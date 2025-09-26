@@ -75,7 +75,7 @@ class textPreprocessor:
                     cleaned = self.clean_text(raw_text)
                     chunks = self.chunk_text(cleaned, chunk_size, overlap)
                     
-                # Save as JSON (one file for each book)
+                # Saving as JSON, one file for each book
                 out_file = os.path.join(output_folder, filename.replace(".txt", ".json"))
                 with open(out_file, "w", encoding="utf-8") as out:
                     json.dump(chunks, out, ensure_ascii=False, indent=2)
@@ -90,24 +90,41 @@ class textPreprocessor:
         input_folder = "data/raw/summarization/cnn_dailymail"
         output_folder = "data/processed/summarization"
         os.makedirs(output_folder, exist_ok=True)
-        # Find first .csv file in input_folder
-        csv_files = [f for f in os.listdir(input_folder) if f.endswith(".csv")]
-        if not csv_files:
-            print(f"No CSV found in {input_folder}")
-            return
-        df = pd.read_csv(os.path.join(input_folder, csv_files[0]))
-        # Expect columns: 'article', 'summary'
-        if not {'article', 'summary'}.issubset(df.columns):
-            print("CSV must have 'article' and 'summary' columns.")
-            return
-        df['article'] = df['article'].astype(str).apply(self.clean_text)
-        df['summary'] = df['summary'].astype(str).apply(self.clean_text)
-        train, temp = train_test_split(df, test_size=0.2, random_state=42)
-        val, test = train_test_split(temp, test_size=0.5, random_state=42)
-        for split, data in zip(['train', 'val', 'test'], [train, val, test]):
-            records = data[['article', 'summary']].to_dict(orient='records')
-            with open(os.path.join(output_folder, f"{split}.json"), "w", encoding="utf-8") as f:
+        
+        # Process each CSV file separately (train.csv, validation.csv, test.csv)
+        file_mapping = {
+            'train.csv': 'train',
+            'validation.csv': 'val',
+            'test.csv': 'test'
+        }
+        
+        for csv_file, split_name in file_mapping.items():
+            file_path = os.path.join(input_folder, csv_file)
+            if not os.path.exists(file_path):
+                print(f"Missing file: {file_path}")
+                continue
+                
+            print(f"Processing {csv_file}...")
+            df = pd.read_csv(file_path)
+            
+            # Check for required columns (article and highlights)
+            if 'article' not in df.columns or 'highlights' not in df.columns:
+                print(f"CSV {csv_file} must have 'article' and 'highlights' columns.")
+                continue
+                
+            # Clean the text data
+            df['article'] = df['article'].astype(str).apply(self.clean_text)
+            df['summary'] = df['highlights'].astype(str).apply(self.clean_text)  # rename highlights to summary
+            
+            # Convert to records format
+            records = df[['article', 'summary']].to_dict(orient='records')
+            
+            # Save as JSON
+            output_file = os.path.join(output_folder, f"{split_name}.json")
+            with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(records, f, ensure_ascii=False, indent=2)
+            print(f"Processed {csv_file}: {len(records)} samples saved to {split_name}.json")
+            
         print("Summarization dataset processed and saved.")
 
     def process_emotion_dataset(self):
@@ -115,22 +132,33 @@ class textPreprocessor:
         input_folder = "data/raw/emotion"
         output_folder = "data/processed/emotion"
         os.makedirs(output_folder, exist_ok=True)
-        csv_files = [f for f in os.listdir(input_folder) if f.endswith(".csv")]
-        if not csv_files:
-            print(f"No CSV found in {input_folder}")
-            return
-        df = pd.read_csv(os.path.join(input_folder, csv_files[0]))
-        # Expect columns: 'text', 'label'
-        if not {'text', 'label'}.issubset(df.columns):
-            print("CSV must have 'text' and 'label' columns.")
-            return
-        df['text'] = df['text'].astype(str).apply(self.clean_text)
-        train, temp = train_test_split(df, test_size=0.2, random_state=42)
-        val, test = train_test_split(temp, test_size=0.5, random_state=42)
-        for split, data in zip(['train', 'val', 'test'], [train, val, test]):
-            records = data[['text', 'label']].to_dict(orient='records')
-            with open(os.path.join(output_folder, f"{split}.json"), "w", encoding="utf-8") as f:
+        
+        # Process each txt file (train.txt, val.txt, test.txt)
+        for split_file in ['train.txt', 'val.txt', 'test.txt']:
+            file_path = os.path.join(input_folder, split_file)
+            if not os.path.exists(file_path):
+                print(f"Missing file: {file_path}")
+                continue
+                
+            records = []
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and ';' in line:
+                        # Split on the last semicolon to handle semicolons in text
+                        text, label = line.rsplit(';', 1)
+                        records.append({
+                            'text': self.clean_text(text),
+                            'label': label.strip()
+                        })
+            
+            # Save as JSON
+            split_name = split_file.replace('.txt', '')
+            output_file = os.path.join(output_folder, f"{split_name}.json")
+            with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(records, f, ensure_ascii=False, indent=2)
+            print(f"Processed {split_file}: {len(records)} samples saved to {split_name}.json")
+        
         print("Emotion dataset processed and saved.")
 
     def process_topic_dataset(self):
@@ -138,46 +166,79 @@ class textPreprocessor:
         input_folder = "data/raw/topic"
         output_folder = "data/processed/topic"
         os.makedirs(output_folder, exist_ok=True)
-        csv_files = [f for f in os.listdir(input_folder) if f.endswith(".csv")]
-        if not csv_files:
-            print(f"No CSV found in {input_folder}")
-            return
-        df = pd.read_csv(os.path.join(input_folder, csv_files[0]))
-        # Expect at least 'title', 'description', 'label'
-        if not 'label' in df.columns:
-            print("CSV must have 'label' column.")
-            return
-        # Concatenate title and description if both exist
-        if 'title' in df.columns and 'description' in df.columns:
-            text = df['title'].astype(str) + ". " + df['description'].astype(str)
-        elif 'title' in df.columns:
-            text = df['title'].astype(str)
-        elif 'description' in df.columns:
-            text = df['description'].astype(str)
-        else:
-            print("CSV must have 'title' or 'description' columns.")
-            return
-        df['text'] = text.apply(self.clean_text)
-        # Map numeric labels to strings if needed
-        if pd.api.types.is_numeric_dtype(df['label']):
-            # Try to find mapping if available
-            label_map = None
-            # Look for a column like 'label_name' or similar
-            for col in df.columns:
-                if col.lower() in ['label_name', 'topic', 'category']:
-                    label_map = dict(zip(df['label'], df[col]))
-                    break
-            if label_map:
-                df['label'] = df['label'].map(label_map)
+        
+        # Process each CSV file separately (train.csv, test.csv)
+        file_mapping = {
+            'train.csv': 'train',
+            'test.csv': 'test'
+        }
+        
+        # Class index to topic name mapping for AG News dataset
+        class_map = {
+            1: 'World',
+            2: 'Sports', 
+            3: 'Business',
+            4: 'Science/Technology'
+        }
+        
+        for csv_file, split_name in file_mapping.items():
+            file_path = os.path.join(input_folder, csv_file)
+            if not os.path.exists(file_path):
+                print(f"Missing file: {file_path}")
+                continue
+                
+            print(f"Processing {csv_file}...")
+            df = pd.read_csv(file_path)
+            
+            # Check for required columns
+            if 'Class Index' not in df.columns:
+                print(f"CSV {csv_file} must have 'Class Index' column.")
+                continue
+            
+            # Concatenate title and description
+            if 'Title' in df.columns and 'Description' in df.columns:
+                text = df['Title'].astype(str) + ". " + df['Description'].astype(str)
+            elif 'Title' in df.columns:
+                text = df['Title'].astype(str)
+            elif 'Description' in df.columns:
+                text = df['Description'].astype(str)
             else:
-                # Otherwise convert to a string
-                df['label'] = df['label'].astype(str)
-        train, temp = train_test_split(df, test_size=0.2, random_state=42)
-        val, test = train_test_split(temp, test_size=0.5, random_state=42)
-        for split, data in zip(['train', 'val', 'test'], [train, val, test]):
-            records = data[['text', 'label']].to_dict(orient='records')
-            with open(os.path.join(output_folder, f"{split}.json"), "w", encoding="utf-8") as f:
+                print("CSV must have 'Title' or 'Description' columns.")
+                continue
+                
+            df['text'] = text.apply(self.clean_text)
+            
+            # Map numeric labels to category names
+            df['label'] = df['Class Index'].map(class_map)
+            
+            # Convert to records format
+            records = df[['text', 'label']].to_dict(orient='records')
+            
+            # Save as JSON
+            output_file = os.path.join(output_folder, f"{split_name}.json")
+            with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(records, f, ensure_ascii=False, indent=2)
+            print(f"Processed {csv_file}: {len(records)} samples saved to {split_name}.json")
+        
+        # Create validation split from training data
+        if os.path.exists(os.path.join(output_folder, "train.json")):
+            print("Creating validation split from training data...")
+            with open(os.path.join(output_folder, "train.json"), "r", encoding="utf-8") as f:
+                train_data = json.load(f)
+            
+            # Split training data into train and validation
+            train_records, val_records = train_test_split(train_data, test_size=0.2, random_state=42)
+            
+            # Save updated train and new validation files
+            with open(os.path.join(output_folder, "train.json"), "w", encoding="utf-8") as f:
+                json.dump(train_records, f, ensure_ascii=False, indent=2)
+            
+            with open(os.path.join(output_folder, "val.json"), "w", encoding="utf-8") as f:
+                json.dump(val_records, f, ensure_ascii=False, indent=2)
+                
+            print(f"Updated train.json: {len(train_records)} samples")
+            print(f"Created val.json: {len(val_records)} samples")
+            
         print("Topic dataset processed and saved.")
 
 
