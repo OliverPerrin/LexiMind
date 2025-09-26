@@ -87,7 +87,7 @@ class textPreprocessor:
 
     def process_summarization_dataset(self):
         """Process summarization dataset: clean, split, and save."""
-        input_folder = "data/raw/summarization"
+        input_folder = "data/raw/summarization/cnn_dailymail"
         output_folder = "data/processed/summarization"
         os.makedirs(output_folder, exist_ok=True)
         # Find first .csv file in input_folder
@@ -159,7 +159,7 @@ class textPreprocessor:
             return
         df['text'] = text.apply(self.clean_text)
         # Map numeric labels to strings if needed
-        if np.issubdtype(df['label'].dtype, np.number):
+        if pd.api.types.is_numeric_dtype(df['label']):
             # Try to find mapping if available
             label_map = None
             # Look for a column like 'label_name' or similar
