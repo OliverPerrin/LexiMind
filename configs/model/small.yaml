@@ -1,0 +1,23 @@
+# configs/model/small.yaml (for fast iteration)
+model:
+  d_model: 256
+  num_encoder_layers: 4
+  num_decoder_layers: 4
+  num_heads: 8
+
+training:
+  batch_size: 32  # ~4GB VRAM
+  gradient_accumulation_steps: 1
+  mixed_precision: true  # Essential!
+
+# configs/model/base.yaml (production)
+model:
+  d_model: 512
+  num_encoder_layers: 6
+  num_decoder_layers: 6
+  num_heads: 8
+
+training:
+  batch_size: 8   # ~8GB VRAM
+  gradient_accumulation_steps: 4  # Effective batch = 32
+  mixed_precision: true
