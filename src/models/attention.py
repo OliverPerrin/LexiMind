@@ -79,11 +79,35 @@ class ScaledDotProductAttention(nn.Module):
 
         # Mask if provided
         if mask is not None:
-            scores = scores.masked_fill(mask == 0, float('-inf'))
+            # Ensure mask is boolean and on same device as scores
+            mask_bool = mask.to(dtype=torch.bool, device=scores.device)
+            # masked_fill expects broadcastable mask: True means keep, False means mask out
+            scores = scores.masked_fill(~mask_bool, float("-1e9"))
         # Applying Softmax to get attention weights
         attention_weights = F.softmax(scores, dim=-1)
         
-        return torch.matmul(attention_weights, value), attention_weights
+        # Softmax to get attention probabilities
+        p_attn = F.softmax(scores, dim=-1)
+        
+        # If mask was provided, ensure masked positions are exactly zero (and handle all-masked rows)
+        if mask is not None:
+            # Convert mask to same dtype as p_attn for multiplication
+            mask_float = mask.to(dtype=p_attn.dtype, device=p_attn.device)
+            # Broadcast-multiply (zero out masked key positions)
+            p_attn = p_attn * mask_float
+            # Replace any NaNs (can occur when a row was entirely -inf prior to softmax) with 0.0
+            # torch.nan_to_num is efficient and handles negative/positive inf as well
+            p_attn = torch.nan_to_num(p_attn, nan=0.0, posinf=0.0, neginf=0.0)
+
+            # re-normalize rows that still have non-zero sum, this is not strictly necessary
+            # if mask is correct, but safe to avoid tiny numerical issues:
+            row_sums = p_attn.sum(dim=-1, keepdim=True)
+            # Avoid division by zero; only divide where row_sums > 0
+            nonzero_rows = row_sums > 0
+            p_attn = torch.where(nonzero_rows, p_attn / (row_sums + 1e-12), p_attn)
+        
+        output = torch.matmul(p_attn, value)
+        return output, p_attn
     
 # --------------- Multi-Head Attention ---------------
 
