@@ -15,4 +15,8 @@ omegaconf>=2.3.0
 tensorboard>=2.13.0
 gradio>=3.35.0
 requests>=2.31.0
-kagglehub>=0.2.0
+kaggle>=1.5.12
+streamlit>=1.25.0
+plotly>=5.18.0
+faiss-cpu==1.9.0; platform_system != "Windows"
+faiss-cpu==1.9.0; platform_system == "Windows"
