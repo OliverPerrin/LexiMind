@@ -1,263 +1,260 @@
-# src/preprocessing.py
-import re
-import os
+"""Lightweight preprocessing utilities built around the in-repo transformer."""
+
+from __future__ import annotations
+
+from collections import Counter
+from dataclasses import dataclass
 import json
-import tensorflow as tf
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from transformers import AutoTokenizer
-import nltk
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+from pathlib import Path
+import re
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+
+import torch
+
+from ..models.decoder import TransformerDecoder
+from ..models.encoder import TransformerEncoder
+
+SPECIAL_TOKENS: Tuple[str, str, str, str] = ("<pad>", "<bos>", "<eos>", "<unk>")
 
 
-class textPreprocessor:
-    def __init__(self, max_length=512, model_name='bert-base-uncased'):
+def _normalize(text: str, lowercase: bool) -> str:
+    text = text.strip()
+    text = re.sub(r"\s+", " ", text)
+    if lowercase:
+        text = text.lower()
+    return text
+
+
+def _basic_tokenize(text: str) -> List[str]:
+    return re.findall(r"\b\w+\b|[.,;:?!]", text)
+
+
+class TransformerTokenizer:
+    """Minimal tokenizer that keeps vocabulary aligned with the custom transformer."""
+
+    def __init__(
+        self,
+        stoi: Dict[str, int],
+        itos: List[str],
+        specials: Sequence[str] = SPECIAL_TOKENS,
+        lowercase: bool = True,
+    ) -> None:
+        self.stoi = stoi
+        self.itos = itos
+        self.specials = tuple(specials)
+        self.lowercase = lowercase
+        self.pad_id = self._lookup(self.specials[0])
+        self.bos_id = self._lookup(self.specials[1])
+        self.eos_id = self._lookup(self.specials[2])
+        self.unk_id = self._lookup(self.specials[3])
+
+    @classmethod
+    def build(
+        cls,
+        texts: Iterable[str],
+        min_freq: int = 1,
+        lowercase: bool = True,
+        specials: Sequence[str] = SPECIAL_TOKENS,
+    ) -> "TransformerTokenizer":
+        counter: Counter[str] = Counter()
+        for text in texts:
+            normalized = _normalize(text, lowercase)
+            counter.update(_basic_tokenize(normalized))
+
+        ordered_specials = list(dict.fromkeys(specials))
+        itos: List[str] = ordered_specials.copy()
+        for token, freq in counter.most_common():
+            if freq < min_freq:
+                continue
+            if token in itos:
+                continue
+            itos.append(token)
+
+        stoi = {token: idx for idx, token in enumerate(itos)}
+        return cls(stoi=stoi, itos=itos, specials=ordered_specials, lowercase=lowercase)
+
+    @property
+    def vocab_size(self) -> int:
+        return len(self.itos)
+
+    def tokenize(self, text: str) -> List[str]:
+        normalized = _normalize(text, self.lowercase)
+        return _basic_tokenize(normalized)
+
+    def encode(
+        self,
+        text: str,
+        add_special_tokens: bool = True,
+        max_length: Optional[int] = None,
+    ) -> List[int]:
+        tokens = self.tokenize(text)
+        pieces = [self.stoi.get(tok, self.unk_id) for tok in tokens]
+        if add_special_tokens:
+            pieces = [self.bos_id] + pieces + [self.eos_id]
+
+        if max_length is not None and len(pieces) > max_length:
+            if add_special_tokens and max_length >= 2:
+                inner_max = max_length - 2
+                trimmed = pieces[1:-1][:inner_max]
+                pieces = [self.bos_id] + trimmed + [self.eos_id]
+            else:
+                pieces = pieces[:max_length]
+        return pieces
+
+    def decode(self, ids: Sequence[int], skip_special_tokens: bool = True) -> str:
+        tokens: List[str] = []
+        for idx in ids:
+            if idx < 0 or idx >= len(self.itos):
+                continue
+            token = self.itos[idx]
+            if skip_special_tokens and token in self.specials:
+                continue
+            tokens.append(token)
+        return " ".join(tokens).strip()
+
+    def pad_batch(
+        self,
+        sequences: Sequence[Sequence[int]],
+        pad_to_length: Optional[int] = None,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        if not sequences:
+            raise ValueError("pad_batch requires at least one sequence")
+        if pad_to_length is None:
+            pad_to_length = max(len(seq) for seq in sequences)
+        padded: List[List[int]] = []
+        mask: List[List[int]] = []
+        for seq in sequences:
+            trimmed = list(seq[:pad_to_length])
+            pad_len = pad_to_length - len(trimmed)
+            padded.append(trimmed + [self.pad_id] * pad_len)
+            mask.append([1] * len(trimmed) + [0] * pad_len)
+        return torch.tensor(padded, dtype=torch.long), torch.tensor(mask, dtype=torch.bool)
+
+    def save(self, path: Path) -> None:
+        payload = {
+            "itos": self.itos,
+            "specials": list(self.specials),
+            "lowercase": self.lowercase,
+        }
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    @classmethod
+    def load(cls, path: Path) -> "TransformerTokenizer":
+        data = json.loads(path.read_text(encoding="utf-8"))
+        itos = list(data["itos"])
+        stoi = {token: idx for idx, token in enumerate(itos)}
+        specials = data.get("specials", list(SPECIAL_TOKENS))
+        lowercase = bool(data.get("lowercase", True))
+        return cls(stoi=stoi, itos=itos, specials=specials, lowercase=lowercase)
+
+    def _lookup(self, token: str) -> int:
+        if token not in self.stoi:
+            raise ValueError(f"token '{token}' missing from vocabulary")
+        return self.stoi[token]
+
+
+@dataclass
+class Batch:
+    input_ids: torch.Tensor
+    attention_mask: torch.Tensor
+    lengths: List[int]
+
+
+class TextPreprocessor:
+    """Prepares text so it can flow directly into the custom transformer stack."""
+
+    def __init__(
+        self,
+        max_length: int = 512,
+        tokenizer: Optional[TransformerTokenizer] = None,
+        *,
+        min_freq: int = 1,
+        lowercase: bool = True,
+    ) -> None:
         self.max_length = max_length
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        
+        self.min_freq = min_freq
+        self.lowercase = lowercase
+        self.tokenizer = tokenizer
+
     def clean_text(self, text: str) -> str:
-        """Cleaning and Normalizing Text"""
-        text = re.sub(r'\s+', ' ', text) # Getting rid of extra spaces
-        text = re.sub(r'[^a-zA-Z0-9.,;:?!\'" ]', '', text) # Removing weird characters
-        return text.strip()
+        return _normalize(text, self.lowercase)
 
-    def tokenize_text(self, texts: list[str]):
-        return self.tokenizer(
-            texts,
-            truncation=True,
-            padding=True,
-            max_length=self.max_length,
-            return_tensors='tf'
+    def fit_tokenizer(self, texts: Iterable[str]) -> TransformerTokenizer:
+        cleaned = [self.clean_text(text) for text in texts]
+        self.tokenizer = TransformerTokenizer.build(
+            cleaned,
+            min_freq=self.min_freq,
+            lowercase=False,
         )
-        
-    def prepare_data(self, texts: list[str], labels=None):
-        """Preparing Data for Training"""
-        cleaned_texts = [self.clean_text(text) for text in texts]
-        encoded = self.tokenize_text(cleaned_texts)
-        
-        if labels is not None:
-            return encoded, tf.convert_to_tensor(labels)
-        return encoded
+        return self.tokenizer
 
-    def load_books(self, folder_path="data/raw/books") -> list[str]:
-        """Load books from text files in the specific folder"""
-        texts = []
-        for filename in os.listdir(folder_path):
-            if filename.endswith(".txt"):
-                file_path = os.path.join(folder_path, filename)
-                with open(file_path, 'r', encoding='utf-8', errors ="ignore") as file:
-                    raw_text = file.read()
-                    cleaned = self.clean_text(raw_text)
-                    texts.append(cleaned)
-        return texts
+    def encode(self, text: str, *, add_special_tokens: bool = True) -> List[int]:
+        if self.tokenizer is None:
+            raise RuntimeError("Tokenizer not fitted")
+        cleaned = self.clean_text(text)
+        return self.tokenizer.encode(cleaned, add_special_tokens=add_special_tokens, max_length=self.max_length)
 
-    def chunk_text(self, text: str, chunk_size=1000, overlap=100) -> list[str]:
-        """Splits long texts into smaller segments or chunks"""
-        words = text.split()
-        chunks = []
+    def batch_encode(self, texts: Sequence[str]) -> Batch:
+        if self.tokenizer is None:
+            raise RuntimeError("Tokenizer not fitted")
+        sequences = [self.encode(text) for text in texts]
+        lengths = [len(seq) for seq in sequences]
+        input_ids, attention_mask = self.tokenizer.pad_batch(sequences, pad_to_length=self.max_length)
+        return Batch(input_ids=input_ids, attention_mask=attention_mask, lengths=lengths)
+
+    def build_encoder(self, **encoder_kwargs) -> TransformerEncoder:
+        if self.tokenizer is None:
+            raise RuntimeError("Tokenizer not fitted")
+        return TransformerEncoder(
+            vocab_size=self.tokenizer.vocab_size,
+            max_len=self.max_length,
+            pad_token_id=self.tokenizer.pad_id,
+            **encoder_kwargs,
+        )
+
+    def build_decoder(self, **decoder_kwargs) -> TransformerDecoder:
+        if self.tokenizer is None:
+            raise RuntimeError("Tokenizer not fitted")
+        return TransformerDecoder(
+            vocab_size=self.tokenizer.vocab_size,
+            max_len=self.max_length,
+            pad_token_id=self.tokenizer.pad_id,
+            **decoder_kwargs,
+        )
+
+    def save_tokenizer(self, path: Path) -> None:
+        if self.tokenizer is None:
+            raise RuntimeError("Tokenizer not fitted")
+        self.tokenizer.save(path)
+
+    def load_tokenizer(self, path: Path) -> TransformerTokenizer:
+        self.tokenizer = TransformerTokenizer.load(path)
+        return self.tokenizer
+
+    def chunk_text(self, text: str, *, chunk_size: int = 1000, overlap: int = 100) -> List[str]:
+        if chunk_size <= overlap:
+            raise ValueError("chunk_size must be larger than overlap")
+        words = self.clean_text(text).split()
+        chunks: List[str] = []
         start = 0
         while start < len(words):
-            end = start + chunk_size
-            chunk = " ".join(words[start:end])
-            chunks.append(chunk)
+            end = min(start + chunk_size, len(words))
+            chunks.append(" ".join(words[start:end]))
             start += chunk_size - overlap
         return chunks
 
-    def save_preprocessed_books(self, data, input_folder="data/raw/books", output_folder="data/processed/books", chunk_size=1000, overlap=100):
-        os.makedirs(output_folder, exist_ok=True)
-        for filename in os.listdir(input_folder):
-            if filename.endswith(".txt"):
-                file_path = os.path.join(input_folder, filename)
-                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                    raw_text = f.read()
-                    cleaned = self.clean_text(raw_text)
-                    chunks = self.chunk_text(cleaned, chunk_size, overlap)
-                    
-                # Saving as JSON, one file for each book
-                out_file = os.path.join(output_folder, filename.replace(".txt", ".json"))
-                with open(out_file, "w", encoding="utf-8") as out:
-                    json.dump(chunks, out, ensure_ascii=False, indent=2)
-                    
-                print(f"Processed and saved {filename} → {out_file}")
-                
-                
-    # ----- Dataset-specific processing methods ------
-
-    def process_summarization_dataset(self):
-        """Process summarization dataset: clean, split, and save."""
-        input_folder = "data/raw/summarization/cnn_dailymail"
-        output_folder = "data/processed/summarization"
-        os.makedirs(output_folder, exist_ok=True)
-        
-        # Process each CSV file separately (train.csv, validation.csv, test.csv)
-        file_mapping = {
-            'train.csv': 'train',
-            'validation.csv': 'val',
-            'test.csv': 'test'
-        }
-        
-        for csv_file, split_name in file_mapping.items():
-            file_path = os.path.join(input_folder, csv_file)
-            if not os.path.exists(file_path):
-                print(f"Missing file: {file_path}")
-                continue
-                
-            print(f"Processing {csv_file}...")
-            df = pd.read_csv(file_path)
-            
-            # Check for required columns (article and highlights)
-            if 'article' not in df.columns or 'highlights' not in df.columns:
-                print(f"CSV {csv_file} must have 'article' and 'highlights' columns.")
-                continue
-                
-            # Clean the text data
-            df['article'] = df['article'].astype(str).apply(self.clean_text)
-            df['summary'] = df['highlights'].astype(str).apply(self.clean_text)  # rename highlights to summary
-            
-            # Convert to records format
-            records = df[['article', 'summary']].to_dict(orient='records')
-            
-            # Save as JSON
-            output_file = os.path.join(output_folder, f"{split_name}.json")
-            with open(output_file, "w", encoding="utf-8") as f:
-                json.dump(records, f, ensure_ascii=False, indent=2)
-            print(f"Processed {csv_file}: {len(records)} samples saved to {split_name}.json")
-            
-        print("Summarization dataset processed and saved.")
-
-    def process_emotion_dataset(self):
-        """Process emotion dataset: clean, split, and save."""
-        input_folder = "data/raw/emotion"
-        output_folder = "data/processed/emotion"
-        os.makedirs(output_folder, exist_ok=True)
-        
-        # Process each txt file (train.txt, val.txt, test.txt)
-        for split_file in ['train.txt', 'val.txt', 'test.txt']:
-            file_path = os.path.join(input_folder, split_file)
-            if not os.path.exists(file_path):
-                print(f"Missing file: {file_path}")
-                continue
-                
-            records = []
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-                for line in f:
-                    line = line.strip()
-                    if line and ';' in line:
-                        # Split on the last semicolon to handle semicolons in text
-                        text, label = line.rsplit(';', 1)
-                        records.append({
-                            'text': self.clean_text(text),
-                            'label': label.strip()
-                        })
-            
-            # Save as JSON
-            split_name = split_file.replace('.txt', '')
-            output_file = os.path.join(output_folder, f"{split_name}.json")
-            with open(output_file, "w", encoding="utf-8") as f:
-                json.dump(records, f, ensure_ascii=False, indent=2)
-            print(f"Processed {split_file}: {len(records)} samples saved to {split_name}.json")
-        
-        print("Emotion dataset processed and saved.")
-
-    def process_topic_dataset(self):
-        """Process topic dataset: clean, split, and save."""
-        input_folder = "data/raw/topic"
-        output_folder = "data/processed/topic"
-        os.makedirs(output_folder, exist_ok=True)
-        
-        # Process each CSV file separately (train.csv, test.csv)
-        file_mapping = {
-            'train.csv': 'train',
-            'test.csv': 'test'
-        }
-        
-        # Class index to topic name mapping for AG News dataset
-        class_map = {
-            1: 'World',
-            2: 'Sports', 
-            3: 'Business',
-            4: 'Science/Technology'
-        }
-        
-        for csv_file, split_name in file_mapping.items():
-            file_path = os.path.join(input_folder, csv_file)
-            if not os.path.exists(file_path):
-                print(f"Missing file: {file_path}")
-                continue
-                
-            print(f"Processing {csv_file}...")
-            df = pd.read_csv(file_path)
-            
-            # Check for required columns
-            if 'Class Index' not in df.columns:
-                print(f"CSV {csv_file} must have 'Class Index' column.")
-                continue
-            
-            # Concatenate title and description
-            if 'Title' in df.columns and 'Description' in df.columns:
-                text = df['Title'].astype(str) + ". " + df['Description'].astype(str)
-            elif 'Title' in df.columns:
-                text = df['Title'].astype(str)
-            elif 'Description' in df.columns:
-                text = df['Description'].astype(str)
-            else:
-                print("CSV must have 'Title' or 'Description' columns.")
-                continue
-                
-            df['text'] = text.apply(self.clean_text)
-            
-            # Map numeric labels to category names
-            df['label'] = df['Class Index'].map(class_map)
-            
-            # Convert to records format
-            records = df[['text', 'label']].to_dict(orient='records')
-            
-            # Save as JSON
-            output_file = os.path.join(output_folder, f"{split_name}.json")
-            with open(output_file, "w", encoding="utf-8") as f:
-                json.dump(records, f, ensure_ascii=False, indent=2)
-            print(f"Processed {csv_file}: {len(records)} samples saved to {split_name}.json")
-        
-        # Create validation split from training data
-        if os.path.exists(os.path.join(output_folder, "train.json")):
-            print("Creating validation split from training data...")
-            with open(os.path.join(output_folder, "train.json"), "r", encoding="utf-8") as f:
-                train_data = json.load(f)
-            
-            # Split training data into train and validation
-            train_records, val_records = train_test_split(train_data, test_size=0.2, random_state=42)
-            
-            # Save updated train and new validation files
-            with open(os.path.join(output_folder, "train.json"), "w", encoding="utf-8") as f:
-                json.dump(train_records, f, ensure_ascii=False, indent=2)
-            
-            with open(os.path.join(output_folder, "val.json"), "w", encoding="utf-8") as f:
-                json.dump(val_records, f, ensure_ascii=False, indent=2)
-                
-            print(f"Updated train.json: {len(train_records)} samples")
-            print(f"Created val.json: {len(val_records)} samples")
-            
-        print("Topic dataset processed and saved.")
-
-
-# ----- Main function for quick testing ------
-
-if __name__ == "__main__":
-    preprocessor = textPreprocessor(max_length=128)
-
-    # Process and save all books
-    preprocessor.save_preprocessed_books(data=None)
-
-    # Load a processed book back
-    import json
-    with open("data/processed/books/pride_and_prejudice.json", "r") as f:
-        chunks = json.load(f)
-    print(f"Loaded {len(chunks)} chunks from Pride and Prejudice")
-    print(chunks[0][:200])  # printing first 200 chars of chunk
-
-    # Process new datasets
-    preprocessor.process_summarization_dataset()
-    preprocessor.process_emotion_dataset()
-    preprocessor.process_topic_dataset()
+    def save_book_chunks(
+        self,
+        input_path: Path,
+        out_dir: Path,
+        *,
+        chunk_size: int = 1000,
+        overlap: int = 100,
+    ) -> Path:
+        out_dir.mkdir(parents=True, exist_ok=True)
+        raw_text = input_path.read_text(encoding="utf-8", errors="ignore")
+        chunks = self.chunk_text(raw_text, chunk_size=chunk_size, overlap=overlap)
+        out_file = out_dir / f"{input_path.stem}.json"
+        out_file.write_text(json.dumps(chunks, ensure_ascii=False, indent=2), encoding="utf-8")
+        return out_file
