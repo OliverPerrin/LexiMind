@@ -1,0 +1,1 @@
+"""LexiMind core package."""
