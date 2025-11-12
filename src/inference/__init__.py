@@ -1,7 +1,12 @@
-"""
-Inference utilities for LexiMind.
-"""
+"""Inference tools for LexiMind."""
 
-from .baseline_summarizer import Summarizer, TransformerSummarizer
+from .factory import create_inference_pipeline
+from .pipeline import EmotionPrediction, InferenceConfig, InferencePipeline, TopicPrediction
 
-__all__ = ["Summarizer", "TransformerSummarizer"]
+__all__ = [
+	"InferencePipeline",
+	"InferenceConfig",
+	"EmotionPrediction",
+	"TopicPrediction",
+	"create_inference_pipeline",
+]

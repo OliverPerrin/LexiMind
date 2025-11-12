@@ -39,17 +39,28 @@ class MultiTaskModel(nn.Module):
         mt = MultiTaskModel(encoder=enc, decoder=dec)
         mt.add_head("summarize", LMHead(...))
         logits = mt.forward("summarize", {"src_ids": src_ids, "tgt_ids": tgt_ids})
+
+    Args:
+        encoder: optional encoder backbone.
+        decoder: optional decoder backbone.
+        decoder_outputs_logits: set True when ``decoder.forward`` already returns vocabulary logits;
+            set False if the decoder produces hidden states that must be projected by the LM head.
     """
 
     def __init__(
         self,
         encoder: Optional[TransformerEncoder] = None,
         decoder: Optional[TransformerDecoder] = None,
+        *,
+        decoder_outputs_logits: bool = True,
     ):
         super().__init__()
         self.encoder = encoder
         self.decoder = decoder
         self.heads: Dict[str, nn.Module] = {}
+        # When True, decoder.forward(...) is expected to return logits already projected to the vocabulary space.
+        # When False, decoder outputs hidden states that must be passed through the registered LM head.
+        self.decoder_outputs_logits = decoder_outputs_logits
 
     def add_head(self, name: str, module: nn.Module) -> None:
         """Register a head under a task name."""
@@ -99,9 +110,15 @@ class MultiTaskModel(nn.Module):
                 raise RuntimeError("Encoder is required for encoder-side heads")
             # accept either input_ids or embeddings
             if "input_ids" in inputs:
-                enc_out = self.encoder(inputs["input_ids"])
+                encoder_mask = None
+                if "attention_mask" in inputs:
+                    encoder_mask = self._expand_attention_mask(inputs["attention_mask"], inputs["input_ids"].device)
+                enc_out = self.encoder(inputs["input_ids"], mask=encoder_mask)
             elif "embeddings" in inputs:
-                enc_out = self.encoder(inputs["embeddings"])
+                encoder_mask = inputs.get("attention_mask")
+                if encoder_mask is not None:
+                    encoder_mask = self._expand_attention_mask(encoder_mask, inputs["embeddings"].device)
+                enc_out = self.encoder(inputs["embeddings"], mask=encoder_mask)
             else:
                 raise ValueError("inputs must contain 'input_ids' or 'embeddings' for encoder tasks")
             logits = head(enc_out)
@@ -120,10 +137,20 @@ class MultiTaskModel(nn.Module):
                 raise RuntimeError("Both encoder and decoder are required for LM-style heads")
 
             # Build encoder memory
+            src_mask = inputs.get("src_mask")
+            if src_mask is None:
+                src_mask = inputs.get("attention_mask")
+            encoder_mask = None
+            reference_tensor = inputs.get("src_ids")
+            if reference_tensor is None:
+                reference_tensor = inputs.get("src_embeddings")
+            if src_mask is not None and reference_tensor is not None:
+                encoder_mask = self._expand_attention_mask(src_mask, reference_tensor.device)
+
             if "src_ids" in inputs:
-                memory = self.encoder(inputs["src_ids"])
+                memory = self.encoder(inputs["src_ids"], mask=encoder_mask)
             elif "src_embeddings" in inputs:
-                memory = self.encoder(inputs["src_embeddings"])
+                memory = self.encoder(inputs["src_embeddings"], mask=encoder_mask)
             else:
                 raise ValueError("inputs must contain 'src_ids' or 'src_embeddings' for seq2seq tasks")
 
@@ -137,12 +164,13 @@ class MultiTaskModel(nn.Module):
                 # Here we don't attempt to generate when labels not provided.
                 raise ValueError("Seq2seq tasks require 'tgt_ids' or 'tgt_embeddings' for training forward")
 
-            # Run decoder. Decoder returns logits shaped (B, T, vocab) in this codebase.
             decoder_out = self.decoder(decoder_inputs, memory)
 
-            # If decoder already returned logits matching the head vocab size, use them directly.
-            # Otherwise, assume decoder returned hidden states and let the head project them.
-            if isinstance(decoder_out, torch.Tensor) and decoder_out.shape[-1] == head.vocab_size:
+            if self.decoder_outputs_logits:
+                if not isinstance(decoder_out, torch.Tensor):
+                    raise TypeError(
+                        "Decoder is configured to return logits, but forward returned a non-tensor value."
+                    )
                 logits = decoder_out
             else:
                 logits = head(decoder_out)
@@ -196,3 +224,14 @@ class MultiTaskModel(nn.Module):
 
         # If we can't determine, raise
         raise RuntimeError("Cannot compute loss for unknown head type")
+
+    @staticmethod
+    def _expand_attention_mask(mask: torch.Tensor, device: torch.device) -> torch.Tensor:
+        if mask is None:
+            return None  # type: ignore[return-value]
+        bool_mask = mask.to(device=device, dtype=torch.bool)
+        if bool_mask.dim() == 2:
+            return bool_mask.unsqueeze(1) & bool_mask.unsqueeze(2)
+        if bool_mask.dim() in (3, 4):
+            return bool_mask
+        raise ValueError("Attention mask must be 2D, 3D, or 4D tensor")

@@ -1,0 +1,26 @@
+raw:
+  summarization: data/raw/summarization/cnn_dailymail
+  emotion: data/raw/emotion
+  topic: data/raw/topic
+  books: data/raw/books
+processed:
+  summarization: data/processed/summarization
+  emotion: data/processed/emotion
+  topic: data/processed/topic
+  books: data/processed/books
+tokenizer:
+  pretrained_model_name: facebook/bart-base
+  max_length: 512
+  lower: false
+downloads:
+  summarization:
+    dataset: gowrishankarp/newspaper-text-summarization-cnn-dailymail
+    output: data/raw/summarization/cnn_dailymail
+  books:
+    - name: pride_and_prejudice
+      url: https://www.gutenberg.org/cache/epub/1342/pg1342.txt
+      output: data/raw/books/pride_and_prejudice.txt
+  emotion:
+    dataset: dair-ai/emotion
+  topic:
+    dataset: ag_news

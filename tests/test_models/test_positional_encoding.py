@@ -4,8 +4,13 @@
 Tests for positional encoding.
 """
 
+import os
+
 import pytest
 import torch
+import matplotlib
+
+matplotlib.use("Agg")  # use non-interactive backend for test environments
 import matplotlib.pyplot as plt
 import seaborn as sns
 from src.models.positional_encoding import PositionalEncoding
@@ -93,6 +98,7 @@ def test_visualize_positional_encoding():
     plt.ylabel('Embedding Dimension')
     plt.title('Positional Encoding Pattern\n(Notice the wave patterns with different frequencies)')
     plt.tight_layout()
+    os.makedirs('outputs', exist_ok=True)
     plt.savefig('outputs/positional_encoding_heatmap.png', dpi=150)
     print("✅ Saved to outputs/positional_encoding_heatmap.png")
 

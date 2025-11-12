@@ -1,66 +1,45 @@
-"""
-Download helpers for datasets.
+"""Dataset download helpers."""
 
-This version:
-- Adds robust error handling when Kaggle API is not configured.
-- Stores files under data/raw/ subfolders.
-- Keeps the Gutenberg direct download example.
+import socket
+from pathlib import Path
+from subprocess import CalledProcessError, run
+from urllib.error import URLError
+from urllib.request import urlopen
 
-Make sure you have Kaggle credentials configured if you call Kaggle downloads.
-"""
-import os
-import requests
 
-def download_gutenberg(out_dir="data/raw/books", gutenberg_id: int = 1342, filename: str = "pride_and_prejudice.txt"):
-    """Download a Gutenberg text file by direct URL template (best-effort)."""
-    url = f"https://www.gutenberg.org/files/{gutenberg_id}/{gutenberg_id}-0.txt"
-    os.makedirs(out_dir, exist_ok=True)
-    out_path = os.path.join(out_dir, filename)
-    if os.path.exists(out_path):
-        print("Already downloaded:", out_path)
-        return out_path
+DOWNLOAD_TIMEOUT = 60
+
+
+def kaggle_download(dataset: str, output_dir: str) -> None:
+    target = Path(output_dir)
+    target.mkdir(parents=True, exist_ok=True)
     try:
-        r = requests.get(url, timeout=30)
-        r.raise_for_status()
-        with open(out_path, "wb") as f:
-            f.write(r.content)
-        print("Downloaded:", out_path)
-        return out_path
-    except Exception as e:
-        print("Failed to download Gutenberg file:", e)
-        return None
+        run([
+            "kaggle",
+            "datasets",
+            "download",
+            "-d",
+            dataset,
+            "-p",
+            str(target),
+            "--unzip",
+        ], check=True)
+    except CalledProcessError as error:
+        raise RuntimeError(
+            "Kaggle download failed. Verify that the Kaggle CLI is authenticated,"
+            " you have accepted the dataset terms on kaggle.com, and your kaggle.json"
+            " credentials are located in %USERPROFILE%/.kaggle."
+        ) from error
 
-# Kaggle helpers: optional, wrapped to avoid hard failure when Kaggle isn't configured.
-def _safe_kaggle_download(dataset: str, path: str):
+
+def gutenberg_download(url: str, output_path: str) -> None:
+    target = Path(output_path)
+    target.parent.mkdir(parents=True, exist_ok=True)
     try:
-        import kaggle
-    except Exception as e:
-        print("Kaggle package not available or not configured. Please install 'kaggle' and configure API token. Error:", e)
-        return False
-    try:
-        os.makedirs(path, exist_ok=True)
-        kaggle.api.authenticate()
-        kaggle.api.dataset_download_files(dataset, path=path, unzip=True)
-        print(f"Downloaded Kaggle dataset {dataset} to {path}")
-        return True
-    except Exception as e:
-        print("Failed to download Kaggle dataset:", e)
-        return False
-
-def download_emotion_dataset():
-    target_dir = "data/raw/emotion"
-    return _safe_kaggle_download('praveengovi/emotions-dataset-for-nlp', target_dir)
-
-def download_cnn_dailymail():
-    target_dir = "data/raw/summarization"
-    return _safe_kaggle_download('gowrishankarp/newspaper-text-summarization-cnn-dailymail', target_dir)
-
-def download_ag_news():
-    target_dir = "data/raw/topic"
-    return _safe_kaggle_download('amananandrai/ag-news-classification-dataset', target_dir)
-
-if __name__ == "__main__":
-    download_gutenberg()
-    download_emotion_dataset()
-    download_cnn_dailymail()
-    download_ag_news()
+        with urlopen(url, timeout=DOWNLOAD_TIMEOUT) as response, target.open("wb") as handle:
+            chunk = response.read(8192)
+            while chunk:
+                handle.write(chunk)
+                chunk = response.read(8192)
+    except (URLError, socket.timeout, OSError) as error:
+        raise RuntimeError(f"Failed to download '{url}' to '{target}': {error}") from error
