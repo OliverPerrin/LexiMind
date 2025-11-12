@@ -1,0 +1,12 @@
+dataloader:
+  batch_size: 16
+  shuffle: true
+optimizer:
+  name: adamw
+  lr: 2.0e-5
+scheduler:
+  name: cosine
+  warmup_steps: 1000
+trainer:
+  max_epochs: 15
+  gradient_clip_norm: 1.0
