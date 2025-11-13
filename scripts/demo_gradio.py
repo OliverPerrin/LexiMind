@@ -6,6 +6,7 @@ import json
 import sys
 from pathlib import Path
 from typing import Iterable, Sequence
+
 import gradio as gr
 from gradio.themes import Soft
 import matplotlib.pyplot as plt
@@ -70,51 +71,43 @@ def map_compression_to_length(compression: int, max_model_length: int = 512):
     return int(ratio * max_model_length)
 
 def predict(text: str, compression: int):
-    """
-    Main predcition function for the Gradio interface.
-    Args:
-        text: Text to process
-        compression: Compression percentage (20-80)
-    Returns:
-        Tuple of (summary_html, emotion_plot, topic_output, attention_fig, download_data)
-    """
+    """Run the full pipeline and prepare Gradio outputs."""
+    hidden_download = gr.update(value=None, visible=False)
     if not text or not text.strip():
         return (
             "Please enter some text to analyze.",
             None,
             "No topic prediction available",
             None,
-            gr.update(value=None, visible=False),
+            hidden_download,
         )
     try:
         pipeline = get_pipeline()
         max_len = map_compression_to_length(compression)
-        logger.info(f"Generating summary with max length of {max_len}")
-        
-        # Get the predictions
+        logger.info("Generating summary with max length of %s", max_len)
+
         summary = pipeline.summarize([text], max_length=max_len)[0]
         emotions = pipeline.predict_emotions([text])[0]
         topic = pipeline.predict_topics([text])[0]
-        
+
         summary_html = format_summary(text, summary)
         emotion_plot = create_emotion_plot(emotions)
         topic_output = format_topic(topic)
         attention_fig = create_attention_heatmap(text, summary, pipeline)
-        download_data = prepare_download(text, summary, emotions, topic)
+        download_bytes = prepare_download(text, summary, emotions, topic)
+        download_update = gr.update(value=download_bytes, visible=True)
 
-        return summary_html, emotion_plot, topic_output, attention_fig, gr.update(
-            value=download_data,
-            visible=True,
-        )
-    
-    except Exception as e:
-        logger.error(f"Prediction error: {e}", exc_info=True)
+        return summary_html, emotion_plot, topic_output, attention_fig, download_update
+
+    except Exception as exc:  # pragma: no cover - surfaced in UI
+        logger.error("Prediction error: %s", exc, exc_info=True)
         error_msg = "Prediction failed. Check logs for details."
-        return error_msg, None, "Error", None, gr.update(value=None, visible=False)
-    
-def format_summary(original: str, summary:str) ->str:
-    """Format original and summary text for display"""
-    html = f"""
+        return error_msg, None, "Error", None, hidden_download
+
+
+def format_summary(original: str, summary: str) -> str:
+    """Format original and summary text for display."""
+    return f"""
     <div style="padding: 10px; border-radius: 5px;">
         <h3>Original Text</h3>
         <p style="background-color: #f0f0f0; padding: 10px; border-radius: 3px;">
@@ -126,17 +119,15 @@ def format_summary(original: str, summary:str) ->str:
         </p>
     </div>
     """
-    return html
 
-def create_emotion_plot(emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]]) -> Figure | None:
-    """
-    Create bar plot for emotion predictions.
-    Args:
-        emotions: Dict with 'labels' and 'scores' keys
-    """
+
+def create_emotion_plot(
+    emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]]
+) -> Figure | None:
+    """Create a horizontal bar chart for emotion predictions."""
     if isinstance(emotions, EmotionPrediction):
-        labels = emotions.labels
-        scores = emotions.scores
+        labels = list(emotions.labels)
+        scores = list(emotions.scores)
     else:
         labels = list(emotions.get("labels", []))
         scores = list(emotions.get("scores", []))
@@ -144,10 +135,7 @@ def create_emotion_plot(emotions: EmotionPrediction | dict[str, Sequence[float] 
     if not labels or not scores:
         return None
 
-    df = pd.DataFrame({
-        "Emotion": labels,
-        "Probability": scores,
-    })
+    df = pd.DataFrame({"Emotion": labels, "Probability": scores})
     fig, ax = plt.subplots(figsize=(8, 5))
     colors = sns.color_palette("Set2", len(labels))
     bars = ax.barh(df["Emotion"], df["Probability"], color=colors)
@@ -169,27 +157,23 @@ def create_emotion_plot(emotions: EmotionPrediction | dict[str, Sequence[float] 
     plt.tight_layout()
     return fig
 
+
 def format_topic(topic: TopicPrediction | dict[str, float | str]) -> str:
-    """
-    Format topic prediction output.
-    
-    Args:
-        topic: Dict with 'label' and 'score' keys
-    """
+    """Format topic prediction output as markdown."""
     if isinstance(topic, TopicPrediction):
         label = topic.label
         score = topic.confidence
     else:
         label = str(topic.get("label", "Unknown"))
         score = float(topic.get("score", 0.0))
-    output = f"""
+
+    return f"""
     ### Predicted Topic
-        
+
     **{label}**
-        
+
     Confidence: {score:.2%}
     """
-    return output
 
 def _clean_tokens(tokens: Iterable[str]) -> list[str]:
     cleaned: list[str] = []
