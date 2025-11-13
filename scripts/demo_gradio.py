@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Iterable, Sequence
+from textwrap import dedent
 
 import gradio as gr
 from gradio.themes import Soft
@@ -29,7 +30,6 @@ logger = get_logger(__name__)
 
 _pipeline: InferencePipeline | None = None  # Global pipeline instance
 _label_metadata = None  # Cached label metadata
-
 
 def get_pipeline() -> InferencePipeline:
     """Lazy Loading and Caching the inference pipeline"""
@@ -92,15 +92,26 @@ def predict(text: str, compression: int):
         topic = pipeline.predict_topics([text])[0]
 
         clean_summary = summary.strip()
-        display_summary = (
-            clean_summary if clean_summary else "<em>Summary unavailable – model returned empty output.</em>"
-        )
+        if clean_summary:
+            summary_source = clean_summary
+            summary_notice = ""
+        else:
+            summary_source = generate_fallback_summary(text)
+            summary_notice = (
+                "<p style=\"color: #b45309; margin-top: 8px;\"><strong>Heads-up:</strong> "
+                "The model did not produce a summary, so a fallback extractive summary is shown instead.</p>"
+            )
 
-        summary_html = format_summary(text, display_summary)
+        summary_html = format_summary(text, summary_source, notice=summary_notice)
         emotion_plot = create_emotion_plot(emotions)
         topic_output = format_topic(topic)
-        attention_fig = create_attention_heatmap(text, clean_summary, pipeline) if clean_summary else None
-        download_path = prepare_download(text, clean_summary or summary, emotions, topic)
+        if clean_summary:
+            attention_fig = create_attention_heatmap(text, clean_summary, pipeline)
+        else:
+            attention_fig = render_unavailable_message(
+                "Attention heatmap unavailable because the model produced an empty summary."
+            )
+        download_path = prepare_download(text, summary_source, emotions, topic)
         download_update = gr.update(value=download_path, visible=True)
 
         return summary_html, emotion_plot, topic_output, attention_fig, download_update
@@ -110,10 +121,9 @@ def predict(text: str, compression: int):
         error_msg = "Prediction failed. Check logs for details."
         return error_msg, None, "Error", None, hidden_download
 
-
-def format_summary(original: str, summary: str) -> str:
+def format_summary(original: str, summary: str, *, notice: str = "") -> str:
     """Format original and summary text for display."""
-    return f"""
+    html = f"""
     <div style="padding: 10px; border-radius: 5px; color: #111;">
         <h3 style="color: #111;">Original Text</h3>
         <p style="background-color: #f0f0f0; padding: 10px; border-radius: 3px; color: #111; white-space: pre-wrap;">
@@ -123,25 +133,38 @@ def format_summary(original: str, summary: str) -> str:
         <p style="background-color: #e6f3ff; padding: 10px; border-radius: 3px; color: #111; white-space: pre-wrap;">
             {summary}
         </p>
+        {notice}
     </div>
     """
-
+    return dedent(html).strip()
 
 def create_emotion_plot(
     emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]]
 ) -> Figure | None:
     """Create a horizontal bar chart for emotion predictions."""
     if isinstance(emotions, EmotionPrediction):
-        pairs = list(zip(emotions.labels, emotions.scores))
+        raw_pairs = list(zip(emotions.labels, emotions.scores))
     else:
-        pairs = list(zip(emotions.get("labels", []), emotions.get("scores", [])))
+        raw_pairs = list(zip(emotions.get("labels", []), emotions.get("scores", [])))
+
+    pairs: list[tuple[str, float]] = []
+    for label, score in raw_pairs:
+        try:
+            score_val = float(score)
+        except (TypeError, ValueError):
+            continue
+        pairs.append((str(label), score_val))
 
     if not pairs:
         return None
 
-    pairs = sorted(pairs, key=lambda item: item[1], reverse=True)[:5]
-    labels = [label for label, _ in pairs]
-    scores = [score for _, score in pairs]
+    pairs = sorted(pairs, key=lambda item: item[1], reverse=True)
+    filtered = [item for item in pairs if item[1] >= 0.2]
+    if not filtered:
+        filtered = pairs[:3]
+
+    labels = [label for label, _ in filtered[:5]]
+    scores = [score for _, score in filtered[:5]]
 
     df = pd.DataFrame({"Emotion": labels, "Probability": scores})
     fig, ax = plt.subplots(figsize=(8, 5))
@@ -164,7 +187,6 @@ def create_emotion_plot(
         )
     plt.tight_layout()
     return fig
-
 
 def format_topic(topic: TopicPrediction | dict[str, float | str]) -> str:
     """Format topic prediction output as markdown."""
@@ -190,6 +212,28 @@ def _clean_tokens(tokens: Iterable[str]) -> list[str]:
         cleaned.append(item.strip() if item.strip() else token)
     return cleaned
 
+def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
+    """Build a lightweight extractive summary when the model generates nothing."""
+    if not text.strip():
+        return ""
+
+    sections = [segment.strip() for segment in text.replace("\n", " ").split(". ") if segment.strip()]
+    if not sections:
+        return text.strip()[:max_chars]
+
+    summary_fragments: list[str] = []
+    chars_used = 0
+    for segment in sections:
+        candidate = segment if segment.endswith(".") else f"{segment}."
+        if chars_used + len(candidate) > max_chars and summary_fragments:
+            break
+        summary_fragments.append(candidate)
+        chars_used += len(candidate)
+
+    fallback = " ".join(summary_fragments)
+    if not fallback:
+        fallback = text.strip()[:max_chars]
+    return fallback
 
 def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipeline) -> Figure | None:
     """Generate a seaborn heatmap of decoder cross-attention averaged over heads."""
@@ -275,6 +319,15 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
     except Exception as exc:
         logger.error("Unable to build attention heatmap: %s", exc, exc_info=True)
         return None
+
+
+def render_unavailable_message(message: str) -> Figure:
+    """Render a simple Matplotlib figure containing an informational message."""
+    fig, ax = plt.subplots(figsize=(6, 2))
+    ax.axis("off")
+    ax.text(0.5, 0.5, message, ha="center", va="center", fontsize=11, wrap=True)
+    fig.tight_layout()
+    return fig
 
 
 def prepare_download(
