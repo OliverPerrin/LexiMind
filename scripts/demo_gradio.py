@@ -4,7 +4,6 @@ Showcases summarization, emotion detection, and topic prediction.
 """
 import json
 import sys
-from io import BytesIO
 from pathlib import Path
 from typing import Iterable, Sequence
 import gradio as gr
@@ -291,7 +290,7 @@ def prepare_download(
     summary: str,
     emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]],
     topic: TopicPrediction | dict[str, float | str],
-) -> BytesIO:
+) -> bytes:
     """Prepare JSON data buffer for download."""
     if isinstance(emotions, EmotionPrediction):
         emotion_payload = {
@@ -315,12 +314,7 @@ def prepare_download(
         "emotions": emotion_payload,
         "topic": topic_payload,
     }
-
-    buffer = BytesIO()
-    buffer.write(json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8"))
-    buffer.seek(0)
-    buffer.name = "leximind_demo_output.json"
-    return buffer
+    return json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
 
 # Sample data for the demo
 SAMPLE_TEXT = """
