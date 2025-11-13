@@ -25,13 +25,17 @@ data/raw/
 data/processed/
 data/cache/
 *.csv
-*.json
 *.txt
 !requirements*.txt
 
 # Models
+checkpoints/*.pt
+!checkpoints/best.pt
 *.pth
 *.ckpt
+*.json
+!artifacts/*.json
+!artifacts/hf_tokenizer/*.json
 
 # Logs
 logs/

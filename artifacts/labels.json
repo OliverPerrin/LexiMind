@@ -1,0 +1,16 @@
+{
+  "emotion": [
+    "anger",
+    "fear",
+    "joy",
+    "love",
+    "sadness",
+    "surprise"
+  ],
+  "topic": [
+    "Business",
+    "Sci/Tech",
+    "Sports",
+    "World"
+  ]
+}
