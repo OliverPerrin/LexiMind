@@ -4,7 +4,7 @@ Showcases summarization, emotion detection, and topic prediction.
 """
 import json
 import sys
-from io import StringIO
+from io import BytesIO
 from pathlib import Path
 from typing import Iterable, Sequence
 import gradio as gr
@@ -80,11 +80,13 @@ def predict(text: str, compression: int):
         Tuple of (summary_html, emotion_plot, topic_output, attention_fig, download_data)
     """
     if not text or not text.strip():
-        return ("Please enter some text to analyze.", 
-                None, 
-                "No topic prediction available", 
-                None, 
-                None)
+        return (
+            "Please enter some text to analyze.",
+            None,
+            "No topic prediction available",
+            None,
+            gr.update(value=None, visible=False),
+        )
     try:
         pipeline = get_pipeline()
         max_len = map_compression_to_length(compression)
@@ -109,7 +111,7 @@ def predict(text: str, compression: int):
     except Exception as e:
         logger.error(f"Prediction error: {e}", exc_info=True)
         error_msg = "Prediction failed. Check logs for details."
-        return error_msg, None, "Error", None, None
+        return error_msg, None, "Error", None, gr.update(value=None, visible=False)
     
 def format_summary(original: str, summary:str) ->str:
     """Format original and summary text for display"""
@@ -289,8 +291,8 @@ def prepare_download(
     summary: str,
     emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]],
     topic: TopicPrediction | dict[str, float | str],
-) -> str:
-    """Prepare JSON data for download."""
+) -> BytesIO:
+    """Prepare JSON data buffer for download."""
     if isinstance(emotions, EmotionPrediction):
         emotion_payload = {
             "labels": list(emotions.labels),
@@ -307,13 +309,18 @@ def prepare_download(
     else:
         topic_payload = topic
 
-    data = {
+    payload = {
         "original_text": text,
         "summary": summary,
         "emotions": emotion_payload,
         "topic": topic_payload,
     }
-    return json.dumps(data, indent=2)
+
+    buffer = BytesIO()
+    buffer.write(json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8"))
+    buffer.seek(0)
+    buffer.name = "leximind_demo_output.json"
+    return buffer
 
 # Sample data for the demo
 SAMPLE_TEXT = """
