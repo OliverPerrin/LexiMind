@@ -88,15 +88,19 @@ def predict(text: str, compression: int):
         logger.info("Generating summary with max length of %s", max_len)
 
         summary = pipeline.summarize([text], max_length=max_len)[0]
-        emotions = pipeline.predict_emotions([text])[0]
+        emotions = pipeline.predict_emotions([text], threshold=0.0)[0]
         topic = pipeline.predict_topics([text])[0]
 
-        summary_html = format_summary(text, summary)
+        clean_summary = summary.strip()
+        display_summary = (
+            clean_summary if clean_summary else "<em>Summary unavailable – model returned empty output.</em>"
+        )
+
+        summary_html = format_summary(text, display_summary)
         emotion_plot = create_emotion_plot(emotions)
         topic_output = format_topic(topic)
-        attention_fig = create_attention_heatmap(text, summary, pipeline)
-        download_path = prepare_download(text, summary, emotions, topic)
-        logger.info("Prepared download artifact at %s (type=%s)", download_path, type(download_path))
+        attention_fig = create_attention_heatmap(text, clean_summary, pipeline) if clean_summary else None
+        download_path = prepare_download(text, clean_summary or summary, emotions, topic)
         download_update = gr.update(value=download_path, visible=True)
 
         return summary_html, emotion_plot, topic_output, attention_fig, download_update
@@ -110,13 +114,13 @@ def predict(text: str, compression: int):
 def format_summary(original: str, summary: str) -> str:
     """Format original and summary text for display."""
     return f"""
-    <div style="padding: 10px; border-radius: 5px;">
-        <h3>Original Text</h3>
-        <p style="background-color: #f0f0f0; padding: 10px; border-radius: 3px;">
+    <div style="padding: 10px; border-radius: 5px; color: #111;">
+        <h3 style="color: #111;">Original Text</h3>
+        <p style="background-color: #f0f0f0; padding: 10px; border-radius: 3px; color: #111; white-space: pre-wrap;">
             {original}
         </p>
-        <h3>Summary</h3>
-        <p style="background-color: #e6f3ff; padding: 10px; border-radius: 3px;">
+        <h3 style="color: #111;">Summary</h3>
+        <p style="background-color: #e6f3ff; padding: 10px; border-radius: 3px; color: #111; white-space: pre-wrap;">
             {summary}
         </p>
     </div>
@@ -128,14 +132,16 @@ def create_emotion_plot(
 ) -> Figure | None:
     """Create a horizontal bar chart for emotion predictions."""
     if isinstance(emotions, EmotionPrediction):
-        labels = list(emotions.labels)
-        scores = list(emotions.scores)
+        pairs = list(zip(emotions.labels, emotions.scores))
     else:
-        labels = list(emotions.get("labels", []))
-        scores = list(emotions.get("scores", []))
+        pairs = list(zip(emotions.get("labels", []), emotions.get("scores", [])))
 
-    if not labels or not scores:
+    if not pairs:
         return None
+
+    pairs = sorted(pairs, key=lambda item: item[1], reverse=True)[:5]
+    labels = [label for label, _ in pairs]
+    scores = [score for _, score in pairs]
 
     df = pd.DataFrame({"Emotion": labels, "Probability": scores})
     fig, ax = plt.subplots(figsize=(8, 5))
@@ -171,9 +177,9 @@ def format_topic(topic: TopicPrediction | dict[str, float | str]) -> str:
 
     return f"""
     ### Predicted Topic
-
+    
     **{label}**
-
+    
     Confidence: {score:.2%}
     """
 
@@ -418,4 +424,3 @@ if __name__ == "__main__":
         print(f"Error: {e}")
         sys.exit(1)
 
-        
