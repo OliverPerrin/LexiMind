@@ -30,8 +30,6 @@ data/cache/
 !requirements*.txt
 
 # Models
-checkpoints/
-*.pt
 *.pth
 *.ckpt
 
