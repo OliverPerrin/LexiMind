@@ -75,15 +75,13 @@ class InferencePipeline:
         with torch.inference_mode():
             encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
             memory = self.model.encoder(src_ids, mask=encoder_mask)
-            generated = self.model.decoder.greedy_decode(
-                memory=memory,
-                max_len=max_len,
-                start_token_id=self.tokenizer.bos_token_id,
-                end_token_id=self.tokenizer.eos_token_id,
-                device=self.device,
-            )
+            generated = self._constrained_greedy_decode(memory, max_len, memory_mask=src_mask)
 
-        return self.tokenizer.decode_batch(generated.tolist())
+        trimmed_sequences: List[List[int]] = []
+        for row in generated.cpu().tolist():
+            trimmed_sequences.append(self._trim_special_tokens(row))
+
+        return self.tokenizer.decode_batch(trimmed_sequences)
 
     def predict_emotions(
         self,
@@ -98,7 +96,7 @@ class InferencePipeline:
 
         batch = self._batch_to_device(self.preprocessor.batch_encode(texts))
         model_inputs = self._batch_to_model_inputs(batch)
-        decision_threshold = threshold or self.config.emotion_threshold
+        decision_threshold = self.config.emotion_threshold if threshold is None else float(threshold)
 
         with torch.inference_mode():
             logits = self.model.forward("emotion", model_inputs)
@@ -147,6 +145,62 @@ class InferencePipeline:
             "emotion": self.predict_emotions(text_list),
             "topic": self.predict_topics(text_list),
         }
+
+    def _constrained_greedy_decode(
+        self,
+        memory: torch.Tensor,
+        max_len: int,
+        *,
+        memory_mask: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        """Run greedy decoding while banning BOS/PAD tokens from the generated sequence."""
+
+        device = memory.device
+        batch_size = memory.size(0)
+        bos = self.tokenizer.bos_token_id
+        pad = getattr(self.tokenizer, "pad_token_id", None)
+        eos = getattr(self.tokenizer, "eos_token_id", None)
+
+        generated = torch.full((batch_size, 1), bos, dtype=torch.long, device=device)
+        expanded_memory_mask = None
+        if memory_mask is not None:
+            expanded_memory_mask = memory_mask.to(device=device, dtype=torch.bool)
+
+        for _ in range(max(1, max_len) - 1):
+            decoder_out = self.model.decoder(generated, memory, memory_mask=expanded_memory_mask)
+            logits = decoder_out if isinstance(decoder_out, torch.Tensor) else decoder_out[0]
+
+            step_logits = logits[:, -1, :].clone()
+            if bos is not None and bos < step_logits.size(-1):
+                step_logits[:, bos] = float("-inf")
+            if pad is not None and pad < step_logits.size(-1):
+                step_logits[:, pad] = float("-inf")
+
+            next_token = step_logits.argmax(dim=-1, keepdim=True)
+            generated = torch.cat([generated, next_token], dim=1)
+
+            if eos is not None and torch.all(next_token.squeeze(-1) == eos):
+                break
+
+        return generated
+
+    def _trim_special_tokens(self, sequence: Sequence[int]) -> List[int]:
+        """Remove leading BOS and trailing PAD/EOS tokens from a generated sequence."""
+
+        bos = self.tokenizer.bos_token_id
+        pad = getattr(self.tokenizer, "pad_token_id", None)
+        eos = getattr(self.tokenizer, "eos_token_id", None)
+
+        trimmed: List[int] = []
+        for idx, token in enumerate(sequence):
+            if idx == 0 and bos is not None and token == bos:
+                continue
+            if pad is not None and token == pad:
+                continue
+            if eos is not None and token == eos:
+                break
+            trimmed.append(int(token))
+        return trimmed
 
     def _batch_to_device(self, batch: Batch) -> Batch:
         tensor_updates: dict[str, torch.Tensor] = {}
