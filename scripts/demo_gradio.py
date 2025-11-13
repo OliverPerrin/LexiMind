@@ -3,11 +3,13 @@ Gradio Demo interface for LexiMind NLP pipeline.
 Showcases summarization, emotion detection, and topic prediction.
 """
 import json
+import re
 import sys
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Iterable, Sequence
 from textwrap import dedent
+from collections import Counter
 
 import gradio as gr
 from gradio.themes import Soft
@@ -30,6 +32,69 @@ logger = get_logger(__name__)
 
 _pipeline: InferencePipeline | None = None  # Global pipeline instance
 _label_metadata = None  # Cached label metadata
+
+STOPWORDS = {
+    "the",
+    "is",
+    "a",
+    "an",
+    "to",
+    "of",
+    "and",
+    "in",
+    "it",
+    "that",
+    "for",
+    "on",
+    "with",
+    "as",
+    "by",
+    "be",
+    "are",
+    "was",
+    "were",
+    "this",
+    "which",
+    "at",
+    "or",
+    "from",
+    "but",
+    "has",
+    "have",
+    "had",
+    "can",
+    "will",
+    "would",
+}
+
+EMOTION_THRESHOLDS = {
+    "anger": 0.6,
+    "fear": 0.85,
+    "joy": 0.6,
+    "love": 0.25,
+    "sadness": 0.3,
+    "surprise": 0.55,
+}
+
+EMOTION_KEYWORDS = {
+    "love": {
+        "love",
+        "loved",
+        "loving",
+        "beloved",
+        "romance",
+        "romantic",
+        "affection",
+        "passion",
+        "sweetheart",
+        "valentine",
+        "dear",
+        "cherish",
+        "ador",
+        "marriage",
+        "wedding",
+    }
+}
 
 def get_pipeline() -> InferencePipeline:
     """Lazy Loading and Caching the inference pipeline"""
@@ -88,30 +153,60 @@ def predict(text: str, compression: int):
         logger.info("Generating summary with max length of %s", max_len)
 
         summary = pipeline.summarize([text], max_length=max_len)[0]
-        emotions = pipeline.predict_emotions([text], threshold=0.0)[0]
+        raw_emotion_pairs = extract_emotion_pairs(pipeline.predict_emotions([text], threshold=0.0)[0])
+        filtered_emotions = filter_emotions(raw_emotion_pairs, text)
         topic = pipeline.predict_topics([text])[0]
 
         clean_summary = summary.strip()
-        if clean_summary:
+        summary_notice = ""
+        fallback_summary: str | None = None
+
+        if clean_summary and summary_is_plausible(clean_summary, text):
             summary_source = clean_summary
-            summary_notice = ""
         else:
-            summary_source = generate_fallback_summary(text)
-            summary_notice = (
-                "<p style=\"color: #b45309; margin-top: 8px;\"><strong>Heads-up:</strong> "
-                "The model did not produce a summary, so a fallback extractive summary is shown instead.</p>"
-            )
+            fallback_summary = generate_fallback_summary(text)
+            summary_source = fallback_summary
+            if clean_summary:
+                logger.info("Neural summary flagged as low-overlap; showing extractive fallback instead")
+                summary_notice = dedent(
+                    f"""
+                    <p style=\"color: #b45309; margin-top: 8px;\"><strong>Heads-up:</strong> The neural summary looked off-topic, so an extractive fallback is shown above.</p>
+                    <details style=\"margin-top: 4px;\">
+                        <summary style=\"color: #b45309; cursor: pointer;\">View the original neural summary</summary>
+                        <p style=\"margin-top: 8px; background-color: #fff7ed; padding: 10px; border-radius: 4px; color: #7c2d12; white-space: pre-wrap;\">
+                            {clean_summary}
+                        </p>
+                    </details>
+                    """
+                ).strip()
+            else:
+                summary_notice = (
+                    "<p style=\"color: #b45309; margin-top: 8px;\"><strong>Heads-up:</strong> "
+                    "The model did not produce a summary, so an extractive fallback is shown instead.</p>"
+                )
 
         summary_html = format_summary(text, summary_source, notice=summary_notice)
-        emotion_plot = create_emotion_plot(emotions)
+        emotion_plot = create_emotion_plot(filtered_emotions)
+        if emotion_plot is None:
+            emotion_plot = render_unavailable_message(
+                "No emotion met the confidence threshold."
+            )
         topic_output = format_topic(topic)
-        if clean_summary:
+        if clean_summary and fallback_summary is None:
             attention_fig = create_attention_heatmap(text, clean_summary, pipeline)
         else:
             attention_fig = render_unavailable_message(
-                "Attention heatmap unavailable because the model produced an empty summary."
+                "Attention heatmap unavailable because the neural summary was empty or flagged as unreliable."
             )
-        download_path = prepare_download(text, summary_source, emotions, topic)
+        download_path = prepare_download(
+            text,
+            summary_source,
+            filtered_emotions,
+            topic,
+            neural_summary=clean_summary or None,
+            fallback_summary=fallback_summary,
+            raw_emotions=raw_emotion_pairs,
+        )
         download_update = gr.update(value=download_path, visible=True)
 
         return summary_html, emotion_plot, topic_output, attention_fig, download_update
@@ -211,6 +306,70 @@ def _clean_tokens(tokens: Iterable[str]) -> list[str]:
         item = token.replace("Ġ", " ").replace("▁", " ")
         cleaned.append(item.strip() if item.strip() else token)
     return cleaned
+
+def extract_emotion_pairs(
+    emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]]
+) -> list[tuple[str, float]]:
+    if isinstance(emotions, EmotionPrediction):
+        return list(zip(map(str, emotions.labels), map(float, emotions.scores)))
+    labels = emotions.get("labels", [])
+    scores = emotions.get("scores", [])
+    return [(str(label), float(score)) for label, score in zip(labels, scores)]
+
+def filter_emotions(pairs: list[tuple[str, float]], text: str) -> EmotionPrediction:
+    filtered: list[tuple[str, float]] = []
+    lowered_text = text.lower()
+
+    for label, score in pairs:
+        threshold = EMOTION_THRESHOLDS.get(label, 0.5)
+        if score < threshold:
+            continue
+
+        if label == "love":
+            keywords = EMOTION_KEYWORDS.get("love", set())
+            if score < 0.6 and not any(keyword in lowered_text for keyword in keywords):
+                continue
+
+        filtered.append((label, score))
+
+    if filtered:
+        labels, scores = zip(*filtered)
+        return EmotionPrediction(labels=list(labels), scores=list(scores))
+
+    return EmotionPrediction(labels=[], scores=[])
+
+def summary_is_plausible(
+    summary: str,
+    original: str,
+    *,
+    min_overlap: float = 0.2,
+    min_unique_ratio: float = 0.3,
+    max_repeat_ratio: float = 0.6,
+) -> bool:
+    """Heuristic filter to catch off-topic or repetitive neural summaries."""
+
+    summary_tokens = re.findall(r"\w+", summary.lower())
+    if not summary_tokens:
+        return False
+
+    summary_content = [token for token in summary_tokens if token not in STOPWORDS]
+    if not summary_content:
+        return False
+
+    original_vocab = {token for token in re.findall(r"\w+", original.lower()) if token not in STOPWORDS}
+    overlap = sum(1 for token in summary_content if token in original_vocab)
+    overlap_ratio = overlap / max(1, len(summary_content))
+    if overlap_ratio < min_overlap:
+        return False
+
+    token_counts = Counter(summary_content)
+    most_common_ratio = token_counts.most_common(1)[0][1] / len(summary_content)
+    unique_ratio = len(token_counts) / len(summary_content)
+    if unique_ratio < min_unique_ratio:
+        return False
+    if most_common_ratio > max_repeat_ratio:
+        return False
+    return True
 
 def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
     """Build a lightweight extractive summary when the model generates nothing."""
@@ -335,6 +494,10 @@ def prepare_download(
     summary: str,
     emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]],
     topic: TopicPrediction | dict[str, float | str],
+    *,
+    neural_summary: str | None = None,
+    fallback_summary: str | None = None,
+    raw_emotions: Sequence[tuple[str, float]] | None = None,
 ) -> str:
     """Persist JSON payload to a temporary file and return its path for download."""
     if isinstance(emotions, EmotionPrediction):
@@ -362,9 +525,15 @@ def prepare_download(
     payload = {
         "original_text": text,
         "summary": summary,
+        "neural_summary": neural_summary,
+        "fallback_summary": fallback_summary,
         "emotions": emotion_payload,
         "topic": topic_payload,
     }
+    if raw_emotions is not None:
+        payload["raw_emotions"] = [
+            {"label": label, "score": float(score)} for label, score in raw_emotions
+        ]
     with NamedTemporaryFile("w", delete=False, suffix=".json", encoding="utf-8") as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
         temp_path = handle.name
