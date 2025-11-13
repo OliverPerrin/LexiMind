@@ -100,8 +100,11 @@ def predict(text: str, compression: int):
         topic_output = format_topic(topic)
         attention_fig = create_attention_heatmap(text, summary, pipeline)
         download_data = prepare_download(text, summary, emotions, topic)
-        
-        return summary_html, emotion_plot, topic_output, attention_fig, download_data
+
+        return summary_html, emotion_plot, topic_output, attention_fig, gr.update(
+            value=download_data,
+            visible=True,
+        )
     
     except Exception as e:
         logger.error(f"Prediction error: {e}", exc_info=True)
@@ -323,7 +326,7 @@ privacy, bias, and transparency remain critical challenges that must be addresse
 as these technologies continue to evolve.
 """
 
-def create_interface():
+def create_interface() -> gr.Blocks:
     with gr.Blocks(title="LexiMind Demo", theme=Soft()) as demo:
         gr.Markdown("""
         # LexiMind NLP Pipeline Demo
@@ -371,10 +374,9 @@ def create_interface():
                         gr.Markdown("*Visualizes which parts of the input the model focused on.*")
                 # Download section
                 gr.Markdown("### Export Results")
-                download_data = gr.Textbox(visible=False)
                 download_btn = gr.DownloadButton(
                     "Download Results (JSON)",
-                    visible=True
+                    visible=False,
                 )
             # Event Handlers
             input_text.change(
@@ -385,41 +387,39 @@ def create_interface():
             predict_btn.click(
                 fn=predict,
                 inputs=[input_text, compression],
-                outputs=[summary_output, emotion_output, topic_output, attention_output, download_data]
-            ).then(
-                fn=lambda x: gr.DownloadButton("Download Results (JSON)", value=x, visible=True),
-                inputs=[download_data],
-                outputs=[download_btn]
+                outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
             )
             # Examples
             gr.Examples(
-            examples=[
-                [SAMPLE_TEXT, 50],
-                ["Climate change poses significant risks to global ecosystems. Rising temperatures, melting ice caps, and extreme weather events are becoming more frequent. Scientists urge immediate action to reduce carbon emissions and transition to renewable energy sources.", 40],
+                examples=[
+                    [SAMPLE_TEXT, 50],
+                    [
+                        "Climate change poses significant risks to global ecosystems. Rising temperatures, melting ice caps, and extreme weather events are becoming more frequent. Scientists urge immediate action to reduce carbon emissions and transition to renewable energy sources.",
+                        40,
+                    ],
                 ],
                 inputs=[input_text, compression],
-                label="Try these examples:"
+                label="Try these examples:",
             )
         return demo
-    
-    if __name__ == "__main__":
-        try:
-            # Pre-load pipeline
-            get_pipeline()
-        
-            # Create and launch interface
-            demo = create_interface()
-            demo.queue()  # Enable queuing for better responsiveness
-            demo.launch(
+
+
+demo = create_interface()
+app = demo
+
+
+if __name__ == "__main__":
+    try:
+        get_pipeline()
+        demo.queue().launch(
             share=True,
             server_name="0.0.0.0",
             server_port=7860,
-            show_error=True
-            )
+            show_error=True,
+        )
+    except Exception as e:
+        logger.error("Failed to launch demo: %s", e, exc_info=True)
+        print(f"Error: {e}")
+        sys.exit(1)
+
         
-        except Exception as e:
-            logger.error(f"Failed to launch demo: {e}", exc_info=True)
-            print(f"Error: {e}")
-            sys.exit(1)
-        
-            
