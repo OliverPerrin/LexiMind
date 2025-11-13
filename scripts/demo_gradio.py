@@ -96,6 +96,7 @@ def predict(text: str, compression: int):
         topic_output = format_topic(topic)
         attention_fig = create_attention_heatmap(text, summary, pipeline)
         download_path = prepare_download(text, summary, emotions, topic)
+        logger.info("Prepared download artifact at %s (type=%s)", download_path, type(download_path))
         download_update = gr.update(value=download_path, visible=True)
 
         return summary_html, emotion_plot, topic_output, attention_fig, download_update
