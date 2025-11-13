@@ -37,9 +37,9 @@ def get_pipeline() -> InferencePipeline:
         try:
             logger.info("Loading inference pipeline...")
             pipeline, label_metadata = create_inference_pipeline(
-                tokenizer_dir="data/tokenization",
+                tokenizer_dir="src/data/tokenization",
                 checkpoint_path="checkpoints/best.pt",
-                labels_path="data/labels.json",
+                labels_path="artifacts/labels.json",
             )
             _pipeline = pipeline
             _label_metadata = label_metadata
