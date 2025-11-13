@@ -94,8 +94,8 @@ def predict(text: str, compression: int):
         emotion_plot = create_emotion_plot(emotions)
         topic_output = format_topic(topic)
         attention_fig = create_attention_heatmap(text, summary, pipeline)
-        download_bytes = prepare_download(text, summary, emotions, topic)
-        download_update = gr.update(value=download_bytes, visible=True)
+        filename, download_bytes = prepare_download(text, summary, emotions, topic)
+        download_update = gr.update(value=(filename, download_bytes), visible=True)
 
         return summary_html, emotion_plot, topic_output, attention_fig, download_update
 
@@ -274,7 +274,7 @@ def prepare_download(
     summary: str,
     emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]],
     topic: TopicPrediction | dict[str, float | str],
-) -> bytes:
+) -> tuple[str, bytes]:
     """Prepare JSON data buffer for download."""
     if isinstance(emotions, EmotionPrediction):
         emotion_payload = {
@@ -298,7 +298,7 @@ def prepare_download(
         "emotions": emotion_payload,
         "topic": topic_payload,
     }
-    return json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
+    return "leximind_demo_output.json", json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
 
 # Sample data for the demo
 SAMPLE_TEXT = """
