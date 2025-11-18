@@ -23,7 +23,33 @@ from matplotlib.figure import Figure
 
 # Make local packages importable when running the script directly
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent
+
+
+def guess_project_root(script_dir: Path) -> Path:
+    """Attempt to locate the LexiMind repo root even when deployed under /app."""
+    markers = ("pyproject.toml", "setup.py", "README.md")
+    candidates = [script_dir]
+    candidates.extend(script_dir.parents)
+    candidates.extend(
+        [
+            script_dir / "LexiMind",
+            script_dir.parent / "LexiMind",
+            Path("/LexiMind"),
+        ]
+    )
+
+    seen: set[Path] = set()
+    for candidate in candidates:
+        if candidate in seen:
+            continue
+        seen.add(candidate)
+        if any((candidate / marker).exists() for marker in markers):
+            return candidate
+
+    return script_dir.parent
+
+
+PROJECT_ROOT = guess_project_root(SCRIPT_DIR)
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
