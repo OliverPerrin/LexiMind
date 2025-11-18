@@ -24,6 +24,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+ROUGE_REPORT_PATH = PROJECT_ROOT / "outputs" / "rouge_validation.json"
+
 from src.inference.factory import create_inference_pipeline
 from src.inference.pipeline import EmotionPrediction, InferencePipeline, TopicPrediction
 from src.utils.logging import configure_logging, get_logger
@@ -358,6 +360,39 @@ def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
     return " ".join(fragments)
 
 
+def load_rouge_metrics():
+    columns = ["metric", "precision", "recall", "fmeasure"]
+    empty = pd.DataFrame(columns=columns)
+    if not ROUGE_REPORT_PATH.exists():
+        return empty, {"error": f"ROUGE report not found at {ROUGE_REPORT_PATH}"}
+
+    try:
+        with ROUGE_REPORT_PATH.open("r", encoding="utf-8") as handle:
+            report = json.load(handle)
+    except Exception as exc:  # pragma: no cover - surfaced in UI
+        logger.error("Failed to read ROUGE report: %s", exc, exc_info=True)
+        return empty, {"error": f"Unable to parse report: {exc}", "report_path": str(ROUGE_REPORT_PATH)}
+
+    rows: list[dict[str, object]] = []
+    for metric_name, components in report.get("metrics", {}).items():
+        rows.append(
+            {
+                "metric": metric_name,
+                "precision": round(float(components.get("precision", 0.0)), 4),
+                "recall": round(float(components.get("recall", 0.0)), 4),
+                "fmeasure": round(float(components.get("fmeasure", 0.0)), 4),
+            }
+        )
+
+    table = pd.DataFrame(rows, columns=columns) if rows else empty
+    metadata = {
+        "num_examples": report.get("num_examples"),
+        "config": report.get("config"),
+        "report_path": str(ROUGE_REPORT_PATH),
+    }
+    return table, metadata
+
+
 SAMPLE_TEXT = (
     "Artificial intelligence is rapidly transforming the technology landscape. "
     "Machine learning algorithms are now capable of processing vast amounts of data, "
@@ -379,6 +414,8 @@ def create_interface() -> gr.Blocks:
             Results may be noisy; retraining is recommended for production use.
             """
         )
+
+        initial_metrics, initial_metrics_meta = load_rouge_metrics()
 
         with gr.Row():
             with gr.Column(scale=1):
@@ -417,11 +454,25 @@ def create_interface() -> gr.Blocks:
                             columns=2,
                             height=400,
                             interactive=False,
+                            type="filepath"
                         )
                         gr.Markdown(
                             "These PNGs come from the visualization-focused tests in `tests/test_models` and are consumed as-is."
                         )
                         refresh_visuals = gr.Button("Refresh Visuals")
+                    with gr.TabItem("Metrics"):
+                        rouge_table = gr.Dataframe(
+                            value=initial_metrics,
+                            headers=["metric", "precision", "recall", "fmeasure"],
+                            datatype=["str", "number", "number", "number"],
+                            interactive=False,
+                            label="ROUGE Scores",
+                        )
+                        rouge_meta = gr.JSON(
+                            value=initial_metrics_meta,
+                            label="ROUGE Run Metadata",
+                        )
+                        refresh_metrics = gr.Button("Refresh Metrics")
                 gr.Markdown("### Download Results")
                 download_btn = gr.DownloadButton("Download JSON", visible=False)
 
@@ -432,6 +483,7 @@ def create_interface() -> gr.Blocks:
             outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
         )
         refresh_visuals.click(fn=load_visualization_gallery, inputs=None, outputs=visuals)
+        refresh_metrics.click(fn=load_rouge_metrics, inputs=None, outputs=[rouge_table, rouge_meta])
         return demo
 
 
