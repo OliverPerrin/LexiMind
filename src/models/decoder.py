@@ -219,6 +219,8 @@ class TransformerDecoder(nn.Module):
         start_token_id: int,
         end_token_id: Optional[int] = None,
         device: Optional[torch.device] = None,
+        *,
+        min_len: Optional[int] = None,
     ) -> torch.Tensor:
         """
         Naive greedy decoding: repeatedly run the decoder on the growing prefix.
@@ -229,16 +231,23 @@ class TransformerDecoder(nn.Module):
         B = memory.size(0)
         generated = torch.full((B, 1), start_token_id, dtype=torch.long, device=device)
 
+        min_len = 0 if min_len is None else max(0, min_len)
+
         for _ in range(max_len - 1):
             logits = self.forward(generated, memory, collect_attn=False)  # (B, L, V)
             assert isinstance(logits, torch.Tensor)  # type narrowing
-            next_token = logits[:, -1, :].argmax(dim=-1, keepdim=True)  # (B, 1)
+            next_step_logits = logits[:, -1, :]
+            if end_token_id is not None and generated.size(1) < max(1, min_len):
+                next_step_logits = next_step_logits.clone()
+                next_step_logits[:, end_token_id] = float("-inf")
+            next_token = next_step_logits.argmax(dim=-1, keepdim=True)  # (B, 1)
             generated = torch.cat([generated, next_token], dim=1)
 
             if end_token_id is not None:
                 # stop if all sequences ended
-                if (generated[:, -1] == end_token_id).all():
-                    break
+                if generated.size(1) >= max(1, min_len):
+                    if (generated[:, -1] == end_token_id).all():
+                        break
 
         return generated
 

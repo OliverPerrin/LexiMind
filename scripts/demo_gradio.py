@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+import re
 from tempfile import NamedTemporaryFile
 from typing import Iterable, Sequence
 
@@ -90,15 +91,34 @@ def predict(text: str, compression: int):
         emotions = pipeline.predict_emotions([text])[0]
         topic = pipeline.predict_topics([text])[0]
 
-        summary_html = format_summary(text, summary)
+        fallback_summary = None
+        summary_notice = ""
+        summary_source = summary
+        if not summary:
+            fallback_summary = generate_fallback_summary(text)
+            summary_source = fallback_summary
+            summary_notice = (
+                "<p style=\"color: #b45309; margin-top: 8px;\">"
+                "Model returned an empty summary, so a simple extractive fallback is shown instead." "</p>"
+            )
+
+        summary_html = format_summary(text, summary_source, notice=summary_notice)
         emotion_plot = create_emotion_plot(emotions)
         topic_markdown = format_topic(topic)
-        if summary:
-            attention_fig = create_attention_heatmap(text, summary, pipeline)
+        heatmap_source = summary if summary else fallback_summary
+        if heatmap_source:
+            attention_fig = create_attention_heatmap(text, heatmap_source, pipeline)
         else:
             attention_fig = render_message_figure("Attention heatmap unavailable: summary was empty.")
 
-        download_path = prepare_download(text, summary, emotions, topic)
+        download_path = prepare_download(
+            text,
+            summary_source,
+            emotions,
+            topic,
+            neural_summary=summary or None,
+            fallback_summary=fallback_summary,
+        )
         download_update = gr.update(value=download_path, visible=True)
 
         return summary_html, emotion_plot, topic_markdown, attention_fig, download_update
@@ -108,21 +128,22 @@ def predict(text: str, compression: int):
         return "Prediction failed. Check logs for details.", None, "Error", None, hidden_download
 
 
-def format_summary(original: str, summary: str) -> str:
+def format_summary(original: str, summary: str, *, notice: str = "") -> str:
     if not summary:
         summary = "(Model returned an empty summary. Consider retraining the summarization head.)"
 
     return f"""
-    <div style="padding: 12px; border-radius: 6px; background-color: #fafafa; color: #222;">
-        <h3 style="margin-top: 0; color: #222;">Original Text</h3>
-        <p style="background-color: #f0f0f0; padding: 10px; border-radius: 4px; white-space: pre-wrap; color: #222;">
+    <div style=\"padding: 12px; border-radius: 6px; background-color: #fafafa; color: #222;\">
+        <h3 style=\"margin-top: 0; color: #222;\">Original Text</h3>
+        <p style=\"background-color: #f0f0f0; padding: 10px; border-radius: 4px; white-space: pre-wrap; color: #222;\">
             {original}
         </p>
-        <h3 style="color: #222;">Model Summary</h3>
-        <p style="background-color: #e6f3ff; padding: 10px; border-radius: 4px; white-space: pre-wrap; color: #111;">
+        <h3 style=\"color: #222;\">Summary</h3>
+        <p style=\"background-color: #e6f3ff; padding: 10px; border-radius: 4px; white-space: pre-wrap; color: #111;\">
             {summary}
         </p>
-        <p style="margin-top: 12px; color: #6b7280; font-size: 0.9rem;">
+        {notice}
+        <p style=\"margin-top: 12px; color: #6b7280; font-size: 0.9rem;\">
             Outputs are shown exactly as produced by the checkpoint.
         </p>
     </div>
@@ -266,6 +287,9 @@ def prepare_download(
     summary: str,
     emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]],
     topic: TopicPrediction | dict[str, float | str],
+    *,
+    neural_summary: str | None = None,
+    fallback_summary: str | None = None,
 ) -> str:
     if isinstance(emotions, EmotionPrediction):
         emotion_payload = {
@@ -289,6 +313,8 @@ def prepare_download(
     payload = {
         "original_text": text,
         "summary": summary,
+        "neural_summary": neural_summary,
+        "fallback_summary": fallback_summary,
         "emotions": emotion_payload,
         "topic": topic_payload,
     }
@@ -308,6 +334,28 @@ def load_visualization_gallery() -> list[tuple[str, str]]:
         else:
             logger.debug("Visualization asset missing: %s", path)
     return items
+
+
+def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
+    content = text.strip()
+    if not content:
+        return "(Input text was empty.)"
+
+    sentences = re.split(r"(?<=[.!?])\s+", content)
+    fragments: list[str] = []
+    total = 0
+    for sentence in sentences:
+        if not sentence:
+            continue
+        candidate = sentence if sentence.endswith(('.', '!', '?')) else f"{sentence}."
+        if total + len(candidate) > max_chars and fragments:
+            break
+        fragments.append(candidate)
+        total += len(candidate)
+
+    if not fragments:
+        return content[:max_chars]
+    return " ".join(fragments)
 
 
 SAMPLE_TEXT = (
@@ -365,6 +413,7 @@ def create_interface() -> gr.Blocks:
                     with gr.TabItem("Model Visuals"):
                         visuals = gr.Gallery(
                             label="Test Visualizations",
+                            value=load_visualization_gallery(),
                             columns=2,
                             height=400,
                             interactive=False,
@@ -372,6 +421,7 @@ def create_interface() -> gr.Blocks:
                         gr.Markdown(
                             "These PNGs come from the visualization-focused tests in `tests/test_models` and are consumed as-is."
                         )
+                        refresh_visuals = gr.Button("Refresh Visuals")
                 gr.Markdown("### Download Results")
                 download_btn = gr.DownloadButton("Download JSON", visible=False)
 
@@ -381,8 +431,7 @@ def create_interface() -> gr.Blocks:
             inputs=[input_text, compression],
             outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
         )
-
-        demo.load(fn=load_visualization_gallery, inputs=None, outputs=visuals)
+        refresh_visuals.click(fn=load_visualization_gallery, inputs=None, outputs=visuals)
         return demo
 
 
