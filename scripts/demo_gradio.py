@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 import re
 from tempfile import NamedTemporaryFile
@@ -21,12 +22,14 @@ import torch
 from matplotlib.figure import Figure
 
 # Make local packages importable when running the script directly
-PROJECT_ROOT = Path(__file__).resolve().parent
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 ROUGE_REPORT_PATH = Path(
-    os.environ.get("ROUGE_REPORT_PATH", PROJECT_ROOT / "outputs" / "rouge_validation.json")
+    os.environ.get("ROUGE_REPORT_PATH", OUTPUTS_DIR / "rouge_validation.json")
 )
 
 from src.inference.factory import create_inference_pipeline
@@ -38,7 +41,7 @@ logger = get_logger(__name__)
 
 _pipeline: InferencePipeline | None = None
 
-VISUALIZATION_DIR = PROJECT_ROOT / "outputs"
+VISUALIZATION_DIR = OUTPUTS_DIR
 VISUALIZATION_ASSETS: list[tuple[str, str]] = [
     ("attention_visualization.png", "Attention weights (single head)"),
     ("multihead_attention_visualization.png", "Multi-head attention comparison"),
@@ -377,12 +380,13 @@ def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
 
 
 def load_rouge_metrics():
-    columns = ["metric", "precision", "recall", "fmeasure"]
+    columns = ["metric", "precision", "recall", "f1"]
     empty = pd.DataFrame(columns=columns)
+
     if not ROUGE_REPORT_PATH.exists():
         return empty, {
             "error": f"ROUGE report not found at {ROUGE_REPORT_PATH}",
-            "hint": "Run scripts/eval_rouge.py to generate outputs/rouge_validation.json before launching the demo.",
+            "hint": "Run scripts/eval_rouge.py then deploy/copy outputs/rouge_validation.json with the app.",
         }
 
     try:
@@ -399,7 +403,7 @@ def load_rouge_metrics():
                 "metric": metric_name,
                 "precision": round(float(components.get("precision", 0.0)), 4),
                 "recall": round(float(components.get("recall", 0.0)), 4),
-                "fmeasure": round(float(components.get("fmeasure", 0.0)), 4),
+                "f1": round(float(components.get("fmeasure", 0.0)), 4),
             }
         )
 
@@ -408,6 +412,7 @@ def load_rouge_metrics():
         "num_examples": report.get("num_examples"),
         "config": report.get("config"),
         "report_path": str(ROUGE_REPORT_PATH),
+        "last_updated": datetime.fromtimestamp(ROUGE_REPORT_PATH.stat().st_mtime).isoformat(),
     }
     return table, metadata
 
