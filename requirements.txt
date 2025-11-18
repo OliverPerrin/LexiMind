@@ -12,3 +12,4 @@ gradio>=4.0.0
 seaborn
 pytest
 matplotlib
+rouge-score>=0.1.2
