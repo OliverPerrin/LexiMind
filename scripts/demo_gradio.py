@@ -5,6 +5,7 @@ Shows raw model outputs without any post-processing tricks.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 import re
@@ -24,7 +25,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-ROUGE_REPORT_PATH = PROJECT_ROOT / "outputs" / "rouge_validation.json"
+ROUGE_REPORT_PATH = Path(
+    os.environ.get("ROUGE_REPORT_PATH", PROJECT_ROOT / "outputs" / "rouge_validation.json")
+)
 
 from src.inference.factory import create_inference_pipeline
 from src.inference.pipeline import EmotionPrediction, InferencePipeline, TopicPrediction
@@ -326,16 +329,29 @@ def prepare_download(
         return handle.name
 
 
-def load_visualization_gallery() -> list[tuple[str, str]]:
+def load_visualization_gallery() -> tuple[list[tuple[str, str]], str]:
     """Collect visualization images produced by model tests."""
     items: list[tuple[str, str]] = []
+    missing: list[str] = []
     for filename, label in VISUALIZATION_ASSETS:
         path = VISUALIZATION_DIR / filename
         if path.exists():
             items.append((str(path), label))
         else:
-            logger.debug("Visualization asset missing: %s", path)
-    return items
+            missing.append(filename)
+
+    if items:
+        status = f"Loaded {len(items)} visualization(s) from {VISUALIZATION_DIR}."
+    else:
+        status = (
+            "No visualization PNGs found in the outputs/ directory. "
+            "Ensure tests/test_models/* have produced the PNGs and that they are available on this host."
+        )
+
+    if missing:
+        status += f" Missing files: {', '.join(missing)}."
+
+    return items, status
 
 
 def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
@@ -364,7 +380,10 @@ def load_rouge_metrics():
     columns = ["metric", "precision", "recall", "fmeasure"]
     empty = pd.DataFrame(columns=columns)
     if not ROUGE_REPORT_PATH.exists():
-        return empty, {"error": f"ROUGE report not found at {ROUGE_REPORT_PATH}"}
+        return empty, {
+            "error": f"ROUGE report not found at {ROUGE_REPORT_PATH}",
+            "hint": "Run scripts/eval_rouge.py to generate outputs/rouge_validation.json before launching the demo.",
+        }
 
     try:
         with ROUGE_REPORT_PATH.open("r", encoding="utf-8") as handle:
@@ -415,6 +434,7 @@ def create_interface() -> gr.Blocks:
             """
         )
 
+        initial_visuals, initial_visual_status = load_visualization_gallery()
         initial_metrics, initial_metrics_meta = load_rouge_metrics()
 
         with gr.Row():
@@ -450,7 +470,7 @@ def create_interface() -> gr.Blocks:
                     with gr.TabItem("Model Visuals"):
                         visuals = gr.Gallery(
                             label="Test Visualizations",
-                            value=load_visualization_gallery(),
+                            value=initial_visuals,
                             columns=2,
                             height=400,
                             interactive=False,
@@ -459,6 +479,7 @@ def create_interface() -> gr.Blocks:
                         gr.Markdown(
                             "These PNGs come from the visualization-focused tests in `tests/test_models` and are consumed as-is."
                         )
+                        visuals_notice = gr.Markdown(initial_visual_status)
                         refresh_visuals = gr.Button("Refresh Visuals")
                     with gr.TabItem("Metrics"):
                         rouge_table = gr.Dataframe(
@@ -482,7 +503,11 @@ def create_interface() -> gr.Blocks:
             inputs=[input_text, compression],
             outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
         )
-        refresh_visuals.click(fn=load_visualization_gallery, inputs=None, outputs=visuals)
+        refresh_visuals.click(
+            fn=load_visualization_gallery,
+            inputs=None,
+            outputs=[visuals, visuals_notice],
+        )
         refresh_metrics.click(fn=load_rouge_metrics, inputs=None, outputs=[rouge_table, rouge_meta])
         return demo
 
