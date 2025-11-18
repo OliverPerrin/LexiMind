@@ -4,7 +4,6 @@ Shows raw model outputs without any post-processing tricks.
 """
 from __future__ import annotations
 
-import base64
 import json
 import sys
 from pathlib import Path
@@ -311,34 +310,6 @@ def load_visualization_gallery() -> list[tuple[str, str]]:
     return items
 
 
-def build_visualization_html() -> str:
-    """Render static HTML for test-produced visualizations."""
-    items: list[str] = []
-    for filepath, caption in load_visualization_gallery():
-        try:
-            encoded = base64.b64encode(Path(filepath).read_bytes()).decode("utf-8")
-        except Exception as exc:
-            logger.warning("Unable to load visualization %s: %s", filepath, exc)
-            continue
-
-        block = (
-            "<figure style=\"margin: 0 12px 24px 0; display: inline-block; max-width: 360px;\">"
-            f"<img src=\"data:image/png;base64,{encoded}\" alt=\"{caption}\" style=\"width: 100%; border: 1px solid #e5e7eb; border-radius: 6px;\">"
-            f"<figcaption style=\"margin-top: 8px; color: #4b5563; font-size: 0.9rem;\">{caption}</figcaption>"
-            "</figure>"
-        )
-        items.append(block)
-
-    if not items:
-        return (
-            "<p style=\"color: #6b7280;\">"
-            "Visualization assets not found. Run the visualization tests to regenerate the PNGs in the `outputs/` folder."
-            "</p>"
-        )
-
-    return "<div style=\"display: flex; flex-wrap: wrap;\">" + "".join(items) + "</div>"
-
-
 SAMPLE_TEXT = (
     "Artificial intelligence is rapidly transforming the technology landscape. "
     "Machine learning algorithms are now capable of processing vast amounts of data, "
@@ -392,7 +363,12 @@ def create_interface() -> gr.Blocks:
                         attention_output = gr.Plot(label="Attention Heatmap")
                         gr.Markdown("*Shows decoder attention if a summary is available.*")
                     with gr.TabItem("Model Visuals"):
-                        visuals_html = gr.HTML(value=build_visualization_html(), label="Test Visualizations")
+                        visuals = gr.Gallery(
+                            label="Test Visualizations",
+                            columns=2,
+                            height=400,
+                            interactive=False,
+                        )
                         gr.Markdown(
                             "These PNGs come from the visualization-focused tests in `tests/test_models` and are consumed as-is."
                         )
@@ -406,6 +382,7 @@ def create_interface() -> gr.Blocks:
             outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
         )
 
+        demo.load(fn=load_visualization_gallery, inputs=None, outputs=visuals)
         return demo
 
 
