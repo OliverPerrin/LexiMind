@@ -1,15 +1,14 @@
 """
-Gradio Demo interface for LexiMind NLP pipeline.
-Showcases summarization, emotion detection, and topic prediction.
+Minimal Gradio demo for the LexiMind multitask model.
+Shows raw model outputs without any post-processing tricks.
 """
+from __future__ import annotations
+
 import json
-import re
 import sys
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Iterable, Sequence
-from textwrap import dedent
-from collections import Counter
 
 import gradio as gr
 from gradio.themes import Soft
@@ -19,9 +18,10 @@ import seaborn as sns
 import torch
 from matplotlib.figure import Figure
 
-# Add project root to the path, going up two folder levels from this file
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+# Make local packages importable when running the script directly
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.inference.factory import create_inference_pipeline
 from src.inference.pipeline import EmotionPrediction, InferencePipeline, TopicPrediction
@@ -30,275 +30,140 @@ from src.utils.logging import configure_logging, get_logger
 configure_logging()
 logger = get_logger(__name__)
 
-_pipeline: InferencePipeline | None = None  # Global pipeline instance
-_label_metadata = None  # Cached label metadata
+_pipeline: InferencePipeline | None = None
 
-STOPWORDS = {
-    "the",
-    "is",
-    "a",
-    "an",
-    "to",
-    "of",
-    "and",
-    "in",
-    "it",
-    "that",
-    "for",
-    "on",
-    "with",
-    "as",
-    "by",
-    "be",
-    "are",
-    "was",
-    "were",
-    "this",
-    "which",
-    "at",
-    "or",
-    "from",
-    "but",
-    "has",
-    "have",
-    "had",
-    "can",
-    "will",
-    "would",
-}
+VISUALIZATION_DIR = PROJECT_ROOT / "outputs"
+VISUALIZATION_ASSETS: list[tuple[str, str]] = [
+    ("attention_visualization.png", "Attention weights (single head)"),
+    ("multihead_attention_visualization.png", "Multi-head attention comparison"),
+    ("single_vs_multihead.png", "Single vs multi-head attention"),
+    ("positional_encoding_heatmap.png", "Positional encoding heatmap"),
+]
 
-EMOTION_THRESHOLDS = {
-    "anger": 0.6,
-    "fear": 0.85,
-    "joy": 0.6,
-    "love": 0.25,
-    "sadness": 0.3,
-    "surprise": 0.55,
-}
-
-EMOTION_KEYWORDS = {
-    "love": {
-        "love",
-        "loved",
-        "loving",
-        "beloved",
-        "romance",
-        "romantic",
-        "affection",
-        "passion",
-        "sweetheart",
-        "valentine",
-        "dear",
-        "cherish",
-        "ador",
-        "marriage",
-        "wedding",
-    }
-}
 
 def get_pipeline() -> InferencePipeline:
-    """Lazy Loading and Caching the inference pipeline"""
-    global _pipeline, _label_metadata
+    global _pipeline
     if _pipeline is None:
-        try:
-            logger.info("Loading inference pipeline...")
-            pipeline, label_metadata = create_inference_pipeline(
-                tokenizer_dir="artifacts/hf_tokenizer/",
-                checkpoint_path="checkpoints/best.pt",
-                labels_path="artifacts/labels.json",
-            )
-            _pipeline = pipeline
-            _label_metadata = label_metadata
-            logger.info("Pipeline loaded successfully")
-        except Exception as e:
-            logger.error(f"Failed to load pipeline: {e}")
-            raise RuntimeError("Could not initialize inference pipeline. Check logs for details.")
+        logger.info("Loading inference pipeline ...")
+        _pipeline, _ = create_inference_pipeline(
+            tokenizer_dir="artifacts/hf_tokenizer/",
+            checkpoint_path="checkpoints/best.pt",
+            labels_path="artifacts/labels.json",
+        )
+        logger.info("Pipeline loaded")
     return _pipeline
 
+
+def map_compression_to_length(compression: int, max_model_length: int = 512) -> int:
+    ratio = (100 - compression) / 100
+    return max(16, int(ratio * max_model_length))
+
+
 def count_tokens(text: str) -> str:
-    """Count tokens in the input text."""
     if not text:
         return "Tokens: 0"
-    try: 
+    try:
         pipeline = get_pipeline()
-        token_count = len(pipeline.tokenizer.encode(text))
-        return f"Tokens: {token_count}"
-    except Exception as e:
-        logger.error(f"Token counting error: {e}")
+        return f"Tokens: {len(pipeline.tokenizer.encode(text))}"
+    except Exception as exc:  # pragma: no cover - surfaced in UI
+        logger.error("Token counting failed: %s", exc, exc_info=True)
         return "Token count unavailable"
-            
-def map_compression_to_length(compression: int, max_model_length: int = 512):
-    """
-    Map Compression slider (20-80%) to max summary length.
-    Higher compression = shorter summary output.
-    """
-    # Invert, 20% compression = 80% of max length
-    ratio = (100 - compression) / 100
-    return int(ratio * max_model_length)
+
 
 def predict(text: str, compression: int):
-    """Run the full pipeline and prepare Gradio outputs."""
     hidden_download = gr.update(value=None, visible=False)
     if not text or not text.strip():
         return (
-            "Please enter some text to analyze.",
+            "Please enter text to analyze.",
             None,
-            "No topic prediction available",
+            "No topic prediction available.",
             None,
             hidden_download,
         )
+
     try:
         pipeline = get_pipeline()
         max_len = map_compression_to_length(compression)
-        logger.info("Generating summary with max length of %s", max_len)
+        logger.info("Generating summary with max length %s", max_len)
 
-        summary = pipeline.summarize([text], max_length=max_len)[0]
-        raw_emotion_pairs = extract_emotion_pairs(pipeline.predict_emotions([text], threshold=0.0)[0])
-        filtered_emotions = filter_emotions(raw_emotion_pairs, text)
+        summary = pipeline.summarize([text], max_length=max_len)[0].strip()
+        emotions = pipeline.predict_emotions([text])[0]
         topic = pipeline.predict_topics([text])[0]
 
-        clean_summary = summary.strip()
-        summary_notice = ""
-        fallback_summary: str | None = None
-
-        if clean_summary and summary_is_plausible(clean_summary, text):
-            summary_source = clean_summary
+        summary_html = format_summary(text, summary)
+        emotion_plot = create_emotion_plot(emotions)
+        topic_markdown = format_topic(topic)
+        if summary:
+            attention_fig = create_attention_heatmap(text, summary, pipeline)
         else:
-            fallback_summary = generate_fallback_summary(text)
-            summary_source = fallback_summary
-            if clean_summary:
-                logger.info("Neural summary flagged as low-overlap; showing extractive fallback instead")
-                summary_notice = dedent(
-                    f"""
-                    <p style=\"color: #b45309; margin-top: 8px;\"><strong>Heads-up:</strong> The neural summary looked off-topic, so an extractive fallback is shown above.</p>
-                    <details style=\"margin-top: 4px;\">
-                        <summary style=\"color: #b45309; cursor: pointer;\">View the original neural summary</summary>
-                        <p style=\"margin-top: 8px; background-color: #fff7ed; padding: 10px; border-radius: 4px; color: #7c2d12; white-space: pre-wrap;\">
-                            {clean_summary}
-                        </p>
-                    </details>
-                    """
-                ).strip()
-            else:
-                summary_notice = (
-                    "<p style=\"color: #b45309; margin-top: 8px;\"><strong>Heads-up:</strong> "
-                    "The model did not produce a summary, so an extractive fallback is shown instead.</p>"
-                )
+            attention_fig = render_message_figure("Attention heatmap unavailable: summary was empty.")
 
-        summary_html = format_summary(text, summary_source, notice=summary_notice)
-        emotion_plot = create_emotion_plot(filtered_emotions)
-        if emotion_plot is None:
-            emotion_plot = render_unavailable_message(
-                "No emotion met the confidence threshold."
-            )
-        topic_output = format_topic(topic)
-        if clean_summary and fallback_summary is None:
-            attention_fig = create_attention_heatmap(text, clean_summary, pipeline)
-        else:
-            attention_fig = render_unavailable_message(
-                "Attention heatmap unavailable because the neural summary was empty or flagged as unreliable."
-            )
-        download_path = prepare_download(
-            text,
-            summary_source,
-            filtered_emotions,
-            topic,
-            neural_summary=clean_summary or None,
-            fallback_summary=fallback_summary,
-            raw_emotions=raw_emotion_pairs,
-        )
+        download_path = prepare_download(text, summary, emotions, topic)
         download_update = gr.update(value=download_path, visible=True)
 
-        return summary_html, emotion_plot, topic_output, attention_fig, download_update
+        return summary_html, emotion_plot, topic_markdown, attention_fig, download_update
 
     except Exception as exc:  # pragma: no cover - surfaced in UI
         logger.error("Prediction error: %s", exc, exc_info=True)
-        error_msg = "Prediction failed. Check logs for details."
-        return error_msg, None, "Error", None, hidden_download
+        return "Prediction failed. Check logs for details.", None, "Error", None, hidden_download
 
-def format_summary(original: str, summary: str, *, notice: str = "") -> str:
-    """Format original and summary text for display."""
-    html = f"""
-    <div style="padding: 10px; border-radius: 5px; color: #111;">
-        <h3 style="color: #111;">Original Text</h3>
-        <p style="background-color: #f0f0f0; padding: 10px; border-radius: 3px; color: #111; white-space: pre-wrap;">
+
+def format_summary(original: str, summary: str) -> str:
+    if not summary:
+        summary = "(Model returned an empty summary. Consider retraining the summarization head.)"
+
+    return f"""
+    <div style="padding: 12px; border-radius: 6px; background-color: #fafafa; color: #222;">
+        <h3 style="margin-top: 0; color: #222;">Original Text</h3>
+        <p style="background-color: #f0f0f0; padding: 10px; border-radius: 4px; white-space: pre-wrap; color: #222;">
             {original}
         </p>
-        <h3 style="color: #111;">Summary</h3>
-        <p style="background-color: #e6f3ff; padding: 10px; border-radius: 3px; color: #111; white-space: pre-wrap;">
+        <h3 style="color: #222;">Model Summary</h3>
+        <p style="background-color: #e6f3ff; padding: 10px; border-radius: 4px; white-space: pre-wrap; color: #111;">
             {summary}
         </p>
-        {notice}
+        <p style="margin-top: 12px; color: #6b7280; font-size: 0.9rem;">
+            Outputs are shown exactly as produced by the checkpoint.
+        </p>
     </div>
-    """
-    return dedent(html).strip()
+    """.strip()
 
-def create_emotion_plot(
-    emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]]
-) -> Figure | None:
-    """Create a horizontal bar chart for emotion predictions."""
-    if isinstance(emotions, EmotionPrediction):
-        raw_pairs = list(zip(emotions.labels, emotions.scores))
-    else:
-        raw_pairs = list(zip(emotions.get("labels", []), emotions.get("scores", [])))
 
-    pairs: list[tuple[str, float]] = []
-    for label, score in raw_pairs:
-        try:
-            score_val = float(score)
-        except (TypeError, ValueError):
-            continue
-        pairs.append((str(label), score_val))
+def create_emotion_plot(emotions: EmotionPrediction) -> Figure | None:
+    if not emotions.labels:
+        return render_message_figure("No emotions cleared the model threshold.")
 
-    if not pairs:
-        return None
-
-    pairs = sorted(pairs, key=lambda item: item[1], reverse=True)
-    filtered = [item for item in pairs if item[1] >= 0.2]
-    if not filtered:
-        filtered = pairs[:3]
-
-    labels = [label for label, _ in filtered[:5]]
-    scores = [score for _, score in filtered[:5]]
-
-    df = pd.DataFrame({"Emotion": labels, "Probability": scores})
-    fig, ax = plt.subplots(figsize=(8, 5))
-    colors = sns.color_palette("Set2", len(labels))
+    df = pd.DataFrame({"Emotion": emotions.labels, "Probability": emotions.scores}).sort_values(
+        "Probability", ascending=True
+    )
+    fig, ax = plt.subplots(figsize=(6, 4))
+    colors = sns.color_palette("crest", len(df))
     bars = ax.barh(df["Emotion"], df["Probability"], color=colors)
-    ax.set_xlabel("Probability", fontsize=12)
-    ax.set_ylabel("Emotion", fontsize=12)
-    ax.set_title("Emotion Detection Results", fontsize=14, fontweight="bold")
+    ax.set_xlabel("Probability")
+    ax.set_title("Emotion Scores")
     ax.set_xlim(0, 1)
     for bar in bars:
         width = bar.get_width()
-        ax.text(
-            width,
-            bar.get_y() + bar.get_height() / 2,
-            f"{width:.2%}",
-            ha="left",
-            va="center",
-            fontsize=10,
-            bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7),
-        )
+        ax.text(width + 0.02, bar.get_y() + bar.get_height() / 2, f"{width:.2%}", va="center")
     plt.tight_layout()
     return fig
 
+
 def format_topic(topic: TopicPrediction | dict[str, float | str]) -> str:
-    """Format topic prediction output as markdown."""
     if isinstance(topic, TopicPrediction):
         label = topic.label
-        score = topic.confidence
+        confidence = topic.confidence
     else:
         label = str(topic.get("label", "Unknown"))
-        score = float(topic.get("score", 0.0))
-
+        confidence = float(topic.get("score", 0.0))
     return f"""
     ### Predicted Topic
-    
+
     **{label}**
-    
-    Confidence: {score:.2%}
-    """
+
+    Confidence: {confidence:.2%}
+    """.strip()
+
 
 def _clean_tokens(tokens: Iterable[str]) -> list[str]:
     cleaned: list[str] = []
@@ -307,105 +172,14 @@ def _clean_tokens(tokens: Iterable[str]) -> list[str]:
         cleaned.append(item.strip() if item.strip() else token)
     return cleaned
 
-def extract_emotion_pairs(
-    emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]]
-) -> list[tuple[str, float]]:
-    if isinstance(emotions, EmotionPrediction):
-        return list(zip(map(str, emotions.labels), map(float, emotions.scores)))
-    labels = emotions.get("labels", [])
-    scores = emotions.get("scores", [])
-    return [(str(label), float(score)) for label, score in zip(labels, scores)]
-
-def filter_emotions(pairs: list[tuple[str, float]], text: str) -> EmotionPrediction:
-    filtered: list[tuple[str, float]] = []
-    lowered_text = text.lower()
-
-    for label, score in pairs:
-        threshold = EMOTION_THRESHOLDS.get(label, 0.5)
-        if score < threshold:
-            continue
-
-        if label == "love":
-            keywords = EMOTION_KEYWORDS.get("love", set())
-            if score < 0.6 and not any(keyword in lowered_text for keyword in keywords):
-                continue
-
-        filtered.append((label, score))
-
-    if filtered:
-        labels, scores = zip(*filtered)
-        return EmotionPrediction(labels=list(labels), scores=list(scores))
-
-    return EmotionPrediction(labels=[], scores=[])
-
-def summary_is_plausible(
-    summary: str,
-    original: str,
-    *,
-    min_overlap: float = 0.2,
-    min_unique_ratio: float = 0.3,
-    max_repeat_ratio: float = 0.6,
-) -> bool:
-    """Heuristic filter to catch off-topic or repetitive neural summaries."""
-
-    summary_tokens = re.findall(r"\w+", summary.lower())
-    if not summary_tokens:
-        return False
-
-    summary_content = [token for token in summary_tokens if token not in STOPWORDS]
-    if not summary_content:
-        return False
-
-    original_vocab = {token for token in re.findall(r"\w+", original.lower()) if token not in STOPWORDS}
-    overlap = sum(1 for token in summary_content if token in original_vocab)
-    overlap_ratio = overlap / max(1, len(summary_content))
-    if overlap_ratio < min_overlap:
-        return False
-
-    token_counts = Counter(summary_content)
-    most_common_ratio = token_counts.most_common(1)[0][1] / len(summary_content)
-    unique_ratio = len(token_counts) / len(summary_content)
-    if unique_ratio < min_unique_ratio:
-        return False
-    if most_common_ratio > max_repeat_ratio:
-        return False
-    return True
-
-def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
-    """Build a lightweight extractive summary when the model generates nothing."""
-    if not text.strip():
-        return ""
-
-    sections = [segment.strip() for segment in text.replace("\n", " ").split(". ") if segment.strip()]
-    if not sections:
-        return text.strip()[:max_chars]
-
-    summary_fragments: list[str] = []
-    chars_used = 0
-    for segment in sections:
-        candidate = segment if segment.endswith(".") else f"{segment}."
-        if chars_used + len(candidate) > max_chars and summary_fragments:
-            break
-        summary_fragments.append(candidate)
-        chars_used += len(candidate)
-
-    fallback = " ".join(summary_fragments)
-    if not fallback:
-        fallback = text.strip()[:max_chars]
-    return fallback
 
 def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipeline) -> Figure | None:
-    """Generate a seaborn heatmap of decoder cross-attention averaged over heads."""
-    if not summary:
-        return None
     try:
         batch = pipeline.preprocessor.batch_encode([text])
         batch = pipeline._batch_to_device(batch)
         src_ids = batch.input_ids
         src_mask = batch.attention_mask
-        encoder_mask = None
-        if src_mask is not None:
-            encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2)
+        encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
 
         with torch.inference_mode():
             memory = pipeline.model.encoder(src_ids, mask=encoder_mask)
@@ -423,11 +197,11 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
                 memory_mask=memory_mask,
                 collect_attn=True,
             )
+
         if not attn_list:
             return None
-        cross_attn = attn_list[-1]["cross"]  # (B, heads, T, S)
+        cross_attn = attn_list[-1]["cross"]
         attn_matrix = cross_attn.mean(dim=1)[0].detach().cpu().numpy()
-
         source_len = batch.lengths[0]
         attn_matrix = attn_matrix[:target_len, :source_len]
 
@@ -439,7 +213,7 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
             pipeline.tokenizer.bos_token_id,
             pipeline.tokenizer.eos_token_id,
         }
-        keep_indices = [index for index, token_id in enumerate(target_id_list) if token_id not in special_ids]
+        keep_indices = [idx for idx, token_id in enumerate(target_id_list) if token_id not in special_ids]
         if not keep_indices:
             return None
 
@@ -447,10 +221,9 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
         tokenizer_impl = pipeline.tokenizer.tokenizer
         convert_tokens = getattr(tokenizer_impl, "convert_ids_to_tokens", None)
         if convert_tokens is None:
-            logger.warning("Tokenizer does not expose convert_ids_to_tokens; skipping attention heatmap.")
             return None
 
-        summary_tokens_raw = convert_tokens([target_id_list[index] for index in keep_indices])
+        summary_tokens_raw = convert_tokens([target_id_list[idx] for idx in keep_indices])
         source_tokens_raw = convert_tokens(source_ids)
 
         summary_tokens = _clean_tokens(summary_tokens_raw)
@@ -477,14 +250,13 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
 
     except Exception as exc:
         logger.error("Unable to build attention heatmap: %s", exc, exc_info=True)
-        return None
+        return render_message_figure("Unable to render attention heatmap for this example.")
 
 
-def render_unavailable_message(message: str) -> Figure:
-    """Render a simple Matplotlib figure containing an informational message."""
+def render_message_figure(message: str) -> Figure:
     fig, ax = plt.subplots(figsize=(6, 2))
     ax.axis("off")
-    ax.text(0.5, 0.5, message, ha="center", va="center", fontsize=11, wrap=True)
+    ax.text(0.5, 0.5, message, ha="center", va="center", wrap=True)
     fig.tight_layout()
     return fig
 
@@ -494,12 +266,7 @@ def prepare_download(
     summary: str,
     emotions: EmotionPrediction | dict[str, Sequence[float] | Sequence[str]],
     topic: TopicPrediction | dict[str, float | str],
-    *,
-    neural_summary: str | None = None,
-    fallback_summary: str | None = None,
-    raw_emotions: Sequence[tuple[str, float]] | None = None,
 ) -> str:
-    """Persist JSON payload to a temporary file and return its path for download."""
     if isinstance(emotions, EmotionPrediction):
         emotion_payload = {
             "labels": list(emotions.labels),
@@ -512,10 +279,7 @@ def prepare_download(
         }
 
     if isinstance(topic, TopicPrediction):
-        topic_payload = {
-            "label": topic.label,
-            "confidence": topic.confidence,
-        }
+        topic_payload = {"label": topic.label, "confidence": topic.confidence}
     else:
         topic_payload = {
             "label": str(topic.get("label", topic.get("topic", "Unknown"))),
@@ -525,106 +289,99 @@ def prepare_download(
     payload = {
         "original_text": text,
         "summary": summary,
-        "neural_summary": neural_summary,
-        "fallback_summary": fallback_summary,
         "emotions": emotion_payload,
         "topic": topic_payload,
     }
-    if raw_emotions is not None:
-        payload["raw_emotions"] = [
-            {"label": label, "score": float(score)} for label, score in raw_emotions
-        ]
+
     with NamedTemporaryFile("w", delete=False, suffix=".json", encoding="utf-8") as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
-        temp_path = handle.name
-    return temp_path
+        return handle.name
 
-# Sample data for the demo
-SAMPLE_TEXT = """
-Artificial intelligence is rapidly transforming the technology landscape. 
-Machine learning algorithms are now capable of processing vast amounts of data, 
-identifying patterns, and making predictions with unprecedented accuracy. 
-From healthcare diagnostics to financial forecasting, AI applications are 
-revolutionizing industries worldwide. However, ethical considerations around 
-privacy, bias, and transparency remain critical challenges that must be addressed 
-as these technologies continue to evolve.
-"""
+
+def load_visualization_gallery() -> list[tuple[str, str]]:
+    """Collect visualization images produced by model tests."""
+    items: list[tuple[str, str]] = []
+    for filename, label in VISUALIZATION_ASSETS:
+        path = VISUALIZATION_DIR / filename
+        if path.exists():
+            items.append((str(path), label))
+        else:
+            logger.debug("Visualization asset missing: %s", path)
+    return items
+
+
+SAMPLE_TEXT = (
+    "Artificial intelligence is rapidly transforming the technology landscape. "
+    "Machine learning algorithms are now capable of processing vast amounts of data, "
+    "identifying patterns, and making predictions with unprecedented accuracy. "
+    "From healthcare diagnostics to financial forecasting, AI applications are "
+    "revolutionizing industries worldwide. However, ethical considerations around "
+    "privacy, bias, and transparency remain critical challenges that must be addressed "
+    "as these technologies continue to evolve."
+)
+
 
 def create_interface() -> gr.Blocks:
     with gr.Blocks(title="LexiMind Demo", theme=Soft()) as demo:
-        gr.Markdown("""
-        # LexiMind NLP Pipeline Demo
-        
-        **Full pipleine for text summarization, emotion detection, and topic prediction.**
-        
-        Enter text below and adjust compressoin to see the results.
-        """)
+        gr.Markdown(
+            """
+            # LexiMind NLP Demo
+
+            This demo streams the raw outputs from the saved LexiMind checkpoint.
+            Results may be noisy; retraining is recommended for production use.
+            """
+        )
+
         with gr.Row():
-            # Left column - Input
             with gr.Column(scale=1):
-                gr.Markdown("### Input")
                 input_text = gr.Textbox(
-                    label="Enter text",
-                    placeholder="Paste or type your text here...",
+                    label="Input Text",
                     lines=10,
-                    value=SAMPLE_TEXT
+                    value=SAMPLE_TEXT,
+                    placeholder="Paste or type your text here...",
                 )
-                token_count = gr.Textbox(
-                    label="Token Count",
-                    value="Tokens: 0",
-                    interactive=False
-                )
+                token_box = gr.Textbox(label="Token Count", value="Tokens: 0", interactive=False)
                 compression = gr.Slider(
                     minimum=20,
                     maximum=80,
                     value=50,
                     step=5,
                     label="Compression %",
-                    info="Higher = shorter summary"
+                    info="Higher values request shorter summaries.",
                 )
-                predict_btn = gr.Button("🚀 Analyze", variant="primary", size="lg")
-            # Right column - Outputs
+                analyze_btn = gr.Button("Run Analysis", variant="primary")
+
             with gr.Column(scale=2):
-                gr.Markdown("### Result")
                 with gr.Tabs():
                     with gr.TabItem("Summary"):
                         summary_output = gr.HTML(label="Summary")
                     with gr.TabItem("Emotions"):
-                        emotion_output = gr.Plot(label="Emotion Analysis")
+                        emotion_output = gr.Plot(label="Emotion Probabilities")
                     with gr.TabItem("Topic"):
                         topic_output = gr.Markdown(label="Topic Prediction")
-                    with gr.TabItem("Attention Heatmap"):
-                        attention_output = gr.Plot(label="Attention Weights")
-                        gr.Markdown("*Visualizes which parts of the input the model focused on.*")
-                # Download section
-                gr.Markdown("### Export Results")
-                download_btn = gr.DownloadButton(
-                    "Download Results (JSON)",
-                    visible=False,
-                )
-            # Event Handlers
-            input_text.change(
-                fn=count_tokens,
-                inputs=[input_text],
-                outputs=[token_count]
-            )
-            predict_btn.click(
-                fn=predict,
-                inputs=[input_text, compression],
-                outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
-            )
-            # Examples
-            gr.Examples(
-                examples=[
-                    [SAMPLE_TEXT, 50],
-                    [
-                        "Climate change poses significant risks to global ecosystems. Rising temperatures, melting ice caps, and extreme weather events are becoming more frequent. Scientists urge immediate action to reduce carbon emissions and transition to renewable energy sources.",
-                        40,
-                    ],
-                ],
-                inputs=[input_text, compression],
-                label="Try these examples:",
-            )
+                    with gr.TabItem("Attention"):
+                        attention_output = gr.Plot(label="Attention Heatmap")
+                        gr.Markdown("*Shows decoder attention if a summary is available.*")
+                    with gr.TabItem("Model Visuals"):
+                        visuals = gr.Gallery(
+                            label="Test Visualizations",
+                            value=load_visualization_gallery(),
+                            columns=2,
+                            height=400,
+                        )
+                        gr.Markdown(
+                            "These PNGs come from the visualization-focused tests in `tests/test_models` and are consumed as-is."
+                        )
+                gr.Markdown("### Download Results")
+                download_btn = gr.DownloadButton("Download JSON", visible=False)
+
+        input_text.change(fn=count_tokens, inputs=[input_text], outputs=[token_box])
+        analyze_btn.click(
+            fn=predict,
+            inputs=[input_text, compression],
+            outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
+        )
+
         return demo
 
 
@@ -635,14 +392,8 @@ app = demo
 if __name__ == "__main__":
     try:
         get_pipeline()
-        demo.queue().launch(
-            share=True,
-            server_name="0.0.0.0",
-            server_port=7860,
-            show_error=True,
-        )
-    except Exception as e:
-        logger.error("Failed to launch demo: %s", e, exc_info=True)
-        print(f"Error: {e}")
-        sys.exit(1)
+        demo.queue().launch(share=False)
+    except Exception as exc:  # pragma: no cover - surfaced in console
+        logger.error("Failed to launch demo: %s", exc, exc_info=True)
+        raise
 
