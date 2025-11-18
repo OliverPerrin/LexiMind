@@ -75,12 +75,14 @@ class InferencePipeline:
         with torch.inference_mode():
             encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
             memory = self.model.encoder(src_ids, mask=encoder_mask)
+            min_len = max(4, min(max_len // 4, max_len))
             generated = self.model.decoder.greedy_decode(
                 memory=memory,
                 max_len=max_len,
                 start_token_id=self.tokenizer.bos_token_id,
                 end_token_id=self.tokenizer.eos_token_id,
                 device=self.device,
+                min_len=min_len,
             )
 
         return self.tokenizer.decode_batch(generated.tolist())
