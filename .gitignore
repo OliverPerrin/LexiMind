@@ -44,6 +44,8 @@ runs/
 
 # Outputs
 outputs/
+!outputs/*.png
+!outputs/*.json
 results/
 
 # Jupyter
