@@ -221,6 +221,8 @@ class TransformerDecoder(nn.Module):
         device: Optional[torch.device] = None,
         *,
         min_len: Optional[int] = None,
+        ban_token_ids: Optional[List[int]] = None,
+        no_repeat_ngram_size: int = 0,
     ) -> torch.Tensor:
         """
         Naive greedy decoding: repeatedly run the decoder on the growing prefix.
@@ -237,9 +239,52 @@ class TransformerDecoder(nn.Module):
             logits = self.forward(generated, memory, collect_attn=False)  # (B, L, V)
             assert isinstance(logits, torch.Tensor)  # type narrowing
             next_step_logits = logits[:, -1, :]
+
+            # Apply constraints (min_len or ban_token_ids)
+            should_clone = False
             if end_token_id is not None and generated.size(1) < max(1, min_len):
+                should_clone = True
+            if ban_token_ids:
+                should_clone = True
+            
+            # Check for n-gram repetition
+            if no_repeat_ngram_size > 0:
+                # We might need to clone if we find something to ban
+                pass 
+
+            if should_clone:
                 next_step_logits = next_step_logits.clone()
+
+            if end_token_id is not None and generated.size(1) < max(1, min_len):
                 next_step_logits[:, end_token_id] = float("-inf")
+            
+            if ban_token_ids:
+                next_step_logits[:, ban_token_ids] = float("-inf")
+
+            if no_repeat_ngram_size > 0:
+                # Calculate banned tokens based on n-grams
+                for b in range(B):
+                    gen_seq = generated[b].tolist()
+                    if len(gen_seq) < no_repeat_ngram_size - 1:
+                        continue
+                        
+                    prefix = tuple(gen_seq[-(no_repeat_ngram_size - 1):])
+                    banned_for_this_batch = set()
+                    
+                    # Scan history for prefix
+                    for i in range(len(gen_seq) - no_repeat_ngram_size + 1):
+                        window = tuple(gen_seq[i : i + no_repeat_ngram_size - 1])
+                        if window == prefix:
+                            # The token that followed this instance of prefix
+                            if i + no_repeat_ngram_size - 1 < len(gen_seq):
+                                banned_for_this_batch.add(gen_seq[i + no_repeat_ngram_size - 1])
+                    
+                    if banned_for_this_batch:
+                        if not should_clone:
+                             next_step_logits = next_step_logits.clone()
+                             should_clone = True
+                        next_step_logits[b, list(banned_for_this_batch)] = float("-inf")
+
             next_token = next_step_logits.argmax(dim=-1, keepdim=True)  # (B, 1)
             generated = torch.cat([generated, next_token], dim=1)
 
