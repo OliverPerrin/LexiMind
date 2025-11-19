@@ -33,7 +33,6 @@ checkpoints/*.pt
 !checkpoints/best.pt
 *.pth
 *.ckpt
-*.json
 !artifacts/*.json
 !artifacts/hf_tokenizer/*.json
 
@@ -43,9 +42,6 @@ logs/
 runs/
 
 # Outputs
-outputs/
-!outputs/*.png
-!outputs/*.json
 results/
 
 # Jupyter
