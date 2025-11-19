@@ -75,7 +75,8 @@ class InferencePipeline:
         with torch.inference_mode():
             encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
             memory = self.model.encoder(src_ids, mask=encoder_mask)
-            min_len = max(4, min(max_len // 4, max_len))
+            # Relax min_len to avoid forcing repetition if the model wants to stop
+            min_len = 0
             generated = self.model.decoder.greedy_decode(
                 memory=memory,
                 max_len=max_len,
@@ -84,7 +85,11 @@ class InferencePipeline:
                 device=self.device,
                 min_len=min_len,
             )
-
+            
+            # If the first token is EOS, it means empty generation.
+            # Try forcing a different start token if that happens, or just accept it.
+            # For now, we just decode.
+            
         return self.tokenizer.decode_batch(generated.tolist())
 
     def predict_emotions(

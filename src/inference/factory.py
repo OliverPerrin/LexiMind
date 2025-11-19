@@ -56,8 +56,12 @@ def create_inference_pipeline(
 
     # Tie weights manually to ensure decoder output projection matches embeddings
     # This fixes issues where the output projection might be untrained or mismatched
-    if hasattr(model, "decoder") and hasattr(model.decoder, "output_projection") and hasattr(model.decoder, "embedding"):
-        model.decoder.output_projection.weight = model.decoder.embedding.weight
+    decoder = getattr(model, "decoder", None)
+    output_projection = getattr(decoder, "output_projection", None) if decoder is not None else None
+    embedding = getattr(decoder, "embedding", None) if decoder is not None else None
+
+    if output_projection is not None and embedding is not None:
+        output_projection.weight = embedding.weight
 
     if isinstance(device, torch.device):
         device_str = str(device)
