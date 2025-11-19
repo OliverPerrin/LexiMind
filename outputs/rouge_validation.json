@@ -1,0 +1,33 @@
+{
+  "num_examples": 13368,
+  "metrics": {
+    "rouge1": {
+      "precision": 1.1811395634508172e-05,
+      "recall": 1.1220825852782764e-05,
+      "fmeasure": 1.1508539336187451e-05
+    },
+    "rouge2": {
+      "precision": 2.0217704239248226e-06,
+      "recall": 1.9180898893645752e-06,
+      "fmeasure": 1.9685659390846956e-06
+    },
+    "rougeL": {
+      "precision": 5.905697817254086e-06,
+      "recall": 5.610412926391382e-06,
+      "fmeasure": 5.754269668093726e-06
+    }
+  },
+  "config": {
+    "data": "data\\processed\\summarization\\validation.jsonl",
+    "checkpoint": "checkpoints\\best.pt",
+    "tokenizer_dir": "artifacts\\hf_tokenizer",
+    "metrics": [
+      "rouge1",
+      "rouge2",
+      "rougeL"
+    ],
+    "max_length": 64,
+    "batch_size": 8,
+    "device": "cuda"
+  }
+}

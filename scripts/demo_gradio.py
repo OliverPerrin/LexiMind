@@ -54,9 +54,13 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
-ROUGE_REPORT_PATH = Path(
-    os.environ.get("ROUGE_REPORT_PATH", OUTPUTS_DIR / "rouge_validation.json")
-)
+
+# Resolve ROUGE report path with fallback
+_env_path = os.environ.get("ROUGE_REPORT_PATH")
+if _env_path and Path(_env_path).exists():
+    ROUGE_REPORT_PATH = Path(_env_path)
+else:
+    ROUGE_REPORT_PATH = OUTPUTS_DIR / "rouge_validation.json"
 
 from src.inference.factory import create_inference_pipeline
 from src.inference.pipeline import EmotionPrediction, InferencePipeline, TopicPrediction
@@ -550,7 +554,7 @@ app = demo
 if __name__ == "__main__":
     try:
         get_pipeline()
-        demo.queue().launch(share=False)
+        demo.queue().launch(share=False, allowed_paths=[str(OUTPUTS_DIR)])
     except Exception as exc:  # pragma: no cover - surfaced in console
         logger.error("Failed to launch demo: %s", exc, exc_info=True)
         raise

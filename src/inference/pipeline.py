@@ -79,7 +79,7 @@ class InferencePipeline:
             generated = self.model.decoder.greedy_decode(
                 memory=memory,
                 max_len=max_len,
-                start_token_id=self.tokenizer.bos_token_id,
+                start_token_id=self.tokenizer.eos_token_id,
                 end_token_id=self.tokenizer.eos_token_id,
                 device=self.device,
                 min_len=min_len,
