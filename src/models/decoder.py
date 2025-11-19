@@ -223,6 +223,7 @@ class TransformerDecoder(nn.Module):
         min_len: Optional[int] = None,
         ban_token_ids: Optional[List[int]] = None,
         no_repeat_ngram_size: int = 0,
+        memory_mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         """
         Naive greedy decoding: repeatedly run the decoder on the growing prefix.
@@ -236,7 +237,7 @@ class TransformerDecoder(nn.Module):
         min_len = 0 if min_len is None else max(0, min_len)
 
         for _ in range(max_len - 1):
-            logits = self.forward(generated, memory, collect_attn=False)  # (B, L, V)
+            logits = self.forward(generated, memory, collect_attn=False, memory_mask=memory_mask)  # (B, L, V)
             assert isinstance(logits, torch.Tensor)  # type narrowing
             next_step_logits = logits[:, -1, :]
 

@@ -164,7 +164,7 @@ class MultiTaskModel(nn.Module):
                 # Here we don't attempt to generate when labels not provided.
                 raise ValueError("Seq2seq tasks require 'tgt_ids' or 'tgt_embeddings' for training forward")
 
-            decoder_out = self.decoder(decoder_inputs, memory)
+            decoder_out = self.decoder(decoder_inputs, memory, memory_mask=src_mask)
 
             if self.decoder_outputs_logits:
                 if not isinstance(decoder_out, torch.Tensor):

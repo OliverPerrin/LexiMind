@@ -90,24 +90,17 @@ class InferencePipeline:
             generated = self.model.decoder.greedy_decode(
                 memory=memory,
                 max_len=max_len,
-                start_token_id=self.tokenizer.eos_token_id,
+                start_token_id=self.tokenizer.bos_token_id,
                 end_token_id=self.tokenizer.eos_token_id,
                 device=self.device,
                 min_len=min_len,
                 ban_token_ids=ban_token_ids,
                 no_repeat_ngram_size=3,
+                memory_mask=src_mask,
             )
             
-            # Post-process to remove repetition if detected
             decoded_list = self.tokenizer.decode_batch(generated.tolist())
-            final_summaries = []
-            for summary in decoded_list:
-                # Simple repetition check: if the string starts with a repeated pattern
-                # "TextText" -> "Text" == "Text"
-                if len(summary) > 20 and summary[:4] == summary[4:8]:
-                     final_summaries.append("") # Fallback to empty if garbage
-                else:
-                     final_summaries.append(summary)
+            final_summaries = decoded_list
             
         return final_summaries
 
