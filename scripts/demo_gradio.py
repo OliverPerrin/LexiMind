@@ -288,8 +288,17 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
         summary_tokens = _clean_tokens(summary_tokens_raw)
         source_tokens = _clean_tokens(source_tokens_raw)
 
-        height = max(4.0, 0.4 * len(summary_tokens))
-        width = max(6.0, 0.4 * len(source_tokens))
+        # Cap the visualization to prevent massive heatmaps
+        max_tokens = 40
+        if len(summary_tokens) > max_tokens:
+            summary_tokens = summary_tokens[:max_tokens]
+            pruned_matrix = pruned_matrix[:max_tokens, :]
+        if len(source_tokens) > max_tokens:
+            source_tokens = source_tokens[:max_tokens]
+            pruned_matrix = pruned_matrix[:, :max_tokens]
+
+        height = max(4.0, 0.3 * len(summary_tokens))
+        width = max(6.0, 0.3 * len(source_tokens))
         fig, ax = plt.subplots(figsize=(width, height))
         sns.heatmap(
             pruned_matrix,
@@ -427,7 +436,11 @@ def load_rouge_metrics():
         return empty, {"error": f"Unable to parse report: {exc}", "report_path": str(ROUGE_REPORT_PATH)}
 
     rows: list[dict[str, object]] = []
-    for metric_name, components in report.get("metrics", {}).items():
+    metrics_data = report.get("metrics", {})
+    if not metrics_data:
+        logger.warning("ROUGE report found but 'metrics' key is missing or empty.")
+    
+    for metric_name, components in metrics_data.items():
         rows.append(
             {
                 "metric": metric_name,
