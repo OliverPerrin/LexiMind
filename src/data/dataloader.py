@@ -25,14 +25,30 @@ class SummarizationCollator:
         source_enc = self.tokenizer.batch_encode(sources, max_length=self.max_source_length)
         target_enc = self.tokenizer.batch_encode(targets, max_length=self.max_target_length)
 
-        labels = target_enc["input_ids"].clone()
-        decoder_input_ids = self.tokenizer.prepare_decoder_inputs(target_enc["input_ids"])
-        labels[target_enc["attention_mask"] == 0] = -100
+        # target_enc["input_ids"] is [BOS, A, B, EOS, PAD...]
+        # We want:
+        # tgt_ids (decoder input): [BOS, A, B, EOS] (drop last PAD or EOS if full)
+        # labels (target): [A, B, EOS, PAD] (drop first BOS)
+        
+        ids = target_enc["input_ids"]
+        mask = target_enc["attention_mask"]
+
+        # Slice to create shifted inputs/targets
+        # tgt_ids: everything except the last token
+        tgt_ids = ids[:, :-1]
+        
+        # labels: everything except the first token (BOS)
+        labels = ids[:, 1:].clone()
+        
+        # Adjust mask for labels to ignore padding
+        # The mask corresponds to the original ids. We slice it to match labels.
+        labels_mask = mask[:, 1:]
+        labels[labels_mask == 0] = -100
 
         return {
             "src_ids": source_enc["input_ids"],
             "src_mask": source_enc["attention_mask"],
-            "tgt_ids": decoder_input_ids,
+            "tgt_ids": tgt_ids,
             "labels": labels,
         }
 
