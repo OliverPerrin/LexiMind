@@ -77,6 +77,16 @@ class InferencePipeline:
             memory = self.model.encoder(src_ids, mask=encoder_mask)
             # Force a minimum length to prevent immediate EOS
             min_len = 10
+            
+            # Ban BOS, PAD, UNK from being generated
+            ban_token_ids = [
+                self.tokenizer.bos_token_id,
+                self.tokenizer.pad_token_id,
+                self.tokenizer.tokenizer.unk_token_id
+            ]
+            # Filter out None values just in case
+            ban_token_ids = [tid for tid in ban_token_ids if tid is not None]
+
             generated = self.model.decoder.greedy_decode(
                 memory=memory,
                 max_len=max_len,
@@ -84,6 +94,8 @@ class InferencePipeline:
                 end_token_id=self.tokenizer.eos_token_id,
                 device=self.device,
                 min_len=min_len,
+                ban_token_ids=ban_token_ids,
+                no_repeat_ngram_size=3,
             )
             
             # Post-process to remove repetition if detected
