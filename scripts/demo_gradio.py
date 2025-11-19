@@ -126,7 +126,8 @@ def predict(text: str, compression: int):
         logger.info("Generating summary with max length %s", max_len)
 
         summary = pipeline.summarize([text], max_length=max_len)[0].strip()
-        emotions = pipeline.predict_emotions([text])[0]
+        # Use a higher threshold to filter out weak/wrong predictions on out-of-domain text
+        emotions = pipeline.predict_emotions([text], threshold=0.6)[0]
         topic = pipeline.predict_topics([text])[0]
 
         fallback_summary = None
@@ -451,10 +452,16 @@ def load_rouge_metrics():
         )
 
     table = pd.DataFrame(rows, columns=columns) if rows else empty
+    
+    # Clean up path for display
+    display_path = str(ROUGE_REPORT_PATH)
+    if "/app/" in display_path:
+        display_path = display_path.replace("/app/", "/LexiMind/")
+        
     metadata = {
         "num_examples": report.get("num_examples"),
         "config": report.get("config"),
-        "report_path": str(ROUGE_REPORT_PATH),
+        "report_path": display_path,
         "last_updated": datetime.fromtimestamp(ROUGE_REPORT_PATH.stat().st_mtime).isoformat(),
     }
     return table, metadata

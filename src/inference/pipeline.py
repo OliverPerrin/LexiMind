@@ -75,8 +75,8 @@ class InferencePipeline:
         with torch.inference_mode():
             encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
             memory = self.model.encoder(src_ids, mask=encoder_mask)
-            # Relax min_len to avoid forcing repetition if the model wants to stop
-            min_len = 0
+            # Force a minimum length to prevent immediate EOS
+            min_len = 10
             generated = self.model.decoder.greedy_decode(
                 memory=memory,
                 max_len=max_len,
@@ -86,11 +86,18 @@ class InferencePipeline:
                 min_len=min_len,
             )
             
-            # If the first token is EOS, it means empty generation.
-            # Try forcing a different start token if that happens, or just accept it.
-            # For now, we just decode.
+            # Post-process to remove repetition if detected
+            decoded_list = self.tokenizer.decode_batch(generated.tolist())
+            final_summaries = []
+            for summary in decoded_list:
+                # Simple repetition check: if the string starts with a repeated pattern
+                # "TextText" -> "Text" == "Text"
+                if len(summary) > 20 and summary[:4] == summary[4:8]:
+                     final_summaries.append("") # Fallback to empty if garbage
+                else:
+                     final_summaries.append(summary)
             
-        return self.tokenizer.decode_batch(generated.tolist())
+        return final_summaries
 
     def predict_emotions(
         self,
