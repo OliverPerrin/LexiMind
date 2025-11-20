@@ -34,22 +34,3 @@ def set_seed(seed: int) -> np.random.Generator:
     _thread_local.rng = rng
     return rng
 
-
-def numpy_generator() -> np.random.Generator:
-    """Return the calling thread's NumPy generator, creating one if needed."""
-
-    rng = getattr(_thread_local, "rng", None)
-    if rng is not None:
-        return rng
-
-    global _seed_sequence, _spawn_counter
-    with _seed_lock:
-        if _seed_sequence is None:
-            _seed_sequence = np.random.SeedSequence()
-            _spawn_counter = 0
-        child_seq = _seed_sequence.spawn(1)[0]
-        _spawn_counter += 1
-
-    rng = np.random.default_rng(child_seq)
-    _thread_local.rng = rng
-    return rng
