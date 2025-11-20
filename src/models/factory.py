@@ -5,6 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+import torch
+from transformers import BartModel
+
 from ..data.tokenization import Tokenizer
 from ..utils.config import load_yaml
 from .decoder import TransformerDecoder
@@ -23,6 +26,8 @@ class ModelConfig:
     num_attention_heads: int = 8
     ffn_dim: int = 2048
     dropout: float = 0.1
+    use_pretrained: bool = False
+    pretrained_model_name: str = "facebook/bart-base"
 
     def __post_init__(self):
         if self.d_model % self.num_attention_heads != 0:
@@ -51,7 +56,91 @@ def load_model_config(path: Optional[str | Path]) -> ModelConfig:
         num_attention_heads=int(data.get("num_attention_heads", 8)),
         ffn_dim=int(data.get("ffn_dim", 2048)),
         dropout=float(data.get("dropout", 0.1)),
+        use_pretrained=bool(data.get("use_pretrained", False)),
+        pretrained_model_name=str(data.get("pretrained_model_name", "facebook/bart-base")),
     )
+
+
+def _load_pretrained_weights(encoder: TransformerEncoder, decoder: TransformerDecoder, model_name: str) -> None:
+    """Load pretrained BART weights into custom encoder/decoder."""
+    print(f"Loading pretrained weights from {model_name}...")
+    bart = BartModel.from_pretrained(model_name)
+    
+    # Load encoder weights
+    print("Transferring encoder weights...")
+    encoder.embedding.weight.data.copy_(bart.encoder.embed_tokens.weight.data)
+    encoder.pos_encoder.pe.data.copy_(bart.encoder.embed_positions.weight.data.unsqueeze(0))
+    
+    for i, (custom_layer, bart_layer) in enumerate(zip(encoder.layers, bart.encoder.layers)):
+        # Self-attention
+        custom_layer.self_attn.W_Q.weight.data.copy_(bart_layer.self_attn.q_proj.weight.data)
+        custom_layer.self_attn.W_Q.bias.data.copy_(bart_layer.self_attn.q_proj.bias.data)
+        custom_layer.self_attn.W_K.weight.data.copy_(bart_layer.self_attn.k_proj.weight.data)
+        custom_layer.self_attn.W_K.bias.data.copy_(bart_layer.self_attn.k_proj.bias.data)
+        custom_layer.self_attn.W_V.weight.data.copy_(bart_layer.self_attn.v_proj.weight.data)
+        custom_layer.self_attn.W_V.bias.data.copy_(bart_layer.self_attn.v_proj.bias.data)
+        custom_layer.self_attn.W_O.weight.data.copy_(bart_layer.self_attn.out_proj.weight.data)
+        custom_layer.self_attn.W_O.bias.data.copy_(bart_layer.self_attn.out_proj.bias.data)
+        
+        # Layer norms
+        custom_layer.norm1.weight.data.copy_(bart_layer.self_attn_layer_norm.weight.data)
+        custom_layer.norm1.bias.data.copy_(bart_layer.self_attn_layer_norm.bias.data)
+        custom_layer.norm2.weight.data.copy_(bart_layer.final_layer_norm.weight.data)
+        custom_layer.norm2.bias.data.copy_(bart_layer.final_layer_norm.bias.data)
+        
+        # FFN
+        custom_layer.ffn.fc1.weight.data.copy_(bart_layer.fc1.weight.data)
+        custom_layer.ffn.fc1.bias.data.copy_(bart_layer.fc1.bias.data)
+        custom_layer.ffn.fc2.weight.data.copy_(bart_layer.fc2.weight.data)
+        custom_layer.ffn.fc2.bias.data.copy_(bart_layer.fc2.bias.data)
+    
+    encoder.final_norm.weight.data.copy_(bart.encoder.layernorm_embedding.weight.data)
+    encoder.final_norm.bias.data.copy_(bart.encoder.layernorm_embedding.bias.data)
+    
+    # Load decoder weights
+    print("Transferring decoder weights...")
+    decoder.embedding.weight.data.copy_(bart.decoder.embed_tokens.weight.data)
+    decoder.pos_encoder.pe.data.copy_(bart.decoder.embed_positions.weight.data.unsqueeze(0))
+    
+    for i, (custom_layer, bart_layer) in enumerate(zip(decoder.layers, bart.decoder.layers)):
+        # Self-attention
+        custom_layer.self_attn.W_Q.weight.data.copy_(bart_layer.self_attn.q_proj.weight.data)
+        custom_layer.self_attn.W_Q.bias.data.copy_(bart_layer.self_attn.q_proj.bias.data)
+        custom_layer.self_attn.W_K.weight.data.copy_(bart_layer.self_attn.k_proj.weight.data)
+        custom_layer.self_attn.W_K.bias.data.copy_(bart_layer.self_attn.k_proj.bias.data)
+        custom_layer.self_attn.W_V.weight.data.copy_(bart_layer.self_attn.v_proj.weight.data)
+        custom_layer.self_attn.W_V.bias.data.copy_(bart_layer.self_attn.v_proj.bias.data)
+        custom_layer.self_attn.W_O.weight.data.copy_(bart_layer.self_attn.out_proj.weight.data)
+        custom_layer.self_attn.W_O.bias.data.copy_(bart_layer.self_attn.out_proj.bias.data)
+        
+        # Cross-attention
+        custom_layer.cross_attn.W_Q.weight.data.copy_(bart_layer.encoder_attn.q_proj.weight.data)
+        custom_layer.cross_attn.W_Q.bias.data.copy_(bart_layer.encoder_attn.q_proj.bias.data)
+        custom_layer.cross_attn.W_K.weight.data.copy_(bart_layer.encoder_attn.k_proj.weight.data)
+        custom_layer.cross_attn.W_K.bias.data.copy_(bart_layer.encoder_attn.k_proj.bias.data)
+        custom_layer.cross_attn.W_V.weight.data.copy_(bart_layer.encoder_attn.v_proj.weight.data)
+        custom_layer.cross_attn.W_V.bias.data.copy_(bart_layer.encoder_attn.v_proj.bias.data)
+        custom_layer.cross_attn.W_O.weight.data.copy_(bart_layer.encoder_attn.out_proj.weight.data)
+        custom_layer.cross_attn.W_O.bias.data.copy_(bart_layer.encoder_attn.out_proj.bias.data)
+        
+        # Layer norms
+        custom_layer.norm1.weight.data.copy_(bart_layer.self_attn_layer_norm.weight.data)
+        custom_layer.norm1.bias.data.copy_(bart_layer.self_attn_layer_norm.bias.data)
+        custom_layer.norm2.weight.data.copy_(bart_layer.encoder_attn_layer_norm.weight.data)
+        custom_layer.norm2.bias.data.copy_(bart_layer.encoder_attn_layer_norm.bias.data)
+        custom_layer.norm3.weight.data.copy_(bart_layer.final_layer_norm.weight.data)
+        custom_layer.norm3.bias.data.copy_(bart_layer.final_layer_norm.bias.data)
+        
+        # FFN
+        custom_layer.ffn.fc1.weight.data.copy_(bart_layer.fc1.weight.data)
+        custom_layer.ffn.fc1.bias.data.copy_(bart_layer.fc1.bias.data)
+        custom_layer.ffn.fc2.weight.data.copy_(bart_layer.fc2.weight.data)
+        custom_layer.ffn.fc2.bias.data.copy_(bart_layer.fc2.bias.data)
+    
+    decoder.final_norm.weight.data.copy_(bart.decoder.layernorm_embedding.weight.data)
+    decoder.final_norm.bias.data.copy_(bart.decoder.layernorm_embedding.bias.data)
+    
+    print("Pretrained weights loaded successfully!")
 
 
 def build_multitask_model(
@@ -68,6 +157,7 @@ def build_multitask_model(
         raise ValueError("num_emotions must be a positive integer")
     if not isinstance(num_topics, int) or num_topics <= 0:
         raise ValueError("num_topics must be a positive integer")
+    
     encoder = TransformerEncoder(
         vocab_size=tokenizer.vocab_size,
         d_model=cfg.d_model,
@@ -88,7 +178,12 @@ def build_multitask_model(
         max_len=tokenizer.config.max_length,
         pad_token_id=tokenizer.pad_token_id,
     )
+    
+    # Load pretrained weights if requested
+    if cfg.use_pretrained:
+        _load_pretrained_weights(encoder, decoder, cfg.pretrained_model_name)
 
+    
     model = MultiTaskModel(encoder=encoder, decoder=decoder, decoder_outputs_logits=True)
     model.add_head(
         "summarization",
