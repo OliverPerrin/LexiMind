@@ -3,9 +3,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import socket
 import sys
 from pathlib import Path
+from subprocess import CalledProcessError, run
 from typing import Iterable, Iterator, cast
+from urllib.error import URLError
+from urllib.request import urlopen
 
 from datasets import ClassLabel, Dataset, DatasetDict, load_dataset
 
@@ -14,15 +18,50 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.data.download import gutenberg_download, kaggle_download
 from src.utils.config import load_yaml
 
 
+DOWNLOAD_TIMEOUT = 60
 DEFAULT_SUMMARIZATION_DATASET = "gowrishankarp/newspaper-text-summarization-cnn-dailymail"
 DEFAULT_EMOTION_DATASET = "dair-ai/emotion"
 DEFAULT_TOPIC_DATASET = "ag_news"
 DEFAULT_BOOK_URL = "https://www.gutenberg.org/cache/epub/1342/pg1342.txt"
 DEFAULT_BOOK_OUTPUT = "data/raw/books/pride_and_prejudice.txt"
+
+
+def kaggle_download(dataset: str, output_dir: str) -> None:
+    target = Path(output_dir)
+    target.mkdir(parents=True, exist_ok=True)
+    try:
+        run([
+            "kaggle",
+            "datasets",
+            "download",
+            "-d",
+            dataset,
+            "-p",
+            str(target),
+            "--unzip",
+        ], check=True)
+    except CalledProcessError as error:
+        raise RuntimeError(
+            "Kaggle download failed. Verify that the Kaggle CLI is authenticated,"
+            " you have accepted the dataset terms on kaggle.com, and your kaggle.json"
+            " credentials are located in %USERPROFILE%/.kaggle."
+        ) from error
+
+
+def gutenberg_download(url: str, output_path: str) -> None:
+    target = Path(output_path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with urlopen(url, timeout=DOWNLOAD_TIMEOUT) as response, target.open("wb") as handle:
+            chunk = response.read(8192)
+            while chunk:
+                handle.write(chunk)
+                chunk = response.read(8192)
+    except (URLError, socket.timeout, OSError) as error:
+        raise RuntimeError(f"Failed to download '{url}' to '{target}': {error}") from error
 
 
 def parse_args() -> argparse.Namespace:
