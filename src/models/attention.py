@@ -83,8 +83,6 @@ class ScaledDotProductAttention(nn.Module):
             mask_bool = mask.to(dtype=torch.bool, device=scores.device)
             # masked_fill expects broadcastable mask: True means keep, False means mask out
             scores = scores.masked_fill(~mask_bool, float("-1e9"))
-        # Applying Softmax to get attention weights
-        attention_weights = F.softmax(scores, dim=-1)
         
         # Softmax to get attention probabilities
         p_attn = F.softmax(scores, dim=-1)

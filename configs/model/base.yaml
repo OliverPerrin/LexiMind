@@ -1,6 +1,8 @@
-d_model: 512
+d_model: 768
 num_encoder_layers: 6
 num_decoder_layers: 6
-num_attention_heads: 8
-ffn_dim: 2048
+num_attention_heads: 12
+ffn_dim: 3072
 dropout: 0.1
+use_pretrained: true
+pretrained_model_name: facebook/bart-base

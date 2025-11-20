@@ -20,6 +20,8 @@ class TrainerConfig:
     gradient_clip_norm: float = 1.0
     logging_interval: int = 50
     task_weights: Dict[str, float] | None = None
+    validation_samples: int = 3
+    validation_max_length: int = 128
 
 
 class Trainer:
@@ -63,6 +65,9 @@ class Trainer:
             if val_loaders:
                 val_metrics = self._run_epoch(val_loaders, train=False, epoch=epoch)
                 history[f"val_epoch_{epoch}"] = val_metrics
+                # Generate sample summaries for validation
+                if "summarization" in val_loaders:
+                    self._validate_generation(val_loaders["summarization"], epoch)
             epoch_duration = time.perf_counter() - epoch_start
             total_elapsed = time.perf_counter() - start_time
             self._print_epoch_progress(epoch, total_epochs, epoch_duration, total_elapsed)
@@ -222,6 +227,72 @@ class Trainer:
         valid = labels.clone()
         valid[valid == -100] = self.tokenizer.pad_token_id
         return self.tokenizer.decode_batch(valid.tolist())
+
+    def _validate_generation(self, val_loader: DataLoader, epoch: int) -> None:
+        """Generate and print sample summaries to monitor quality during training."""
+        self.model.eval()
+        samples_generated = 0
+        print(f"\n{'='*80}")
+        print(f"[Validation Generation - Epoch {epoch}]")
+        print(f"{'='*80}")
+        
+        with torch.no_grad():
+            for batch in val_loader:
+                if samples_generated >= self.config.validation_samples:
+                    break
+                    
+                batch = {k: v.to(self.device) if isinstance(v, torch.Tensor) else v for k, v in batch.items()}
+                src_ids = batch["src_ids"]
+                src_mask = batch.get("src_mask")
+                labels = batch["labels"]
+                
+                # Only process first item from batch
+                src_ids = src_ids[:1]
+                if src_mask is not None:
+                    src_mask = src_mask[:1]
+                labels = labels[:1]
+                
+                # Encode source
+                encoder_mask = None
+                if src_mask is not None:
+                    encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2)
+                memory = self.model.encoder(src_ids, mask=encoder_mask)
+                
+                # Ban special tokens from generation
+                ban_token_ids = [self.tokenizer.bos_token_id, self.tokenizer.pad_token_id]
+                unk_id = getattr(self.tokenizer._tokenizer, 'unk_token_id', None)
+                if isinstance(unk_id, int):
+                    ban_token_ids.append(unk_id)
+                ban_token_ids = [tid for tid in ban_token_ids if tid is not None]
+                
+                # Generate
+                generated = self.model.decoder.greedy_decode(
+                    memory=memory,
+                    max_len=self.config.validation_max_length,
+                    start_token_id=self.tokenizer.bos_token_id,
+                    end_token_id=self.tokenizer.eos_token_id,
+                    device=self.device,
+                    min_len=10,
+                    ban_token_ids=ban_token_ids,
+                    no_repeat_ngram_size=3,
+                    memory_mask=src_mask,
+                )
+                
+                # Decode
+                source_text = self.tokenizer.decode(src_ids[0].tolist())
+                generated_text = self.tokenizer.decode(generated[0].tolist())
+                reference_text = self._decode_labels(labels)[0]
+                
+                print(f"\nSample {samples_generated + 1}:")
+                print(f"Source: {source_text[:200]}..." if len(source_text) > 200 else f"Source: {source_text}")
+                print(f"Generated: {generated_text}")
+                print(f"Reference: {reference_text[:200]}..." if len(reference_text) > 200 else f"Reference: {reference_text}")
+                print("-" * 80)
+                
+                samples_generated += 1
+        
+        print(f"{'='*80}\n")
+        self.model.train()
 
     def _print_epoch_progress(
         self,
