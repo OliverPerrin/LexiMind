@@ -82,8 +82,11 @@ class InferencePipeline:
             ban_token_ids = [
                 self.tokenizer.bos_token_id,
                 self.tokenizer.pad_token_id,
-                self.tokenizer.tokenizer.unk_token_id
             ]
+            # Add UNK token if it exists
+            unk_id = getattr(self.tokenizer._tokenizer, 'unk_token_id', None)
+            if isinstance(unk_id, int):
+                ban_token_ids.append(unk_id)
             # Filter out None values just in case
             ban_token_ids = [tid for tid in ban_token_ids if tid is not None]
 
