@@ -443,7 +443,7 @@ def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
 
 
 def load_rouge_metrics():
-    columns = ["metric", "precision", "recall", "f1"]
+    columns = ["metric", "precision", "recall", "fmeasure"]
     empty = pd.DataFrame(columns=columns)
 
     if not ROUGE_REPORT_PATH.exists():
@@ -468,9 +468,9 @@ def load_rouge_metrics():
         rows.append(
             {
                 "metric": metric_name,
-                "precision": round(float(components.get("precision", 0.0)), 4),
-                "recall": round(float(components.get("recall", 0.0)), 4),
-                "f1": round(float(components.get("fmeasure", 0.0)), 4),
+                "precision": float(components.get("precision", 0.0)),
+                "recall": float(components.get("recall", 0.0)),
+                "fmeasure": float(components.get("fmeasure", 0.0)),
             }
         )
 
