@@ -65,6 +65,7 @@ else:
 from src.inference.factory import create_inference_pipeline
 from src.inference.pipeline import EmotionPrediction, InferencePipeline, TopicPrediction
 from src.utils.logging import configure_logging, get_logger
+from huggingface_hub import hf_hub_download
 
 configure_logging()
 logger = get_logger(__name__)
@@ -84,6 +85,28 @@ def get_pipeline() -> InferencePipeline:
     global _pipeline
     if _pipeline is None:
         logger.info("Loading inference pipeline ...")
+        
+        # Download checkpoint if not found locally
+        checkpoint_path = Path("checkpoints/best.pt")
+        if not checkpoint_path.exists():
+            logger.info("Checkpoint not found locally. Downloading from Hugging Face Hub...")
+            try:
+                # Ensure checkpoints directory exists
+                checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                # Download from the model repository
+                # NOTE: Replace 'OliverPerrin/LexiMind-Model' with your actual model repo ID
+                downloaded_path = hf_hub_download(
+                    repo_id="OliverPerrin/LexiMind-Model",
+                    filename="best.pt",
+                    local_dir="checkpoints",
+                    local_dir_use_symlinks=False
+                )
+                logger.info(f"Checkpoint downloaded to {downloaded_path}")
+            except Exception as e:
+                logger.error(f"Failed to download checkpoint: {e}")
+                # Fallback or re-raise will happen in create_inference_pipeline
+        
         _pipeline, _ = create_inference_pipeline(
             tokenizer_dir="artifacts/hf_tokenizer/",
             checkpoint_path="checkpoints/best.pt",
