@@ -6,6 +6,7 @@ from typing import Tuple
 
 import torch
 
+from ..data.preprocessing import TextPreprocessor
 from ..data.tokenization import Tokenizer, TokenizerConfig
 from ..models.factory import ModelConfig, build_multitask_model, load_model_config
 from ..utils.io import load_state
@@ -45,23 +46,22 @@ def create_inference_pipeline(
             )
 
     tokenizer = Tokenizer(resolved_tokenizer_config)
+    
+    # Default to base config if not specified (checkpoint was trained with base config)
+    if model_config_path is None:
+        model_config_path = Path(__file__).resolve().parent.parent.parent / "configs" / "model" / "base.yaml"
+    
     model_config = load_model_config(model_config_path)
     model = build_multitask_model(
         tokenizer,
         num_emotions=labels.emotion_size,
         num_topics=labels.topic_size,
         config=model_config,
+        load_pretrained=False,
     )
+    
+    # Load checkpoint - weights will load separately since factory doesn't tie them
     load_state(model, str(checkpoint))
-
-    # Tie weights manually to ensure decoder output projection matches embeddings
-    # This fixes issues where the output projection might be untrained or mismatched
-    decoder = getattr(model, "decoder", None)
-    output_projection = getattr(decoder, "output_projection", None) if decoder is not None else None
-    embedding = getattr(decoder, "embedding", None) if decoder is not None else None
-
-    if output_projection is not None and embedding is not None:
-        output_projection.weight = embedding.weight
 
     if isinstance(device, torch.device):
         device_str = str(device)
@@ -80,5 +80,6 @@ def create_inference_pipeline(
         emotion_labels=labels.emotion,
         topic_labels=labels.topic,
         device=device,
+        preprocessor=TextPreprocessor(tokenizer=tokenizer, lowercase=tokenizer.config.lower),
     )
     return pipeline, labels

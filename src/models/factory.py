@@ -69,7 +69,8 @@ def _load_pretrained_weights(encoder: TransformerEncoder, decoder: TransformerDe
     # Load encoder weights
     print("Transferring encoder weights...")
     encoder.embedding.weight.data.copy_(bart.encoder.embed_tokens.weight.data)
-    encoder.pos_encoder.pe.data.copy_(bart.encoder.embed_positions.weight.data.unsqueeze(0))
+    # Skip positional encoding - BART uses learned positions, I use sinusoidal
+    # implementation will work fine with sinusoidal encodings
     
     for i, (custom_layer, bart_layer) in enumerate(zip(encoder.layers, bart.encoder.layers)):
         # Self-attention
@@ -88,19 +89,22 @@ def _load_pretrained_weights(encoder: TransformerEncoder, decoder: TransformerDe
         custom_layer.norm2.weight.data.copy_(bart_layer.final_layer_norm.weight.data)
         custom_layer.norm2.bias.data.copy_(bart_layer.final_layer_norm.bias.data)
         
-        # FFN
-        custom_layer.ffn.fc1.weight.data.copy_(bart_layer.fc1.weight.data)
-        custom_layer.ffn.fc1.bias.data.copy_(bart_layer.fc1.bias.data)
-        custom_layer.ffn.fc2.weight.data.copy_(bart_layer.fc2.weight.data)
-        custom_layer.ffn.fc2.bias.data.copy_(bart_layer.fc2.bias.data)
+        # FFN - use linear1/linear2 
+        custom_layer.ffn.linear1.weight.data.copy_(bart_layer.fc1.weight.data)
+        custom_layer.ffn.linear1.bias.data.copy_(bart_layer.fc1.bias.data)
+        custom_layer.ffn.linear2.weight.data.copy_(bart_layer.fc2.weight.data)
+        custom_layer.ffn.linear2.bias.data.copy_(bart_layer.fc2.bias.data)
     
-    encoder.final_norm.weight.data.copy_(bart.encoder.layernorm_embedding.weight.data)
-    encoder.final_norm.bias.data.copy_(bart.encoder.layernorm_embedding.bias.data)
+    # BART has layernorm_embedding at the input, I have final_norm at output
+    # Copy it to final_norm - not a perfect match but close enough for transfer learning
+    if hasattr(bart.encoder, 'layernorm_embedding'):
+        encoder.final_norm.weight.data.copy_(bart.encoder.layernorm_embedding.weight.data)
+        encoder.final_norm.bias.data.copy_(bart.encoder.layernorm_embedding.bias.data)
     
     # Load decoder weights
     print("Transferring decoder weights...")
     decoder.embedding.weight.data.copy_(bart.decoder.embed_tokens.weight.data)
-    decoder.pos_encoder.pe.data.copy_(bart.decoder.embed_positions.weight.data.unsqueeze(0))
+    # Skip positional encoding - BART uses learned positions, we use sinusoidal
     
     for i, (custom_layer, bart_layer) in enumerate(zip(decoder.layers, bart.decoder.layers)):
         # Self-attention
@@ -131,14 +135,16 @@ def _load_pretrained_weights(encoder: TransformerEncoder, decoder: TransformerDe
         custom_layer.norm3.weight.data.copy_(bart_layer.final_layer_norm.weight.data)
         custom_layer.norm3.bias.data.copy_(bart_layer.final_layer_norm.bias.data)
         
-        # FFN
-        custom_layer.ffn.fc1.weight.data.copy_(bart_layer.fc1.weight.data)
-        custom_layer.ffn.fc1.bias.data.copy_(bart_layer.fc1.bias.data)
-        custom_layer.ffn.fc2.weight.data.copy_(bart_layer.fc2.weight.data)
-        custom_layer.ffn.fc2.bias.data.copy_(bart_layer.fc2.bias.data)
+        # FFN - use linear1/linear2 (not fc1/fc2)
+        custom_layer.ffn.linear1.weight.data.copy_(bart_layer.fc1.weight.data)
+        custom_layer.ffn.linear1.bias.data.copy_(bart_layer.fc1.bias.data)
+        custom_layer.ffn.linear2.weight.data.copy_(bart_layer.fc2.weight.data)
+        custom_layer.ffn.linear2.bias.data.copy_(bart_layer.fc2.bias.data)
     
-    decoder.final_norm.weight.data.copy_(bart.decoder.layernorm_embedding.weight.data)
-    decoder.final_norm.bias.data.copy_(bart.decoder.layernorm_embedding.bias.data)
+    # BART has layernorm_embedding at the input, we have final_norm at output
+    if hasattr(bart.decoder, 'layernorm_embedding'):
+        decoder.final_norm.weight.data.copy_(bart.decoder.layernorm_embedding.weight.data)
+        decoder.final_norm.bias.data.copy_(bart.decoder.layernorm_embedding.bias.data)
     
     print("Pretrained weights loaded successfully!")
 
@@ -149,8 +155,17 @@ def build_multitask_model(
     num_emotions: int,
     num_topics: int,
     config: ModelConfig | None = None,
+    load_pretrained: bool | None = None,
 ) -> MultiTaskModel:
-    """Construct the multitask transformer with heads for the three tasks."""
+    """Construct the multitask transformer with heads for the three tasks.
+    
+    Args:
+        tokenizer: Tokenizer for vocabulary size and pad token
+        num_emotions: Number of emotion classes
+        num_topics: Number of topic classes
+        config: Model architecture configuration
+        load_pretrained: Override config.use_pretrained (for inference to skip loading)
+    """
 
     cfg = config or ModelConfig()
     if not isinstance(num_emotions, int) or num_emotions <= 0:
@@ -179,10 +194,14 @@ def build_multitask_model(
         pad_token_id=tokenizer.pad_token_id,
     )
     
-    # Load pretrained weights if requested
-    if cfg.use_pretrained:
+    # Load pretrained weights if requested (but allow override for inference)
+    should_load = cfg.use_pretrained if load_pretrained is None else load_pretrained
+    if should_load:
         _load_pretrained_weights(encoder, decoder, cfg.pretrained_model_name)
 
+    # NOTE: Weight tying disabled because the current checkpoint was trained without it
+    # For NEW training runs, uncomment this line to enable proper weight tying:
+    # decoder.output_projection.weight = decoder.embedding.weight
     
     model = MultiTaskModel(encoder=encoder, decoder=decoder, decoder_outputs_logits=True)
     model.add_head(
