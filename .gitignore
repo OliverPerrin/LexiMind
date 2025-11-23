@@ -30,7 +30,7 @@ data/cache/
 
 # Models
 checkpoints/*.pt
-!checkpoints/best.pt
+# !checkpoints/best.pt
 *.pth
 *.ckpt
 !artifacts/*.json
