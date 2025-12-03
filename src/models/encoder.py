@@ -20,6 +20,7 @@ from typing import List, Optional, Tuple, Union
 import torch
 import torch.nn as nn
 
+# Encoder implementation
 from .attention import MultiHeadAttention
 from .feedforward import FeedForward
 from .positional_encoding import PositionalEncoding
