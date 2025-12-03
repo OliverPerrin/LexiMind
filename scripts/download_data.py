@@ -13,13 +13,11 @@ from urllib.request import urlopen
 
 from datasets import ClassLabel, Dataset, DatasetDict, load_dataset
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.utils.config import load_yaml
-
 
 DOWNLOAD_TIMEOUT = 60
 DEFAULT_SUMMARIZATION_DATASET = "gowrishankarp/newspaper-text-summarization-cnn-dailymail"
@@ -33,16 +31,19 @@ def kaggle_download(dataset: str, output_dir: str) -> None:
     target = Path(output_dir)
     target.mkdir(parents=True, exist_ok=True)
     try:
-        run([
-            "kaggle",
-            "datasets",
-            "download",
-            "-d",
-            dataset,
-            "-p",
-            str(target),
-            "--unzip",
-        ], check=True)
+        run(
+            [
+                "kaggle",
+                "datasets",
+                "download",
+                "-d",
+                dataset,
+                "-p",
+                str(target),
+                "--unzip",
+            ],
+            check=True,
+        )
     except CalledProcessError as error:
         raise RuntimeError(
             "Kaggle download failed. Verify that the Kaggle CLI is authenticated,"
@@ -71,8 +72,14 @@ def parse_args() -> argparse.Namespace:
         default="configs/data/datasets.yaml",
         help="Path to the dataset configuration YAML.",
     )
-    parser.add_argument("--skip-kaggle", action="store_true", help="Skip downloading the Kaggle summarization dataset.")
-    parser.add_argument("--skip-book", action="store_true", help="Skip downloading Gutenberg book texts.")
+    parser.add_argument(
+        "--skip-kaggle",
+        action="store_true",
+        help="Skip downloading the Kaggle summarization dataset.",
+    )
+    parser.add_argument(
+        "--skip-book", action="store_true", help="Skip downloading Gutenberg book texts."
+    )
     return parser.parse_args()
 
 
@@ -92,11 +99,14 @@ def _write_jsonl(records: Iterable[dict[str, object]], destination: Path) -> Non
             handle.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
-def _emotion_records(dataset_split: Dataset, label_names: list[str] | None) -> Iterator[dict[str, object]]:
+def _emotion_records(
+    dataset_split: Dataset, label_names: list[str] | None
+) -> Iterator[dict[str, object]]:
     for item in dataset_split:
         data = dict(item)
         text = data.get("text", "")
         label_value = data.get("label")
+
         def resolve_label(index: object) -> str:
             if isinstance(index, int) and label_names and 0 <= index < len(label_names):
                 return label_names[index]
@@ -109,11 +119,14 @@ def _emotion_records(dataset_split: Dataset, label_names: list[str] | None) -> I
         yield {"text": text, "emotions": labels}
 
 
-def _topic_records(dataset_split: Dataset, label_names: list[str] | None) -> Iterator[dict[str, object]]:
+def _topic_records(
+    dataset_split: Dataset, label_names: list[str] | None
+) -> Iterator[dict[str, object]]:
     for item in dataset_split:
         data = dict(item)
         text = data.get("text") or data.get("content") or ""
         label_value = data.get("label")
+
         def resolve_topic(raw: object) -> str:
             if label_names:
                 idx: int | None = None
@@ -142,12 +155,18 @@ def main() -> None:
     raw_paths = config.get("raw", {}) if isinstance(config, dict) else {}
     downloads_cfg = config.get("downloads", {}) if isinstance(config, dict) else {}
 
-    summarization_cfg = downloads_cfg.get("summarization", {}) if isinstance(downloads_cfg, dict) else {}
+    summarization_cfg = (
+        downloads_cfg.get("summarization", {}) if isinstance(downloads_cfg, dict) else {}
+    )
     summarization_dataset = summarization_cfg.get("dataset", DEFAULT_SUMMARIZATION_DATASET)
-    summarization_output = summarization_cfg.get("output", raw_paths.get("summarization", "data/raw/summarization"))
+    summarization_output = summarization_cfg.get(
+        "output", raw_paths.get("summarization", "data/raw/summarization")
+    )
 
     if not args.skip_kaggle and summarization_dataset:
-        print(f"Downloading summarization dataset '{summarization_dataset}' -> {summarization_output}")
+        print(
+            f"Downloading summarization dataset '{summarization_dataset}' -> {summarization_output}"
+        )
         kaggle_download(summarization_dataset, summarization_output)
     else:
         print("Skipping Kaggle summarization download.")
@@ -174,7 +193,11 @@ def main() -> None:
             name = str(entry.get("name") or "gutenberg_text")
             url = str(entry.get("url") or DEFAULT_BOOK_URL)
             output_value = entry.get("output")
-            destination = Path(output_value) if isinstance(output_value, str) and output_value else books_root / f"{name}.txt"
+            destination = (
+                Path(output_value)
+                if isinstance(output_value, str) and output_value
+                else books_root / f"{name}.txt"
+            )
             destination.parent.mkdir(parents=True, exist_ok=True)
             print(f"Downloading Gutenberg text '{name}' from {url} -> {destination}")
             gutenberg_download(url, str(destination))
@@ -192,7 +215,9 @@ def main() -> None:
         if first_emotion_key is not None
         else None
     )
-    emotion_label_names = emotion_label_feature.names if isinstance(emotion_label_feature, ClassLabel) else None
+    emotion_label_names = (
+        emotion_label_feature.names if isinstance(emotion_label_feature, ClassLabel) else None
+    )
     for split_name, split in emotion_dataset.items():
         output_path = emotion_dir / f"{str(split_name)}.jsonl"
         _write_jsonl(_emotion_records(split, emotion_label_names), output_path)
@@ -209,7 +234,9 @@ def main() -> None:
         if first_topic_key is not None
         else None
     )
-    topic_label_names = topic_label_feature.names if isinstance(topic_label_feature, ClassLabel) else None
+    topic_label_names = (
+        topic_label_feature.names if isinstance(topic_label_feature, ClassLabel) else None
+    )
     for split_name, split in topic_dataset.items():
         output_path = topic_dir / f"{str(split_name)}.jsonl"
         _write_jsonl(_topic_records(split, topic_label_names), output_path)

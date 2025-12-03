@@ -9,7 +9,6 @@ from typing import Optional
 import numpy as np
 import torch
 
-
 _seed_sequence: Optional[np.random.SeedSequence] = None
 _seed_lock = threading.Lock()
 _spawn_counter = 0
@@ -33,4 +32,3 @@ def set_seed(seed: int) -> np.random.Generator:
         _spawn_counter = 1
     _thread_local.rng = rng
     return rng
-

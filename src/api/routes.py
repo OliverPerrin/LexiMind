@@ -11,7 +11,10 @@ router = APIRouter()
 
 
 @router.post("/summarize", response_model=SummaryResponse)
-def summarize(payload: SummaryRequest, pipeline: InferencePipeline = Depends(get_pipeline)) -> SummaryResponse:
+def summarize(
+    payload: SummaryRequest,
+    pipeline: InferencePipeline = Depends(get_pipeline),  # noqa: B008
+) -> SummaryResponse:
     try:
         outputs = pipeline.batch_predict([payload.text])
     except Exception as exc:  # noqa: BLE001 - surface inference error to client

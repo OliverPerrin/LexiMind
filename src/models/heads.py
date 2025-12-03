@@ -9,7 +9,7 @@ Includes:
 
 Keep these heads minimal, well-tested, and easy to compose on top of encoder/decoder outputs.
 """
-from typing import Optional, Literal
+from typing import Literal, Optional
 
 import torch
 import torch.nn as nn
@@ -96,8 +96,12 @@ class LMHead(nn.Module):
 
         if tie_embedding is not None:
             # Validate sizes
-            assert tie_embedding.num_embeddings == vocab_size, "vocab size mismatch for weight tying"
-            assert tie_embedding.embedding_dim == d_model, "embedding dim must match d_model for weight tying"
+            assert (
+                tie_embedding.num_embeddings == vocab_size
+            ), "vocab size mismatch for weight tying"
+            assert (
+                tie_embedding.embedding_dim == d_model
+            ), "embedding dim must match d_model for weight tying"
             # Tie weights: point the projection weight to the embedding weight Tensor
             # Remove the existing projection parameter in favor of the embedding weight
             # This keeps the same Parameter object, so updates affect both modules.
@@ -122,7 +126,13 @@ class ProjectionHead(nn.Module):
         dropout: dropout probability
     """
 
-    def __init__(self, d_model: int, proj_dim: int = 128, hidden_dim: Optional[int] = None, dropout: float = 0.1):
+    def __init__(
+        self,
+        d_model: int,
+        proj_dim: int = 128,
+        hidden_dim: Optional[int] = None,
+        dropout: float = 0.1,
+    ):
         super().__init__()
         if hidden_dim is None:
             hidden_dim = max(d_model, proj_dim)

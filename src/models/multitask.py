@@ -14,16 +14,17 @@ Design goals:
   seq2seq tasks (encoder -> decoder -> LMHead)
 - Minimal dependencies on training loop; return logits and (optionally) loss
 """
-from typing import Optional, Dict, Any, Tuple
+from typing import Any, Dict, Optional
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .decoder import TransformerDecoder
+
 # Import your components
 from .encoder import TransformerEncoder
-from .decoder import TransformerDecoder
-from .heads import ClassificationHead, TokenClassificationHead, LMHead
+from .heads import ClassificationHead, LMHead, TokenClassificationHead
 
 
 class MultiTaskModel(nn.Module):
@@ -112,15 +113,21 @@ class MultiTaskModel(nn.Module):
             if "input_ids" in inputs:
                 encoder_mask = None
                 if "attention_mask" in inputs:
-                    encoder_mask = self._expand_attention_mask(inputs["attention_mask"], inputs["input_ids"].device)
+                    encoder_mask = self._expand_attention_mask(
+                        inputs["attention_mask"], inputs["input_ids"].device
+                    )
                 enc_out = self.encoder(inputs["input_ids"], mask=encoder_mask)
             elif "embeddings" in inputs:
                 encoder_mask = inputs.get("attention_mask")
                 if encoder_mask is not None:
-                    encoder_mask = self._expand_attention_mask(encoder_mask, inputs["embeddings"].device)
+                    encoder_mask = self._expand_attention_mask(
+                        encoder_mask, inputs["embeddings"].device
+                    )
                 enc_out = self.encoder(inputs["embeddings"], mask=encoder_mask)
             else:
-                raise ValueError("inputs must contain 'input_ids' or 'embeddings' for encoder tasks")
+                raise ValueError(
+                    "inputs must contain 'input_ids' or 'embeddings' for encoder tasks"
+                )
             logits = head(enc_out)
 
             if return_loss:
@@ -152,7 +159,9 @@ class MultiTaskModel(nn.Module):
             elif "src_embeddings" in inputs:
                 memory = self.encoder(inputs["src_embeddings"], mask=encoder_mask)
             else:
-                raise ValueError("inputs must contain 'src_ids' or 'src_embeddings' for seq2seq tasks")
+                raise ValueError(
+                    "inputs must contain 'src_ids' or 'src_embeddings' for seq2seq tasks"
+                )
 
             # If training / teacher forcing: expect tgt_ids (shifted by caller) or embeddings
             if "tgt_ids" in inputs:
@@ -162,7 +171,9 @@ class MultiTaskModel(nn.Module):
             else:
                 # For generation time you may call decoder.greedy_decode separately.
                 # Here we don't attempt to generate when labels not provided.
-                raise ValueError("Seq2seq tasks require 'tgt_ids' or 'tgt_embeddings' for training forward")
+                raise ValueError(
+                    "Seq2seq tasks require 'tgt_ids' or 'tgt_embeddings' for training forward"
+                )
 
             decoder_out = self.decoder(decoder_inputs, memory, memory_mask=src_mask)
 
@@ -209,13 +220,17 @@ class MultiTaskModel(nn.Module):
         if isinstance(head, TokenClassificationHead):
             # logits: (B, T, C), labels: (B, T)
             B, T, C = logits.shape
-            loss = F.cross_entropy(logits.view(B * T, C), labels.view(B * T).long(), ignore_index=ignore_index)
+            loss = F.cross_entropy(
+                logits.view(B * T, C), labels.view(B * T).long(), ignore_index=ignore_index
+            )
             return loss
 
         if isinstance(head, LMHead):
             # logits: (B, T, V), labels: (B, T)
             B, T, V = logits.shape
-            loss = F.cross_entropy(logits.view(B * T, V), labels.view(B * T).long(), ignore_index=ignore_index)
+            loss = F.cross_entropy(
+                logits.view(B * T, V), labels.view(B * T).long(), ignore_index=ignore_index
+            )
             return loss
 
         # Generic fall-back: try CrossEntropy on final dim
