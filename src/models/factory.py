@@ -81,7 +81,9 @@ def _load_pretrained_weights(
     # Skip positional encoding - BART uses learned positions, I use sinusoidal
     # implementation will work fine with sinusoidal encodings
 
-    for _i, (custom_layer, bart_layer) in enumerate(zip(encoder.layers, bart.encoder.layers)):
+    for _i, (custom_layer, bart_layer) in enumerate(
+        zip(encoder.layers, bart.encoder.layers, strict=False)
+    ):
         # Self-attention
         custom_layer.self_attn.W_Q.weight.data.copy_(bart_layer.self_attn.q_proj.weight.data)
         custom_layer.self_attn.W_Q.bias.data.copy_(bart_layer.self_attn.q_proj.bias.data)
@@ -115,7 +117,9 @@ def _load_pretrained_weights(
     decoder.embedding.weight.data.copy_(bart.decoder.embed_tokens.weight.data)
     # Skip positional encoding - BART uses learned positions, we use sinusoidal
 
-    for _i, (custom_layer, bart_layer) in enumerate(zip(decoder.layers, bart.decoder.layers)):
+    for _i, (custom_layer, bart_layer) in enumerate(
+        zip(decoder.layers, bart.decoder.layers, strict=False)
+    ):
         # Self-attention
         custom_layer.self_attn.W_Q.weight.data.copy_(bart_layer.self_attn.q_proj.weight.data)
         custom_layer.self_attn.W_Q.bias.data.copy_(bart_layer.self_attn.q_proj.bias.data)
