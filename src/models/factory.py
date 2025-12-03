@@ -1,4 +1,5 @@
 """Factory helpers to assemble multitask models for inference/training."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

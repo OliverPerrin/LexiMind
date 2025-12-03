@@ -9,6 +9,7 @@ Includes:
 
 Keep these heads minimal, well-tested, and easy to compose on top of encoder/decoder outputs.
 """
+
 from typing import Literal, Optional
 
 import torch

@@ -1,4 +1,5 @@
 """API schemas."""
+
 from pydantic import BaseModel
 
 

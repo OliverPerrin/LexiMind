@@ -1,4 +1,5 @@
 """Dataset definitions for the LexiMind multitask training pipeline."""
+
 from __future__ import annotations
 
 import json
@@ -179,7 +180,9 @@ def _load_jsonl_generic(
         if first_non_ws == "[":
             payloads = _safe_json_load(handle, data_path)
             if not isinstance(payloads, list):
-                raise ValueError(f"Expected a JSON array in '{data_path}' but found {type(payloads).__name__}")
+                raise ValueError(
+                    f"Expected a JSON array in '{data_path}' but found {type(payloads).__name__}"
+                )
             for idx, payload in enumerate(payloads):
                 if not isinstance(payload, dict):
                     raise ValueError(

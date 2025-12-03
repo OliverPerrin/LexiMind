@@ -1,4 +1,5 @@
 """Tokenizer wrapper around HuggingFace models used across LexiMind."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -23,13 +24,19 @@ class Tokenizer:
     def __init__(self, config: TokenizerConfig | None = None) -> None:
         cfg = config or TokenizerConfig()
         self.config = cfg
-        self._tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(cfg.pretrained_model_name)
+        self._tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(
+            cfg.pretrained_model_name
+        )
         self._pad_token_id = self._resolve_id(self._tokenizer.pad_token_id)
         self._bos_token_id = self._resolve_id(
-            self._tokenizer.bos_token_id if self._tokenizer.bos_token_id is not None else self._tokenizer.cls_token_id
+            self._tokenizer.bos_token_id
+            if self._tokenizer.bos_token_id is not None
+            else self._tokenizer.cls_token_id
         )
         self._eos_token_id = self._resolve_id(
-            self._tokenizer.eos_token_id if self._tokenizer.eos_token_id is not None else self._tokenizer.sep_token_id
+            self._tokenizer.eos_token_id
+            if self._tokenizer.eos_token_id is not None
+            else self._tokenizer.sep_token_id
         )
 
     @property
@@ -84,7 +91,9 @@ class Tokenizer:
         )
         return cast(List[List[int]], encoded["input_ids"])
 
-    def batch_encode(self, texts: Sequence[str], *, max_length: int | None = None) -> dict[str, torch.Tensor]:
+    def batch_encode(
+        self, texts: Sequence[str], *, max_length: int | None = None
+    ) -> dict[str, torch.Tensor]:
         normalized = [text.lower() if self.config.lower else text for text in texts]
         encoded = self._tokenizer(
             normalized,

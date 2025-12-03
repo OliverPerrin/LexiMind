@@ -1,4 +1,5 @@
 """Label metadata helpers for multitask inference."""
+
 from __future__ import annotations
 
 import json

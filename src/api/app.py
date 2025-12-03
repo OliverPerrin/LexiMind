@@ -1,4 +1,5 @@
 """FastAPI application entrypoint."""
+
 from fastapi import FastAPI
 
 from .routes import router

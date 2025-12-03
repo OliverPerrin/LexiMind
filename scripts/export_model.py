@@ -1,4 +1,5 @@
 """Rebuild and export the trained multitask model for downstream use."""
+
 from __future__ import annotations
 
 import argparse
@@ -14,11 +15,27 @@ from src.utils.labels import load_label_metadata
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Export LexiMind model weights")
-    parser.add_argument("--checkpoint", default="checkpoints/best.pt", help="Path to the trained checkpoint.")
-    parser.add_argument("--output", default="outputs/model.pt", help="Output path for the exported state dict.")
-    parser.add_argument("--labels", default="artifacts/labels.json", help="Label metadata JSON produced after training.")
-    parser.add_argument("--model-config", default="configs/model/base.yaml", help="Model architecture configuration.")
-    parser.add_argument("--data-config", default="configs/data/datasets.yaml", help="Data configuration (for tokenizer settings).")
+    parser.add_argument(
+        "--checkpoint", default="checkpoints/best.pt", help="Path to the trained checkpoint."
+    )
+    parser.add_argument(
+        "--output", default="outputs/model.pt", help="Output path for the exported state dict."
+    )
+    parser.add_argument(
+        "--labels",
+        default="artifacts/labels.json",
+        help="Label metadata JSON produced after training.",
+    )
+    parser.add_argument(
+        "--model-config",
+        default="configs/model/base.yaml",
+        help="Model architecture configuration.",
+    )
+    parser.add_argument(
+        "--data-config",
+        default="configs/data/datasets.yaml",
+        help="Data configuration (for tokenizer settings).",
+    )
     return parser.parse_args()
 
 
