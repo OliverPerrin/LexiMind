@@ -3,8 +3,7 @@ title: LexiMind
 emoji: 🧠
 colorFrom: blue
 colorTo: indigo
-sdk: gradio
-sdk_version: "5.49.1"
+sdk: docker
 app_file: scripts/demo_gradio.py
 pinned: false
 ---
