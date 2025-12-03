@@ -160,9 +160,9 @@ class TransformerEncoder(nn.Module):
         Build a 3D attention mask (batch, seq, seq) from input_ids and pad_token_id.
         True indicates valid positions; False indicates masked (pad).
         """
-        assert (
-            self.pad_token_id is not None
-        ), "pad_token_id must be set to build padding mask from ids."
+        assert self.pad_token_id is not None, (
+            "pad_token_id must be set to build padding mask from ids."
+        )
         # mask shape: (batch, seq) where True = token kept (non-pad)
         pad_mask = input_ids != self.pad_token_id
         # Convert to (batch, seq_q, seq_k) by outer product broadcasting
