@@ -8,13 +8,13 @@ This package provides a from-scratch transformer implementation with:
 - MultiTaskModel: composable wrapper for encoder/decoder + task heads
 """
 
-from .encoder import TransformerEncoder, TransformerEncoderLayer
-from .decoder import TransformerDecoder, TransformerDecoderLayer, create_causal_mask
 from .attention import MultiHeadAttention
+from .decoder import TransformerDecoder, TransformerDecoderLayer, create_causal_mask
+from .encoder import TransformerEncoder, TransformerEncoderLayer
 from .feedforward import FeedForward
-from .positional_encoding import PositionalEncoding
-from .heads import ClassificationHead, TokenClassificationHead, LMHead, ProjectionHead
+from .heads import ClassificationHead, LMHead, ProjectionHead, TokenClassificationHead
 from .multitask import MultiTaskModel
+from .positional_encoding import PositionalEncoding
 
 __all__ = [
     "TransformerEncoder",

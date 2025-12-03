@@ -25,8 +25,15 @@ def parse_args() -> argparse.Namespace:
         default="configs/data/datasets.yaml",
         help="Path to data configuration YAML.",
     )
-    parser.add_argument("--val-ratio", type=float, default=0.1, help="Validation split size for topic dataset when no validation split is present.")
-    parser.add_argument("--seed", type=int, default=17, help="Random seed for deterministic splitting.")
+    parser.add_argument(
+        "--val-ratio",
+        type=float,
+        default=0.1,
+        help="Validation split size for topic dataset when no validation split is present.",
+    )
+    parser.add_argument(
+        "--seed", type=int, default=17, help="Random seed for deterministic splitting."
+    )
     return parser.parse_args()
 
 
@@ -73,7 +80,9 @@ def preprocess_books(
     for book_path in sorted(raw_dir.glob("*.txt")):
         text = book_path.read_text(encoding="utf-8").lstrip("\ufeff")
         normalized = text.replace("\r\n", "\n")
-        paragraphs = [paragraph.strip() for paragraph in normalized.split("\n\n") if paragraph.strip()]
+        paragraphs = [
+            paragraph.strip() for paragraph in normalized.split("\n\n") if paragraph.strip()
+        ]
 
         records: list[Dict[str, object]] = []
         for paragraph_id, paragraph in enumerate(paragraphs):
@@ -130,7 +139,9 @@ def preprocess_summarization(raw_dir: Path, processed_dir: Path) -> None:
         output_path = processed_dir / f"{split}.jsonl"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         print(f"Writing summarization split '{split}' to {output_path}")
-        with source_path.open("r", encoding="utf-8", newline="") as source_handle, output_path.open("w", encoding="utf-8") as sink:
+        with source_path.open("r", encoding="utf-8", newline="") as source_handle, output_path.open(
+            "w", encoding="utf-8"
+        ) as sink:
             reader = csv.DictReader(source_handle)
             for row in reader:
                 article = row.get("article") or row.get("Article") or ""
@@ -167,7 +178,7 @@ def preprocess_emotion(raw_dir: Path, processed_dir: Path, cleaner: BasicTextCle
         assert source_path is not None
         path = source_path
 
-        def iter_records() -> Iterator[Dict[str, object]]:
+        def iter_records(path: Path = path) -> Iterator[Dict[str, object]]:
             if path.suffix == ".jsonl":
                 for row in _read_jsonl(path):
                     raw_text = str(row.get("text", ""))
@@ -186,12 +197,12 @@ def preprocess_emotion(raw_dir: Path, processed_dir: Path, cleaner: BasicTextCle
                 delimiter = ";" if path.suffix == ".txt" else ","
                 with path.open("r", encoding="utf-8", newline="") as handle:
                     reader = csv.reader(handle, delimiter=delimiter)
-                    for row in reader:
-                        if not row:
+                    for csv_row in reader:
+                        if not csv_row:
                             continue
-                        raw_text = str(row[0])
+                        raw_text = str(csv_row[0])
                         text = cleaner.transform([raw_text])[0]
-                        raw_labels = row[1] if len(row) > 1 else ""
+                        raw_labels = csv_row[1] if len(csv_row) > 1 else ""
                         labels = [label.strip() for label in raw_labels.split(",") if label.strip()]
                         if not labels:
                             labels = ["neutral"]
@@ -303,7 +314,9 @@ def main() -> None:
     topic_raw = Path(raw_cfg.get("topic", "data/raw/topic"))
 
     books_processed = Path(processed_cfg.get("books", "data/processed/books"))
-    summarization_processed = Path(processed_cfg.get("summarization", "data/processed/summarization"))
+    summarization_processed = Path(
+        processed_cfg.get("summarization", "data/processed/summarization")
+    )
     emotion_processed = Path(processed_cfg.get("emotion", "data/processed/emotion"))
     topic_processed = Path(processed_cfg.get("topic", "data/processed/topic"))
 

@@ -1,6 +1,6 @@
-import math
-import torch
 import pytest
+import torch
+
 from src.models.encoder import TransformerEncoder
 
 

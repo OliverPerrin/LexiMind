@@ -1,11 +1,11 @@
 import torch
-import pytest
 import torch.nn as nn
+
 from src.models.heads import (
     ClassificationHead,
-    TokenClassificationHead,
     LMHead,
     ProjectionHead,
+    TokenClassificationHead,
 )
 
 

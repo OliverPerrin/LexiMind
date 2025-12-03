@@ -1,6 +1,7 @@
-import torch
-import pytest
 from typing import Any, Dict, cast
+
+import torch
+
 from src.models.decoder import TransformerDecoder
 
 
@@ -93,6 +94,5 @@ def test_step_cache_growth_and_shapes():
     for i in range(num_layers):
         assert f"mem_k_{i}" in cache and f"mem_v_{i}" in cache
         mem_k = cache[f"mem_k_{i}"]
-        mem_v = cache[f"mem_v_{i}"]
         assert mem_k.shape[0] == batch_size
         assert mem_k.shape[2] == src_len  # seq length of memory

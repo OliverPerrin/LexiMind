@@ -8,7 +8,7 @@ import torch
 
 from ..data.preprocessing import TextPreprocessor
 from ..data.tokenization import Tokenizer, TokenizerConfig
-from ..models.factory import ModelConfig, build_multitask_model, load_model_config
+from ..models.factory import build_multitask_model, load_model_config
 from ..utils.io import load_state
 from ..utils.labels import LabelMetadata, load_label_metadata
 from .pipeline import InferenceConfig, InferencePipeline
@@ -38,7 +38,9 @@ def create_inference_pipeline(
         chosen_dir = Path(tokenizer_dir) if tokenizer_dir is not None else default_dir
         local_tokenizer_dir = chosen_dir
         if local_tokenizer_dir.exists():
-            resolved_tokenizer_config = TokenizerConfig(pretrained_model_name=str(local_tokenizer_dir))
+            resolved_tokenizer_config = TokenizerConfig(
+                pretrained_model_name=str(local_tokenizer_dir)
+            )
         else:
             raise ValueError(
                 "No tokenizer configuration provided and default tokenizer directory "
@@ -46,11 +48,13 @@ def create_inference_pipeline(
             )
 
     tokenizer = Tokenizer(resolved_tokenizer_config)
-    
+
     # Default to base config if not specified (checkpoint was trained with base config)
     if model_config_path is None:
-        model_config_path = Path(__file__).resolve().parent.parent.parent / "configs" / "model" / "base.yaml"
-    
+        model_config_path = (
+            Path(__file__).resolve().parent.parent.parent / "configs" / "model" / "base.yaml"
+        )
+
     model_config = load_model_config(model_config_path)
     model = build_multitask_model(
         tokenizer,
@@ -59,7 +63,7 @@ def create_inference_pipeline(
         config=model_config,
         load_pretrained=False,
     )
-    
+
     # Load checkpoint - weights will load separately since factory doesn't tie them
     load_state(model, str(checkpoint))
 

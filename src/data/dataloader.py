@@ -1,19 +1,32 @@
 """Task-aware DataLoader builders for the LexiMind multitask suite."""
 from __future__ import annotations
 
-from typing import Iterable, List
+from typing import List
 
 import torch
 from torch.utils.data import DataLoader
 
-from .dataset import EmotionDataset, EmotionExample, SummarizationDataset, SummarizationExample, TopicDataset, TopicExample
+from .dataset import (
+    EmotionDataset,
+    EmotionExample,
+    SummarizationDataset,
+    SummarizationExample,
+    TopicDataset,
+    TopicExample,
+)
 from .tokenization import Tokenizer
 
 
 class SummarizationCollator:
     """Prepare encoder-decoder batches for abstractive summarization."""
 
-    def __init__(self, tokenizer: Tokenizer, *, max_source_length: int | None = None, max_target_length: int | None = None) -> None:
+    def __init__(
+        self,
+        tokenizer: Tokenizer,
+        *,
+        max_source_length: int | None = None,
+        max_target_length: int | None = None,
+    ) -> None:
         self.tokenizer = tokenizer
         self.max_source_length = max_source_length
         self.max_target_length = max_target_length
@@ -29,17 +42,17 @@ class SummarizationCollator:
         # We want:
         # tgt_ids (decoder input): [BOS, A, B, EOS] (drop last PAD or EOS if full)
         # labels (target): [A, B, EOS, PAD] (drop first BOS)
-        
+
         ids = target_enc["input_ids"]
         mask = target_enc["attention_mask"]
 
         # Slice to create shifted inputs/targets
         # tgt_ids: everything except the last token
         tgt_ids = ids[:, :-1]
-        
+
         # labels: everything except the first token (BOS)
         labels = ids[:, 1:].clone()
-        
+
         # Adjust mask for labels to ignore padding
         # The mask corresponds to the original ids. We slice it to match labels.
         labels_mask = mask[:, 1:]
@@ -56,7 +69,9 @@ class SummarizationCollator:
 class EmotionCollator:
     """Prepare batches for multi-label emotion classification."""
 
-    def __init__(self, tokenizer: Tokenizer, dataset: EmotionDataset, *, max_length: int | None = None) -> None:
+    def __init__(
+        self, tokenizer: Tokenizer, dataset: EmotionDataset, *, max_length: int | None = None
+    ) -> None:
         self.tokenizer = tokenizer
         self.binarizer = dataset.binarizer
         self.max_length = max_length
@@ -76,7 +91,9 @@ class EmotionCollator:
 class TopicCollator:
     """Prepare batches for topic classification using the projection head."""
 
-    def __init__(self, tokenizer: Tokenizer, dataset: TopicDataset, *, max_length: int | None = None) -> None:
+    def __init__(
+        self, tokenizer: Tokenizer, dataset: TopicDataset, *, max_length: int | None = None
+    ) -> None:
         self.tokenizer = tokenizer
         self.encoder = dataset.encoder
         self.max_length = max_length
@@ -84,7 +101,9 @@ class TopicCollator:
     def __call__(self, batch: List[TopicExample]) -> dict[str, torch.Tensor]:
         texts = [example.text for example in batch]
         encoded = self.tokenizer.batch_encode(texts, max_length=self.max_length)
-        labels = torch.as_tensor(self.encoder.transform([example.topic for example in batch]), dtype=torch.long)
+        labels = torch.as_tensor(
+            self.encoder.transform([example.topic for example in batch]), dtype=torch.long
+        )
         return {
             "input_ids": encoded["input_ids"],
             "attention_mask": encoded["attention_mask"],
