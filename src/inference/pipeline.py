@@ -12,7 +12,7 @@ from ..data.preprocessing import Batch, TextPreprocessor
 from ..data.tokenization import Tokenizer
 
 
-@dataclass(slots=True)
+@dataclass
 class InferenceConfig:
     """Configuration knobs for the inference pipeline."""
 
@@ -21,13 +21,13 @@ class InferenceConfig:
     device: str | None = None
 
 
-@dataclass(slots=True)
+@dataclass
 class EmotionPrediction:
     labels: List[str]
     scores: List[float]
 
 
-@dataclass(slots=True)
+@dataclass
 class TopicPrediction:
     label: str
     confidence: float

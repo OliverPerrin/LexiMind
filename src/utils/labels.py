@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import List
 
 
-@dataclass(slots=True)
+@dataclass
 class LabelMetadata:
     """Container for label vocabularies persisted after training."""
 
