@@ -1,3 +1,14 @@
+---
+title: LexiMind
+emoji: 🧠
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: "5.49.1"
+app_file: scripts/demo_gradio.py
+pinned: false
+---
+
 # LexiMind: A Multi-Task NLP Model
 
 LexiMind is a state-of-the-art Natural Language Processing model designed for complex document understanding. It leverages a modern, pre-trained Transformer architecture to perform three sophisticated tasks simultaneously: text summarization, emotion classification, and topic clustering.
