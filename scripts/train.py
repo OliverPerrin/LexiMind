@@ -1,13 +1,14 @@
 """End-to-end training entrypoint for the LexiMind multitask model."""
 from __future__ import annotations
 
-import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Dict, Sequence
+from typing import Dict, Sequence, cast
 
+import hydra
 import torch
+from omegaconf import DictConfig, OmegaConf
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -27,13 +28,11 @@ from src.data.dataset import (
     load_topic_jsonl,
 )
 from src.data.tokenization import Tokenizer, TokenizerConfig
-from src.models.factory import build_multitask_model, load_model_config
+from src.models.factory import ModelConfig, build_multitask_model
 from src.training.trainer import Trainer, TrainerConfig
 from src.training.utils import set_seed
-from src.utils.config import load_yaml
 from src.utils.io import save_state
 from src.utils.labels import LabelMetadata, save_label_metadata
-
 
 SplitExamples = Dict[str, list]
 
@@ -63,30 +62,30 @@ def _read_examples(data_dir: Path, loader) -> SplitExamples:
     return splits
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train the LexiMind multitask transformer")
-    parser.add_argument("--data-config", default="configs/data/datasets.yaml", help="Path to data configuration YAML.")
-    parser.add_argument("--training-config", default="configs/training/default.yaml", help="Path to training hyperparameter YAML.")
-    parser.add_argument("--model-config", default="configs/model/base.yaml", help="Path to model architecture YAML.")
-    parser.add_argument("--checkpoint-out", default="checkpoints/best.pt", help="Where to store the trained checkpoint.")
-    parser.add_argument("--labels-out", default="artifacts/labels.json", help="Where to persist label vocabularies.")
-    parser.add_argument("--history-out", default="outputs/training_history.json", help="Where to write training history.")
-    parser.add_argument("--device", default="cpu", help="Training device identifier (cpu or cuda).")
-    parser.add_argument("--seed", type=int, default=17, help="Random seed for reproducibility.")
-    return parser.parse_args()
+@hydra.main(version_base=None, config_path="../configs", config_name="config")
+def main(cfg: DictConfig) -> None:
+    print(OmegaConf.to_yaml(cfg))
+    set_seed(cfg.seed)
 
+    # Access configs directly from Hydra cfg object
+    data_cfg = cfg.data
+    training_cfg = cfg.training
 
-def main() -> None:
-    args = parse_args()
-    set_seed(args.seed)
+    # Instantiate ModelConfig directly from cfg.model
+    model_cfg = ModelConfig(
+        d_model=cfg.model.d_model,
+        num_encoder_layers=cfg.model.num_encoder_layers,
+        num_decoder_layers=cfg.model.num_decoder_layers,
+        num_attention_heads=cfg.model.num_attention_heads,
+        ffn_dim=cfg.model.ffn_dim,
+        dropout=cfg.model.dropout,
+        use_pretrained=cfg.model.use_pretrained,
+        pretrained_model_name=cfg.model.pretrained_model_name,
+    )
 
-    data_cfg = load_yaml(args.data_config).data
-    training_cfg = load_yaml(args.training_config).data
-    model_cfg = load_model_config(args.model_config)
-
-    summarization_dir = Path(data_cfg["processed"]["summarization"])
-    emotion_dir = Path(data_cfg["processed"]["emotion"])
-    topic_dir = Path(data_cfg["processed"]["topic"])
+    summarization_dir = Path(data_cfg.processed.summarization)
+    emotion_dir = Path(data_cfg.processed.emotion)
+    topic_dir = Path(data_cfg.processed.topic)
 
     summarization_splits = _read_examples(summarization_dir, load_summarization_jsonl)
     emotion_splits = _read_examples(emotion_dir, load_emotion_jsonl)
@@ -164,7 +163,7 @@ def main() -> None:
         ),
     }
 
-    device = torch.device(args.device)
+    device = torch.device(cfg.device)
     model = build_multitask_model(
         tokenizer,
         num_emotions=len(emotion_train.emotion_classes),
@@ -174,7 +173,14 @@ def main() -> None:
 
     optimizer_cfg = training_cfg.get("optimizer", {})
     lr = float(optimizer_cfg.get("lr", 3.0e-5))
-    optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
+    # Add weight decay for regularization to prevent overfitting
+    weight_decay = float(optimizer_cfg.get("weight_decay", 0.01))
+    optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+
+    # Optimize model execution graph with torch.compile (PyTorch 2.0+)
+    # This fuses kernels and reduces overhead for faster training on my RTX 4070
+    print("Compiling model with torch.compile...")
+    model = cast(torch.nn.Module, torch.compile(model))
 
     trainer_cfg = training_cfg.get("trainer", {})
     trainer = Trainer(
@@ -185,18 +191,27 @@ def main() -> None:
             gradient_clip_norm=float(trainer_cfg.get("gradient_clip_norm", 1.0)),
             logging_interval=int(trainer_cfg.get("logging_interval", 50)),
             task_weights=trainer_cfg.get("task_weights"),
+            label_smoothing=float(trainer_cfg.get("label_smoothing", 0.0)),
         ),
         device=device,
         tokenizer=tokenizer,
     )
 
-    history = trainer.fit(train_loaders, val_loaders)
+    # Save checkpoint after every epoch to avoid losing good early checkpoints
+    # Previous training showed overfitting at epoch 5 but good results at epoch 3
+    def save_epoch_checkpoint(epoch: int) -> None:
+        epoch_path = Path(cfg.checkpoint_out).parent / f"epoch_{epoch}.pt"
+        epoch_path.parent.mkdir(parents=True, exist_ok=True)
+        save_state(model, str(epoch_path))
+        print(f"Checkpoint saved: {epoch_path}")
 
-    checkpoint_path = Path(args.checkpoint_out)
+    history = trainer.fit(train_loaders, val_loaders, checkpoint_callback=save_epoch_checkpoint)
+
+    checkpoint_path = Path(cfg.checkpoint_out)
     checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
     save_state(model, str(checkpoint_path))
 
-    labels_path = Path(args.labels_out)
+    labels_path = Path(cfg.labels_out)
     save_label_metadata(
         LabelMetadata(
             emotion=emotion_train.emotion_classes,
@@ -205,7 +220,7 @@ def main() -> None:
         labels_path,
     )
 
-    history_path = Path(args.history_out)
+    history_path = Path(cfg.history_out)
     history_path.parent.mkdir(parents=True, exist_ok=True)
     with history_path.open("w", encoding="utf-8") as handle:
         json.dump(history, handle, indent=2)
@@ -213,6 +228,30 @@ def main() -> None:
     print(f"Training complete. Checkpoint saved to {checkpoint_path}")
     print(f"Label metadata saved to {labels_path}")
     print(f"History saved to {history_path}")
+
+    # Run evaluation pipeline
+    print("\nRunning evaluation pipeline...")
+    import subprocess
+
+    try:
+        subprocess.run(
+            [
+                sys.executable,
+                "scripts/evaluate.py",
+                "--split",
+                "test",  # Evaluate on test set
+                "--checkpoint",
+                str(checkpoint_path),
+                "--labels",
+                str(labels_path),
+                "--output-dir",
+                "outputs",
+            ],
+            check=True,
+        )
+        print("Evaluation pipeline completed successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"Evaluation pipeline failed with error: {e}")
 
 
 if __name__ == "__main__":

@@ -1,11 +1,13 @@
 """Multi-task trainer coordinating summarization, emotion, and topic heads."""
 from __future__ import annotations
 
+import shutil
+import time
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, Iterator, List
-import time
-import shutil
+from typing import Callable, Dict, Iterator, List
+
+import mlflow
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
@@ -22,10 +24,14 @@ class TrainerConfig:
     task_weights: Dict[str, float] | None = None
     validation_samples: int = 3
     validation_max_length: int = 128
+    label_smoothing: float = 0.0  # Label smoothing for regularization (e.g., 0.1)
+    experiment_name: str = "LexiMind"
+    run_name: str | None = None
 
 
 class Trainer:
     """Coordinates multi-task optimisation across task-specific dataloaders."""
+
     def __init__(
         self,
         model: torch.nn.Module,
@@ -41,36 +47,88 @@ class Trainer:
         self.tokenizer = tokenizer
         self.emotion_loss = torch.nn.BCEWithLogitsLoss()
         self.topic_loss = torch.nn.CrossEntropyLoss()
+        # Apply label smoothing to summarization task if configured
+        self.label_smoothing = config.label_smoothing
         self._progress_last_len = 0
+
+        # Mixed Precision Training
+        # Initialize GradScaler for float16/bfloat16 training
+        # This scales gradients to prevent underflow during backward pass
+        self.scaler = torch.GradScaler("cuda", enabled=(device.type == "cuda"))
+
+        # Initialize MLflow
+        mlflow.set_experiment(config.experiment_name)
 
     def fit(
         self,
         train_loaders: Dict[str, DataLoader],
         val_loaders: Dict[str, DataLoader] | None = None,
+        checkpoint_callback: Callable | None = None,
     ) -> Dict[str, Dict[str, float]]:
+        """Train the model.
+
+        Args:
+            train_loaders: Task-specific training dataloaders
+            val_loaders: Optional task-specific validation dataloaders
+            checkpoint_callback: Optional callback(epoch, model, history) to save checkpoints
+
+        Returns:
+            Training history dictionary
+        """
         history: Dict[str, Dict[str, float]] = {}
         total_epochs = max(1, self.config.max_epochs)
         start_time = time.perf_counter()
-        for epoch in range(1, total_epochs + 1):
-            epoch_start = time.perf_counter()
-            train_metrics = self._run_epoch(
-                train_loaders,
-                train=True,
-                epoch=epoch,
-                total_epochs=total_epochs,
-                epoch_start=epoch_start,
-                global_start=start_time,
+
+        with mlflow.start_run(run_name=self.config.run_name):
+            # Log configuration
+            mlflow.log_params(
+                {
+                    "max_epochs": self.config.max_epochs,
+                    "gradient_clip_norm": self.config.gradient_clip_norm,
+                    "label_smoothing": self.config.label_smoothing,
+                    "task_weights": str(self.config.task_weights),
+                    "device": str(self.device),
+                }
             )
-            history[f"train_epoch_{epoch}"] = train_metrics
-            if val_loaders:
-                val_metrics = self._run_epoch(val_loaders, train=False, epoch=epoch)
-                history[f"val_epoch_{epoch}"] = val_metrics
-                # Generate sample summaries for validation
-                if "summarization" in val_loaders:
-                    self._validate_generation(val_loaders["summarization"], epoch)
-            epoch_duration = time.perf_counter() - epoch_start
-            total_elapsed = time.perf_counter() - start_time
-            self._print_epoch_progress(epoch, total_epochs, epoch_duration, total_elapsed)
+
+            for epoch in range(1, total_epochs + 1):
+                epoch_start = time.perf_counter()
+                train_metrics = self._run_epoch(
+                    train_loaders,
+                    train=True,
+                    epoch=epoch,
+                    total_epochs=total_epochs,
+                    epoch_start=epoch_start,
+                    global_start=start_time,
+                )
+                history[f"train_epoch_{epoch}"] = train_metrics
+
+                # Log training metrics to MLflow
+                for k, v in train_metrics.items():
+                    if k != "epoch":
+                        mlflow.log_metric(f"train_{k}", v, step=epoch)
+
+                if val_loaders:
+                    val_metrics = self._run_epoch(val_loaders, train=False, epoch=epoch)
+                    history[f"val_epoch_{epoch}"] = val_metrics
+
+                    # Log validation metrics to MLflow
+                    for k, v in val_metrics.items():
+                        if k != "epoch":
+                            mlflow.log_metric(f"val_{k}", v, step=epoch)
+
+                    # Generate sample summaries for manual quality assessment
+                    if "summarization" in val_loaders:
+                        self._validate_generation(val_loaders["summarization"], epoch)
+
+                # Save checkpoint after each epoch
+                if checkpoint_callback is not None:
+                    checkpoint_callback(epoch, self.model, history)
+
+                epoch_duration = time.perf_counter() - epoch_start
+                total_elapsed = time.perf_counter() - start_time
+                self._print_epoch_progress(epoch, total_epochs, epoch_duration, total_elapsed)
+
         return history
 
     def _run_epoch(
@@ -123,34 +181,67 @@ class Trainer:
         with context:
             for step in range(max_batches):
                 backward_performed = False
+                step_total_loss = 0.0
+
                 for task, loader in loaders.items():
                     batch = self._next_batch(iterator_map, loader, task)
                     if batch is None:
                         continue
-                    loss, task_metrics = self._forward_task(task, batch, train)
+
+                    # Mixed Precision Context
+                    # Using bfloat16 for my RTX 4070 (Ampere/Ada) - better stability than float16
+                    with torch.autocast(
+                        "cuda", dtype=torch.bfloat16, enabled=(self.device.type == "cuda")
+                    ):
+                        loss, task_metrics = self._forward_task(task, batch, train)
+
                     weight = self._task_weight(task)
+                    weighted_loss = loss * weight
+                    step_total_loss += weighted_loss.item()
+
                     metrics_accumulator[f"{task}_loss"].append(loss.item())
                     for metric_name, metric_value in task_metrics.items():
                         metrics_accumulator[f"{task}_{metric_name}"].append(metric_value)
+
                     if train:
-                        scaled_loss = loss * weight
-                        scaled_loss.backward()
+                        # Scale loss before backward to prevent underflow
+                        # We accumulate gradients from all tasks before stepping the optimizer
+                        # This effectively minimizes the weighted sum of losses: L_total = w1*L1 + w2*L2 + ...
+                        self.scaler.scale(weighted_loss).backward()
                         backward_performed = True
+
+                if backward_performed:
+                    metrics_accumulator["total_loss"].append(step_total_loss)
+
                 if train and backward_performed:
-                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config.gradient_clip_norm)
-                    self.optimizer.step()
+                    # Unscale gradients before clipping
+                    self.scaler.unscale_(self.optimizer)
+                    torch.nn.utils.clip_grad_norm_(
+                        self.model.parameters(), self.config.gradient_clip_norm
+                    )
+
+                    # Step optimizer using scaler
+                    self.scaler.step(self.optimizer)
+                    self.scaler.update()
                     self.optimizer.zero_grad()
-                if train and self.config.logging_interval and (step + 1) % self.config.logging_interval == 0:
+
+                if (
+                    train
+                    and self.config.logging_interval
+                    and (step + 1) % self.config.logging_interval == 0
+                ):
                     if torch.cuda.is_available() and self.device.type == "cuda":
                         torch.cuda.empty_cache()
                 emit_progress(step + 1)
         emit_progress(max_batches, final=True)
 
-        averaged = {name: sum(values) / len(values) for name, values in metrics_accumulator.items() if values}
+        averaged = {
+            name: sum(values) / len(values)
+            for name, values in metrics_accumulator.items()
+            if values
+        }
         averaged["epoch"] = float(epoch)
-        metric_str = ", ".join(
-            f"{k}={v:.4f}" for k, v in averaged.items() if k != "epoch"
-        )
+        metric_str = ", ".join(f"{k}={v:.4f}" for k, v in averaged.items() if k != "epoch")
         print(f"[{phase}] epoch {epoch}: {metric_str}")
         return averaged
 
@@ -168,9 +259,14 @@ class Trainer:
                 batch = next(iterator_map[task])
             except StopIteration:
                 return None
-        return {key: value.to(self.device) if isinstance(value, torch.Tensor) else value for key, value in batch.items()}
+        return {
+            key: value.to(self.device) if isinstance(value, torch.Tensor) else value
+            for key, value in batch.items()
+        }
 
-    def _forward_task(self, task: str, batch: Dict[str, torch.Tensor], train: bool) -> tuple[torch.Tensor, Dict[str, float]]:
+    def _forward_task(
+        self, task: str, batch: Dict[str, torch.Tensor], train: bool
+    ) -> tuple[torch.Tensor, Dict[str, float]]:
         if task == "summarization":
             summarization_inputs = {
                 "src_ids": batch["src_ids"],
@@ -180,10 +276,12 @@ class Trainer:
                 summarization_inputs["src_mask"] = batch["src_mask"]
             logits = self.model.forward("summarization", summarization_inputs)
             vocab_size = logits.size(-1)
+            # Apply label smoothing for regularization - prevents overconfident predictions
             loss = F.cross_entropy(
                 logits.view(-1, vocab_size),
                 batch["labels"].view(-1),
                 ignore_index=-100,
+                label_smoothing=self.label_smoothing,
             )
             summaries = self._decode_predictions(logits)
             references = self._decode_labels(batch["labels"])
@@ -235,36 +333,39 @@ class Trainer:
         print(f"\n{'='*80}")
         print(f"[Validation Generation - Epoch {epoch}]")
         print(f"{'='*80}")
-        
+
         with torch.no_grad():
             for batch in val_loader:
                 if samples_generated >= self.config.validation_samples:
                     break
-                    
-                batch = {k: v.to(self.device) if isinstance(v, torch.Tensor) else v for k, v in batch.items()}
+
+                batch = {
+                    k: v.to(self.device) if isinstance(v, torch.Tensor) else v
+                    for k, v in batch.items()
+                }
                 src_ids = batch["src_ids"]
                 src_mask = batch.get("src_mask")
                 labels = batch["labels"]
-                
+
                 # Only process first item from batch
                 src_ids = src_ids[:1]
                 if src_mask is not None:
                     src_mask = src_mask[:1]
                 labels = labels[:1]
-                
+
                 # Encode source
                 encoder_mask = None
                 if src_mask is not None:
                     encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2)
                 memory = self.model.encoder(src_ids, mask=encoder_mask)
-                
+
                 # Ban special tokens from generation
                 ban_token_ids = [self.tokenizer.bos_token_id, self.tokenizer.pad_token_id]
-                unk_id = getattr(self.tokenizer._tokenizer, 'unk_token_id', None)
+                unk_id = getattr(self.tokenizer._tokenizer, "unk_token_id", None)
                 if isinstance(unk_id, int):
                     ban_token_ids.append(unk_id)
                 ban_token_ids = [tid for tid in ban_token_ids if tid is not None]
-                
+
                 # Generate
                 generated = self.model.decoder.greedy_decode(
                     memory=memory,
@@ -277,20 +378,28 @@ class Trainer:
                     no_repeat_ngram_size=3,
                     memory_mask=src_mask,
                 )
-                
+
                 # Decode
                 source_text = self.tokenizer.decode(src_ids[0].tolist())
                 generated_text = self.tokenizer.decode(generated[0].tolist())
                 reference_text = self._decode_labels(labels)[0]
-                
+
                 print(f"\nSample {samples_generated + 1}:")
-                print(f"Source: {source_text[:200]}..." if len(source_text) > 200 else f"Source: {source_text}")
+                print(
+                    f"Source: {source_text[:200]}..."
+                    if len(source_text) > 200
+                    else f"Source: {source_text}"
+                )
                 print(f"Generated: {generated_text}")
-                print(f"Reference: {reference_text[:200]}..." if len(reference_text) > 200 else f"Reference: {reference_text}")
+                print(
+                    f"Reference: {reference_text[:200]}..."
+                    if len(reference_text) > 200
+                    else f"Reference: {reference_text}"
+                )
                 print("-" * 80)
-                
+
                 samples_generated += 1
-        
+
         print(f"{'='*80}\n")
         self.model.train()
 
@@ -341,7 +450,9 @@ class Trainer:
         total_elapsed = time.perf_counter() - global_start
         if epochs_completed > 0:
             remaining_epochs = max(total_epochs - epochs_completed, 0.0)
-            eta = (total_elapsed / epochs_completed) * remaining_epochs if total_elapsed > 0 else 0.0
+            eta = (
+                (total_elapsed / epochs_completed) * remaining_epochs if total_elapsed > 0 else 0.0
+            )
         else:
             eta = 0.0
         bar = self._format_progress_bar(overall_progress, width=self._progress_bar_width())

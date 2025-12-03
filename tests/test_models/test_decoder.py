@@ -1,9 +1,10 @@
-import torch
 import pytest
+import torch
+
 from src.models.decoder import (
-    create_causal_mask,
-    TransformerDecoderLayer,
     TransformerDecoder,
+    TransformerDecoderLayer,
+    create_causal_mask,
 )
 
 
@@ -29,7 +30,7 @@ def test_decoder_layer_shapes_and_grad():
     memory = torch.randn(batch_size, src_len, d_model)
 
     # No masks
-    out, attn = layer(tgt, memory, tgt_mask=None, memory_mask=None)
+    out, attn = layer(tgt, memory, tgt_mask=None, memory_mask=None, collect_attn=True)
     assert out.shape == (batch_size, tgt_len, d_model)
     assert isinstance(attn, dict)
     assert "self" in attn and "cross" in attn
@@ -56,15 +57,16 @@ def test_decoder_layer_causal_mask_blocks_future():
     causal = create_causal_mask(tgt_len, device=tgt.device)  # (T, T)
     tgt_mask = causal.unsqueeze(0)  # (1, T, T) -> layer will handle unsqueeze to heads
 
-    out, attn = layer(tgt, memory, tgt_mask=tgt_mask, memory_mask=None)
+    out, attn = layer(tgt, memory, tgt_mask=tgt_mask, memory_mask=None, collect_attn=True)
     self_attn = attn["self"].detach()
     # Ensure upper triangle of attention weights is zero (no future attention)
     # For each head and query i, keys j>i should be zero
     B, H, Tq, Tk = self_attn.shape
     for i in range(Tq):
         for j in range(i + 1, Tk):
-            assert torch.allclose(self_attn[:, :, i, j], torch.zeros(B, H)), \
-                f"Found nonzero attention to future position {j} from query {i}"
+            assert torch.allclose(
+                self_attn[:, :, i, j], torch.zeros(B, H)
+            ), f"Found nonzero attention to future position {j} from query {i}"
 
 
 def test_decoder_stack_and_greedy_decode_shapes():

@@ -7,7 +7,12 @@ from typing import cast
 import torch
 
 from src.data.tokenization import Tokenizer, TokenizerConfig
-from src.inference.pipeline import EmotionPrediction, InferenceConfig, InferencePipeline, TopicPrediction
+from src.inference.pipeline import (
+    EmotionPrediction,
+    InferenceConfig,
+    InferencePipeline,
+    TopicPrediction,
+)
 from src.utils.labels import LabelMetadata
 
 
@@ -18,7 +23,9 @@ def _local_tokenizer_config() -> TokenizerConfig:
 
 
 class DummyEncoder(torch.nn.Module):
-    def forward(self, input_ids: torch.Tensor) -> torch.Tensor:  # pragma: no cover - trivial
+    def forward(
+        self, input_ids: torch.Tensor, mask: torch.Tensor | None = None
+    ) -> torch.Tensor:  # pragma: no cover - trivial
         batch, seq_len = input_ids.shape
         return torch.zeros(batch, seq_len, 8, device=input_ids.device)
 
@@ -38,6 +45,7 @@ class DummyDecoder(torch.nn.Module):
         start_token_id: int,
         end_token_id: int | None,
         device: torch.device,
+        **kwargs: object,
     ) -> torch.Tensor:
         seq = self.sequence.to(device)
         if seq.numel() > max_len:
@@ -56,7 +64,9 @@ class DummyModel(torch.nn.Module):
         self.register_buffer("_emotion_logits", emotion_logits)
         self.register_buffer("_topic_logits", topic_logits)
 
-    def forward(self, task: str, inputs: dict[str, torch.Tensor]) -> torch.Tensor:  # pragma: no cover - simple dispatch
+    def forward(
+        self, task: str, inputs: dict[str, torch.Tensor]
+    ) -> torch.Tensor:  # pragma: no cover - simple dispatch
         batch = inputs["input_ids"].size(0)
         if task == "emotion":
             return self._emotion_logits.unsqueeze(0).repeat(batch, 1)

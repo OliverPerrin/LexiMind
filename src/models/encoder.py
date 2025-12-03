@@ -2,11 +2,11 @@
 Transformer encoder implementation (Pre-LN).
 
 Contains:
-- TransformerEncoderLayer: one encoder block (self-attention + FFN with residuals + LayerNorm)
+- TransformerEncoderLayer: one encoder block (self-attention + FFN with residuals + LayerNorm (RMSNorm - modern convention))
 - TransformerEncoder: embedding + positional encoding + stack of encoder layers
 
 Design choices:
-- Pre-LN (LayerNorm before each sublayer) for stable training.
+- Pre-LN (RMSNorm before each sublayer) for stable training.
 - The FeedForward module is position-wise and does NOT include residuals or normalization.
 - MultiHeadAttention handles mask broadcasting from (B, S, S) -> (B, 1, S, S) internally.
 - The encoder accepts either token ids (LongTensor) or precomputed embeddings (FloatTensor).
@@ -14,9 +14,9 @@ Design choices:
 - Optionally collect attention weights by passing collect_attn=True to forward().
 """
 
-from typing import Optional, Tuple, List, Union
-
 import math
+from typing import List, Optional, Tuple, Union
+
 import torch
 import torch.nn as nn
 
@@ -34,17 +34,29 @@ class TransformerEncoderLayer(nn.Module):
         num_heads: number of attention heads
         d_ff: hidden dimension of the position-wise feed-forward network
         dropout: dropout probability applied to sublayer outputs
+        quantization: optional quantization mode ("4bit", "8bit")
     """
 
-    def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout: float = 0.1):
+    def __init__(
+        self,
+        d_model: int,
+        num_heads: int,
+        d_ff: int,
+        dropout: float = 0.1,
+        quantization: Optional[str] = None,
+    ):
         super().__init__()
-        self.self_attn = MultiHeadAttention(d_model=d_model, num_heads=num_heads, dropout=0.0)
+        self.self_attn = MultiHeadAttention(
+            d_model=d_model, num_heads=num_heads, dropout=0.0, quantization=quantization
+        )
         # set MHA internal dropout to 0.0 and use dropout1/dropout2 in the layer
-        self.ffn = FeedForward(d_model=d_model, d_ff=d_ff, dropout=dropout)
-        
-        self.norm1 = nn.LayerNorm(d_model)
-        self.norm2 = nn.LayerNorm(d_model)
-        
+        self.ffn = FeedForward(
+            d_model=d_model, d_ff=d_ff, dropout=dropout, quantization=quantization
+        )
+
+        self.norm1 = nn.RMSNorm(d_model)
+        self.norm2 = nn.RMSNorm(d_model)
+
         self.dropout1 = nn.Dropout(dropout)
         self.dropout2 = nn.Dropout(dropout)
 
@@ -52,13 +64,15 @@ class TransformerEncoderLayer(nn.Module):
         self,
         x: torch.Tensor,
         mask: Optional[torch.Tensor] = None,
-    ) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
+        collect_attn: bool = False,
+    ) -> Union[torch.Tensor, Tuple[torch.Tensor, Optional[torch.Tensor]]]:
         """
         Forward pass for the encoder layer.
 
         Args:
             x: (batch, seq_len, d_model) - input embeddings / representations
             mask: optional attention mask, shape either (batch, seq_q, seq_k) or (batch, 1, seq_q, seq_k)
+            collect_attn: whether to return attention weights
 
         Returns:
             x: (batch, seq_len, d_model)
@@ -67,7 +81,9 @@ class TransformerEncoderLayer(nn.Module):
         # Self-attention sublayer (Pre-LN)
         x_norm = self.norm1(x)  # Pre-LN
         # self_attn expects query, key, value; for encoder they are the same
-        attn_out, attn_weights = self.self_attn(x_norm, x_norm, x_norm, mask)
+        attn_out, attn_weights = self.self_attn(
+            x_norm, x_norm, x_norm, mask, return_attn_weights=collect_attn
+        )
         x = x + self.dropout1(attn_out)
 
         # Feed-forward sublayer (Pre-LN)
@@ -105,6 +121,7 @@ class TransformerEncoder(nn.Module):
         dropout: float = 0.1,
         max_len: int = 512,
         pad_token_id: Optional[int] = None,
+        quantization: Optional[str] = None,
     ):
         super().__init__()
         self.vocab_size = vocab_size
@@ -119,12 +136,20 @@ class TransformerEncoder(nn.Module):
 
         # Encoder layers stack
         self.layers = nn.ModuleList(
-            [TransformerEncoderLayer(d_model=d_model, num_heads=num_heads, d_ff=d_ff, dropout=dropout)
-             for _ in range(num_layers)]
+            [
+                TransformerEncoderLayer(
+                    d_model=d_model,
+                    num_heads=num_heads,
+                    d_ff=d_ff,
+                    dropout=dropout,
+                    quantization=quantization,
+                )
+                for _ in range(num_layers)
+            ]
         )
 
-        # Final LayerNorm for Pre-LN stacks (recommended)
-        self.final_norm = nn.LayerNorm(d_model)
+        # Final RMSNorm for Pre-LN stacks (recommended)
+        self.final_norm = nn.RMSNorm(d_model)
 
         # Dropout applied after embedding + positional encoding (paper uses this)
         self.input_dropout = nn.Dropout(dropout)
@@ -134,9 +159,11 @@ class TransformerEncoder(nn.Module):
         Build a 3D attention mask (batch, seq, seq) from input_ids and pad_token_id.
         True indicates valid positions; False indicates masked (pad).
         """
-        assert self.pad_token_id is not None, "pad_token_id must be set to build padding mask from ids."
+        assert (
+            self.pad_token_id is not None
+        ), "pad_token_id must be set to build padding mask from ids."
         # mask shape: (batch, seq) where True = token kept (non-pad)
-        pad_mask = (input_ids != self.pad_token_id)
+        pad_mask = input_ids != self.pad_token_id
         # Convert to (batch, seq_q, seq_k) by outer product broadcasting
         # We want positions that are valid as both query and key
         attn_mask = pad_mask.unsqueeze(1) & pad_mask.unsqueeze(2)
@@ -173,7 +200,9 @@ class TransformerEncoder(nn.Module):
         elif inputs.dim() == 3:  # already embeddings
             x = inputs
         else:
-            raise ValueError("inputs must be (batch, seq) token ids or (batch, seq, d_model) embeddings")
+            raise ValueError(
+                "inputs must be (batch, seq) token ids or (batch, seq, d_model) embeddings"
+            )
 
         # Positional encoding + dropout
         x = self.pos_encoder(x)
@@ -191,7 +220,7 @@ class TransformerEncoder(nn.Module):
 
         # Pass through each encoder layer (optionally collect attn)
         for layer in self.layers:
-            x, attn = layer(x, mask=mask)
+            x, attn = layer(x, mask=mask, collect_attn=collect_attn)
             if collect_attn:
                 attn_weights_per_layer.append(attn)
 

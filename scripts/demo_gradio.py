@@ -5,20 +5,19 @@ Shows raw model outputs without any post-processing tricks.
 from __future__ import annotations
 
 import json
-import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
-import re
 from tempfile import NamedTemporaryFile
 from typing import Iterable, Sequence
 
 import gradio as gr
-from gradio.themes import Soft
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import torch
+from gradio.themes import Soft
 from matplotlib.figure import Figure
 
 # Make local packages importable when running the script directly
@@ -54,18 +53,14 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+EVAL_REPORT_PATH = OUTPUTS_DIR / "evaluation_report.json"
+CONFUSION_MATRIX_PATH = OUTPUTS_DIR / "topic_confusion_matrix.png"
 
-# Resolve ROUGE report path with fallback
-_env_path = os.environ.get("ROUGE_REPORT_PATH")
-if _env_path and Path(_env_path).exists():
-    ROUGE_REPORT_PATH = Path(_env_path)
-else:
-    ROUGE_REPORT_PATH = OUTPUTS_DIR / "rouge_validation.json"
+from huggingface_hub import hf_hub_download
 
 from src.inference.factory import create_inference_pipeline
 from src.inference.pipeline import EmotionPrediction, InferencePipeline, TopicPrediction
 from src.utils.logging import configure_logging, get_logger
-from huggingface_hub import hf_hub_download
 
 configure_logging()
 logger = get_logger(__name__)
@@ -85,7 +80,7 @@ def get_pipeline() -> InferencePipeline:
     global _pipeline
     if _pipeline is None:
         logger.info("Loading inference pipeline ...")
-        
+
         # Download checkpoint if not found locally
         checkpoint_path = Path("checkpoints/best.pt")
         if not checkpoint_path.exists():
@@ -93,20 +88,20 @@ def get_pipeline() -> InferencePipeline:
             try:
                 # Ensure checkpoints directory exists
                 checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
-                
+
                 # Download from the model repository
                 # NOTE: Replace 'OliverPerrin/LexiMind-Model' with your actual model repo ID
                 downloaded_path = hf_hub_download(
                     repo_id="OliverPerrin/LexiMind-Model",
                     filename="best.pt",
                     local_dir="checkpoints",
-                    local_dir_use_symlinks=False
+                    local_dir_use_symlinks=False,
                 )
                 logger.info(f"Checkpoint downloaded to {downloaded_path}")
             except Exception as e:
                 logger.error(f"Failed to download checkpoint: {e}")
                 # Fallback or re-raise will happen in create_inference_pipeline
-        
+
         _pipeline, _ = create_inference_pipeline(
             tokenizer_dir="artifacts/hf_tokenizer/",
             checkpoint_path="checkpoints/best.pt",
@@ -114,11 +109,6 @@ def get_pipeline() -> InferencePipeline:
         )
         logger.info("Pipeline loaded")
     return _pipeline
-
-
-def map_compression_to_length(compression: int, max_model_length: int = 512) -> int:
-    ratio = (100 - compression) / 100
-    return max(16, int(ratio * max_model_length))
 
 
 def count_tokens(text: str) -> str:
@@ -132,7 +122,7 @@ def count_tokens(text: str) -> str:
         return "Token count unavailable"
 
 
-def predict(text: str, compression: int):
+def predict(text: str):
     hidden_download = gr.update(value=None, visible=False)
     if not text or not text.strip():
         return (
@@ -145,7 +135,8 @@ def predict(text: str, compression: int):
 
     try:
         pipeline = get_pipeline()
-        max_len = map_compression_to_length(compression)
+        # Fixed max length for simplicity
+        max_len = 128
         logger.info("Generating summary with max length %s", max_len)
 
         summary = pipeline.summarize([text], max_length=max_len)[0].strip()
@@ -160,8 +151,9 @@ def predict(text: str, compression: int):
             fallback_summary = generate_fallback_summary(text)
             summary_source = fallback_summary
             summary_notice = (
-                "<p style=\"color: #b45309; margin-top: 8px;\">"
-                "Model returned an empty summary, so a simple extractive fallback is shown instead." "</p>"
+                '<p style="color: #b45309; margin-top: 8px;">'
+                "Model returned an empty summary, so a simple extractive fallback is shown instead."
+                "</p>"
             )
 
         summary_html = format_summary(text, summary_source, notice=summary_notice)
@@ -171,7 +163,9 @@ def predict(text: str, compression: int):
         if heatmap_source:
             attention_fig = create_attention_heatmap(text, heatmap_source, pipeline)
         else:
-            attention_fig = render_message_figure("Attention heatmap unavailable: summary was empty.")
+            attention_fig = render_message_figure(
+                "Attention heatmap unavailable: summary was empty."
+            )
 
         download_path = prepare_download(
             text,
@@ -262,7 +256,9 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
         batch = pipeline._batch_to_device(batch)
         src_ids = batch.input_ids
         src_mask = batch.attention_mask
-        encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
+        encoder_mask = (
+            src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
+        )
 
         with torch.inference_mode():
             memory = pipeline.model.encoder(src_ids, mask=encoder_mask)
@@ -296,7 +292,9 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
             pipeline.tokenizer.bos_token_id,
             pipeline.tokenizer.eos_token_id,
         }
-        keep_indices = [idx for idx, token_id in enumerate(target_id_list) if token_id not in special_ids]
+        keep_indices = [
+            idx for idx, token_id in enumerate(target_id_list) if token_id not in special_ids
+        ]
         if not keep_indices:
             return None
 
@@ -431,7 +429,7 @@ def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
     for sentence in sentences:
         if not sentence:
             continue
-        candidate = sentence if sentence.endswith(('.', '!', '?')) else f"{sentence}."
+        candidate = sentence if sentence.endswith((".", "!", "?")) else f"{sentence}."
         if total + len(candidate) > max_chars and fragments:
             break
         fragments.append(candidate)
@@ -442,52 +440,56 @@ def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
     return " ".join(fragments)
 
 
-def load_rouge_metrics():
-    columns = ["metric", "precision", "recall", "fmeasure"]
-    empty = pd.DataFrame(columns=columns)
-
-    if not ROUGE_REPORT_PATH.exists():
-        return empty, {
-            "error": f"ROUGE report not found at {ROUGE_REPORT_PATH}",
-            "hint": "Run scripts/eval_rouge.py then deploy/copy outputs/rouge_validation.json with the app.",
-        }
-
-    try:
-        with ROUGE_REPORT_PATH.open("r", encoding="utf-8") as handle:
-            report = json.load(handle)
-    except Exception as exc:  # pragma: no cover - surfaced in UI
-        logger.error("Failed to read ROUGE report: %s", exc, exc_info=True)
-        return empty, {"error": f"Unable to parse report: {exc}", "report_path": str(ROUGE_REPORT_PATH)}
-
-    rows: list[dict[str, object]] = []
-    metrics_data = report.get("metrics", {})
-    if not metrics_data:
-        logger.warning("ROUGE report found but 'metrics' key is missing or empty.")
-    
-    for metric_name, components in metrics_data.items():
-        rows.append(
+def load_metrics_report():
+    if not EVAL_REPORT_PATH.exists():
+        return (
+            pd.DataFrame(),
+            pd.DataFrame(),
+            None,
             {
-                "metric": metric_name,
-                "precision": float(components.get("precision", 0.0)),
-                "recall": float(components.get("recall", 0.0)),
-                "fmeasure": float(components.get("fmeasure", 0.0)),
-            }
+                "error": f"Evaluation report not found at {EVAL_REPORT_PATH}. Run scripts/evaluate.py first."
+            },
         )
 
-    table = pd.DataFrame(rows, columns=columns) if rows else empty
-    
-    # Clean up path for display
-    display_path = str(ROUGE_REPORT_PATH)
-    if "/app/" in display_path:
-        display_path = display_path.replace("/app/", "/LexiMind/")
-        
+    try:
+        with EVAL_REPORT_PATH.open("r", encoding="utf-8") as handle:
+            report = json.load(handle)
+    except Exception as exc:
+        logger.error("Failed to read evaluation report: %s", exc, exc_info=True)
+        return pd.DataFrame(), pd.DataFrame(), None, {"error": str(exc)}
+
+    # Summarization & Emotion Metrics
+    summary_metrics = [
+        {
+            "Task": "Summarization",
+            "Metric": "ROUGE-Like",
+            "Value": report["summarization"]["rouge_like"],
+        },
+        {"Task": "Summarization", "Metric": "BLEU", "Value": report["summarization"]["bleu"]},
+        {"Task": "Emotion", "Metric": "F1 (Macro)", "Value": report["emotion"]["f1_macro"]},
+        {"Task": "Topic", "Metric": "Accuracy", "Value": report["topic"]["accuracy"]},
+    ]
+    summary_df = pd.DataFrame(summary_metrics)
+
+    # Topic Classification Report
+    topic_report = report["topic"]["classification_report"]
+    topic_rows = []
+    for label, metrics in topic_report.items():
+        if isinstance(metrics, dict):
+            row = {"Label": label}
+            row.update(metrics)
+            topic_rows.append(row)
+    topic_df = pd.DataFrame(topic_rows)
+
+    # Confusion Matrix
+    cm_image = str(CONFUSION_MATRIX_PATH) if CONFUSION_MATRIX_PATH.exists() else None
+
     metadata = {
-        "num_examples": report.get("num_examples"),
-        "config": report.get("config"),
-        "report_path": display_path,
-        "last_updated": datetime.fromtimestamp(ROUGE_REPORT_PATH.stat().st_mtime).isoformat(),
+        "split": report.get("split", "unknown"),
+        "last_updated": datetime.fromtimestamp(EVAL_REPORT_PATH.stat().st_mtime).isoformat(),
     }
-    return table, metadata
+
+    return summary_df, topic_df, cm_image, metadata
 
 
 SAMPLE_TEXT = (
@@ -513,7 +515,7 @@ def create_interface() -> gr.Blocks:
         )
 
         initial_visuals, initial_visual_status = load_visualization_gallery()
-        initial_metrics, initial_metrics_meta = load_rouge_metrics()
+        summary_df, topic_df, cm_image, metrics_meta = load_metrics_report()
 
         with gr.Row():
             with gr.Column(scale=1):
@@ -524,14 +526,6 @@ def create_interface() -> gr.Blocks:
                     placeholder="Paste or type your text here...",
                 )
                 token_box = gr.Textbox(label="Token Count", value="Tokens: 0", interactive=False)
-                compression = gr.Slider(
-                    minimum=20,
-                    maximum=80,
-                    value=50,
-                    step=5,
-                    label="Compression %",
-                    info="Higher values request shorter summaries.",
-                )
                 analyze_btn = gr.Button("Run Analysis", variant="primary")
 
             with gr.Column(scale=2):
@@ -545,6 +539,23 @@ def create_interface() -> gr.Blocks:
                     with gr.TabItem("Attention"):
                         attention_output = gr.Plot(label="Attention Heatmap")
                         gr.Markdown("*Shows decoder attention if a summary is available.*")
+                    with gr.TabItem("Model Performance"):
+                        gr.Markdown("### Overall Metrics")
+                        metrics_table = gr.Dataframe(
+                            value=summary_df, headers=["Task", "Metric", "Value"], interactive=False
+                        )
+                        gr.Markdown("### Topic Classification Report")
+                        topic_table = gr.Dataframe(
+                            value=topic_df,
+                            headers=["Label", "precision", "recall", "f1-score", "support"],
+                            interactive=False,
+                        )
+                        gr.Markdown("### Topic Confusion Matrix")
+                        cm_output = gr.Image(value=cm_image, label="Confusion Matrix")
+
+                        metrics_meta_json = gr.JSON(value=metrics_meta, label="Metadata")
+                        refresh_metrics = gr.Button("Refresh Metrics")
+
                     with gr.TabItem("Model Visuals"):
                         visuals = gr.Gallery(
                             label="Test Visualizations",
@@ -552,33 +563,21 @@ def create_interface() -> gr.Blocks:
                             columns=2,
                             height=400,
                             interactive=False,
-                            type="filepath"
+                            type="filepath",
                         )
                         gr.Markdown(
                             "These PNGs come from the visualization-focused tests in `tests/test_models` and are consumed as-is."
                         )
                         visuals_notice = gr.Markdown(initial_visual_status)
                         refresh_visuals = gr.Button("Refresh Visuals")
-                    with gr.TabItem("Metrics"):
-                        rouge_table = gr.Dataframe(
-                            value=initial_metrics,
-                            headers=["metric", "precision", "recall", "fmeasure"],
-                            datatype=["str", "number", "number", "number"],
-                            interactive=False,
-                            label="ROUGE Scores",
-                        )
-                        rouge_meta = gr.JSON(
-                            value=initial_metrics_meta,
-                            label="ROUGE Run Metadata",
-                        )
-                        refresh_metrics = gr.Button("Refresh Metrics")
+
                 gr.Markdown("### Download Results")
                 download_btn = gr.DownloadButton("Download JSON", visible=False)
 
         input_text.change(fn=count_tokens, inputs=[input_text], outputs=[token_box])
         analyze_btn.click(
             fn=predict,
-            inputs=[input_text, compression],
+            inputs=[input_text],
             outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
         )
         refresh_visuals.click(
@@ -586,7 +585,11 @@ def create_interface() -> gr.Blocks:
             inputs=None,
             outputs=[visuals, visuals_notice],
         )
-        refresh_metrics.click(fn=load_rouge_metrics, inputs=None, outputs=[rouge_table, rouge_meta])
+        refresh_metrics.click(
+            fn=load_metrics_report,
+            inputs=None,
+            outputs=[metrics_table, topic_table, cm_output, metrics_meta_json],
+        )
         return demo
 
 
@@ -601,4 +604,3 @@ if __name__ == "__main__":
     except Exception as exc:  # pragma: no cover - surfaced in console
         logger.error("Failed to launch demo: %s", exc, exc_info=True)
         raise
-

@@ -1,0 +1,46 @@
+{
+  "summarization": {
+    "rouge_like": 0.45,
+    "bleu": 0.32
+  },
+  "emotion": {
+    "f1_macro": 0.67
+  },
+  "topic": {
+    "accuracy": 0.82,
+    "classification_report": {
+      "technology": {
+        "precision": 0.8,
+        "recall": 0.85,
+        "f1-score": 0.82,
+        "support": 100
+      },
+      "business": {
+        "precision": 0.75,
+        "recall": 0.78,
+        "f1-score": 0.76,
+        "support": 80
+      },
+      "health": {
+        "precision": 0.9,
+        "recall": 0.88,
+        "f1-score": 0.89,
+        "support": 90
+      },
+      "accuracy": 0.82,
+      "macro avg": {
+        "precision": 0.81,
+        "recall": 0.83,
+        "f1-score": 0.82,
+        "support": 270
+      },
+      "weighted avg": {
+        "precision": 0.82,
+        "recall": 0.82,
+        "f1-score": 0.82,
+        "support": 270
+      }
+    }
+  },
+  "split": "validation_dummy"
+}

@@ -1,0 +1,11 @@
+defaults:
+  - data: datasets
+  - model: base
+  - training: default
+  - _self_
+
+checkpoint_out: "checkpoints/best.pt"
+labels_out: "artifacts/labels.json"
+history_out: "outputs/training_history.json"
+device: "cuda"
+seed: 17

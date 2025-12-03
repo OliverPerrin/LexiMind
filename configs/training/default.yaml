@@ -4,11 +4,17 @@ dataloader:
 optimizer:
   name: adamw
   lr: 3.0e-5
+  weight_decay: 0.01  # L2 regularization to prevent overfitting
 scheduler:
   name: cosine
   warmup_steps: 500
 trainer:
-  max_epochs: 5
+  max_epochs: 4  # Reduced from 5 to prevent overfitting
   gradient_clip_norm: 1.0
   validation_samples: 3
   validation_max_length: 128
+  label_smoothing: 0.1  # Smooths target distribution for better generalization
+  task_weights:
+    summarization: 1.0
+    emotion: 1.0
+    topic: 1.0

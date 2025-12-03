@@ -9,10 +9,12 @@ Implements:
 Conventions:
 - Masks are boolean: True = allowed, False = masked.
 - MultiHeadAttention expects masks broadcastable to (B, num_heads, T_q, T_k).
-- This decoder uses Pre-LN (LayerNorm before each sublayer).
+- This decoder uses Pre-LN (RMSNorm before each sublayer).
+- RMSNorm is just simpler than LayerNorm and more computationally efficient, it's become the modern convention. These reasons are why I used it here.
 """
-from typing import Optional, Tuple, List, Union, Dict
 import math
+from typing import Dict, List, Optional, Tuple, Union
+
 import torch
 import torch.nn as nn
 
@@ -40,16 +42,29 @@ class TransformerDecoderLayer(nn.Module):
     Returns the updated tgt and a dict of attention maps.
     """
 
-    def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout: float = 0.1):
+    def __init__(
+        self,
+        d_model: int,
+        num_heads: int,
+        d_ff: int,
+        dropout: float = 0.1,
+        quantization: Optional[str] = None,
+    ):
         super().__init__()
         # use internal MHA dropout = 0.0; the layer handles dropout after sublayers
-        self.self_attn = MultiHeadAttention(d_model=d_model, num_heads=num_heads, dropout=0.0)
-        self.cross_attn = MultiHeadAttention(d_model=d_model, num_heads=num_heads, dropout=0.0)
-        self.ffn = FeedForward(d_model=d_model, d_ff=d_ff, dropout=dropout)
+        self.self_attn = MultiHeadAttention(
+            d_model=d_model, num_heads=num_heads, dropout=0.0, quantization=quantization
+        )
+        self.cross_attn = MultiHeadAttention(
+            d_model=d_model, num_heads=num_heads, dropout=0.0, quantization=quantization
+        )
+        self.ffn = FeedForward(
+            d_model=d_model, d_ff=d_ff, dropout=dropout, quantization=quantization
+        )
 
-        self.norm1 = nn.LayerNorm(d_model)
-        self.norm2 = nn.LayerNorm(d_model)
-        self.norm3 = nn.LayerNorm(d_model)
+        self.norm1 = nn.RMSNorm(d_model)
+        self.norm2 = nn.RMSNorm(d_model)
+        self.norm3 = nn.RMSNorm(d_model)
 
         self.dropout1 = nn.Dropout(dropout)
         self.dropout2 = nn.Dropout(dropout)
@@ -61,13 +76,15 @@ class TransformerDecoderLayer(nn.Module):
         memory: torch.Tensor,
         tgt_mask: Optional[torch.Tensor] = None,
         memory_mask: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+        collect_attn: bool = False,
+    ) -> Tuple[torch.Tensor, Dict[str, Optional[torch.Tensor]]]:
         """
         Args:
             tgt: (B, T, d_model)
             memory: (B, S, d_model)
             tgt_mask: optional mask for self-attn - shape (B, T, T) or (B, 1, T, T)
             memory_mask: optional mask for cross-attn - shape (B, S) or (B, 1, S) or (B, 1, T, S)
+            collect_attn: whether to return attention weights
 
         Returns:
             (tgt_out, {"self": self_attn_weights, "cross": cross_attn_weights})
@@ -87,12 +104,16 @@ class TransformerDecoderLayer(nn.Module):
 
         # --- Masked self-attention (Pre-LN) ---
         x_norm = self.norm1(tgt)
-        self_out, self_attn = self.self_attn(x_norm, x_norm, x_norm, tgt_mask)
+        self_out, self_attn = self.self_attn(
+            x_norm, x_norm, x_norm, tgt_mask, return_attn_weights=collect_attn
+        )
         tgt = tgt + self.dropout1(self_out)
 
         # --- Cross-attention (Pre-LN) ---
         x_norm = self.norm2(tgt)
-        cross_out, cross_attn = self.cross_attn(x_norm, memory, memory, memory_mask)
+        cross_out, cross_attn = self.cross_attn(
+            x_norm, memory, memory, memory_mask, return_attn_weights=collect_attn
+        )
         tgt = tgt + self.dropout2(cross_out)
 
         # --- Feed-forward (Pre-LN) ---
@@ -120,6 +141,7 @@ class TransformerDecoder(nn.Module):
         dropout: float = 0.1,
         max_len: int = 512,
         pad_token_id: Optional[int] = None,
+        quantization: Optional[str] = None,
     ):
         super().__init__()
         self.vocab_size = vocab_size
@@ -130,11 +152,19 @@ class TransformerDecoder(nn.Module):
         self.pos_encoder = PositionalEncoding(d_model=d_model, max_len=max_len, dropout=dropout)
 
         self.layers = nn.ModuleList(
-            [TransformerDecoderLayer(d_model=d_model, num_heads=num_heads, d_ff=d_ff, dropout=dropout)
-             for _ in range(num_layers)]
+            [
+                TransformerDecoderLayer(
+                    d_model=d_model,
+                    num_heads=num_heads,
+                    d_ff=d_ff,
+                    dropout=dropout,
+                    quantization=quantization,
+                )
+                for _ in range(num_layers)
+            ]
         )
 
-        self.final_norm = nn.LayerNorm(d_model)
+        self.final_norm = nn.RMSNorm(d_model)
         self.output_projection = nn.Linear(d_model, vocab_size)
         self.input_dropout = nn.Dropout(dropout)
 
@@ -143,7 +173,7 @@ class TransformerDecoder(nn.Module):
         Convert input ids to (B, T, T) boolean mask where True = allowed.
         """
         assert self.pad_token_id is not None, "pad_token_id must be set to build mask from ids"
-        pad_mask = (input_ids != self.pad_token_id)  # (B, T)
+        pad_mask = input_ids != self.pad_token_id  # (B, T)
         attn_mask = pad_mask.unsqueeze(1) & pad_mask.unsqueeze(2)  # (B, T, T)
         return attn_mask
 
@@ -201,7 +231,9 @@ class TransformerDecoder(nn.Module):
 
         # Pass through decoder layers
         for layer in self.layers:
-            x, attn = layer(x, memory, tgt_mask=tgt_mask, memory_mask=memory_mask)
+            x, attn = layer(
+                x, memory, tgt_mask=tgt_mask, memory_mask=memory_mask, collect_attn=collect_attn
+            )
             if collect_attn:
                 attn_list.append(attn)
 
@@ -237,7 +269,9 @@ class TransformerDecoder(nn.Module):
         min_len = 0 if min_len is None else max(0, min_len)
 
         for _ in range(max_len - 1):
-            logits = self.forward(generated, memory, collect_attn=False, memory_mask=memory_mask)  # (B, L, V)
+            logits = self.forward(
+                generated, memory, collect_attn=False, memory_mask=memory_mask
+            )  # (B, L, V)
             assert isinstance(logits, torch.Tensor)  # type narrowing
             next_step_logits = logits[:, -1, :]
 
@@ -247,18 +281,18 @@ class TransformerDecoder(nn.Module):
                 should_clone = True
             if ban_token_ids:
                 should_clone = True
-            
+
             # Check for n-gram repetition
             if no_repeat_ngram_size > 0:
                 # We might need to clone if we find something to ban
-                pass 
+                pass
 
             if should_clone:
                 next_step_logits = next_step_logits.clone()
 
             if end_token_id is not None and generated.size(1) < max(1, min_len):
                 next_step_logits[:, end_token_id] = float("-inf")
-            
+
             if ban_token_ids:
                 next_step_logits[:, ban_token_ids] = float("-inf")
 
@@ -268,10 +302,10 @@ class TransformerDecoder(nn.Module):
                     gen_seq = generated[b].tolist()
                     if len(gen_seq) < no_repeat_ngram_size - 1:
                         continue
-                        
-                    prefix = tuple(gen_seq[-(no_repeat_ngram_size - 1):])
+
+                    prefix = tuple(gen_seq[-(no_repeat_ngram_size - 1) :])
                     banned_for_this_batch = set()
-                    
+
                     # Scan history for prefix
                     for i in range(len(gen_seq) - no_repeat_ngram_size + 1):
                         window = tuple(gen_seq[i : i + no_repeat_ngram_size - 1])
@@ -279,11 +313,11 @@ class TransformerDecoder(nn.Module):
                             # The token that followed this instance of prefix
                             if i + no_repeat_ngram_size - 1 < len(gen_seq):
                                 banned_for_this_batch.add(gen_seq[i + no_repeat_ngram_size - 1])
-                    
+
                     if banned_for_this_batch:
                         if not should_clone:
-                             next_step_logits = next_step_logits.clone()
-                             should_clone = True
+                            next_step_logits = next_step_logits.clone()
+                            should_clone = True
                         next_step_logits[b, list(banned_for_this_batch)] = float("-inf")
 
             next_token = next_step_logits.argmax(dim=-1, keepdim=True)  # (B, 1)
@@ -334,7 +368,7 @@ class TransformerDecoder(nn.Module):
             pos_idx = past_len
             if pos_idx >= pe.size(1):
                 raise RuntimeError(f"pos_idx {pos_idx} exceeds max_len {pe.size(1)}")
-            x = x + pe[:, pos_idx:pos_idx + 1, :].to(device)
+            x = x + pe[:, pos_idx : pos_idx + 1, :].to(device)
         else:
             # fallback: call pos_encoder and rely on its dropout (less ideal)
             x = self.pos_encoder(x)
@@ -391,11 +425,17 @@ class TransformerDecoder(nn.Module):
             new_cache[f"self_v_{i}"] = V_all
 
             # Compute attention for the new token: Query length = 1, Key length = K_all.size(2)
-            attn_out_heads, self_attn_w = layer.self_attn.attention(Qh, K_all, V_all, mask=None)
+            # Explicitly create mask for consistency with forward pass (though None should work)
+            # mask=True means attend.
+            step_mask = torch.ones(B_, 1, 1, K_all.size(2), dtype=torch.bool, device=device)
+            attn_out_heads, self_attn_w = layer.self_attn.attention(
+                Qh, K_all, V_all, mask=step_mask
+            )
             # attn_out_heads: (B, H, 1, d_k)
             # concat heads, project out
             attn_out = attn_out_heads.transpose(1, 2).contiguous().view(B_, 1, num_heads * d_k)
             attn_out = layer.self_attn.W_O(attn_out)  # (B,1,d_model)
+            attn_out = layer.self_attn.dropout(attn_out)
             layer_output = layer_input + layer.dropout1(attn_out)
 
             # -------------------
@@ -411,8 +451,12 @@ class TransformerDecoder(nn.Module):
                 MK = layer.cross_attn.W_K(memory)  # (B, S, d_model)
                 MV = layer.cross_attn.W_V(memory)
                 Bm, S, _ = MK.shape
-                MKh = MK.view(Bm, S, layer.cross_attn.num_heads, layer.cross_attn.d_k).transpose(1, 2)  # (B,H,S,d_k)
-                MVh = MV.view(Bm, S, layer.cross_attn.num_heads, layer.cross_attn.d_k).transpose(1, 2)
+                MKh = MK.view(Bm, S, layer.cross_attn.num_heads, layer.cross_attn.d_k).transpose(
+                    1, 2
+                )  # (B,H,S,d_k)
+                MVh = MV.view(Bm, S, layer.cross_attn.num_heads, layer.cross_attn.d_k).transpose(
+                    1, 2
+                )
                 mem_k = MKh
                 mem_v = MVh
                 new_cache[f"mem_k_{i}"] = mem_k
@@ -422,11 +466,20 @@ class TransformerDecoder(nn.Module):
                 mem_v = mem_v.to(device)
 
             Qc = layer.cross_attn.W_Q(x_norm2)  # (B,1,d_model)
-            Qch = Qc.view(B, 1, layer.cross_attn.num_heads, layer.cross_attn.d_k).transpose(1, 2)  # (B,H,1,d_k)
+            Qch = Qc.view(B, 1, layer.cross_attn.num_heads, layer.cross_attn.d_k).transpose(
+                1, 2
+            )  # (B,H,1,d_k)
 
-            cross_out_heads, cross_attn_w = layer.cross_attn.attention(Qch, mem_k, mem_v, mask=memory_mask)
-            cross_out = cross_out_heads.transpose(1, 2).contiguous().view(B, 1, layer.cross_attn.num_heads * layer.cross_attn.d_k)
+            cross_out_heads, cross_attn_w = layer.cross_attn.attention(
+                Qch, mem_k, mem_v, mask=memory_mask
+            )
+            cross_out = (
+                cross_out_heads.transpose(1, 2)
+                .contiguous()
+                .view(B, 1, layer.cross_attn.num_heads * layer.cross_attn.d_k)
+            )
             cross_out = layer.cross_attn.W_O(cross_out)  # (B,1,d_model)
+            cross_out = layer.cross_attn.dropout(cross_out)
             layer_output = layer_output + layer.dropout2(cross_out)
 
             # -------------------

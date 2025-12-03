@@ -70,24 +70,25 @@ class InferencePipeline:
         max_len = max_length or self.config.summary_max_length
 
         if not hasattr(self.model, "encoder") or not hasattr(self.model, "decoder"):
-            raise RuntimeError("Model must expose encoder and decoder attributes for summarization.")
+            raise RuntimeError(
+                "Model must expose encoder and decoder attributes for summarization."
+            )
 
         with torch.inference_mode():
-            encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
+            encoder_mask = (
+                src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
+            )
             memory = self.model.encoder(src_ids, mask=encoder_mask)
-            # Force a minimum length to prevent immediate EOS
             min_len = 10
-            
+
             # Ban BOS, PAD, UNK from being generated
             ban_token_ids = [
                 self.tokenizer.bos_token_id,
                 self.tokenizer.pad_token_id,
             ]
-            # Add UNK token if it exists
-            unk_id = getattr(self.tokenizer._tokenizer, 'unk_token_id', None)
+            unk_id = getattr(self.tokenizer._tokenizer, "unk_token_id", None)
             if isinstance(unk_id, int):
                 ban_token_ids.append(unk_id)
-            # Filter out None values just in case
             ban_token_ids = [tid for tid in ban_token_ids if tid is not None]
 
             generated = self.model.decoder.greedy_decode(
@@ -101,10 +102,10 @@ class InferencePipeline:
                 no_repeat_ngram_size=3,
                 memory_mask=src_mask,
             )
-            
+
             decoded_list = self.tokenizer.decode_batch(generated.tolist())
             final_summaries = decoded_list
-            
+
         return final_summaries
 
     def predict_emotions(
@@ -155,7 +156,9 @@ class InferencePipeline:
         for row in probs.cpu():
             scores = row.tolist()
             best_index = int(row.argmax().item())
-            results.append(TopicPrediction(label=self.topic_labels[best_index], confidence=scores[best_index]))
+            results.append(
+                TopicPrediction(label=self.topic_labels[best_index], confidence=scores[best_index])
+            )
         return results
 
     def batch_predict(self, texts: Iterable[str]) -> dict[str, object]:
