@@ -28,7 +28,7 @@ def rouge_like(predictions: Sequence[str], references: Sequence[str]) -> float:
     if not predictions or not references:
         return 0.0
     scores = []
-    for pred, ref in zip(predictions, references):
+    for pred, ref in zip(predictions, references, strict=False):
         pred_tokens = pred.split()
         ref_tokens = ref.split()
         if not ref_tokens:
@@ -46,7 +46,7 @@ def calculate_bleu(predictions: Sequence[str], references: Sequence[str]) -> flo
 
     smoother = SmoothingFunction().method1
     scores = []
-    for pred, ref in zip(predictions, references):
+    for pred, ref in zip(predictions, references, strict=False):
         pred_tokens = pred.split()
         ref_tokens = [ref.split()]  # BLEU expects list of references
         scores.append(sentence_bleu(ref_tokens, pred_tokens, smoothing_function=smoother))

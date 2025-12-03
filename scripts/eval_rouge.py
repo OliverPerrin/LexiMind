@@ -165,7 +165,7 @@ def main() -> None:
         references = [item[1] for item in batch]
         predictions = pipeline.summarize(documents, max_length=args.max_length)
 
-        for reference, prediction in zip(references, predictions):
+        for reference, prediction in zip(references, predictions, strict=False):
             scores = scorer.score(reference, prediction)
             for metric_name, score in scores.items():
                 score_store[metric_name]["precision"].append(score.precision)

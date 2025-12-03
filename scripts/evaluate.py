@@ -9,7 +9,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import List
+from typing import Any, List, cast
 
 import torch
 from sklearn.preprocessing import MultiLabelBinarizer
@@ -44,13 +44,13 @@ SPLIT_ALIASES = {
 }
 
 
-def _read_split(root: Path, split: str, loader) -> list:
+def _read_split(root: Path, split: str, loader) -> List[Any]:
     aliases = SPLIT_ALIASES.get(split, (split,))
     for alias in aliases:
         for ext in ("jsonl", "json"):
             candidate = root / f"{alias}.{ext}"
             if candidate.exists():
-                return loader(str(candidate))
+                return cast(List[Any], loader(str(candidate)))
     raise FileNotFoundError(f"Missing {split} split under {root}")
 
 
@@ -152,7 +152,7 @@ def main() -> None:
         inputs = [example.text for example in batch]
         predictions = pipeline.predict_emotions(inputs)
         target_matrix = emotion_binarizer.transform([list(example.emotions) for example in batch])
-        for pred, target_row in zip(predictions, target_matrix):
+        for pred, target_row in zip(predictions, target_matrix, strict=False):
             vector = torch.zeros(len(metadata.emotion), dtype=torch.float32)
             for label in pred.labels:
                 idx = label_to_index.get(label)

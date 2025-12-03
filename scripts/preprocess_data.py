@@ -282,8 +282,8 @@ def preprocess_topic(
             random_state=seed,
             stratify=topics,
         )
-        train_records = list(zip(train_texts, train_topics))
-        val_rows = list(zip(val_texts, val_topics))
+        train_records = list(zip(train_texts, train_topics, strict=False))
+        val_rows = list(zip(val_texts, val_topics, strict=False))
 
     def to_records(pairs: Sequence[Tuple[str, str]]) -> Iterator[Dict[str, object]]:
         for text, topic in pairs:
