@@ -132,7 +132,7 @@ class InferencePipeline:
         for row in probs.cpu():
             pairs = [
                 (label, score)
-                for label, score in zip(self.emotion_labels, row.tolist())
+                for label, score in zip(self.emotion_labels, row.tolist(), strict=False)
                 if score >= decision_threshold
             ]
             labels = [label for label, _ in pairs]
