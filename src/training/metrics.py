@@ -61,6 +61,11 @@ def classification_report_dict(
     precision, recall, f1, support = precision_recall_fscore_support(
         targets, predictions, labels=labels, average=None, zero_division=0
     )
+    # Type hint help for static analysis since average=None returns arrays
+    precision = cast(np.ndarray, precision)
+    recall = cast(np.ndarray, recall)
+    f1 = cast(np.ndarray, f1)
+    support = cast(np.ndarray, support)
 
     report = {}
     if labels:
