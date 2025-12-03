@@ -64,9 +64,9 @@ def test_decoder_layer_causal_mask_blocks_future():
     B, H, Tq, Tk = self_attn.shape
     for i in range(Tq):
         for j in range(i + 1, Tk):
-            assert torch.allclose(
-                self_attn[:, :, i, j], torch.zeros(B, H)
-            ), f"Found nonzero attention to future position {j} from query {i}"
+            assert torch.allclose(self_attn[:, :, i, j], torch.zeros(B, H)), (
+                f"Found nonzero attention to future position {j} from query {i}"
+            )
 
 
 def test_decoder_stack_and_greedy_decode_shapes():

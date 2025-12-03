@@ -97,12 +97,12 @@ class LMHead(nn.Module):
 
         if tie_embedding is not None:
             # Validate sizes
-            assert (
-                tie_embedding.num_embeddings == vocab_size
-            ), "vocab size mismatch for weight tying"
-            assert (
-                tie_embedding.embedding_dim == d_model
-            ), "embedding dim must match d_model for weight tying"
+            assert tie_embedding.num_embeddings == vocab_size, (
+                "vocab size mismatch for weight tying"
+            )
+            assert tie_embedding.embedding_dim == d_model, (
+                "embedding dim must match d_model for weight tying"
+            )
             # Tie weights: point the projection weight to the embedding weight Tensor
             # Remove the existing projection parameter in favor of the embedding weight
             # This keeps the same Parameter object, so updates affect both modules.
