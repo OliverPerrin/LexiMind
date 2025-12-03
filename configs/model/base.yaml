@@ -3,6 +3,6 @@ num_encoder_layers: 6
 num_decoder_layers: 6
 num_attention_heads: 12
 ffn_dim: 3072
-dropout: 0.1
+dropout: 0.15  # Increased from 0.1 for better regularization
 use_pretrained: true
 pretrained_model_name: facebook/bart-base

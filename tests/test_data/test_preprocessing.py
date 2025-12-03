@@ -1,7 +1,7 @@
 import unittest
 
-from LexiMind.src.data.preprocessing import TextPreprocessor
-from LexiMind.src.data.tokenization import Tokenizer, TokenizerConfig
+from src.data.preprocessing import TextPreprocessor
+from src.data.tokenization import Tokenizer, TokenizerConfig
 
 
 class _StubTokenizer(Tokenizer):
