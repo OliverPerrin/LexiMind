@@ -1,4 +1,5 @@
 """Utility script to evaluate LexiMind summaries with ROUGE."""
+
 from __future__ import annotations
 
 import argparse

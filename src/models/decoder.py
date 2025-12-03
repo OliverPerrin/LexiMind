@@ -12,6 +12,7 @@ Conventions:
 - This decoder uses Pre-LN (RMSNorm before each sublayer).
 - RMSNorm is just simpler than LayerNorm and more computationally efficient, it's become the modern convention. These reasons are why I used it here.
 """
+
 import math
 from typing import Dict, List, Optional, Tuple, Union
 

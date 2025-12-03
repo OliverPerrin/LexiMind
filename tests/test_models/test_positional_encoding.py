@@ -4,7 +4,6 @@
 Tests for positional encoding.
 """
 
-
 import matplotlib
 import torch
 

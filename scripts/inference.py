@@ -1,4 +1,5 @@
 """Run inference with the multitask model."""
+
 from __future__ import annotations
 
 import argparse

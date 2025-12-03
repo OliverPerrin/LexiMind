@@ -2,6 +2,7 @@
 Minimal Gradio demo for the LexiMind multitask model.
 Shows raw model outputs without any post-processing tricks.
 """
+
 from __future__ import annotations
 
 import json
