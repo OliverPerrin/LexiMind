@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
 from torch.utils.data import Dataset
 
 
-@dataclass(slots=True)
+@dataclass
 class SummarizationExample:
     """Container for abstractive summarization samples."""
 
@@ -19,7 +19,7 @@ class SummarizationExample:
     summary: str
 
 
-@dataclass(slots=True)
+@dataclass
 class EmotionExample:
     """Container for multi-label emotion classification samples."""
 
@@ -27,7 +27,7 @@ class EmotionExample:
     emotions: Sequence[str]
 
 
-@dataclass(slots=True)
+@dataclass
 class TopicExample:
     """Container for topic clustering / classification samples."""
 

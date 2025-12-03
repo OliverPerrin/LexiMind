@@ -17,7 +17,7 @@ from ..data.tokenization import Tokenizer
 from .metrics import accuracy, multilabel_f1, rouge_like
 
 
-@dataclass(slots=True)
+@dataclass
 class TrainerConfig:
     max_epochs: int = 1
     gradient_clip_norm: float = 1.0

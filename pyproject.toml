@@ -67,3 +67,42 @@ line-ending = "auto"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "torch.*",
+    "transformers.*",
+    "datasets.*",
+    "numpy.*",
+    "pandas.*",
+    "sklearn.*",
+    "matplotlib.*",
+    "seaborn.*",
+    "nltk.*",
+    "tqdm.*",
+    "yaml.*",
+    "omegaconf.*",
+    "gradio.*",
+    "requests.*",
+    "kaggle.*",
+    "streamlit.*",
+    "plotly.*",
+    "faiss.*",
+    "huggingface_hub.*",
+    "hydra.*",
+    "bitsandbytes.*",
+    "accelerate.*",
+    "fastapi.*",
+    "mlflow.*",
+    "pydantic.*",
+    "rouge_score.*"
+]
+ignore_missing_imports = true
+follow_imports = "skip"

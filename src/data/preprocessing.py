@@ -31,7 +31,7 @@ class BasicTextCleaner(BaseEstimator, TransformerMixin):
         return " ".join(item.split())
 
 
-@dataclass(slots=True)
+@dataclass
 class Batch:
     """Bundle of tensors returned by the text preprocessor."""
 
