@@ -1,4 +1,5 @@
 """Helpers to assemble an inference pipeline from saved artifacts."""
+
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,4 +1,5 @@
 """API routes."""
+
 from typing import cast
 
 from fastapi import APIRouter, Depends, HTTPException, status

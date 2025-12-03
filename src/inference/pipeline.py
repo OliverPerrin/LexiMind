@@ -1,4 +1,5 @@
 """Inference helpers for multitask LexiMind models."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, fields, replace

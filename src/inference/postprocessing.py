@@ -1,4 +1,5 @@
 """Output cleaning helpers."""
+
 from typing import List
 
 

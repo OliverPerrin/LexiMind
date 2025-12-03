@@ -1,4 +1,5 @@
 """Download datasets used by LexiMind."""
+
 from __future__ import annotations
 
 import argparse

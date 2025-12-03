@@ -1,4 +1,5 @@
 """Preprocess raw datasets into JSONL splits for LexiMind training."""
+
 from __future__ import annotations
 
 import argparse
@@ -139,9 +140,10 @@ def preprocess_summarization(raw_dir: Path, processed_dir: Path) -> None:
         output_path = processed_dir / f"{split}.jsonl"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         print(f"Writing summarization split '{split}' to {output_path}")
-        with source_path.open("r", encoding="utf-8", newline="") as source_handle, output_path.open(
-            "w", encoding="utf-8"
-        ) as sink:
+        with (
+            source_path.open("r", encoding="utf-8", newline="") as source_handle,
+            output_path.open("w", encoding="utf-8") as sink,
+        ):
             reader = csv.DictReader(source_handle)
             for row in reader:
                 article = row.get("article") or row.get("Article") or ""

@@ -1,4 +1,5 @@
 """Unit tests for dataset record helpers in scripts.download_data."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -26,11 +27,13 @@ class DummyDataset:
 
 class DownloadDataRecordTests(unittest.TestCase):
     def test_emotion_records_handles_out_of_range_labels(self) -> None:
-        dataset_split = DummyDataset([
-            {"text": "sample", "label": 1},
-            {"text": "multi", "label": [0, 5]},
-            {"text": "string", "label": "2"},
-        ])
+        dataset_split = DummyDataset(
+            [
+                {"text": "sample", "label": 1},
+                {"text": "multi", "label": [0, 5]},
+                {"text": "string", "label": "2"},
+            ]
+        )
         label_names = ["sadness", "joy", "love"]
         records = list(
             download_data._emotion_records(
@@ -45,12 +48,14 @@ class DownloadDataRecordTests(unittest.TestCase):
         self.assertEqual(records[2]["emotions"], ["2"])
 
     def test_topic_records_handles_varied_label_inputs(self) -> None:
-        dataset_split = DummyDataset([
-            {"text": "news", "label": 3},
-            {"text": "list", "label": [1]},
-            {"text": "unknown", "label": "5"},
-            {"text": "missing", "label": []},
-        ])
+        dataset_split = DummyDataset(
+            [
+                {"text": "news", "label": 3},
+                {"text": "list", "label": [1]},
+                {"text": "unknown", "label": "5"},
+                {"text": "missing", "label": []},
+            ]
+        )
         label_names = ["World", "Sports", "Business", "Sci/Tech"]
         records = list(
             download_data._topic_records(

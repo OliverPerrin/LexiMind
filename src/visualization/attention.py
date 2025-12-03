@@ -1,4 +1,5 @@
 """Attention plotting utilities."""
+
 from typing import Sequence
 
 import matplotlib.pyplot as plt

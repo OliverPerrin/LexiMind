@@ -1,4 +1,5 @@
 """Multi-task trainer coordinating summarization, emotion, and topic heads."""
+
 from __future__ import annotations
 
 import shutil
@@ -330,9 +331,9 @@ class Trainer:
         """Generate and print sample summaries to monitor quality during training."""
         self.model.eval()
         samples_generated = 0
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print(f"[Validation Generation - Epoch {epoch}]")
-        print(f"{'='*80}")
+        print(f"{'=' * 80}")
 
         with torch.no_grad():
             for batch in val_loader:
@@ -400,7 +401,7 @@ class Trainer:
 
                 samples_generated += 1
 
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
         self.model.train()
 
     def _print_epoch_progress(
