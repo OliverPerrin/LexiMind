@@ -7,7 +7,7 @@ from typing import Any, Dict
 import yaml
 
 
-@dataclass(slots=True)
+@dataclass
 class Config:
     data: Dict[str, Any]
 

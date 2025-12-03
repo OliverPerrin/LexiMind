@@ -17,7 +17,7 @@ from .heads import ClassificationHead, LMHead
 from .multitask import MultiTaskModel
 
 
-@dataclass(slots=True)
+@dataclass
 class ModelConfig:
     """Configuration describing the transformer architecture."""
 

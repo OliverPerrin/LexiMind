@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Sequence, cast
 
 import numpy as np
 import torch
@@ -11,7 +11,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_f
 
 
 def accuracy(predictions: Sequence[int | str], targets: Sequence[int | str]) -> float:
-    return accuracy_score(targets, predictions)
+    return cast(float, accuracy_score(targets, predictions))
 
 
 def multilabel_f1(predictions: torch.Tensor, targets: torch.Tensor) -> float:
@@ -51,7 +51,7 @@ def calculate_bleu(predictions: Sequence[str], references: Sequence[str]) -> flo
         ref_tokens = [ref.split()]  # BLEU expects list of references
         scores.append(sentence_bleu(ref_tokens, pred_tokens, smoothing_function=smoother))
 
-    return sum(scores) / len(scores)
+    return cast(float, sum(scores) / len(scores))
 
 
 def classification_report_dict(
@@ -87,4 +87,4 @@ def get_confusion_matrix(
     predictions: Sequence[int | str], targets: Sequence[int | str], labels: List[str] | None = None
 ) -> np.ndarray:
     """Compute confusion matrix."""
-    return confusion_matrix(targets, predictions, labels=labels)
+    return cast(np.ndarray, confusion_matrix(targets, predictions, labels=labels))

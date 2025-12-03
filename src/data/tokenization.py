@@ -9,7 +9,7 @@ import torch
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 
-@dataclass(slots=True)
+@dataclass
 class TokenizerConfig:
     pretrained_model_name: str = "facebook/bart-base"
     max_length: int = 512
@@ -72,11 +72,14 @@ class Tokenizer:
 
     def encode(self, text: str) -> List[int]:
         content = text.lower() if self.config.lower else text
-        return self._tokenizer.encode(
-            content,
-            max_length=self.config.max_length,
-            truncation=self.config.truncation,
-            padding=self.config.padding,
+        return cast(
+            List[int],
+            self._tokenizer.encode(
+                content,
+                max_length=self.config.max_length,
+                truncation=self.config.truncation,
+                padding=self.config.padding,
+            ),
         )
 
     def encode_batch(self, texts: Sequence[str]) -> List[List[int]]:
@@ -114,11 +117,11 @@ class Tokenizer:
         }
 
     def decode(self, token_ids: Iterable[int]) -> str:
-        return self._tokenizer.decode(list(token_ids), skip_special_tokens=True)
+        return cast(str, self._tokenizer.decode(list(token_ids), skip_special_tokens=True))
 
     def decode_batch(self, sequences: Sequence[Sequence[int]]) -> List[str]:
         prepared = [list(seq) for seq in sequences]
-        return self._tokenizer.batch_decode(prepared, skip_special_tokens=True)
+        return cast(List[str], self._tokenizer.batch_decode(prepared, skip_special_tokens=True))
 
     def prepare_decoder_inputs(self, labels: torch.Tensor) -> torch.Tensor:
         """Shift decoder labels to create input ids prefixed by BOS."""
