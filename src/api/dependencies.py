@@ -7,6 +7,7 @@ from pathlib import Path
 from fastapi import HTTPException, status
 
 from ..utils.logging import get_logger
+
 logger = get_logger(__name__)
 
 from ..inference.factory import create_inference_pipeline

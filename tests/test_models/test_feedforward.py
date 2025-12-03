@@ -1,5 +1,5 @@
 import torch
-import pytest
+
 from src.models.feedforward import FeedForward
 
 
@@ -38,15 +38,15 @@ class TestFeedForward:
 
         # Parameter existence
         param_names = [name for name, _ in ffn.named_parameters()]
-        assert any('linear1' in name for name in param_names)
-        assert any('linear2' in name for name in param_names)
+        assert any("linear1" in name for name in param_names)
+        assert any("linear2" in name for name in param_names)
 
         # Parameter shapes
         shapes = {name: p.shape for name, p in ffn.named_parameters()}
-        assert shapes.get('linear1.weight') == (d_ff, d_model)
-        assert shapes.get('linear2.weight') == (d_model, d_ff)
-        assert shapes.get('linear1.bias') == (d_ff,)
-        assert shapes.get('linear2.bias') == (d_model,)
+        assert shapes.get("linear1.weight") == (d_ff, d_model)
+        assert shapes.get("linear2.weight") == (d_model, d_ff)
+        assert shapes.get("linear1.bias") == (d_ff,)
+        assert shapes.get("linear2.bias") == (d_model,)
 
         # ensure gradients flow
         x = torch.randn(3, 5, d_model)
