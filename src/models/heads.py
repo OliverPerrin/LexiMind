@@ -40,16 +40,36 @@ class ClassificationHead(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.out_proj = nn.Linear(d_model, num_labels)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
         """
         x: (batch, seq_len, d_model)
+        mask: (batch, seq_len) - True for valid tokens, False for padding
         returns: (batch, num_labels)
         """
         if self.pooler == "mean":
-            pooled = x.mean(dim=1)
+            if mask is not None:
+                # mask is (B, S)
+                # x is (B, S, D)
+                # Expand mask to (B, S, 1)
+                mask_expanded = mask.unsqueeze(-1).float()
+                # Zero out padding
+                x = x * mask_expanded
+                # Sum over sequence
+                sum_embeddings = x.sum(dim=1)
+                # Count valid tokens
+                sum_mask = mask_expanded.sum(dim=1)
+                # Avoid division by zero
+                sum_mask = torch.clamp(sum_mask, min=1e-9)
+                pooled = sum_embeddings / sum_mask
+            else:
+                pooled = x.mean(dim=1)
         elif self.pooler == "cls":
             pooled = x[:, 0, :]
         else:  # max
+            if mask is not None:
+                # Mask padding with -inf
+                mask_expanded = mask.unsqueeze(-1)
+                x = x.masked_fill(~mask_expanded, float("-inf"))
             pooled, _ = x.max(dim=1)
         pooled = self.dropout(pooled)
         return self.out_proj(pooled)

@@ -104,10 +104,15 @@ class MultiTaskModel(nn.Module):
             raise KeyError(f"Unknown task/head '{task}'")
 
         head = self.heads[task]
+        # Unwrap for type checking if compiled
+        check_head = head
+        if hasattr(head, "_orig_mod"):
+            check_head = head._orig_mod
+
         loss_kwargs = loss_kwargs or {}
 
         # Encoder-only heads expect encoder outputs
-        if isinstance(head, (ClassificationHead, TokenClassificationHead)):
+        if isinstance(check_head, (ClassificationHead, TokenClassificationHead)):
             if self.encoder is None:
                 raise RuntimeError("Encoder is required for encoder-side heads")
             # accept either input_ids or embeddings
@@ -129,18 +134,23 @@ class MultiTaskModel(nn.Module):
                 raise ValueError(
                     "inputs must contain 'input_ids' or 'embeddings' for encoder tasks"
                 )
-            logits = head(enc_out)
+
+            # Pass attention_mask to head if available (needed for mean pooling to ignore padding)
+            if isinstance(check_head, ClassificationHead):
+                logits = head(enc_out, mask=inputs.get("attention_mask"))
+            else:
+                logits = head(enc_out)
 
             if return_loss:
                 labels = inputs.get("labels", None)
                 if labels is None:
                     raise ValueError("return_loss=True requires 'labels' in inputs")
-                loss = self.compute_loss_for_head(head, logits, labels, **loss_kwargs)
+                loss = self.compute_loss_for_head(check_head, logits, labels, **loss_kwargs)
                 return loss, logits
             return logits
 
         # LM/seq2seq head: run encoder -> decoder -> lm head
-        if isinstance(head, LMHead):
+        if isinstance(check_head, LMHead):
             if self.encoder is None or self.decoder is None:
                 raise RuntimeError("Both encoder and decoder are required for LM-style heads")
 
@@ -163,6 +173,11 @@ class MultiTaskModel(nn.Module):
                 raise ValueError(
                     "inputs must contain 'src_ids' or 'src_embeddings' for seq2seq tasks"
                 )
+
+            # Clone memory to prevent CUDA Graph buffer overwrites when passing between compiled graphs
+            # This fixes "accessing tensor output of CUDAGraphs that has been overwritten" error
+            if isinstance(memory, torch.Tensor):
+                memory = memory.clone()
 
             # If training / teacher forcing: expect tgt_ids (shifted by caller) or embeddings
             if "tgt_ids" in inputs:
@@ -191,12 +206,12 @@ class MultiTaskModel(nn.Module):
                 labels = inputs.get("labels", None)
                 if labels is None:
                     raise ValueError("return_loss=True requires 'labels' in inputs for seq2seq")
-                loss = self.compute_loss_for_head(head, logits, labels, **loss_kwargs)
+                loss = self.compute_loss_for_head(check_head, logits, labels, **loss_kwargs)
                 return loss, logits
             return logits
 
         # Otherwise unsupported head type
-        raise RuntimeError(f"Unsupported head type: {type(head)}")
+        raise RuntimeError(f"Unsupported head type: {type(check_head)}")
 
     def compute_loss_for_head(
         self,

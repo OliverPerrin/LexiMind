@@ -51,7 +51,7 @@ def main() -> None:
     data_cfg = load_yaml(args.data_config).data
     tokenizer_section = data_cfg.get("tokenizer", {})
     tokenizer_config = TokenizerConfig(
-        pretrained_model_name=tokenizer_section.get("pretrained_model_name", "facebook/bart-base"),
+        pretrained_model_name=tokenizer_section.get("pretrained_model_name", "google/flan-t5-base"),
         max_length=int(tokenizer_section.get("max_length", 512)),
         lower=bool(tokenizer_section.get("lower", False)),
     )
@@ -64,7 +64,7 @@ def main() -> None:
         config=load_model_config(args.model_config),
     )
 
-    raw_state = torch.load(checkpoint, map_location="cpu")
+    raw_state = torch.load(checkpoint, map_location="cuda")
     if isinstance(raw_state, dict):
         if "model_state_dict" in raw_state and isinstance(raw_state["model_state_dict"], dict):
             state_dict = raw_state["model_state_dict"]

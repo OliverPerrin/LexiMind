@@ -1,6 +1,11 @@
-d_model: 768
-num_encoder_layers: 12
-num_decoder_layers: 12
-num_attention_heads: 12
-ffn_dim: 3072
+# FLAN-T5-large architecture
+# 24 encoder layers, 24 decoder layers, 1024 hidden dim
+d_model: 1024
+num_encoder_layers: 24
+num_decoder_layers: 24
+num_attention_heads: 16
+ffn_dim: 2816  # T5-large uses 2816
 dropout: 0.1
+activation: gated-gelu  # T5/FLAN-T5 uses gated-gelu (GELU with gating)
+use_pretrained: true
+pretrained_model_name: google/flan-t5-large

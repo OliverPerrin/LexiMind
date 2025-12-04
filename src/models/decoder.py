@@ -13,15 +13,14 @@ Conventions:
 - RMSNorm is just simpler than LayerNorm and more computationally efficient, it's become the modern convention. These reasons are why I used it here.
 """
 
-import math
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import torch
 import torch.nn as nn
 
-from .attention import MultiHeadAttention
+from .attention import MultiHeadAttention, T5RelativePositionBias
 from .feedforward import FeedForward
-from .positional_encoding import PositionalEncoding
+from .positional_encoding import LearnedPositionalEncoding, PositionalEncoding
 
 
 def create_causal_mask(seq_len: int, device: Optional[torch.device] = None) -> torch.Tensor:
@@ -50,17 +49,31 @@ class TransformerDecoderLayer(nn.Module):
         d_ff: int,
         dropout: float = 0.1,
         quantization: Optional[str] = None,
+        activation: Literal["gelu", "relu", "swiglu", "gated-gelu"] = "gated-gelu",
+        scale_attn_scores: bool = True,  # T5 uses False
     ):
         super().__init__()
         # use internal MHA dropout = 0.0; the layer handles dropout after sublayers
         self.self_attn = MultiHeadAttention(
-            d_model=d_model, num_heads=num_heads, dropout=0.0, quantization=quantization
+            d_model=d_model,
+            num_heads=num_heads,
+            dropout=0.0,
+            quantization=quantization,
+            scale_scores=scale_attn_scores,
         )
         self.cross_attn = MultiHeadAttention(
-            d_model=d_model, num_heads=num_heads, dropout=0.0, quantization=quantization
+            d_model=d_model,
+            num_heads=num_heads,
+            dropout=0.0,
+            quantization=quantization,
+            scale_scores=scale_attn_scores,
         )
         self.ffn = FeedForward(
-            d_model=d_model, d_ff=d_ff, dropout=dropout, quantization=quantization
+            d_model=d_model,
+            d_ff=d_ff,
+            dropout=dropout,
+            activation=activation,
+            quantization=quantization,
         )
 
         self.norm1 = nn.RMSNorm(d_model)
@@ -78,6 +91,8 @@ class TransformerDecoderLayer(nn.Module):
         tgt_mask: Optional[torch.Tensor] = None,
         memory_mask: Optional[torch.Tensor] = None,
         collect_attn: bool = False,
+        self_attn_position_bias: Optional[torch.Tensor] = None,
+        cross_attn_position_bias: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, Dict[str, Optional[torch.Tensor]]]:
         """
         Args:
@@ -86,6 +101,8 @@ class TransformerDecoderLayer(nn.Module):
             tgt_mask: optional mask for self-attn - shape (B, T, T) or (B, 1, T, T)
             memory_mask: optional mask for cross-attn - shape (B, S) or (B, 1, S) or (B, 1, T, S)
             collect_attn: whether to return attention weights
+            self_attn_position_bias: optional T5 relative position bias for self-attention
+            cross_attn_position_bias: optional T5 relative position bias for cross-attention
 
         Returns:
             (tgt_out, {"self": self_attn_weights, "cross": cross_attn_weights})
@@ -106,21 +123,46 @@ class TransformerDecoderLayer(nn.Module):
         # --- Masked self-attention (Pre-LN) ---
         x_norm = self.norm1(tgt)
         self_out, self_attn = self.self_attn(
-            x_norm, x_norm, x_norm, tgt_mask, return_attn_weights=collect_attn
+            x_norm,
+            x_norm,
+            x_norm,
+            tgt_mask,
+            return_attn_weights=collect_attn,
+            position_bias=self_attn_position_bias,
         )
         tgt = tgt + self.dropout1(self_out)
+
+        # Clamp inf values for fp16/bf16 training stability (like HuggingFace T5)
+        if tgt.dtype == torch.float16 or tgt.dtype == torch.bfloat16:
+            clamp_value = torch.finfo(tgt.dtype).max - 1000
+            tgt = torch.clamp(tgt, min=-clamp_value, max=clamp_value)
 
         # --- Cross-attention (Pre-LN) ---
         x_norm = self.norm2(tgt)
         cross_out, cross_attn = self.cross_attn(
-            x_norm, memory, memory, memory_mask, return_attn_weights=collect_attn
+            x_norm,
+            memory,
+            memory,
+            memory_mask,
+            return_attn_weights=collect_attn,
+            position_bias=cross_attn_position_bias,
         )
         tgt = tgt + self.dropout2(cross_out)
+
+        # Clamp inf values for fp16/bf16 training stability
+        if tgt.dtype == torch.float16 or tgt.dtype == torch.bfloat16:
+            clamp_value = torch.finfo(tgt.dtype).max - 1000
+            tgt = torch.clamp(tgt, min=-clamp_value, max=clamp_value)
 
         # --- Feed-forward (Pre-LN) ---
         x_norm = self.norm3(tgt)
         ffn_out = self.ffn(x_norm)
         tgt = tgt + self.dropout3(ffn_out)
+
+        # Clamp inf values for fp16/bf16 training stability
+        if tgt.dtype == torch.float16 or tgt.dtype == torch.bfloat16:
+            clamp_value = torch.finfo(tgt.dtype).max - 1000
+            tgt = torch.clamp(tgt, min=-clamp_value, max=clamp_value)
 
         return tgt, {"self": self_attn, "cross": cross_attn}
 
@@ -143,14 +185,42 @@ class TransformerDecoder(nn.Module):
         max_len: int = 512,
         pad_token_id: Optional[int] = None,
         quantization: Optional[str] = None,
+        use_learned_pos_enc: bool = False,
+        activation: Literal["gelu", "relu", "swiglu", "gated-gelu"] = "gated-gelu",
+        use_relative_position_bias: bool = False,  # T5-style relative position bias
     ):
         super().__init__()
         self.vocab_size = vocab_size
         self.d_model = d_model
         self.pad_token_id = pad_token_id
+        self.num_heads = num_heads
+        self.use_relative_position_bias = use_relative_position_bias
 
-        self.embedding = nn.Embedding(vocab_size, d_model)
-        self.pos_encoder = PositionalEncoding(d_model=d_model, max_len=max_len, dropout=dropout)
+        self.embedding = nn.Embedding(vocab_size, d_model, padding_idx=pad_token_id)
+
+        # Positional encoding (disabled when using relative position bias for T5)
+        self.self_relative_position_bias: Optional[T5RelativePositionBias] = None
+        self.cross_relative_position_bias: Optional[T5RelativePositionBias] = None
+        if use_relative_position_bias:
+            # T5 uses relative position bias instead of absolute positional embeddings
+            self.pos_encoder = None
+            # Self-attention position bias (decoder is causal, so is_decoder=True)
+            self.self_relative_position_bias = T5RelativePositionBias(
+                num_heads=num_heads,
+                num_buckets=32,
+                max_distance=128,
+                is_decoder=True,
+            )
+            # T5 cross-attention does NOT use position bias
+        elif use_learned_pos_enc:
+            self.pos_encoder = LearnedPositionalEncoding(
+                d_model=d_model, max_len=max_len + 2, dropout=dropout
+            )
+        else:
+            self.pos_encoder = PositionalEncoding(d_model=d_model, max_len=max_len, dropout=dropout)
+
+        # T5 does NOT scale attention scores by sqrt(d_k), others do
+        scale_attn_scores = not use_relative_position_bias
 
         self.layers = nn.ModuleList(
             [
@@ -160,6 +230,8 @@ class TransformerDecoder(nn.Module):
                     d_ff=d_ff,
                     dropout=dropout,
                     quantization=quantization,
+                    activation=activation,
+                    scale_attn_scores=scale_attn_scores,
                 )
                 for _ in range(num_layers)
             ]
@@ -172,6 +244,10 @@ class TransformerDecoder(nn.Module):
     def _build_padding_mask_from_ids(self, input_ids: torch.Tensor) -> torch.Tensor:
         """
         Convert input ids to (B, T, T) boolean mask where True = allowed.
+
+        Note: For T5, pad_token_id=0 is also used as decoder_start_token_id.
+        During generation, we should NOT mask the start token. The caller should
+        provide an explicit mask or set tgt_mask to avoid this issue.
         """
         assert self.pad_token_id is not None, "pad_token_id must be set to build mask from ids"
         pad_mask = input_ids != self.pad_token_id  # (B, T)
@@ -185,6 +261,7 @@ class TransformerDecoder(nn.Module):
         tgt_mask: Optional[torch.Tensor] = None,
         memory_mask: Optional[torch.Tensor] = None,
         collect_attn: bool = False,
+        skip_padding_mask: bool = False,  # Set True during generation to avoid masking start token
     ) -> Union[torch.Tensor, Tuple[torch.Tensor, List[Dict[str, torch.Tensor]]]]:
         """
         Args:
@@ -192,16 +269,21 @@ class TransformerDecoder(nn.Module):
             memory: (B, S, d_model)
             tgt_mask: optional; if None, will create (causal [+ padding if ids available])
             memory_mask: optional; if provided as (B, S) will be expanded to (B, 1, 1, S)
+            skip_padding_mask: if True, only use causal mask (for generation where start_token=pad_token)
         """
         # Prepare embeddings
         if inputs.dim() == 2:  # token ids
-            x = self.embedding(inputs) * math.sqrt(self.d_model)
+            # T5/FLAN-T5 does NOT scale embeddings by sqrt(d_model)
+            x = self.embedding(inputs)
         elif inputs.dim() == 3:
             x = inputs
         else:
             raise ValueError("inputs must be (B, T) token ids or (B, T, d_model) embeddings")
 
-        x = self.pos_encoder(x)
+        # Apply positional encoding if not using relative position bias
+        # (T5 uses relative position bias in attention instead of absolute positional embeddings)
+        if self.pos_encoder is not None:
+            x = self.pos_encoder(x)
         x = self.input_dropout(x)
 
         B, T, _ = x.shape
@@ -209,12 +291,14 @@ class TransformerDecoder(nn.Module):
         # Build target mask if not provided: combine causal + padding (if available)
         if tgt_mask is None:
             causal = create_causal_mask(T, device=x.device)  # (T, T)
-            if inputs.dim() == 2 and self.pad_token_id is not None:
+            if inputs.dim() == 2 and self.pad_token_id is not None and not skip_padding_mask:
+                # During training: combine causal mask with padding mask
                 pad_pairwise = self._build_padding_mask_from_ids(inputs)  # (B, T, T)
                 combined = pad_pairwise & causal.unsqueeze(0)  # (B, T, T)
                 tgt_mask = combined.unsqueeze(1)  # (B, 1, T, T) -> broadcast to heads
             else:
-                # No per-batch padding info: broadcast causal to (1, 1, T, T)
+                # During generation (skip_padding_mask=True) or no padding info:
+                # Use only causal mask - don't mask based on token values
                 tgt_mask = causal.unsqueeze(0).unsqueeze(1)  # (1, 1, T, T)
         else:
             # Ensure boolean and device alignment; accept (B, T, T) or (B,1,T,T) or (1,1,T,T)
@@ -230,10 +314,27 @@ class TransformerDecoder(nn.Module):
 
         attn_list: List[Dict[str, torch.Tensor]] = []
 
+        # Compute relative position biases (T5-style)
+        # Note: T5 uses relative position bias for self-attention but NOT for cross-attention
+        if self.use_relative_position_bias and self.self_relative_position_bias is not None:
+            self_position_bias = self.self_relative_position_bias(
+                T, T, x.device
+            )  # (1, num_heads, T, T)
+        else:
+            self_position_bias = None
+        # Cross-attention position bias is None for T5 (see T5 paper/implementation)
+        cross_position_bias = None
+
         # Pass through decoder layers
         for layer in self.layers:
             x, attn = layer(
-                x, memory, tgt_mask=tgt_mask, memory_mask=memory_mask, collect_attn=collect_attn
+                x,
+                memory,
+                tgt_mask=tgt_mask,
+                memory_mask=memory_mask,
+                collect_attn=collect_attn,
+                self_attn_position_bias=self_position_bias,
+                cross_attn_position_bias=cross_position_bias,
             )
             if collect_attn:
                 attn_list.append(attn)
@@ -244,6 +345,51 @@ class TransformerDecoder(nn.Module):
         if collect_attn:
             return logits, attn_list
         return logits
+
+    def greedy_decode_naive(
+        self,
+        memory: torch.Tensor,
+        max_len: int,
+        start_token_id: int,
+        end_token_id: Optional[int] = None,
+        device: Optional[torch.device] = None,
+        memory_mask: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
+        """
+        Naive greedy decoding using full forward pass (O(N^2) but simpler).
+        Used for debugging to verify step() correctness.
+        """
+        if device is None:
+            device = memory.device
+        B = memory.size(0)
+
+        # Initialize with start token
+        generated = torch.full((B, 1), start_token_id, dtype=torch.long, device=device)
+
+        for _ in range(max_len - 1):
+            # Full forward pass on entire generated sequence
+            # skip_padding_mask=True because start_token=pad_token for T5
+            logits = self.forward(
+                generated, memory, memory_mask=memory_mask, skip_padding_mask=True
+            )
+            if isinstance(logits, tuple):
+                logits = logits[0]
+            # logits: (B, T, vocab)
+
+            # Get logits for last position
+            next_logits = logits[:, -1, :]  # (B, vocab)
+
+            # Greedy: pick highest probability token
+            next_token = next_logits.argmax(dim=-1, keepdim=True)  # (B, 1)
+
+            # Append to generated
+            generated = torch.cat([generated, next_token], dim=1)
+
+            # Check for EOS
+            if end_token_id is not None and (next_token == end_token_id).all():
+                break
+
+        return generated
 
     def greedy_decode(
         self,
@@ -256,50 +402,65 @@ class TransformerDecoder(nn.Module):
         min_len: Optional[int] = None,
         ban_token_ids: Optional[List[int]] = None,
         no_repeat_ngram_size: int = 0,
+        repetition_penalty: float = 1.0,
         memory_mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         """
-        Naive greedy decoding: repeatedly run the decoder on the growing prefix.
-        Not optimized (recomputes full decoder each step) but simple and correct.
+        Greedy decoding with KV caching for O(N) complexity.
         """
         if device is None:
             device = memory.device
         B = memory.size(0)
+
+        # Initialize generated sequence with start token
         generated = torch.full((B, 1), start_token_id, dtype=torch.long, device=device)
+
+        # Initialize cache
+        cache: Dict[str, Any] = {"past_length": 0}
+        if memory_mask is not None:
+            cache["memory_mask"] = memory_mask
 
         min_len = 0 if min_len is None else max(0, min_len)
 
+        # Keep track of finished sequences
+        finished = torch.zeros(B, dtype=torch.bool, device=device)
+
         for _ in range(max_len - 1):
-            logits = self.forward(
-                generated, memory, collect_attn=False, memory_mask=memory_mask
-            )  # (B, L, V)
-            assert isinstance(logits, torch.Tensor)  # type narrowing
-            next_step_logits = logits[:, -1, :]
+            # Use the last generated token for the next step
+            last_token = generated[:, -1:]  # (B, 1)
 
-            # Apply constraints (min_len or ban_token_ids)
-            should_clone = False
-            if end_token_id is not None and generated.size(1) < max(1, min_len):
-                should_clone = True
-            if ban_token_ids:
-                should_clone = True
+            # Run one step of the decoder
+            logits, cache = self.step(last_token, memory, cache)
+            # logits: (B, vocab_size)
 
-            # Check for n-gram repetition
-            if no_repeat_ngram_size > 0:
-                # We might need to clone if we find something to ban
-                pass
+            next_step_logits = logits.clone()
 
-            if should_clone:
-                next_step_logits = next_step_logits.clone()
+            # Apply repetition penalty
+            if repetition_penalty != 1.0:
+                for b in range(B):
+                    if finished[b]:
+                        continue
+                    gen_seq = generated[b]
+                    unique_tokens = torch.unique(gen_seq)
+                    current_logits = next_step_logits[b, unique_tokens]
+                    next_step_logits[b, unique_tokens] = torch.where(
+                        current_logits < 0,
+                        current_logits * repetition_penalty,
+                        current_logits / repetition_penalty,
+                    )
 
+            # Apply constraints
             if end_token_id is not None and generated.size(1) < max(1, min_len):
                 next_step_logits[:, end_token_id] = float("-inf")
 
             if ban_token_ids:
                 next_step_logits[:, ban_token_ids] = float("-inf")
 
+            # N-gram repetition blocking
             if no_repeat_ngram_size > 0:
-                # Calculate banned tokens based on n-grams
                 for b in range(B):
+                    if finished[b]:
+                        continue
                     gen_seq = generated[b].tolist()
                     if len(gen_seq) < no_repeat_ngram_size - 1:
                         continue
@@ -307,28 +468,27 @@ class TransformerDecoder(nn.Module):
                     prefix = tuple(gen_seq[-(no_repeat_ngram_size - 1) :])
                     banned_for_this_batch = set()
 
-                    # Scan history for prefix
                     for i in range(len(gen_seq) - no_repeat_ngram_size + 1):
                         window = tuple(gen_seq[i : i + no_repeat_ngram_size - 1])
                         if window == prefix:
-                            # The token that followed this instance of prefix
                             if i + no_repeat_ngram_size - 1 < len(gen_seq):
                                 banned_for_this_batch.add(gen_seq[i + no_repeat_ngram_size - 1])
 
                     if banned_for_this_batch:
-                        if not should_clone:
-                            next_step_logits = next_step_logits.clone()
-                            should_clone = True
                         next_step_logits[b, list(banned_for_this_batch)] = float("-inf")
 
+            # Greedy selection
             next_token = next_step_logits.argmax(dim=-1, keepdim=True)  # (B, 1)
+
+            # Update generated sequence
             generated = torch.cat([generated, next_token], dim=1)
 
+            # Check for completion
             if end_token_id is not None:
-                # stop if all sequences ended
-                if generated.size(1) >= max(1, min_len):
-                    if (generated[:, -1] == end_token_id).all():
-                        break
+                is_end = next_token.squeeze(-1) == end_token_id
+                finished = finished | is_end
+                if finished.all() and generated.size(1) >= max(1, min_len):
+                    break
 
         return generated
 
@@ -337,7 +497,7 @@ class TransformerDecoder(nn.Module):
     # -----------------------------
     def step(
         self,
-        last_token_ids: torch.LongTensor,
+        last_token_ids: torch.Tensor,
         memory: torch.Tensor,
         cache: Optional[Dict] = None,
     ) -> Tuple[torch.Tensor, Dict]:
@@ -361,18 +521,33 @@ class TransformerDecoder(nn.Module):
         past_len = int(cache.get("past_length", 0))
 
         # 1) Embed last token and add positional encoding for position `past_len`
-        x = self.embedding(last_token_ids) * math.sqrt(self.d_model)  # (B,1,d)
-        # Use positional encoding buffer directly (avoid dropout in pos_encoder)
-        # pos_encoder.pe expected shape (1, max_len, d_model)
-        if hasattr(self.pos_encoder, "pe"):
-            pe = self.pos_encoder.pe  # (1, max_len, d_model)
-            pos_idx = past_len
-            if pos_idx >= pe.size(1):
-                raise RuntimeError(f"pos_idx {pos_idx} exceeds max_len {pe.size(1)}")
-            x = x + pe[:, pos_idx : pos_idx + 1, :].to(device)
-        else:
-            # fallback: call pos_encoder and rely on its dropout (less ideal)
-            x = self.pos_encoder(x)
+        # T5/FLAN-T5 does NOT scale embeddings by sqrt(d_model)
+        x = self.embedding(last_token_ids)  # (B,1,d)
+
+        # Handle positional encoding for single step
+        # Note: When using relative position bias (T5-style), pos_encoder is None
+        if self.pos_encoder is not None:
+            if hasattr(self.pos_encoder, "pe"):
+                # Sinusoidal: use buffer directly
+                pe = self.pos_encoder.pe  # (1, max_len, d_model)
+                pos_idx = past_len
+                if pos_idx >= pe.size(1):
+                    raise RuntimeError(f"pos_idx {pos_idx} exceeds max_len {pe.size(1)}")
+                x = x + pe[:, pos_idx : pos_idx + 1, :].to(device)
+            elif hasattr(self.pos_encoder, "embeddings"):
+                # Learned: lookup specific position
+                # Create position ids: [past_len]
+                pos_idx = torch.tensor([past_len], dtype=torch.long, device=device)
+                # Lookup embedding: (1, d_model)
+                pos_emb = self.pos_encoder.embeddings(pos_idx)
+                # Add to input: (B, 1, d_model) + (1, 1, d_model) broadcast
+                x = x + pos_emb.unsqueeze(0)
+                x = self.pos_encoder.dropout(x)
+            else:
+                # fallback: call pos_encoder (likely incorrect for step-by-step if it assumes pos 0)
+                x = self.pos_encoder(x)
+        # When pos_encoder is None (relative position bias mode), we skip positional encoding
+        # The position information is provided via relative_position_bias in attention
 
         # We will update new_cache incrementally
         new_cache = dict(cache)  # shallow copy
@@ -387,6 +562,23 @@ class TransformerDecoder(nn.Module):
                 memory_mask = memory_mask.unsqueeze(1).unsqueeze(1)
             elif memory_mask.dim() == 3:
                 memory_mask = memory_mask.unsqueeze(1)
+
+        # Compute position biases for incremental step (T5-style)
+        # For step mode: query_length=1, but actual position is past_len
+        # Self-attention: query at position past_len attends to keys at positions 0..past_len
+        # Note: T5 uses relative position bias for self-attention but NOT for cross-attention
+        if self.use_relative_position_bias and self.self_relative_position_bias is not None:
+            # Self-attention bias: query_length=1, key_length=past_len+1, offset=past_len
+            self_position_bias = self.self_relative_position_bias(
+                query_length=1,
+                key_length=past_len + 1,
+                device=device,
+                query_position_offset=past_len,
+            )  # (1, num_heads, 1, past_len+1)
+        else:
+            self_position_bias = None
+        # Cross-attention position bias is None for T5 (see T5 paper/implementation)
+        cross_position_bias = None
 
         # Iterate layers, updating caches and computing output for current token only
         layer_input = x  # (B,1,d_model)
@@ -430,7 +622,7 @@ class TransformerDecoder(nn.Module):
             # mask=True means attend.
             step_mask = torch.ones(B_, 1, 1, K_all.size(2), dtype=torch.bool, device=device)
             attn_out_heads, self_attn_w = layer.self_attn.attention(
-                Qh, K_all, V_all, mask=step_mask
+                Qh, K_all, V_all, mask=step_mask, position_bias=self_position_bias
             )
             # attn_out_heads: (B, H, 1, d_k)
             # concat heads, project out
@@ -472,7 +664,7 @@ class TransformerDecoder(nn.Module):
             )  # (B,H,1,d_k)
 
             cross_out_heads, cross_attn_w = layer.cross_attn.attention(
-                Qch, mem_k, mem_v, mask=memory_mask
+                Qch, mem_k, mem_v, mask=memory_mask, position_bias=cross_position_bias
             )
             cross_out = (
                 cross_out_heads.transpose(1, 2)

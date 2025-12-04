@@ -4,6 +4,7 @@ Attention mechanisms for Transformer architecture.
 This module implements the core attention mechanisms used in the Transformer model:
 - ScaledDotProductAttention: Fundamental attention operation
 - MultiHeadAttention: Parallel attention with learned projections
+- T5RelativePositionBias: Relative position bias for T5-style attention
 
 Doing this first for Bottom-Up implementation of the Transformer
 
@@ -19,6 +20,130 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+class T5RelativePositionBias(nn.Module):
+    """
+    T5-style relative position bias for attention.
+
+    T5 uses a learned embedding table to encode relative positions between tokens.
+    Positions are bucketed to handle arbitrary sequence lengths efficiently.
+
+    This is added to attention scores BEFORE softmax, not to embeddings.
+    """
+
+    def __init__(
+        self,
+        num_heads: int,
+        num_buckets: int = 32,
+        max_distance: int = 128,
+        is_decoder: bool = False,
+    ):
+        super().__init__()
+        self.num_heads = num_heads
+        self.num_buckets = num_buckets
+        self.max_distance = max_distance
+        self.is_decoder = is_decoder
+
+        # Learned embedding table: (num_buckets, num_heads)
+        self.relative_attention_bias = nn.Embedding(num_buckets, num_heads)
+
+    @staticmethod
+    def _relative_position_bucket(
+        relative_position: torch.Tensor,
+        bidirectional: bool = True,
+        num_buckets: int = 32,
+        max_distance: int = 128,
+    ) -> torch.Tensor:
+        """
+        Translate relative position to a bucket index.
+
+        T5 uses a combination of exact positions (for nearby tokens) and
+        logarithmically-spaced buckets (for distant tokens).
+        """
+        relative_buckets = torch.zeros_like(relative_position, dtype=torch.long)
+
+        if bidirectional:
+            num_buckets //= 2
+            relative_buckets += (relative_position > 0).long() * num_buckets
+            relative_position = torch.abs(relative_position)
+        else:
+            relative_position = -torch.min(relative_position, torch.zeros_like(relative_position))
+
+        # Half buckets for exact positions
+        max_exact = num_buckets // 2
+        is_small = relative_position < max_exact
+
+        # Other half for logarithmically-spaced buckets
+        relative_position_if_large = (
+            max_exact
+            + (
+                torch.log(relative_position.float() / max_exact)
+                / math.log(max_distance / max_exact)
+                * (num_buckets - max_exact)
+            ).long()
+        )
+        relative_position_if_large = torch.min(
+            relative_position_if_large, torch.full_like(relative_position_if_large, num_buckets - 1)
+        )
+
+        relative_buckets += torch.where(is_small, relative_position, relative_position_if_large)
+        return relative_buckets
+
+    def compute_bias(
+        self,
+        query_length: int,
+        key_length: int,
+        device: torch.device,
+        query_position_offset: int = 0,
+    ) -> torch.Tensor:
+        """
+        Compute relative position bias for attention.
+
+        Args:
+            query_length: Number of query positions
+            key_length: Number of key positions
+            device: Device to create tensors on
+            query_position_offset: Offset for query positions (for incremental decoding)
+                                   When decoding step-by-step, query_length=1 but the actual
+                                   position is past_len, so query_position_offset=past_len.
+
+        Returns: (1, num_heads, query_length, key_length)
+        """
+        # Create position indices
+        context_position = torch.arange(query_length, dtype=torch.long, device=device)[:, None]
+        context_position = (
+            context_position + query_position_offset
+        )  # Apply offset for incremental decoding
+        memory_position = torch.arange(key_length, dtype=torch.long, device=device)[None, :]
+
+        # Relative position: (query_length, key_length)
+        relative_position = memory_position - context_position
+
+        # Convert to bucket indices
+        relative_position_bucket = self._relative_position_bucket(
+            relative_position,
+            bidirectional=(not self.is_decoder),
+            num_buckets=self.num_buckets,
+            max_distance=self.max_distance,
+        )
+
+        # Look up bias values: (query_length, key_length, num_heads)
+        values = self.relative_attention_bias(relative_position_bucket)
+
+        # Reshape to (1, num_heads, query_length, key_length)
+        values = values.permute([2, 0, 1]).unsqueeze(0)
+
+        return values
+
+    def forward(
+        self,
+        query_length: int,
+        key_length: int,
+        device: torch.device,
+        query_position_offset: int = 0,
+    ) -> torch.Tensor:
+        return self.compute_bias(query_length, key_length, device, query_position_offset)
+
+
 class ScaledDotProductAttention(nn.Module):
     """
     Scaled Dot-Product Attention using PyTorch's optimized backend.
@@ -31,10 +156,15 @@ class ScaledDotProductAttention(nn.Module):
     See: https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html
     """
 
-    def __init__(self):
+    def __init__(self, scale_scores: bool = True):
+        """
+        Args:
+            scale_scores: Whether to scale attention scores by sqrt(d_k).
+                          T5 does NOT scale scores, so set this to False for T5.
+                          Standard transformers (BERT, GPT, etc.) use scaling.
+        """
         super().__init__()
-        # Params not needed here.
-        pass
+        self.scale_scores = scale_scores
 
     def forward(
         self,
@@ -43,90 +173,86 @@ class ScaledDotProductAttention(nn.Module):
         value: torch.Tensor,
         mask: Optional[torch.Tensor] = None,
         return_attn_weights: bool = False,
+        position_bias: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         """
-        Steps:
-        1. Compute attention scores: scores = query @ key.transpose(-2, -1)
-        2. Scale by sqrt(d_k)
-        3. Apply mask if provided (set masked positions to -inf before softmax)
-        4. Apply softmax to get attention weights
-        5. Compute output: output = attention_weights @ value
-        6. Return both output and attention_weights
+        Args:
+            query: (batch, num_heads, seq_q, d_k)
+            key: (batch, num_heads, seq_k, d_k)
+            value: (batch, num_heads, seq_k, d_v)
+            mask: Optional boolean mask, True = attend, False = mask
+            position_bias: Optional (1, num_heads, seq_q, seq_k) T5-style relative position bias
+
+        Returns:
+            output: (batch, num_heads, seq_q, d_v)
+            attention_weights: Optional (batch, num_heads, seq_q, seq_k)
         """
-        # NEW: FlashAttention implementation using PyTorch 2.0+ SDPA
-        # This automatically selects the best kernel (FlashAttention, EfficientAttention, etc.)
-
-        # Handle mask for SDPA
-        # User mask: 1/True = attend, 0/False = mask
-        # SDPA boolean mask: True = mask out, False = attend
-        # So I invert the user mask if it's provided
-        attn_mask = None
-        if mask is not None:
-            attn_mask = ~mask.to(dtype=torch.bool, device=query.device)
-
-        # Call SDPA
-        # Note: I don't apply dropout here as my original implementation doesn't
-        # If we wanted to, I'd pass dropout_p to this method
-        if not return_attn_weights:
-            output = F.scaled_dot_product_attention(
-                query, key, value, attn_mask=attn_mask, dropout_p=0.0, is_causal=False
-            )
-            # SDPA doesn't return attention weights by default for efficiency
-            # I return None for weights when using the optimized kernel
-            return output, None
-
-        # --------- OLD: Manual implementation (Fallback when weights are needed) ---------------
-        # Scaled Dot-Product Attention as described in "Attention Is All You Need" 2017.
-        # Computes: Attention(Q, K, V) = softmax(QK^T / sqrt(d_k))V
-        # The scaling factor (1/sqrt(d_k)) prevents the dot products from growing too large,
-        # which would push the softmax into regions with extremely small gradients.
-        # Args:
-        #     None - this module has no learnable parameters
-        # Forward Args:
-        #     query: Query tensor of shape (batch, seq_len, d_k)
-        #     key: Key tensor of shape (batch, seq_len, d_k)
-        #     value: Value tensor of shape (batch, seq_len, d_v)
-        #     mask: Optional mask tensor of shape (batch, seq_len, seq_len)
-        #      True/1 values indicate positions to attend to, False/0 to mask
-        # Returns:
-        #     output: Attention output of shape (batch, seq_len, d_v)
-        # attention_weights: Attention probability matrix (batch, seq_len, seq_len)
-        # Getting Dimension for Scaling
         d_k = query.size(-1)
+        scale_factor = 1.0 / math.sqrt(d_k) if self.scale_scores else 1.0
 
-        # Compute Attention Scores
-        scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
-
-        # Mask if provided
-        if mask is not None:
-            # Ensure mask is boolean and on same device as scores
-            mask_bool = mask.to(dtype=torch.bool, device=scores.device)
-            # masked_fill expects broadcastable mask: True means keep, False means mask out
-            scores = scores.masked_fill(~mask_bool, float("-1e9"))
-
-        # Softmax to get attention probabilities
-        p_attn = F.softmax(scores, dim=-1)
-
-        # If mask was provided, ensure masked positions are exactly zero (and handle all-masked rows)
-        if mask is not None:
-            # Convert mask to same dtype as p_attn for multiplication
-            mask_float = mask.to(dtype=p_attn.dtype, device=p_attn.device)
-            # Broadcast-multiply (zero out masked key positions)
-            p_attn = p_attn * mask_float
-            # Replace any NaNs (can occur when a row was entirely -inf prior to softmax) with 0.0
-            # torch.nan_to_num is efficient and handles negative/positive inf as well
+        # If we need attention weights, must use manual path
+        if return_attn_weights:
+            # Manual implementation with float32 softmax for numerical stability
+            scores = torch.matmul(query, key.transpose(-2, -1)) * scale_factor
+            if position_bias is not None:
+                scores = scores + position_bias
+            if mask is not None:
+                mask_bool = mask.to(dtype=torch.bool, device=scores.device)
+                if mask_bool.dim() == 2:
+                    mask_bool = mask_bool.unsqueeze(1).unsqueeze(2)
+                elif mask_bool.dim() == 3:
+                    mask_bool = mask_bool.unsqueeze(1)
+                scores = scores.masked_fill(~mask_bool, -1e4)
+            p_attn = F.softmax(scores.float(), dim=-1).type_as(scores)
             p_attn = torch.nan_to_num(p_attn, nan=0.0, posinf=0.0, neginf=0.0)
+            output = torch.matmul(p_attn, value)
+            return output, p_attn
 
-            # re-normalize rows that still have non-zero sum, this is not strictly necessary
-            # if mask is correct, but safe to avoid tiny numerical issues:
-            row_sums = p_attn.sum(dim=-1, keepdim=True)
-            # Avoid division by zero; only divide where row_sums > 0
-            nonzero_rows = row_sums > 0
-            p_attn = torch.where(nonzero_rows, p_attn / (row_sums + 1e-12), p_attn)
+        # Use optimized SDPA path - torch.compile friendly version
+        # Pre-scale query instead of using SDPA's scale parameter for better compile compatibility
+        # This avoids issues with inductor and custom scale values
+        if self.scale_scores:
+            query = query * scale_factor
 
-        output = torch.matmul(p_attn, value)
-        return output, p_attn
-        # ---------------------------------------------------
+        # Build combined attention mask (float tensor added to scores)
+        attn_mask = None
+
+        if position_bias is not None or mask is not None:
+            # Start with position bias if provided
+            if position_bias is not None:
+                # Clamp position bias to prevent overflow
+                attn_mask = position_bias.to(dtype=query.dtype).clamp(-100, 100)
+
+            # Add mask (convert bool mask to additive float mask)
+            if mask is not None:
+                mask_bool = mask.to(dtype=torch.bool, device=query.device)
+                if mask_bool.dim() == 2:
+                    mask_bool = mask_bool.unsqueeze(1).unsqueeze(2)
+                elif mask_bool.dim() == 3:
+                    mask_bool = mask_bool.unsqueeze(1)
+
+                mask_float = torch.zeros(mask_bool.shape, dtype=query.dtype, device=query.device)
+                mask_float = mask_float.masked_fill(~mask_bool, -1e4)
+
+                if attn_mask is not None:
+                    attn_mask = attn_mask + mask_float
+                else:
+                    attn_mask = mask_float
+
+        # Use SDPA without custom scale (scale=None uses default 1/sqrt(d_k))
+        # For T5 (scale_scores=False), we already didn't scale query above, so default scale is wrong
+        # But we pre-scaled query for scaled attention, so we need scale=1.0 here
+        # Actually simpler: always use scale=1.0 since we handle scaling ourselves
+        output = F.scaled_dot_product_attention(
+            query,
+            key,
+            value,
+            attn_mask=attn_mask,
+            dropout_p=0.0,
+            is_causal=False,
+            scale=1.0,  # We handle scaling manually above
+        )
+        return output, None
 
 
 # --------------- Rotary Positional Embeddings ---------------
@@ -186,6 +312,7 @@ class MultiHeadAttention(nn.Module):
         lora_rank: Rank of LoRA matrices (default: 8)
         lora_alpha: Scaling factor for LoRA (default: 16)
         lora_dropout: Dropout probability for LoRA (default: 0.1)
+        scale_scores: Whether to scale attention scores by sqrt(d_k). T5 does NOT scale.
     """
 
     def __init__(
@@ -200,6 +327,7 @@ class MultiHeadAttention(nn.Module):
         lora_alpha: int = 16,
         lora_dropout: float = 0.1,
         quantization: Optional[str] = None,
+        scale_scores: bool = True,  # T5 uses scale_scores=False
     ):
         super().__init__()
 
@@ -238,7 +366,8 @@ class MultiHeadAttention(nn.Module):
         self.W_V = Linear(d_model, d_model, **kwargs)
         self.W_O = Linear(d_model, d_model, **kwargs)
         # Create ScaledDotProductAttention instance
-        self.attention = ScaledDotProductAttention()
+        # Note: T5 does NOT scale attention scores by sqrt(d_k)
+        self.attention = ScaledDotProductAttention(scale_scores=scale_scores)
         # Create dropout layer
         self.dropout = nn.Dropout(p=dropout)
 
@@ -277,6 +406,7 @@ class MultiHeadAttention(nn.Module):
         value: torch.Tensor,
         mask: Optional[torch.Tensor] = None,
         return_attn_weights: bool = False,
+        position_bias: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         """
         Args:
@@ -284,6 +414,7 @@ class MultiHeadAttention(nn.Module):
             key: (batch, seq_len, d_model)
             value: (batch, seq_len, d_model)
             mask: Optional (batch, seq_len, seq_len) or (batch, 1, seq_len, seq_len)
+            position_bias: Optional (1, num_heads, seq_q, seq_k) T5-style relative position bias
 
         Returns:
             output: (batch, seq_len, d_model)
@@ -329,9 +460,9 @@ class MultiHeadAttention(nn.Module):
                 mask = mask.unsqueeze(1)  # (batch, 1, seq, seq)
         # Now mask broadcasts across all heads: (batch, 1, seq, seq) → (batch, 8, seq, seq)
 
-        # Apply attention
+        # Apply attention with optional position bias
         output, attn_weights = self.attention(
-            Q, K, V, mask, return_attn_weights=return_attn_weights
+            Q, K, V, mask, return_attn_weights=return_attn_weights, position_bias=position_bias
         )
         # output: (batch, num_heads, seq_len, d_k)
         # attn_weights: (batch, num_heads, seq_len, seq_len)

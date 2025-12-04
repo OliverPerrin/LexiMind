@@ -1,8 +1,12 @@
+# FLAN-T5-base architecture
+# 12 encoder layers, 12 decoder layers, 768 hidden dim
 d_model: 768
-num_encoder_layers: 6
-num_decoder_layers: 6
+num_encoder_layers: 12
+num_decoder_layers: 12
 num_attention_heads: 12
-ffn_dim: 3072
-dropout: 0.15  # Increased from 0.1 for better regularization
+ffn_dim: 2048  # T5 uses d_ff = 2048 for base model
+dropout: 0.1
+activation: gated-gelu  # T5/FLAN-T5 uses gated-gelu (GELU activation with gating, not SwiGLU)
 use_pretrained: true
-pretrained_model_name: facebook/bart-base
+pretrained_model_name: google/flan-t5-base
+use_relative_position_bias: true  # T5 uses relative position bias instead of absolute embeddings

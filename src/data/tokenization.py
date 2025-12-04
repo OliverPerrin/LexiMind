@@ -11,9 +11,9 @@ from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 @dataclass
 class TokenizerConfig:
-    pretrained_model_name: str = "facebook/bart-base"
+    pretrained_model_name: str = "google/flan-t5-base"
     max_length: int = 512
-    padding: str = "longest"
+    padding: str = "max_length"
     truncation: bool = True
     lower: bool = False
 
@@ -28,15 +28,29 @@ class Tokenizer:
             cfg.pretrained_model_name
         )
         self._pad_token_id = self._resolve_id(self._tokenizer.pad_token_id)
-        self._bos_token_id = self._resolve_id(
-            self._tokenizer.bos_token_id
-            if self._tokenizer.bos_token_id is not None
-            else self._tokenizer.cls_token_id
-        )
+
+        # T5 uses different special tokens than BART:
+        # T5: pad=0, eos=1, no explicit bos (uses pad or eos as decoder start)
+        # BART: bos=0, pad=1, eos=2
+        # We use eos_token_id as bos for T5 decoder start (common practice)
+        eos_id = self._tokenizer.eos_token_id
+        bos_id = self._tokenizer.bos_token_id
+
+        # For T5, decoder_start_token_id is typically pad_token_id (0)
+        # But we'll use a sensible default based on what's available
+        if bos_id is not None:
+            self._bos_token_id = self._resolve_id(bos_id)
+        elif (
+            hasattr(self._tokenizer, "decoder_start_token_id")
+            and self._tokenizer.decoder_start_token_id is not None
+        ):
+            self._bos_token_id = self._resolve_id(self._tokenizer.decoder_start_token_id)
+        else:
+            # T5 convention: use pad_token_id as decoder start
+            self._bos_token_id = self._pad_token_id
+
         self._eos_token_id = self._resolve_id(
-            self._tokenizer.eos_token_id
-            if self._tokenizer.eos_token_id is not None
-            else self._tokenizer.sep_token_id
+            eos_id if eos_id is not None else self._tokenizer.sep_token_id
         )
 
     @property

@@ -120,13 +120,22 @@ def build_summarization_dataloader(
     shuffle: bool = True,
     max_source_length: int | None = None,
     max_target_length: int | None = None,
+    num_workers: int = 0,
+    pin_memory: bool = False,
 ) -> DataLoader:
     collator = SummarizationCollator(
         tokenizer,
         max_source_length=max_source_length,
         max_target_length=max_target_length,
     )
-    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=collator)
+    return DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        collate_fn=collator,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+    )
 
 
 def build_emotion_dataloader(
@@ -136,9 +145,18 @@ def build_emotion_dataloader(
     batch_size: int,
     shuffle: bool = True,
     max_length: int | None = None,
+    num_workers: int = 0,
+    pin_memory: bool = False,
 ) -> DataLoader:
     collator = EmotionCollator(tokenizer, dataset, max_length=max_length)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=collator)
+    return DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        collate_fn=collator,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+    )
 
 
 def build_topic_dataloader(
@@ -148,6 +166,15 @@ def build_topic_dataloader(
     batch_size: int,
     shuffle: bool = True,
     max_length: int | None = None,
+    num_workers: int = 0,
+    pin_memory: bool = False,
 ) -> DataLoader:
     collator = TopicCollator(tokenizer, dataset, max_length=max_length)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=collator)
+    return DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        collate_fn=collator,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+    )

@@ -8,50 +8,63 @@ LexiMind couples a from-scratch Transformer implementation with a modern data an
 2. **Model Composition** – the bespoke encoder/decoder stack with task heads assembled via
    `MultiTaskModel`, plus `models.factory.build_multitask_model` to rebuild the network from
    configuration files.
-3. **Inference & Serving** – a multi-task pipeline capable of summarization, emotion, and topic classification; surfaced through a CLI and FastAPI service with plans for a Gradio UI.
+3. **Inference & Serving** – a multi-task pipeline capable of summarization, emotion, and topic classification; surfaced through a CLI and FastAPI service with a Gradio UI.
 
 ## Custom Transformer Stack
-- `src/models/encoder.py` and `src/models/decoder.py` implement Pre-LayerNorm Transformer
-  blocks with explicit positional encoding, masking logic, and incremental decoding support.
-- `src/models/heads.py` provides modular output heads. Summarization uses an `LMHead` tied to
-  the decoder embedding weights; emotion and topic tasks use `ClassificationHead` instances.
-- `src/models/multitask.py` routes inputs to the correct head, computes task-specific losses,
-  and exposes a single forward API used by the trainer and inference pipeline.
-- `src/models/factory.py` rebuilds the encoder, decoder, and heads directly from YAML config
-  and tokenizer metadata so inference rebuilds the exact architecture used in training.
+
+The custom Transformer is designed with **modern architectural choices** while maintaining compatibility with pre-trained weights from Google's **FLAN-T5**.
+
+### Architecture Highlights
+- **Pre-Layer Normalization (Pre-LN):** RMSNorm applied *before* each sublayer for stable training
+- **RMSNorm:** More efficient than LayerNorm (no mean computation, no bias parameters)
+- **FlashAttention:** Via PyTorch 2.0's `F.scaled_dot_product_attention` for O(N) memory
+- **Learned Positional Embeddings:** Trainable position representations (randomly initialized)
+- **Multi-Head Attention:** 12 heads with optional LoRA adapters and RoPE support
+
+### Weight Loading from FLAN-T5
+The `factory.py` module loads weights from FLAN-T5-base, which uses a compatible Pre-LN architecture:
+- **Token embeddings:** Shared between encoder and decoder
+- **Attention projections:** Q, K, V, O weights (bias initialized to zero since T5 has no attention bias)
+- **FFN weights:** `wi_1` → `linear1`, `wo` → `linear2` (T5 uses gated FFN; we use the up/down projections)
+- **RMSNorm weights:** Direct transfer (both use RMSNorm without bias)
+- **LM head:** Loaded from T5's `lm_head`
+
+**Note:** T5 uses *relative position bias* computed in attention, not absolute embeddings. Our learned positional embeddings are randomly initialized and train quickly during fine-tuning.
+
+### File Structure
+- `src/models/encoder.py` – TransformerEncoder with Pre-LN RMSNorm blocks
+- `src/models/decoder.py` – TransformerDecoder with KV-cache for efficient generation
+- `src/models/attention.py` – Multi-Head Attention with FlashAttention, LoRA, and RoPE support
+- `src/models/heads.py` – ClassificationHead (mean pooling) and LMHead (with weight tying)
+- `src/models/multitask.py` – Routes inputs to task-specific heads
+- `src/models/factory.py` – Builds models and loads FLAN-T5 weights
 
 ## Data, Tokenization, and Preprocessing
-- `src/data/tokenization.py` wraps `AutoTokenizer` to provide tensor-aware batching and helper
-  utilities for decoder input shifting, BOS/EOS resolution, and vocab size retrieval.
-- `src/data/preprocessing.py` introduces `TextPreprocessor`, layering a `BasicTextCleaner` with
-  optional scikit-learn transformers (via `sklearn_transformer`) before tokenization. This keeps
-  the default cleaning minimal while allowing future reuse of `sklearn.preprocessing` utilities
-  without changing calling code.
-- `src/data/dataset.py` and `src/data/dataloader.py` define strongly typed dataset containers and
-  collators that encode inputs with the shared tokenizer and set up task-specific labels (multi-label
-  emotions, categorical topics, seq2seq summaries).
+- `src/data/tokenization.py` wraps `AutoTokenizer` (configured for FLAN-T5) to provide tensor-aware batching and helper utilities for decoder input shifting.
+- `src/data/preprocessing.py` introduces `TextPreprocessor`, layering a `BasicTextCleaner` with optional scikit-learn transformers.
+- `src/data/dataset.py` and `src/data/dataloader.py` define strongly typed dataset containers and collators.
+
+### T5 Tokenizer Differences
+- **Vocab size:** 32,128 tokens (SentencePiece)
+- **Special tokens:** pad=0, eos=1 (no explicit BOS; decoder starts with pad token)
+- **Subword tokenization:** Unigram-based (vs BART's BPE)
 
 ## Training Pipeline
-- `src/training/trainer.py` coordinates multi-task optimization with per-task loss functions, gradient clipping, and shared tokenizer decoding for metric computation.
-- Metrics in `src/training/metrics.py` include accuracy, multi-label F1, and a ROUGE-like overlap score for summarization. These metrics mirror the trainer outputs logged per task.
-- Label vocabularies are serialized to `artifacts/labels.json` after training so inference can decode class indices consistently.
+- `src/training/trainer.py` coordinates multi-task optimization with:
+  - Mixed precision training (bfloat16 on Ampere/Ada GPUs)
+  - Gradient accumulation for larger effective batch sizes
+  - Per-task loss weighting and label smoothing
+- **torch.compile:** JIT compilation with Inductor backend for 20-40% speedup
+- Metrics in `src/training/metrics.py` include accuracy, multi-label F1, and ROUGE-like overlap
 
 ## Inference & Serving
-- `src/inference/pipeline.py` exposes summarization, emotion, and topic predictions with shared pre-processing, generation, and thresholding logic. It expects label vocabularies from the serialized metadata file.
-- `src/inference/factory.py` rebuilds the full pipeline by loading the tokenizer (preferring the exported tokenizer artifact), reconstructing the model via the factory helpers, restoring checkpoints, and injecting label metadata.
-- The CLI (`scripts/inference.py`) drives the pipeline from the command line. The FastAPI app (`src/api/routes.py`) exposes the `/summarize` endpoint that returns summaries, emotion labels + scores, and topic predictions. Test coverage in `tests/test_inference` and `tests/test_api` validates both layers with lightweight stubs.
-
-## Gradio UI Roadmap
-- The inference pipeline returns structured outputs that are already suitable for a web UI.
-- Planned steps for a Gradio demo:
-  1. Wrap `InferencePipeline.batch_predict` inside Gradio callbacks for text input.
-  2. Display summaries alongside emotion tag chips and topic confidence bars.
-  3. Surface token-level attention visualizations by extending the pipeline to emit decoder attention maps (hooks already exist in the decoder).
-- Documentation and code paths were structured to keep the Gradio integration isolated in a future `src/ui/gradio_app.py` module without altering core logic.
+- `src/inference/pipeline.py` exposes summarization, emotion, and topic predictions with shared pre-processing, generation, and thresholding logic.
+- `src/inference/factory.py` rebuilds the full pipeline using the exported tokenizer artifact
+- The CLI (`scripts/inference.py`) drives the pipeline from the command line
+- Gradio demo (`scripts/demo_gradio.py`) provides a web interface
 
 ## Key Decisions
-- **Custom Transformer Preservation** – all modeling remains on the bespoke encoder/decoder, satisfying the constraint to avoid Hugging Face model classes while still leveraging their tokenizer implementation.
-- **Tokenizer Artifact Preference** – inference automatically favors the exported tokenizer in `artifacts/hf_tokenizer`, guaranteeing consistent vocabularies between training and serving.
-- **Sklearn-friendly Preprocessing** – the text preprocessor now accepts an optional
-  `TransformerMixin` so additional normalization (lemmatization, custom token filters, etc.) can be injected using familiar scikit-learn tooling without rewriting the batching code.
-- **Documentation Alignment** – the `docs/` folder mirrors the structure requested, capturing design reasoning and paving the way for future diagrams in `docs/images`.
+- **Custom Transformer + Pre-trained Weights:** Building from scratch demonstrates deep understanding while leveraging FLAN-T5's language knowledge
+- **Pre-LN RMSNorm:** Modern architecture used by LLaMA, T5 v1.1, and other 2023-2025 models
+- **Tokenizer Artifact Preference:** Inference favors `artifacts/hf_tokenizer` for reproducibility
+- **Sklearn-friendly Preprocessing:** Optional `TransformerMixin` injection for custom cleaning
