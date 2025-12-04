@@ -394,14 +394,14 @@ def prepare_download(
         return handle.name
 
 
-def load_visualization_gallery() -> tuple[list[tuple[str, str]], str]:
+def load_visualization_gallery() -> tuple[list[str], str]:
     """Collect visualization images produced by model tests."""
-    items: list[tuple[str, str]] = []
+    items: list[str] = []
     missing: list[str] = []
-    for filename, label in VISUALIZATION_ASSETS:
+    for filename, _label in VISUALIZATION_ASSETS:
         path = VISUALIZATION_DIR / filename
         if path.exists():
-            items.append((str(path), label))
+            items.append(str(path))
         else:
             missing.append(filename)
 
@@ -444,7 +444,9 @@ def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
 def load_metrics_report_as_markdown() -> tuple[str, str, str | None, str]:
     """Load metrics and return as Markdown strings to avoid Gradio schema issues."""
     if not EVAL_REPORT_PATH.exists():
-        error_msg = f"Evaluation report not found at {EVAL_REPORT_PATH}. Run scripts/evaluate.py first."
+        error_msg = (
+            f"Evaluation report not found at {EVAL_REPORT_PATH}. Run scripts/evaluate.py first."
+        )
         return error_msg, "", None, error_msg
 
     try:
@@ -457,11 +459,11 @@ def load_metrics_report_as_markdown() -> tuple[str, str, str | None, str]:
 
     # Build overall metrics markdown table
     summary_md = """| Task | Metric | Value |
-|------|--------|-------|
-| Summarization | ROUGE-Like | {:.4f} |
-| Summarization | BLEU | {:.4f} |
-| Emotion | F1 (Macro) | {:.4f} |
-| Topic | Accuracy | {:.4f} |""".format(
+                    |------|--------|-------|
+                    | Summarization | ROUGE-Like | {:.4f} |
+                    | Summarization | BLEU | {:.4f} |
+                    | Emotion | F1 (Macro) | {:.4f} |
+                    | Topic | Accuracy | {:.4f} |""".format(
         report["summarization"]["rouge_like"],
         report["summarization"]["bleu"],
         report["emotion"]["f1_macro"],
@@ -470,7 +472,10 @@ def load_metrics_report_as_markdown() -> tuple[str, str, str | None, str]:
 
     # Build topic classification report markdown table
     topic_report = report["topic"]["classification_report"]
-    topic_lines = ["| Label | Precision | Recall | F1-Score | Support |", "|-------|-----------|--------|----------|---------|"]
+    topic_lines = [
+        "| Label | Precision | Recall | F1-Score | Support |",
+        "|-------|-----------|--------|----------|---------|",
+    ]
     for label, metrics in topic_report.items():
         if isinstance(metrics, dict) and "precision" in metrics:
             topic_lines.append(
@@ -509,7 +514,7 @@ def create_interface() -> gr.Blocks:
             """
         )
 
-        initial_visuals, initial_visual_status = load_visualization_gallery()
+        _, initial_visual_status = load_visualization_gallery()
         summary_md, topic_md, cm_image, metrics_meta = load_metrics_report_as_markdown()
 
         with gr.Row():
@@ -551,19 +556,10 @@ def create_interface() -> gr.Blocks:
                         refresh_metrics = gr.Button("Refresh Metrics")
 
                     with gr.TabItem("Model Visuals"):
-                        visuals = gr.Gallery(
-                            label="Test Visualizations",
-                            value=initial_visuals,
-                            columns=2,
-                            height=400,
-                            interactive=False,
-                            type="filepath",
-                        )
                         gr.Markdown(
                             "These PNGs come from the visualization-focused tests in `tests/test_models` and are consumed as-is."
                         )
-                        visuals_notice = gr.Markdown(initial_visual_status)
-                        refresh_visuals = gr.Button("Refresh Visuals")
+                        gr.Markdown(initial_visual_status)
 
                 gr.Markdown("### Download Results")
                 download_btn = gr.DownloadButton("Download JSON", visible=False)
@@ -573,11 +569,6 @@ def create_interface() -> gr.Blocks:
             fn=predict,
             inputs=[input_text],
             outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
-        )
-        refresh_visuals.click(
-            fn=load_visualization_gallery,
-            inputs=None,
-            outputs=[visuals, visuals_notice],
         )
         refresh_metrics.click(
             fn=load_metrics_report_as_markdown,
