@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, fields, replace
-from typing import Iterable, List, Sequence
+from typing import Any, Iterable, List, Sequence, cast
 
 import torch
 import torch.nn.functional as F
@@ -75,11 +75,14 @@ class InferencePipeline:
                 "Model must expose encoder and decoder attributes for summarization."
             )
 
+        # Cast to Any to allow access to dynamic attributes encoder and decoder
+        model = cast(Any, self.model)
+
         with torch.inference_mode():
             encoder_mask = (
                 src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
             )
-            memory = self.model.encoder(src_ids, mask=encoder_mask)
+            memory = model.encoder(src_ids, mask=encoder_mask)
             min_len = 10
 
             # Ban BOS, PAD, UNK from being generated
@@ -92,7 +95,7 @@ class InferencePipeline:
                 ban_token_ids.append(unk_id)
             ban_token_ids = [tid for tid in ban_token_ids if tid is not None]
 
-            generated = self.model.decoder.greedy_decode(
+            generated = model.decoder.greedy_decode(
                 memory=memory,
                 max_len=max_len,
                 start_token_id=self.tokenizer.bos_token_id,

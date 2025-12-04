@@ -262,7 +262,7 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
         )
 
         with torch.inference_mode():
-            memory = pipeline.model.encoder(src_ids, mask=encoder_mask)
+            memory = pipeline.model.encoder(src_ids, mask=encoder_mask)  # type: ignore
             target_enc = pipeline.tokenizer.batch_encode([summary])
             target_ids = target_enc["input_ids"].to(pipeline.device)
             target_mask = target_enc["attention_mask"].to(pipeline.device)
@@ -271,7 +271,7 @@ def create_attention_heatmap(text: str, summary: str, pipeline: InferencePipelin
             decoder_inputs = decoder_inputs[:, :target_len].to(pipeline.device)
             target_ids = target_ids[:, :target_len]
             memory_mask = src_mask.to(pipeline.device) if src_mask is not None else None
-            _, attn_list = pipeline.model.decoder(
+            _, attn_list = pipeline.model.decoder(  # type: ignore
                 decoder_inputs,
                 memory,
                 memory_mask=memory_mask,
