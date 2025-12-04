@@ -120,12 +120,12 @@ class TestTrainer(unittest.TestCase):
         self.model.forward.return_value = torch.randn(1, 2, 10, requires_grad=True)
         # Mock decoder for validation generation
         self.model.encoder.return_value = torch.randn(1, 2, 10)
-        self.model.decoder.greedy_decode.return_value = torch.tensor([[1, 2]])
+        self.model.decoder.greedy_decode_naive.return_value = torch.tensor([[1, 2]])
 
         history = self.trainer.fit(train_loaders, val_loaders=val_loaders)
 
         self.assertIn("val_epoch_1", history)
-        self.model.decoder.greedy_decode.assert_called()
+        self.model.decoder.greedy_decode_naive.assert_called()
 
 
 if __name__ == "__main__":
