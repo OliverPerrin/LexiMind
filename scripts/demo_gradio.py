@@ -441,56 +441,50 @@ def generate_fallback_summary(text: str, max_chars: int = 320) -> str:
     return " ".join(fragments)
 
 
-def load_metrics_report():
+def load_metrics_report_as_markdown() -> tuple[str, str, str | None, str]:
+    """Load metrics and return as Markdown strings to avoid Gradio schema issues."""
     if not EVAL_REPORT_PATH.exists():
-        return (
-            pd.DataFrame(),
-            pd.DataFrame(),
-            None,
-            {
-                "error": f"Evaluation report not found at {EVAL_REPORT_PATH}. Run scripts/evaluate.py first."
-            },
-        )
+        error_msg = f"Evaluation report not found at {EVAL_REPORT_PATH}. Run scripts/evaluate.py first."
+        return error_msg, "", None, error_msg
 
     try:
         with EVAL_REPORT_PATH.open("r", encoding="utf-8") as handle:
             report = json.load(handle)
     except Exception as exc:
         logger.error("Failed to read evaluation report: %s", exc, exc_info=True)
-        return pd.DataFrame(), pd.DataFrame(), None, {"error": str(exc)}
+        error_msg = f"Error loading report: {exc}"
+        return error_msg, "", None, error_msg
 
-    # Summarization & Emotion Metrics
-    summary_metrics = [
-        {
-            "Task": "Summarization",
-            "Metric": "ROUGE-Like",
-            "Value": report["summarization"]["rouge_like"],
-        },
-        {"Task": "Summarization", "Metric": "BLEU", "Value": report["summarization"]["bleu"]},
-        {"Task": "Emotion", "Metric": "F1 (Macro)", "Value": report["emotion"]["f1_macro"]},
-        {"Task": "Topic", "Metric": "Accuracy", "Value": report["topic"]["accuracy"]},
-    ]
-    summary_df = pd.DataFrame(summary_metrics)
+    # Build overall metrics markdown table
+    summary_md = """| Task | Metric | Value |
+|------|--------|-------|
+| Summarization | ROUGE-Like | {:.4f} |
+| Summarization | BLEU | {:.4f} |
+| Emotion | F1 (Macro) | {:.4f} |
+| Topic | Accuracy | {:.4f} |""".format(
+        report["summarization"]["rouge_like"],
+        report["summarization"]["bleu"],
+        report["emotion"]["f1_macro"],
+        report["topic"]["accuracy"],
+    )
 
-    # Topic Classification Report
+    # Build topic classification report markdown table
     topic_report = report["topic"]["classification_report"]
-    topic_rows = []
+    topic_lines = ["| Label | Precision | Recall | F1-Score | Support |", "|-------|-----------|--------|----------|---------|"]
     for label, metrics in topic_report.items():
-        if isinstance(metrics, dict):
-            row = {"Label": label}
-            row.update(metrics)
-            topic_rows.append(row)
-    topic_df = pd.DataFrame(topic_rows)
+        if isinstance(metrics, dict) and "precision" in metrics:
+            topic_lines.append(
+                f"| {label} | {metrics['precision']:.4f} | {metrics['recall']:.4f} | {metrics['f1-score']:.4f} | {int(metrics.get('support', 0))} |"
+            )
+    topic_md = "\n".join(topic_lines)
 
     # Confusion Matrix
     cm_image = str(CONFUSION_MATRIX_PATH) if CONFUSION_MATRIX_PATH.exists() else None
 
-    metadata = {
-        "split": report.get("split", "unknown"),
-        "last_updated": datetime.fromtimestamp(EVAL_REPORT_PATH.stat().st_mtime).isoformat(),
-    }
+    # Metadata
+    meta_str = f"Split: {report.get('split', 'unknown')}\nLast updated: {datetime.fromtimestamp(EVAL_REPORT_PATH.stat().st_mtime).isoformat()}"
 
-    return summary_df, topic_df, cm_image, metadata
+    return summary_md, topic_md, cm_image, meta_str
 
 
 SAMPLE_TEXT = (
@@ -516,7 +510,7 @@ def create_interface() -> gr.Blocks:
         )
 
         initial_visuals, initial_visual_status = load_visualization_gallery()
-        summary_df, topic_df, cm_image, metrics_meta = load_metrics_report()
+        summary_md, topic_md, cm_image, metrics_meta = load_metrics_report_as_markdown()
 
         with gr.Row():
             with gr.Column(scale=1):
@@ -542,23 +536,17 @@ def create_interface() -> gr.Blocks:
                         gr.Markdown("*Shows decoder attention if a summary is available.*")
                     with gr.TabItem("Model Performance"):
                         gr.Markdown("### Overall Metrics")
-                        metrics_table = gr.Dataframe(
-                            value=summary_df, headers=["Task", "Metric", "Value"], interactive=False
-                        )
+                        metrics_table = gr.Markdown(value=summary_md)
                         gr.Markdown("### Topic Classification Report")
-                        topic_table = gr.Dataframe(
-                            value=topic_df,
-                            headers=["Label", "precision", "recall", "f1-score", "support"],
-                            interactive=False,
-                        )
+                        topic_table = gr.Markdown(value=topic_md)
                         gr.Markdown("### Topic Confusion Matrix")
                         cm_output = gr.Image(value=cm_image, label="Confusion Matrix")
-
+                        gr.Markdown("### Metadata")
                         metrics_meta_text = gr.Textbox(
-                            value=json.dumps(metrics_meta, indent=2),
-                            label="Metadata",
+                            value=metrics_meta,
+                            label="Info",
                             interactive=False,
-                            lines=4,
+                            lines=2,
                         )
                         refresh_metrics = gr.Button("Refresh Metrics")
 
@@ -591,12 +579,8 @@ def create_interface() -> gr.Blocks:
             inputs=None,
             outputs=[visuals, visuals_notice],
         )
-        def load_metrics_report_for_ui():
-            summary_df, topic_df, cm_image, metadata = load_metrics_report()
-            return summary_df, topic_df, cm_image, json.dumps(metadata, indent=2)
-
         refresh_metrics.click(
-            fn=load_metrics_report_for_ui,
+            fn=load_metrics_report_as_markdown,
             inputs=None,
             outputs=[metrics_table, topic_table, cm_output, metrics_meta_text],
         )
