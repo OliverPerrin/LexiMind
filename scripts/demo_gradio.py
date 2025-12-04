@@ -124,14 +124,12 @@ def count_tokens(text: str) -> str:
 
 
 def predict(text: str):
-    hidden_download = gr.update(value=None, visible=False)
     if not text or not text.strip():
         return (
             "Please enter text to analyze.",
             None,
             "No topic prediction available.",
             None,
-            hidden_download,
         )
 
     try:
@@ -168,21 +166,11 @@ def predict(text: str):
                 "Attention heatmap unavailable: summary was empty."
             )
 
-        download_path = prepare_download(
-            text,
-            summary_source,
-            emotions,
-            topic,
-            neural_summary=summary or None,
-            fallback_summary=fallback_summary,
-        )
-        download_update = gr.update(value=download_path, visible=True)
-
-        return summary_html, emotion_plot, topic_markdown, attention_fig, download_update
+        return summary_html, emotion_plot, topic_markdown, attention_fig
 
     except Exception as exc:  # pragma: no cover - surfaced in UI
         logger.error("Prediction error: %s", exc, exc_info=True)
-        return "Prediction failed. Check logs for details.", None, "Error", None, hidden_download
+        return "Prediction failed. Check logs for details.", None, "Error", None
 
 
 def format_summary(original: str, summary: str, *, notice: str = "") -> str:
@@ -561,14 +549,11 @@ def create_interface() -> gr.Blocks:
                         )
                         gr.Markdown(initial_visual_status)
 
-                gr.Markdown("### Download Results")
-                download_btn = gr.DownloadButton("Download JSON", visible=False)
-
         input_text.change(fn=count_tokens, inputs=[input_text], outputs=[token_box])
         analyze_btn.click(
             fn=predict,
             inputs=[input_text],
-            outputs=[summary_output, emotion_output, topic_output, attention_output, download_btn],
+            outputs=[summary_output, emotion_output, topic_output, attention_output],
         )
         refresh_metrics.click(
             fn=load_metrics_report_as_markdown,
@@ -583,6 +568,12 @@ app = demo
 
 
 if __name__ == "__main__":
+    import os
+
+    # On HuggingFace Spaces, share must be False (they handle routing)
+    # but we need to ensure server binds correctly
+    is_hf_space = os.environ.get("SPACE_ID") is not None
+
     try:
         get_pipeline()
         demo.queue().launch(
