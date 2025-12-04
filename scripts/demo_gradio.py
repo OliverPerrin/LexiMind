@@ -554,7 +554,12 @@ def create_interface() -> gr.Blocks:
                         gr.Markdown("### Topic Confusion Matrix")
                         cm_output = gr.Image(value=cm_image, label="Confusion Matrix")
 
-                        metrics_meta_json = gr.JSON(value=metrics_meta, label="Metadata")
+                        metrics_meta_text = gr.Textbox(
+                            value=json.dumps(metrics_meta, indent=2),
+                            label="Metadata",
+                            interactive=False,
+                            lines=4,
+                        )
                         refresh_metrics = gr.Button("Refresh Metrics")
 
                     with gr.TabItem("Model Visuals"):
@@ -586,10 +591,14 @@ def create_interface() -> gr.Blocks:
             inputs=None,
             outputs=[visuals, visuals_notice],
         )
+        def load_metrics_report_for_ui():
+            summary_df, topic_df, cm_image, metadata = load_metrics_report()
+            return summary_df, topic_df, cm_image, json.dumps(metadata, indent=2)
+
         refresh_metrics.click(
-            fn=load_metrics_report,
+            fn=load_metrics_report_for_ui,
             inputs=None,
-            outputs=[metrics_table, topic_table, cm_output, metrics_meta_json],
+            outputs=[metrics_table, topic_table, cm_output, metrics_meta_text],
         )
         return demo
 
@@ -601,7 +610,12 @@ app = demo
 if __name__ == "__main__":
     try:
         get_pipeline()
-        demo.queue().launch(share=False, allowed_paths=[str(OUTPUTS_DIR)])
+        demo.queue().launch(
+            server_name="0.0.0.0",
+            server_port=7860,
+            share=False,
+            allowed_paths=[str(OUTPUTS_DIR)],
+        )
     except Exception as exc:  # pragma: no cover - surfaced in console
         logger.error("Failed to launch demo: %s", exc, exc_info=True)
         raise
