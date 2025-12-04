@@ -1,0 +1,35 @@
+# Development/Testing Configuration for FLAN-T5-base
+# Fast iteration for debugging and testing changes
+# Training time: ~10 minutes on RTX 4070 with aot_eager backend
+# Use: python scripts/train.py training=dev
+
+dataloader:
+  batch_size: 8  
+  shuffle: true
+  num_workers: 4  # Reduced to avoid overhead
+  pin_memory: true
+
+optimizer:
+  name: adamw
+  lr: 5.0e-5  # Higher LR for faster convergence on small dataset
+  weight_decay: 0.01
+
+scheduler:
+  name: cosine
+  warmup_steps: 50  # Fewer warmup steps for short training
+
+trainer:
+  max_epochs: 1  # Single epoch for quick testing
+  gradient_clip_norm: 1.0
+  gradient_accumulation_steps: 1  # No accumulation for speed
+  validation_max_length: 64  # Shorter for faster validation
+  label_smoothing: 0.1
+  task_weights:
+    summarization: 1.0
+    emotion: 1.0
+    topic: 1.0
+  
+  # Development-specific settings - optimized for ~10 min total
+  max_train_samples: 2000  # Reduced for faster iteration
+  max_val_samples: 200
+  validation_frequency: 1000  # Validate once during training

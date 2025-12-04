@@ -15,6 +15,7 @@ class FeedForward(nn.Module):
 
     Or with GELU: FFN(x) = GELU(xW₁ + b₁)W₂ + b₂
     Or with SwiGLU: FFN(x) = (Swish(xW_gate) * xW_up)W_down
+    Or with gated-gelu: FFN(x) = (GELU(xW_gate) * xW_up)W_down  (T5/FLAN-T5 style)
     """
 
     def __init__(
@@ -22,7 +23,7 @@ class FeedForward(nn.Module):
         d_model: int,
         d_ff: int,
         dropout: float = 0.1,
-        activation: Literal["gelu", "relu", "swiglu"] = "gelu",
+        activation: Literal["gelu", "relu", "swiglu", "gated-gelu"] = "gelu",
         quantization: Optional[str] = None,
     ):
         super().__init__()
@@ -47,20 +48,22 @@ class FeedForward(nn.Module):
             except (ImportError, AttributeError):
                 print("bitsandbytes not installed or incompatible, falling back to nn.Linear")
 
-        if activation == "swiglu":
-            # SwiGLU requires 3 linear layers: Gate, Up, Down
-            # We use the provided d_ff for the hidden dimension
-            self.linear_gate = Linear(d_model, d_ff, **kwargs)  # Gate projection
-            self.linear1 = Linear(d_model, d_ff, **kwargs)  # Up projection
-            self.linear2 = Linear(d_ff, d_model, **kwargs)  # Down projection
-            self.activation = nn.SiLU()  # Swish activation
+        if activation in ("swiglu", "gated-gelu"):
+            # Gated FFN requires 3 linear layers: Gate, Up, Down
+            # - swiglu uses SiLU (Swish) activation (LLaMA style)
+            # - gated-gelu uses GELU activation (T5/FLAN-T5 style)
+            self.linear_gate = Linear(d_model, d_ff, **kwargs)  # Gate projection (wi_0)
+            self.linear1 = Linear(d_model, d_ff, **kwargs)  # Up projection (wi_1)
+            self.linear2 = Linear(d_ff, d_model, **kwargs)  # Down projection (wo)
+
+            if activation == "swiglu":
+                self.activation = nn.SiLU()  # Swish activation
+            else:  # gated-gelu
+                self.activation = (
+                    nn.GELU()
+                )  # GELU activation (T5 uses gelu_new which is very close)
 
             # Init gate
-            # Note: bnb layers might not support direct init like this if they are already quantized/packed
-            # But if we are initializing from scratch, they are just empty params.
-            # However, bnb layers are usually used for loading pretrained weights.
-            # If training from scratch with 4bit, it's unusual (QLoRA is for finetuning).
-            # We'll assume standard init works or is overwritten by loading.
             if not quantization:
                 init.xavier_uniform_(self.linear_gate.weight)
                 init.zeros_(self.linear_gate.bias)
@@ -83,8 +86,8 @@ class FeedForward(nn.Module):
         x: (batch, seq_len, d_model)
         returns: (batch, seq_len, d_model)
         """
-        if self.activation_type == "swiglu":
-            # SwiGLU: (Swish(xW_gate) * xW_up) W_down
+        if self.activation_type in ("swiglu", "gated-gelu"):
+            # Gated FFN: (activation(xW_gate) * xW_up) W_down
             gate = self.activation(self.linear_gate(x))
             up = self.linear1(x)
             x = gate * up

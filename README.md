@@ -10,21 +10,55 @@ pinned: false
 
 # LexiMind: A Multi-Task NLP Model
 
-LexiMind is a state-of-the-art Natural Language Processing model designed for complex document understanding. It leverages a modern, pre-trained Transformer architecture to perform three sophisticated tasks simultaneously: text summarization, emotion classification, and topic clustering.
+LexiMind is a state-of-the-art Natural Language Processing model designed for complex document understanding. It features a **custom-built Transformer architecture** initialized with weights from Google's **FLAN-T5**, combining the flexibility of from-scratch implementation with the power of modern pre-trained models.
+
+The model performs three sophisticated tasks simultaneously: **text summarization**, **emotion classification**, and **topic clustering**.
 
 This project is built with industry-standard MLOps practices, including configuration management with Hydra, experiment tracking with MLflow, and containerization with Docker, making it a reproducible and scalable solution.
 
 ## Core Features
 
-*   **Abstractive Summarization:** Generates concise, coherent summaries of long-form text.
-*   **Emotion Classification:** Identifies the primary emotion (e.g., Joy, Sadness, Anger) conveyed in a document.
-*   **Topic Clustering:** Groups documents into thematic clusters based on their content.
+*   **Abstractive Summarization:** Generates concise, coherent summaries of long-form text using encoder-decoder attention.
+*   **Emotion Classification:** Identifies emotions (Joy, Sadness, Anger, Fear, Love, Surprise) conveyed in a document.
+*   **Topic Clustering:** Classifies documents into thematic categories (World, Sports, Business, Sci/Tech).
 
 ## Model Architecture
 
-LexiMind is built on a powerful pre-trained Transformer backbone (such as FLAN-T5), which is fine-tuned for high performance on the specified tasks. To ensure computational efficiency without sacrificing accuracy, the model is trained using Parameter-Efficient Fine-Tuning (PEFT) with Low-Rank Adaptation (LoRA).
+LexiMind implements a **from-scratch Transformer** with modern architectural choices:
 
-The model employs a multi-task learning framework, with a shared encoder-decoder core and distinct output heads for each task. This approach allows the model to learn rich, generalized representations of language, improving performance across all functions. Training is accelerated using Flash Attention and mixed-precision computation.
+### Custom Transformer Features
+- **Pre-Layer Normalization (Pre-LN):** RMSNorm applied before each sublayer for stable training
+- **FlashAttention:** Via PyTorch 2.0's `scaled_dot_product_attention` for efficient computation
+- **Learned Positional Embeddings:** Trainable position representations
+- **Multi-Head Attention:** 12 heads with 768-dimensional representations
+- **RMSNorm:** Modern normalization without bias (more efficient than LayerNorm)
+
+### Pre-trained Weight Initialization
+The model loads weights from **Google's FLAN-T5-base**, which provides:
+- Strong language understanding from instruction-tuning
+- Excellent performance on summarization and classification tasks
+- Encoder-decoder architecture matching our custom implementation
+
+### Multi-Task Learning
+A shared encoder-decoder backbone with task-specific heads:
+- **Summarization Head:** Language modeling head with weight tying
+- **Emotion Head:** Mean-pooled classification with dropout
+- **Topic Head:** Mean-pooled classification with dropout
+
+## Technical Specifications
+
+| Component | Specification |
+|-----------|--------------|
+| Architecture | Encoder-Decoder Transformer |
+| Pre-trained Base | google/flan-t5-base |
+| Hidden Dimension | 768 |
+| Encoder Layers | 12 |
+| Decoder Layers | 12 |
+| Attention Heads | 12 |
+| FFN Dimension | 2048 |
+| Normalization | RMSNorm (Pre-LN) |
+| Position Encoding | Learned Embeddings |
+| Max Sequence Length | 512 tokens |
 
 ## Getting Started
 
@@ -39,24 +73,18 @@ The model employs a multi-task learning framework, with a shared encoder-decoder
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/LexiMind.git
+    git clone https://github.com/OliverPerrin/LexiMind.git
     cd LexiMind
     ```
 
 2.  **Install dependencies:**
-    Poetry will handle the virtual environment and package installation.
     ```bash
     poetry install
     ```
 
-3.  **Download dataset:**
-    (Instructions for downloading your specific dataset would go here)
+3.  **Download and preprocess data:**
     ```bash
     poetry run python scripts/download_data.py
-    ```
-
-4.  **Preprocess data:**
-    ```bash
     poetry run python scripts/preprocess_data.py
     ```
 
@@ -64,84 +92,99 @@ The model employs a multi-task learning framework, with a shared encoder-decoder
 
 ### Configuration
 
-All training and model parameters are managed via Hydra. Configurations are located in the `configs/` directory. You can easily override parameters from the command line.
+All training and model parameters are managed via Hydra. Configurations are located in the `configs/` directory.
+
+Available configurations:
+- `model=base` - FLAN-T5-base (default, 12 layers)
+- `model=small` - Smaller model for testing (no pretrained weights)
+- `model=large` - FLAN-T5-large (24 layers, requires more VRAM)
+- `training=dev` - Quick development run
+- `training=medium` - Balanced training (~2-3 hours on RTX 4070)
+- `training=full` - Full training run
 
 ### Training
 
-To start the training process with a base configuration:
-
 ```bash
-poetry run python src/train.py
+# Default training with FLAN-T5-base
+poetry run python scripts/train.py
+
+# Quick development run
+poetry run python scripts/train.py training=dev
+
+# Medium training run (recommended for RTX 4070)
+poetry run python scripts/train.py training=medium
+
+# Override parameters
+poetry run python scripts/train.py training.optimizer.lr=5e-5
 ```
 
-To override a parameter, such as the learning rate:
-
-```bash
-poetry run python src/train.py training.learning_rate=5e-5
-```
-
-Experiments are automatically tracked with MLflow. You can view results by running `mlflow ui` in your terminal.
+Experiments are automatically tracked with MLflow. View results with `mlflow ui`.
 
 ### Evaluation
 
-To evaluate a trained model checkpoint against the test set:
-
 ```bash
-poetry run python src/evaluate.py model_checkpoint=checkpoints/best.pt
+poetry run python scripts/evaluate.py --checkpoint checkpoints/best.pt
 ```
-
-Evaluation metrics and model outputs will be saved to the `outputs/` directory.
 
 ### Inference & Demo
 
-A Gradio demo is available to interact with the trained model. To launch it:
-
 ```bash
+# Command-line inference
+poetry run python scripts/inference.py "Your text to analyze"
+
+# Gradio web demo
 poetry run python scripts/demo_gradio.py
 ```
 
-Navigate to the local URL provided to access the web interface for summarization, classification, and clustering.
-
 ## Docker
 
-For fully reproducible builds and easy deployment, you can use the provided Dockerfile.
+```bash
+# Build
+docker build -t leximind .
 
-1.  **Build the Docker image:**
-    ```bash
-    docker build -t leximind .
-    ```
-
-2.  **Run the Gradio demo in a container:**
-    ```bash
-    docker run -p 7860:7860 leximind
-    ```
+# Run demo
+docker run -p 7860:7860 leximind
+```
 
 ## Project Structure
 
 ```
 ├── configs/            # Hydra configuration files
-├── data/               # Raw, processed, and external data
-├── notebooks/          # Jupyter notebooks for exploration and analysis
-├── scripts/            # Helper scripts (data download, demo, etc.)
-├── src/                # Core source code for the model and training
+│   ├── model/          # Model architectures (base, small, large)
+│   ├── training/       # Training configs (dev, medium, full)
+│   └── data/           # Dataset configurations
+├── src/
+│   ├── models/         # Custom Transformer implementation
+│   │   ├── encoder.py  # TransformerEncoder with Pre-LN RMSNorm
+│   │   ├── decoder.py  # TransformerDecoder with KV-cache
+│   │   ├── attention.py # Multi-Head Attention with FlashAttention
+│   │   └── factory.py  # Model building with FLAN-T5 weight loading
 │   ├── data/           # Data loading and preprocessing
-│   ├── model/          # Model architecture and components
-│   └── training/       # Training and evaluation loops
-├── tests/              # Unit and integration tests
-├── Dockerfile          # Docker configuration
-├── pyproject.toml      # Project metadata and dependencies (for Poetry)
-└── README.md
+│   ├── training/       # Training loop with mixed precision
+│   └── inference/      # Inference pipeline
+├── scripts/            # Entry points
+├── tests/              # Unit tests
+└── notebooks/          # Analysis notebooks
 ```
 
 ## Code Quality
 
-This project enforces high code quality standards using the following tools:
-
-*   **Ruff:** For lightning-fast linting and code formatting.
-*   **MyPy:** For static type checking.
-
-These checks are automated on every commit using pre-commit hooks. To set them up, run:
+*   **Ruff:** Fast linting and formatting
+*   **MyPy:** Static type checking
+*   **Pre-commit hooks:** Automated quality checks
 
 ```bash
 poetry run pre-commit install
 ```
+
+## Performance Optimizations
+
+- **torch.compile:** JIT compilation with Inductor backend
+- **Mixed Precision:** bfloat16 training on Ampere/Ada GPUs
+- **TF32:** Enabled for RTX 30xx/40xx series
+- **KV-Cache:** Efficient autoregressive decoding
+- **FlashAttention:** Memory-efficient attention via SDPA
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
