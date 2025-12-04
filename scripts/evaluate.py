@@ -13,6 +13,7 @@ from typing import Any, List, cast
 
 import torch
 from sklearn.preprocessing import MultiLabelBinarizer
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -135,7 +136,13 @@ def main() -> None:
     print("Evaluating Summarization...")
     summaries_pred = []
     summaries_ref = []
-    for batch in chunks(summary_examples, args.batch_size):
+    total_batches = (len(summary_examples) + args.batch_size - 1) // args.batch_size
+    for batch in tqdm(
+        chunks(summary_examples, args.batch_size),
+        total=total_batches,
+        desc="Summarization",
+        unit="batch",
+    ):
         inputs = [example.source for example in batch]
         summaries_pred.extend(pipeline.summarize(inputs))
         summaries_ref.extend([example.summary for example in batch])
@@ -148,9 +155,17 @@ def main() -> None:
     emotion_preds_tensor = []
     emotion_target_tensor = []
     label_to_index = {label: idx for idx, label in enumerate(metadata.emotion)}
-    for batch in chunks(emotion_examples, args.batch_size):
+    total_batches = (len(emotion_examples) + args.batch_size - 1) // args.batch_size
+
+    # Lower threshold to 0.3 to catch weak signals, or use argmax if appropriate
+    # For now, we'll stick to thresholding but lower it.
+    inference_threshold = 0.3
+
+    for batch in tqdm(
+        chunks(emotion_examples, args.batch_size), total=total_batches, desc="Emotion", unit="batch"
+    ):
         inputs = [example.text for example in batch]
-        predictions = pipeline.predict_emotions(inputs)
+        predictions = pipeline.predict_emotions(inputs, threshold=inference_threshold)
         target_matrix = emotion_binarizer.transform([list(example.emotions) for example in batch])
         for pred, target_row in zip(predictions, target_matrix, strict=False):
             vector = torch.zeros(len(metadata.emotion), dtype=torch.float32)
@@ -169,7 +184,10 @@ def main() -> None:
     print("Evaluating Topic Classification...")
     topic_preds = []
     topic_targets = []
-    for batch in chunks(topic_examples, args.batch_size):
+    total_batches = (len(topic_examples) + args.batch_size - 1) // args.batch_size
+    for batch in tqdm(
+        chunks(topic_examples, args.batch_size), total=total_batches, desc="Topic", unit="batch"
+    ):
         inputs = [example.text for example in batch]
         topic_predictions = pipeline.predict_topics(inputs)
         topic_preds.extend([pred.label for pred in topic_predictions])

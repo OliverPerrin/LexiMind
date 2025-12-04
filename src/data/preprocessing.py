@@ -53,7 +53,7 @@ class TextPreprocessor:
         tokenizer: Tokenizer | None = None,
         *,
         tokenizer_config: TokenizerConfig | None = None,
-        tokenizer_name: str = "facebook/bart-base",
+        tokenizer_name: str = "google/flan-t5-base",
         max_length: int | None = None,
         lowercase: bool = True,
         remove_stopwords: bool = False,

@@ -1,9 +1,0 @@
-dataloader:
-  batch_size: 2
-  shuffle: false
-optimizer:
-  name: adamw
-  lr: 1.0e-4
-trainer:
-  max_epochs: 1
-  gradient_clip_norm: 0.5

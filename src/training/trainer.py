@@ -28,6 +28,7 @@ class TrainerConfig:
     label_smoothing: float = 0.0  # Label smoothing for regularization (e.g., 0.1)
     experiment_name: str = "LexiMind"
     run_name: str | None = None
+    gradient_accumulation_steps: int = 1
 
 
 class Trainer:
@@ -51,10 +52,13 @@ class Trainer:
         # Apply label smoothing to summarization task if configured
         self.label_smoothing = config.label_smoothing
         self._progress_last_len = 0
+        self.gradient_accumulation_steps = max(1, config.gradient_accumulation_steps)
+        self._nan_counter = 0  # Track consecutive NaNs
 
         # Mixed Precision Training
         # Initialize GradScaler for float16/bfloat16 training
         # This scales gradients to prevent underflow during backward pass
+        # Note: bfloat16 generally doesn't need scaling, but we keep it for safety unless it causes NaNs
         self.scaler = torch.GradScaler("cuda", enabled=(device.type == "cuda"))
 
         # Initialize MLflow
@@ -181,24 +185,53 @@ class Trainer:
         context = torch.enable_grad() if train else torch.no_grad()
         with context:
             for step in range(max_batches):
+                # Mark step begin for CUDA Graphs (inductor) to handle memory reuse correctly
+                if (
+                    train
+                    and self.device.type == "cuda"
+                    and hasattr(torch.compiler, "cudagraph_mark_step_begin")
+                ):
+                    torch.compiler.cudagraph_mark_step_begin()
+
                 backward_performed = False
                 step_total_loss = 0.0
+
+                # Mixed Precision Context
+                # Using bfloat16 for my RTX 4070 (Ampere/Ada) - better stability than float16
+                # Disable scaler for bfloat16 to prevent NaNs
+                use_bfloat16 = self.device.type == "cuda" and torch.cuda.is_bf16_supported()
 
                 for task, loader in loaders.items():
                     batch = self._next_batch(iterator_map, loader, task)
                     if batch is None:
                         continue
 
-                    # Mixed Precision Context
-                    # Using bfloat16 for my RTX 4070 (Ampere/Ada) - better stability than float16
                     with torch.autocast(
-                        "cuda", dtype=torch.bfloat16, enabled=(self.device.type == "cuda")
+                        "cuda",
+                        dtype=torch.bfloat16 if use_bfloat16 else torch.float16,
+                        enabled=(self.device.type == "cuda"),
                     ):
                         loss, task_metrics = self._forward_task(task, batch, train)
 
+                    if torch.isnan(loss):
+                        if train:
+                            self._nan_counter += 1
+                            print(
+                                f"Warning: NaN loss detected for task '{task}'. Skipping update for this task. (Consecutive NaNs: {self._nan_counter})"
+                            )
+                            if self._nan_counter > 10:
+                                raise RuntimeError(
+                                    "Too many consecutive NaN losses. Training is diverging."
+                                )
+                        continue
+                    else:
+                        if train:
+                            self._nan_counter = 0
+
                     weight = self._task_weight(task)
-                    weighted_loss = loss * weight
-                    step_total_loss += weighted_loss.item()
+                    # Scale loss by gradient accumulation steps
+                    weighted_loss = (loss * weight) / self.gradient_accumulation_steps
+                    step_total_loss += weighted_loss.item() * self.gradient_accumulation_steps
 
                     metrics_accumulator[f"{task}_loss"].append(loss.item())
                     for metric_name, metric_value in task_metrics.items():
@@ -208,23 +241,39 @@ class Trainer:
                         # Scale loss before backward to prevent underflow
                         # We accumulate gradients from all tasks before stepping the optimizer
                         # This effectively minimizes the weighted sum of losses: L_total = w1*L1 + w2*L2 + ...
-                        self.scaler.scale(weighted_loss).backward()
+                        if use_bfloat16:
+                            # bfloat16 doesn't need scaling and it can cause NaNs
+                            weighted_loss.backward()
+                        else:
+                            self.scaler.scale(weighted_loss).backward()
                         backward_performed = True
 
                 if backward_performed:
                     metrics_accumulator["total_loss"].append(step_total_loss)
 
-                if train and backward_performed:
+                # Perform optimizer step only after accumulating enough gradients
+                if (
+                    train
+                    and backward_performed
+                    and (step + 1) % self.gradient_accumulation_steps == 0
+                ):
                     # Unscale gradients before clipping
-                    self.scaler.unscale_(self.optimizer)
-                    torch.nn.utils.clip_grad_norm_(
-                        self.model.parameters(), self.config.gradient_clip_norm
-                    )
+                    if use_bfloat16:
+                        torch.nn.utils.clip_grad_norm_(
+                            self.model.parameters(), self.config.gradient_clip_norm
+                        )
+                        self.optimizer.step()
+                        self.optimizer.zero_grad()
+                    else:
+                        self.scaler.unscale_(self.optimizer)
+                        torch.nn.utils.clip_grad_norm_(
+                            self.model.parameters(), self.config.gradient_clip_norm
+                        )
 
-                    # Step optimizer using scaler
-                    self.scaler.step(self.optimizer)
-                    self.scaler.update()
-                    self.optimizer.zero_grad()
+                        # Step optimizer using scaler
+                        self.scaler.step(self.optimizer)
+                        self.scaler.update()
+                        self.optimizer.zero_grad()
 
                 if (
                     train
@@ -360,6 +409,21 @@ class Trainer:
                     encoder_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2)
                 memory = self.model.encoder(src_ids, mask=encoder_mask)
 
+                # DEBUG: Check encoder output statistics
+                if samples_generated == 0:
+                    print("\n[DEBUG] Encoder output stats:")
+                    print(f"  Shape: {memory.shape}")
+                    print(f"  Mean: {memory.mean().item():.6f}")
+                    print(f"  Std: {memory.std().item():.6f}")
+                    print(f"  Min: {memory.min().item():.6f}")
+                    print(f"  Max: {memory.max().item():.6f}")
+                    print(f"  Has NaN: {torch.isnan(memory).any().item()}")
+                    print(f"  Has Inf: {torch.isinf(memory).any().item()}")
+
+                    # Check first few positions
+                    print(f"  First position norm: {memory[0, 0].norm().item():.4f}")
+                    print(f"  Last position norm: {memory[0, -1].norm().item():.4f}")
+
                 # Ban special tokens from generation
                 ban_token_ids = [self.tokenizer.bos_token_id, self.tokenizer.pad_token_id]
                 unk_id = getattr(self.tokenizer._tokenizer, "unk_token_id", None)
@@ -367,16 +431,13 @@ class Trainer:
                     ban_token_ids.append(unk_id)
                 ban_token_ids = [tid for tid in ban_token_ids if tid is not None]
 
-                # Generate
-                generated = self.model.decoder.greedy_decode(
+                # Generate using naive method (full forward, O(N^2)) for debugging
+                generated = self.model.decoder.greedy_decode_naive(
                     memory=memory,
                     max_len=self.config.validation_max_length,
                     start_token_id=self.tokenizer.bos_token_id,
                     end_token_id=self.tokenizer.eos_token_id,
                     device=self.device,
-                    min_len=10,
-                    ban_token_ids=ban_token_ids,
-                    no_repeat_ngram_size=3,
                     memory_mask=src_mask,
                 )
 
@@ -386,6 +447,9 @@ class Trainer:
                 reference_text = self._decode_labels(labels)[0]
 
                 print(f"\nSample {samples_generated + 1}:")
+                print(
+                    f"Raw token IDs: {generated[0][:20].tolist()}..."
+                )  # Debug: show first 20 tokens
                 print(
                     f"Source: {source_text[:200]}..."
                     if len(source_text) > 200
@@ -451,19 +515,24 @@ class Trainer:
         total_elapsed = time.perf_counter() - global_start
         if epochs_completed > 0:
             remaining_epochs = max(total_epochs - epochs_completed, 0.0)
-            eta = (
+            total_eta = (
                 (total_elapsed / epochs_completed) * remaining_epochs if total_elapsed > 0 else 0.0
             )
         else:
-            eta = 0.0
+            total_eta = 0.0
+
+        if step > 0:
+            epoch_eta = (epoch_elapsed / step) * (total_steps - step)
+        else:
+            epoch_eta = 0.0
+
         bar = self._format_progress_bar(overall_progress, width=self._progress_bar_width())
         message = (
             f"[progress] {bar} {percent:5.1f}% "
             f"e {epoch}/{total_epochs} "
             f"s {bounded_step}/{total_steps} "
-            f"ep {self._format_duration(epoch_elapsed)} "
-            f"tot {self._format_duration(total_elapsed)} "
-            f"eta {self._format_duration(eta)}"
+            f"ep_eta {self._format_duration(epoch_eta)} "
+            f"tot_eta {self._format_duration(total_eta)}"
         )
         display = self._truncate_to_terminal(message)
         padding = " " * max(self._progress_last_len - len(display), 0)

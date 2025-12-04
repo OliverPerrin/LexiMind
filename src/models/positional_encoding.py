@@ -76,3 +76,40 @@ class PositionalEncoding(nn.Module):
         # self.pe contains pre-computed encodings for all positions
         # just need to add the first seq_len positions to x
         return self.dropout(x)
+
+
+class LearnedPositionalEncoding(nn.Module):
+    """
+    Learned positional embeddings (used by BERT, GPT, etc.).
+
+    Note: T5/FLAN-T5 uses relative position bias instead of absolute positional embeddings.
+    When loading from T5, the model uses learned positional encodings that train from scratch.
+
+    Args:
+        d_model: Dimension of the model embeddings
+        max_len: Maximum sequence length
+        dropout: Dropout probability
+        padding_idx: Index of padding token (used to mask out padding positions if needed)
+    """
+
+    def __init__(
+        self, d_model: int, max_len: int = 1024, dropout: float = 0.1, padding_idx: int = 1
+    ):
+        super().__init__()
+        # Standard learned positional embeddings.
+        # Note: T5's relative position bias is NOT transferred - we train these from scratch.
+        self.embeddings = nn.Embedding(max_len, d_model)
+        self.dropout = nn.Dropout(p=dropout)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            x: Input embeddings (batch, seq_len, d_model)
+        """
+        seq_len = x.size(1)
+        positions = torch.arange(seq_len, dtype=torch.long, device=x.device)
+        # Broadcast to batch
+        positions = positions.unsqueeze(0).expand(x.size(0), -1)
+
+        pos_embeds = self.embeddings(positions)
+        return self.dropout(x + pos_embeds)

@@ -40,6 +40,8 @@ checkpoints/*.pt
 logs/
 *.log
 runs/
+mlruns/
+outputs/
 
 # Outputs
 results/
