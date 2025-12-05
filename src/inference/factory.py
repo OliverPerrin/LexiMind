@@ -1,4 +1,12 @@
-"""Helpers to assemble an inference pipeline from saved artifacts."""
+"""
+Inference pipeline factory for LexiMind.
+
+Assembles a complete inference pipeline from saved checkpoints, tokenizer
+artifacts, and label metadata. Handles model loading and configuration.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

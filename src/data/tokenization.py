@@ -1,4 +1,13 @@
-"""Tokenizer wrapper around HuggingFace models used across LexiMind."""
+"""
+Tokenizer facade for LexiMind.
+
+Wraps HuggingFace tokenizers with a simplified interface that handles
+special token management, batch encoding, and T5-specific conventions
+for decoder input preparation.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

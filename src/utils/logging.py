@@ -1,4 +1,11 @@
-"""Logging setup."""
+"""
+Logging utilities for LexiMind.
+
+Provides centralized logging configuration and logger factory.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 import logging
 

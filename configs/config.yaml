@@ -4,6 +4,13 @@ defaults:
   - training: default
   - _self_
 
+# Hydra config - prevent output dir conflicts
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: outputs/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
 checkpoint_out: "checkpoints/best.pt"
 labels_out: "artifacts/labels.json"
 history_out: "outputs/training_history.json"

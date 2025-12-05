@@ -1,4 +1,11 @@
-"""Output cleaning helpers."""
+"""
+Output postprocessing utilities for LexiMind.
+
+Provides text cleaning helpers for model outputs.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from typing import List
 

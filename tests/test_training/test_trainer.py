@@ -17,7 +17,7 @@ class TestTrainer(unittest.TestCase):
         self.model = MagicMock()
         self.model.to.return_value = self.model  # Ensure .to() returns the same mock
         self.optimizer = MagicMock(spec=torch.optim.Optimizer)
-        self.config = TrainerConfig(max_epochs=1, logging_interval=1)
+        self.config = TrainerConfig(max_epochs=1)
         self.device = torch.device("cpu")
         self.tokenizer = MagicMock()
         self.tokenizer.pad_token_id = 0

@@ -1,18 +1,12 @@
-"""
-Multitask model composition utilities.
+"""Multitask model composition utilities.
 
-Provides:
-- MultiTaskModel: lightweight wrapper to compose an encoder and/or decoder with
-  multiple task heads (classification, token classification, LM head, etc.)
-- add_head / remove_head helpers
-- forward(task_name, ...) that routes inputs to the correct sub-modules
-- compute_loss helper that uses common losses and ignore_index support
+This module provides infrastructure for multi-task learning:
+- MultiTaskModel: Compose encoder/decoder with multiple task heads
+- Routing: forward(task_name, ...) dispatches to correct components
+- Loss computation: Built-in cross-entropy with ignore_index support
 
-Design goals:
-- Keep composition simple and explicit (use named heads per task)
-- Support encoder-only tasks (classification, token classification) and
-  seq2seq tasks (encoder -> decoder -> LMHead)
-- Minimal dependencies on training loop; return logits and (optionally) loss
+Author: Oliver Perrin
+Date: 2025-10-23
 """
 
 from typing import Any, Dict, Optional

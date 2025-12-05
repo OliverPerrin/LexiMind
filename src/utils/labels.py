@@ -1,4 +1,12 @@
-"""Label metadata helpers for multitask inference."""
+"""
+Label metadata utilities for LexiMind.
+
+Manages persistence and loading of emotion and topic label vocabularies
+for multitask inference.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

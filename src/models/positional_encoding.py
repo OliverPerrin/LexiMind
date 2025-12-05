@@ -1,10 +1,12 @@
-# src/models/positional_encoding.py
-
 """
 Positional Encoding for Transformer models.
 
-Injects information about the position of tokens in a sequence, since
-self-attention has no inherent notion of token order.
+Provides sinusoidal position embeddings that inject sequential order information
+into token representations. Required because self-attention is permutation-invariant
+and has no inherent notion of token position.
+
+Author: Oliver Perrin
+Date: December 2025
 """
 
 import math

@@ -1,4 +1,11 @@
-"""Dependency providers for the FastAPI application."""
+"""
+FastAPI dependency providers for LexiMind.
+
+Manages lazy initialization and caching of the inference pipeline.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,12 @@
-"""Small training helpers."""
+"""
+Training utilities for LexiMind.
+
+Provides reproducibility helpers including seed management for stdlib, PyTorch,
+and NumPy random number generators with thread-safe spawning support.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

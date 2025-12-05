@@ -1,9 +1,17 @@
-"""Inference helpers for multitask LexiMind models."""
+"""
+Inference pipeline for LexiMind.
+
+Unified interface for summarization, emotion detection, and topic classification
+with batched processing and device management.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, fields, replace
-from typing import Any, Iterable, List, Sequence, cast
+from typing import Any, Dict, List, Sequence, cast
 
 import torch
 import torch.nn.functional as F
@@ -11,10 +19,12 @@ import torch.nn.functional as F
 from ..data.preprocessing import Batch, TextPreprocessor
 from ..data.tokenization import Tokenizer
 
+# --------------- Configuration ---------------
+
 
 @dataclass
 class InferenceConfig:
-    """Configuration knobs for the inference pipeline."""
+    """Pipeline settings."""
 
     summary_max_length: int = 128
     emotion_threshold: float = 0.5
@@ -33,8 +43,11 @@ class TopicPrediction:
     confidence: float
 
 
+# --------------- Pipeline ---------------
+
+
 class InferencePipeline:
-    """Run summarization, emotion, and topic heads through a unified interface."""
+    """Multi-task inference with batched processing."""
 
     def __init__(
         self,
@@ -50,50 +63,49 @@ class InferencePipeline:
         self.model = model
         self.tokenizer = tokenizer
         self.config = config or InferenceConfig()
-        chosen_device = device or self.config.device
-        if chosen_device is None:
-            first_param = next(model.parameters(), None)
-            chosen_device = first_param.device if first_param is not None else "cpu"
-        self.device = torch.device(chosen_device)
+
+        # Resolve device
+        chosen = device or self.config.device
+        if chosen is None:
+            param = next(model.parameters(), None)
+            chosen = param.device if param else "cpu"
+        self.device = torch.device(chosen)
+
         self.model.to(self.device)
         self.model.eval()
 
         self.preprocessor = preprocessor or TextPreprocessor(tokenizer=tokenizer)
-        self.emotion_labels = list(emotion_labels) if emotion_labels is not None else None
-        self.topic_labels = list(topic_labels) if topic_labels is not None else None
+        self.emotion_labels = list(emotion_labels) if emotion_labels else None
+        self.topic_labels = list(topic_labels) if topic_labels else None
+
+    # --------------- Summarization ---------------
 
     def summarize(self, texts: Sequence[str], *, max_length: int | None = None) -> List[str]:
+        """Generate summaries for input texts."""
         if not texts:
             return []
-        batch = self._batch_to_device(self.preprocessor.batch_encode(texts))
+
+        batch = self._to_device(self.preprocessor.batch_encode(texts))
         src_ids = batch.input_ids
         src_mask = batch.attention_mask
         max_len = max_length or self.config.summary_max_length
 
-        if not hasattr(self.model, "encoder") or not hasattr(self.model, "decoder"):
-            raise RuntimeError(
-                "Model must expose encoder and decoder attributes for summarization."
-            )
-
-        # Cast to Any to allow access to dynamic attributes encoder and decoder
         model = cast(Any, self.model)
+        if not hasattr(model, "encoder") or not hasattr(model, "decoder"):
+            raise RuntimeError("Model must have encoder and decoder for summarization")
 
         with torch.inference_mode():
-            encoder_mask = (
+            # Encode
+            enc_mask = (
                 src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
             )
-            memory = model.encoder(src_ids, mask=encoder_mask)
-            min_len = 10
+            memory = model.encoder(src_ids, mask=enc_mask)
 
-            # Ban BOS, PAD, UNK from being generated
-            ban_token_ids = [
-                self.tokenizer.bos_token_id,
-                self.tokenizer.pad_token_id,
-            ]
-            unk_id = getattr(self.tokenizer._tokenizer, "unk_token_id", None)
-            if isinstance(unk_id, int):
-                ban_token_ids.append(unk_id)
-            ban_token_ids = [tid for tid in ban_token_ids if tid is not None]
+            # Decode with constraints to improve quality
+            ban_ids = [self.tokenizer.bos_token_id, self.tokenizer.pad_token_id]
+            unk = getattr(self.tokenizer._tokenizer, "unk_token_id", None)
+            if isinstance(unk, int):
+                ban_ids.append(unk)
 
             generated = model.decoder.greedy_decode(
                 memory=memory,
@@ -101,16 +113,15 @@ class InferencePipeline:
                 start_token_id=self.tokenizer.bos_token_id,
                 end_token_id=self.tokenizer.eos_token_id,
                 device=self.device,
-                min_len=min_len,
-                ban_token_ids=ban_token_ids,
+                min_len=10,
+                ban_token_ids=[i for i in ban_ids if i is not None],
                 no_repeat_ngram_size=3,
                 memory_mask=src_mask,
             )
 
-            decoded_list = self.tokenizer.decode_batch(generated.tolist())
-            final_summaries = decoded_list
+        return self.tokenizer.decode_batch(generated.tolist())
 
-        return final_summaries
+    # --------------- Emotion ---------------
 
     def predict_emotions(
         self,
@@ -118,78 +129,91 @@ class InferencePipeline:
         *,
         threshold: float | None = None,
     ) -> List[EmotionPrediction]:
+        """Predict emotions for input texts."""
         if not texts:
             return []
-        if self.emotion_labels is None or not self.emotion_labels:
-            raise RuntimeError("emotion_labels must be provided to decode emotion predictions")
+        if not self.emotion_labels:
+            raise RuntimeError("emotion_labels required for emotion prediction")
 
-        batch = self._batch_to_device(self.preprocessor.batch_encode(texts))
-        model_inputs = self._batch_to_model_inputs(batch)
-        decision_threshold = threshold or self.config.emotion_threshold
+        batch = self._to_device(self.preprocessor.batch_encode(texts))
+        inputs = self._model_inputs(batch)
+        thresh = threshold or self.config.emotion_threshold
 
         with torch.inference_mode():
-            logits = self.model.forward("emotion", model_inputs)
+            logits = self.model.forward("emotion", inputs)
             probs = torch.sigmoid(logits)
 
-        predictions: List[EmotionPrediction] = []
+        results = []
         for row in probs.cpu():
             pairs = [
                 (label, score)
                 for label, score in zip(self.emotion_labels, row.tolist(), strict=False)
-                if score >= decision_threshold
+                if score >= thresh
             ]
-            labels = [label for label, _ in pairs]
-            scores = [score for _, score in pairs]
-            predictions.append(EmotionPrediction(labels=labels, scores=scores))
-        return predictions
-
-    def predict_topics(self, texts: Sequence[str]) -> List[TopicPrediction]:
-        if not texts:
-            return []
-        if self.topic_labels is None or not self.topic_labels:
-            raise RuntimeError("topic_labels must be provided to decode topic predictions")
-
-        batch = self._batch_to_device(self.preprocessor.batch_encode(texts))
-        model_inputs = self._batch_to_model_inputs(batch)
-
-        with torch.inference_mode():
-            logits = self.model.forward("topic", model_inputs)
-            probs = F.softmax(logits, dim=-1)
-
-        results: List[TopicPrediction] = []
-        for row in probs.cpu():
-            scores = row.tolist()
-            best_index = int(row.argmax().item())
             results.append(
-                TopicPrediction(label=self.topic_labels[best_index], confidence=scores[best_index])
+                EmotionPrediction(
+                    labels=[label for label, _ in pairs],
+                    scores=[score for _, score in pairs],
+                )
             )
         return results
 
-    def batch_predict(self, texts: Iterable[str]) -> dict[str, object]:
+    # --------------- Topic ---------------
+
+    def predict_topics(self, texts: Sequence[str]) -> List[TopicPrediction]:
+        """Predict topic for input texts."""
+        if not texts:
+            return []
+        if not self.topic_labels:
+            raise RuntimeError("topic_labels required for topic prediction")
+
+        batch = self._to_device(self.preprocessor.batch_encode(texts))
+        inputs = self._model_inputs(batch)
+
+        with torch.inference_mode():
+            logits = self.model.forward("topic", inputs)
+            probs = F.softmax(logits, dim=-1)
+
+        results = []
+        for row in probs.cpu():
+            idx = int(row.argmax().item())
+            results.append(
+                TopicPrediction(
+                    label=self.topic_labels[idx],
+                    confidence=row[idx].item(),
+                )
+            )
+        return results
+
+    # --------------- Batch Prediction ---------------
+
+    def batch_predict(self, texts: Sequence[str]) -> Dict[str, Any]:
+        """Run all three tasks on input texts."""
+        if not self.emotion_labels or not self.topic_labels:
+            raise RuntimeError("Both emotion_labels and topic_labels required")
+
         text_list = list(texts)
-        if self.emotion_labels is None or not self.emotion_labels:
-            raise RuntimeError("emotion_labels must be provided for batch predictions")
-        if self.topic_labels is None or not self.topic_labels:
-            raise RuntimeError("topic_labels must be provided for batch predictions")
         return {
             "summaries": self.summarize(text_list),
             "emotion": self.predict_emotions(text_list),
             "topic": self.predict_topics(text_list),
         }
 
-    def _batch_to_device(self, batch: Batch) -> Batch:
-        tensor_updates: dict[str, torch.Tensor] = {}
-        for item in fields(batch):
-            value = getattr(batch, item.name)
-            if torch.is_tensor(value):
-                tensor_updates[item.name] = value.to(self.device)
-        if not tensor_updates:
-            return batch
-        return replace(batch, **tensor_updates)
+    # --------------- Helpers ---------------
+
+    def _to_device(self, batch: Batch) -> Batch:
+        """Move batch tensors to device with non_blocking for speed."""
+        updates = {}
+        for f in fields(batch):
+            val = getattr(batch, f.name)
+            if torch.is_tensor(val):
+                updates[f.name] = val.to(self.device, non_blocking=True)
+        return replace(batch, **updates) if updates else batch
 
     @staticmethod
-    def _batch_to_model_inputs(batch: Batch) -> dict[str, torch.Tensor]:
-        inputs: dict[str, torch.Tensor] = {"input_ids": batch.input_ids}
+    def _model_inputs(batch: Batch) -> Dict[str, torch.Tensor]:
+        """Extract model inputs from batch."""
+        inputs = {"input_ids": batch.input_ids}
         if batch.attention_mask is not None:
             inputs["attention_mask"] = batch.attention_mask
         return inputs

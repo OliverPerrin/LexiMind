@@ -1,52 +1,64 @@
-"""Text preprocessing utilities built around Hugging Face tokenizers."""
+"""
+Text preprocessing for LexiMind.
+
+Lightweight text cleaning and tokenization pipeline for model input preparation.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from typing import Iterable, List, Sequence
+from typing import List, Sequence
 
 import torch
-from sklearn.base import BaseEstimator, TransformerMixin
 
 from .tokenization import Tokenizer, TokenizerConfig
 
+# --------------- Text Cleaning ---------------
 
-class BasicTextCleaner(BaseEstimator, TransformerMixin):
-    """Minimal text cleaner following scikit-learn conventions."""
 
-    def __init__(self, lowercase: bool = True, strip: bool = True) -> None:
+class TextCleaner:
+    """Basic text normalization."""
+
+    def __init__(self, lowercase: bool = True) -> None:
         self.lowercase = lowercase
-        self.strip = strip
 
-    def fit(self, texts: Iterable[str], y: Iterable[str] | None = None):
-        return self
-
-    def transform(self, texts: Iterable[str]) -> List[str]:
-        return [self._clean_text(text) for text in texts]
-
-    def _clean_text(self, text: str) -> str:
-        item = text.strip() if self.strip else text
+    def clean(self, text: str) -> str:
+        """Strip, normalize whitespace, optionally lowercase."""
+        text = text.strip()
         if self.lowercase:
-            item = item.lower()
-        return " ".join(item.split())
+            text = text.lower()
+        return " ".join(text.split())
+
+    def clean_batch(self, texts: Sequence[str]) -> List[str]:
+        """Clean multiple texts."""
+        return [self.clean(t) for t in texts]
+
+    # Backwards compatibility alias
+    def transform(self, texts: Sequence[str]) -> List[str]:
+        """Alias for clean_batch (sklearn-style interface)."""
+        return self.clean_batch(texts)
+
+
+# --------------- Batch Output ---------------
 
 
 @dataclass
 class Batch:
-    """Bundle of tensors returned by the text preprocessor."""
+    """Tokenized batch ready for model consumption."""
 
     input_ids: torch.Tensor
     attention_mask: torch.Tensor
     lengths: List[int]
 
 
-class TextPreprocessor:
-    """Coordinate lightweight text cleaning and tokenization.
+# --------------- Preprocessor ---------------
 
-    When supplying an already-initialized tokenizer instance, its configuration is left
-    untouched. If a differing ``max_length`` is requested, a ``ValueError`` is raised to
-    avoid mutating shared tokenizer state.
-    """
+
+class TextPreprocessor:
+    """Combines text cleaning with tokenization."""
 
     def __init__(
         self,
@@ -56,19 +68,10 @@ class TextPreprocessor:
         tokenizer_name: str = "google/flan-t5-base",
         max_length: int | None = None,
         lowercase: bool = True,
-        remove_stopwords: bool = False,
-        sklearn_transformer: TransformerMixin | None = None,
     ) -> None:
-        self.cleaner = BasicTextCleaner(lowercase=lowercase, strip=True)
-        self.lowercase = lowercase
-        if remove_stopwords:
-            raise ValueError(
-                "Stop-word removal is not supported because it conflicts with subword tokenizers; "
-                "clean the text externally before initializing TextPreprocessor."
-            )
-        self._stop_words = None
-        self._sklearn_transformer = sklearn_transformer
+        self.cleaner = TextCleaner(lowercase=lowercase)
 
+        # Initialize or validate tokenizer
         if tokenizer is None:
             cfg = tokenizer_config or TokenizerConfig(pretrained_model_name=tokenizer_name)
             if max_length is not None:
@@ -78,52 +81,33 @@ class TextPreprocessor:
             self.tokenizer = tokenizer
             if max_length is not None and max_length != tokenizer.config.max_length:
                 raise ValueError(
-                    "Provided tokenizer config.max_length does not match requested max_length; "
-                    "initialise the tokenizer with desired settings before passing it in."
+                    "max_length conflicts with tokenizer config - "
+                    "initialize tokenizer with desired settings"
                 )
 
         self.max_length = max_length or self.tokenizer.config.max_length
 
     def clean_text(self, text: str) -> str:
-        item = self.cleaner.transform([text])[0]
-        return self._normalize_tokens(item)
-
-    def _normalize_tokens(self, text: str) -> str:
-        """Apply token-level normalization and optional stop-word filtering."""
-        # Note: Pre-tokenization word-splitting is incompatible with subword tokenizers.
-        # Stop-word filtering should be done post-tokenization or not at all for transformers.
-        return text
-
-    def _apply_sklearn_transform(self, texts: List[str]) -> List[str]:
-        if self._sklearn_transformer is None:
-            return texts
-
-        transform = getattr(self._sklearn_transformer, "transform", None)
-        if transform is None:
-            raise AttributeError("Provided sklearn transformer must implement a 'transform' method")
-        transformed = transform(texts)
-        if isinstance(transformed, list):
-            return transformed  # assume downstream type is already list[str]
-        if hasattr(transformed, "tolist"):
-            transformed = transformed.tolist()
-
-        result = list(transformed)
-        if not all(isinstance(item, str) for item in result):
-            result = [str(item) for item in result]
-        return result
-
-    def _prepare_texts(self, texts: Sequence[str]) -> List[str]:
-        cleaned = self.cleaner.transform(texts)
-        normalized = [self._normalize_tokens(text) for text in cleaned]
-        return self._apply_sklearn_transform(normalized)
+        """Clean a single text."""
+        return self.cleaner.clean(text)
 
     def batch_encode(self, texts: Sequence[str]) -> Batch:
-        cleaned = self._prepare_texts(texts)
+        """Clean and tokenize texts into a batch."""
+        cleaned = self.cleaner.clean_batch(texts)
         encoded = self.tokenizer.batch_encode(cleaned, max_length=self.max_length)
-        input_ids: torch.Tensor = encoded["input_ids"]
-        attention_mask: torch.Tensor = encoded["attention_mask"].to(dtype=torch.bool)
+
+        input_ids = encoded["input_ids"]
+        attention_mask = encoded["attention_mask"].to(dtype=torch.bool)
         lengths = attention_mask.sum(dim=1).tolist()
+
         return Batch(input_ids=input_ids, attention_mask=attention_mask, lengths=lengths)
 
     def __call__(self, texts: Sequence[str]) -> Batch:
+        """Alias for batch_encode."""
         return self.batch_encode(texts)
+
+
+# --------------- Backwards Compatibility ---------------
+
+# Keep old name for any imports
+BasicTextCleaner = TextCleaner

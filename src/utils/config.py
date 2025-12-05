@@ -1,4 +1,11 @@
-"""YAML config loader."""
+"""
+Configuration utilities for LexiMind.
+
+Provides YAML configuration loading with validation.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from dataclasses import dataclass
 from pathlib import Path

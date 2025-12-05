@@ -1,17 +1,16 @@
-"""
-Transformer encoder implementation (Pre-LN).
+"""Transformer Encoder implementation (Pre-LN).
 
-Contains:
-- TransformerEncoderLayer: one encoder block (self-attention + FFN with residuals + LayerNorm (RMSNorm - modern convention))
-- TransformerEncoder: embedding + positional encoding + stack of encoder layers
+This module implements the encoder component of the Transformer architecture:
+- TransformerEncoderLayer: Single encoder block with self-attention + FFN
+- TransformerEncoder: Full stack with embeddings and positional encoding
 
-Design choices:
-- Pre-LN (RMSNorm before each sublayer) for stable training.
-- The FeedForward module is position-wise and does NOT include residuals or normalization.
-- MultiHeadAttention handles mask broadcasting from (B, S, S) -> (B, 1, S, S) internally.
-- The encoder accepts either token ids (LongTensor) or precomputed embeddings (FloatTensor).
-  If you pass token ids, provide vocab_size when constructing the encoder and optionally pad_token_id.
-- Optionally collect attention weights by passing collect_attn=True to forward().
+Design notes:
+- Pre-LN with RMSNorm for training stability
+- Masks are boolean: True = attend, False = mask
+- Supports T5-style relative position bias
+
+Author: Oliver Perrin
+Date: 2025-10-23
 """
 
 from typing import List, Literal, Optional, Tuple, Union
@@ -213,9 +212,9 @@ class TransformerEncoder(nn.Module):
         Build a 3D attention mask (batch, seq, seq) from input_ids and pad_token_id.
         True indicates valid positions; False indicates masked (pad).
         """
-        assert (
-            self.pad_token_id is not None
-        ), "pad_token_id must be set to build padding mask from ids."
+        assert self.pad_token_id is not None, (
+            "pad_token_id must be set to build padding mask from ids."
+        )
         # mask shape: (batch, seq) where True = token kept (non-pad)
         pad_mask = input_ids != self.pad_token_id
         # Convert to (batch, seq_q, seq_k) by outer product broadcasting

@@ -1,4 +1,12 @@
-"""API routes."""
+"""
+API routes for LexiMind.
+
+Defines REST endpoints for text analysis including summarization,
+emotion detection, and topic classification.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from typing import cast
 
