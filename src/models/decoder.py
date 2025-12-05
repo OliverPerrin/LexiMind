@@ -14,7 +14,7 @@ Author: Oliver Perrin
 Date: 2025-10-23
 """
 
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union, cast
 
 import torch
 import torch.nn as nn
@@ -530,7 +530,7 @@ class TransformerDecoder(nn.Module):
         if self.pos_encoder is not None:
             if hasattr(self.pos_encoder, "pe"):
                 # Sinusoidal: use buffer directly
-                pe = self.pos_encoder.pe  # (1, max_len, d_model)
+                pe: torch.Tensor = self.pos_encoder.pe  # type: ignore[union-attr]
                 pos_idx = past_len
                 if pos_idx >= pe.size(1):
                     raise RuntimeError(f"pos_idx {pos_idx} exceeds max_len {pe.size(1)}")
@@ -538,12 +538,12 @@ class TransformerDecoder(nn.Module):
             elif hasattr(self.pos_encoder, "embeddings"):
                 # Learned: lookup specific position
                 # Create position ids: [past_len]
-                pos_idx = torch.tensor([past_len], dtype=torch.long, device=device)
+                pos_idx_t = torch.tensor([past_len], dtype=torch.long, device=device)
                 # Lookup embedding: (1, d_model)
-                pos_emb = self.pos_encoder.embeddings(pos_idx)
+                pos_emb = self.pos_encoder.embeddings(pos_idx_t)  # type: ignore[union-attr]
                 # Add to input: (B, 1, d_model) + (1, 1, d_model) broadcast
                 x = x + pos_emb.unsqueeze(0)
-                x = self.pos_encoder.dropout(x)
+                x = self.pos_encoder.dropout(x)  # type: ignore[union-attr]
             else:
                 # fallback: call pos_encoder (likely incorrect for step-by-step if it assumes pos 0)
                 x = self.pos_encoder(x)
@@ -583,7 +583,8 @@ class TransformerDecoder(nn.Module):
 
         # Iterate layers, updating caches and computing output for current token only
         layer_input = x  # (B,1,d_model)
-        for i, layer in enumerate(self.layers):
+        for i, layer_module in enumerate(self.layers):
+            layer = cast(TransformerDecoderLayer, layer_module)
             # -------------------
             # 1) Self-attention (incremental)
             # -------------------

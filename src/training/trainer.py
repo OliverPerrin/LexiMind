@@ -10,6 +10,7 @@ Date: December 2025
 
 from __future__ import annotations
 
+import sys
 import time
 from collections import defaultdict
 from dataclasses import dataclass
@@ -23,6 +24,7 @@ from tqdm import tqdm
 
 from ..data.tokenization import Tokenizer
 from .metrics import accuracy, multilabel_f1, rouge_like
+from .nan_debugger import NaNDetector
 
 # --------------- Configuration ---------------
 
@@ -69,6 +71,14 @@ class Trainer:
         self.use_bfloat16 = self.use_amp and torch.cuda.is_bf16_supported()
         self.scaler = torch.GradScaler("cuda", enabled=(self.use_amp and not self.use_bfloat16))
 
+        # NaN detection
+        self.nan_detector = NaNDetector(model, enabled=True)
+        self.nan_skip_count = 0
+        self.max_nan_skips = 50
+
+        # Track current step for debugging
+        self._current_step = 0
+
         self._nan_counter = 0
         mlflow.set_experiment(config.experiment_name)
 
@@ -98,6 +108,8 @@ class Trainer:
                 desc="Training",
                 unit="epoch",
                 position=0,
+                file=sys.stderr,
+                dynamic_ncols=True,
             )
 
             for epoch in epoch_pbar:
@@ -178,11 +190,14 @@ class Trainer:
             unit="batch",
             leave=False,
             position=1,
+            file=sys.stderr,
+            dynamic_ncols=True,
         )
 
         context = torch.enable_grad() if train else torch.no_grad()
         with context:
             for step in pbar:
+                self._current_step = step
                 step_loss = 0.0
 
                 for task, loader in loaders.items():
@@ -241,7 +256,19 @@ class Trainer:
         return averaged
 
     def _optimizer_step(self) -> None:
-        """Optimizer step with gradient clipping."""
+        """Optimizer step with gradient clipping and NaN detection."""
+        # Check gradients for NaN/Inf BEFORE clipping
+        nan_grad = self.nan_detector.check_gradients(self._current_step)
+        if nan_grad is not None:
+            param_name, _ = nan_grad
+            print(f"⚠ Skipping optimizer step due to NaN gradient in {param_name}")
+            self.optimizer.zero_grad()
+            self.nan_skip_count += 1
+            if self.nan_skip_count > self.max_nan_skips:
+                raise RuntimeError("Too many NaN gradients, stopping")
+            return
+
+        # Clip and step
         if self.use_bfloat16:
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config.gradient_clip_norm)
             self.optimizer.step()
@@ -250,7 +277,15 @@ class Trainer:
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config.gradient_clip_norm)
             self.scaler.step(self.optimizer)
             self.scaler.update()
+
         self.optimizer.zero_grad()
+
+        # Check parameters for NaN AFTER update
+        nan_param = self.nan_detector.check_parameters(self._current_step)
+        if nan_param is not None:
+            raise RuntimeError(
+                f"NaN in parameter {nan_param} after optimizer step at step {self._current_step}!"
+            )
 
     def _get_batch(
         self, iterators: Dict, loader: DataLoader, task: str
@@ -274,14 +309,28 @@ class Trainer:
     def _forward_task(
         self, task: str, batch: Dict[str, torch.Tensor]
     ) -> tuple[torch.Tensor, Dict[str, float]]:
-        """Route to task-specific forward pass."""
+        """Route to task-specific forward pass with NaN detection."""
         if task == "summarization":
-            return self._forward_summarization(batch)
+            loss, task_metrics = self._forward_summarization(batch)
         elif task == "emotion":
-            return self._forward_emotion(batch)
+            loss, task_metrics = self._forward_emotion(batch)
         elif task == "topic":
-            return self._forward_topic(batch)
-        raise ValueError(f"Unknown task: {task}")
+            loss, task_metrics = self._forward_topic(batch)
+        else:
+            raise ValueError(f"Unknown task: {task}")
+
+        # Check for NaN in loss
+        if torch.isnan(loss):
+            self.nan_skip_count += 1
+            print(
+                f"⚠ NaN loss detected in {task} at step {self._current_step} (skip {self.nan_skip_count}/{self.max_nan_skips})"
+            )
+            if self.nan_skip_count > self.max_nan_skips:
+                raise RuntimeError(f"Too many NaN batches ({self.nan_skip_count}), stopping")
+            # Return zero loss to skip this batch
+            return torch.tensor(0.0, device=loss.device, requires_grad=True), task_metrics
+
+        return loss, task_metrics
 
     def _forward_summarization(
         self, batch: Dict[str, torch.Tensor]

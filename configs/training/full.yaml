@@ -1,27 +1,30 @@
 # Full Training Configuration for FLAN-T5-base
 # Complete training run on all data
-# Training time: ~6-8 hours on RTX 4070 12GB
+# Training time: ~4-6 hours on RTX 4070 12GB with inductor
 # Use: python scripts/train.py training=full
 
 dataloader:
-  batch_size: 6          # Optimized for 12GB VRAM
+  batch_size: 14
   shuffle: true
   num_workers: 6
   pin_memory: true
+  persistent_workers: true
+  prefetch_factor: 4
 
 optimizer:
   name: adamw
   lr: 2.0e-5
   weight_decay: 0.01
+  eps: 1.0e-6
 
 scheduler:
   name: cosine
-  warmup_steps: 500       # ~3% of steps
+  warmup_steps: 500
 
 trainer:
-  max_epochs: 3           # 3 epochs usually sufficient, avoids overfit
+  max_epochs: 3
   gradient_clip_norm: 1.0
-  gradient_accumulation_steps: 6  # Effective batch = 36
+  gradient_accumulation_steps: 3  # Effective batch = 42
   validation_max_length: 128
   label_smoothing: 0.1
   task_weights:
