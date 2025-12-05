@@ -48,7 +48,7 @@ jobs:
         pip install poetry
         poetry config virtualenvs.create false
         poetry install --no-interaction --no-ansi --without dev
-        pip install pytest pytest-cov
+        pip install pytest pytest-cov sentencepiece
         
     - name: Run tests
       run: |
