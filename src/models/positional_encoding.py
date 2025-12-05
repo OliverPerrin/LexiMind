@@ -74,7 +74,8 @@ class PositionalEncoding(nn.Module):
         # Add the appropriate slice of positional encoding
         # Apply dropout
         # Return result
-        x = x + self.pe[:, : x.size(1)].requires_grad_(False)
+        pe: torch.Tensor = self.pe  # type: ignore[assignment]
+        x = x + pe[:, : x.size(1)].requires_grad_(False)
         # self.pe contains pre-computed encodings for all positions
         # just need to add the first seq_len positions to x
         return self.dropout(x)
