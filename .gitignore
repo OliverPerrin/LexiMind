@@ -62,4 +62,5 @@ ehthumbs.db
 ehthumbs_vista.db
 
 # Config overrides
-configs/local/
+configs/local/*.png
+*.pt
