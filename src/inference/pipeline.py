@@ -10,6 +10,7 @@ Date: December 2025
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, fields, replace
 from typing import Any, Dict, List, Sequence, cast
 
@@ -19,6 +20,46 @@ import torch.nn.functional as F
 from ..data.preprocessing import Batch, TextPreprocessor
 from ..data.tokenization import Tokenizer
 
+# --------------- Text Formatting ---------------
+
+
+def _format_summary(text: str) -> str:
+    """Clean and format generated summary text.
+
+    - Capitalize first letter
+    - Fix period spacing (". " not " .")
+    - Remove extra whitespace
+    - Ensure proper sentence endings
+    """
+    if not text:
+        return text
+
+    # Strip and normalize whitespace
+    text = " ".join(text.split())
+
+    # Remove leading punctuation/special chars
+    text = re.sub(r"^[^A-Za-z0-9]+", "", text)
+
+    # Fix spacing around punctuation
+    text = re.sub(r"\s+([.!?,;:])", r"\1", text)  # Remove space before punctuation
+    text = re.sub(
+        r"([.!?])([A-Za-z])", r"\1 \2", text
+    )  # Add space after sentence-ending punctuation
+
+    # Capitalize first letter
+    if text:
+        text = text[0].upper() + text[1:]
+
+    # Capitalize after sentence-ending punctuation
+    text = re.sub(r"([.!?])\s+([a-z])", lambda m: m.group(1) + " " + m.group(2).upper(), text)
+
+    # Ensure ends with punctuation
+    if text and text[-1] not in ".!?":
+        text += "."
+
+    return text
+
+
 # --------------- Configuration ---------------
 
 
@@ -27,6 +68,7 @@ class InferenceConfig:
     """Pipeline settings."""
 
     summary_max_length: int = 128
+    summary_repetition_penalty: float = 1.2  # Penalize repeated tokens
     emotion_threshold: float = 0.5
     device: str | None = None
 
@@ -116,10 +158,13 @@ class InferencePipeline:
                 min_len=10,
                 ban_token_ids=[i for i in ban_ids if i is not None],
                 no_repeat_ngram_size=3,
+                repetition_penalty=self.config.summary_repetition_penalty,
                 memory_mask=src_mask,
             )
 
-        return self.tokenizer.decode_batch(generated.tolist())
+        # Decode and format summaries
+        raw_summaries = self.tokenizer.decode_batch(generated.tolist())
+        return [_format_summary(s) for s in raw_summaries]
 
     # --------------- Emotion ---------------
 

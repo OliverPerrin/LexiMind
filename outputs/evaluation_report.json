@@ -1,44 +1,80 @@
 {
   "split": "val",
   "summarization": {
-    "rouge_like": 0.35947467920968945,
-    "bleu": 0.09027012433010549
+    "rouge_like": 0.13567121660564777,
+    "bleu": 0.014673668103097205
   },
   "emotion": {
-    "f1_macro": 0.9455000162124634
+    "f1_macro": 0.1939181685447693
   },
   "topic": {
-    "accuracy": 0.94175,
+    "accuracy": 0.741687849517031,
     "classification_report": {
-      "Business": {
-        "precision": 0.9319045973038369,
-        "recall": 0.8986666666666666,
-        "f1-score": 0.9149838791786866,
-        "support": 3000
+      "Business & Finance": {
+        "precision": 0.6439114391143912,
+        "recall": 0.527190332326284,
+        "f1-score": 0.579734219269103,
+        "support": 1986
       },
-      "Sci/Tech": {
-        "precision": 0.9055627425614489,
-        "recall": 0.9333333333333333,
-        "f1-score": 0.9192383453709784,
-        "support": 3000
+      "Computers & Internet": {
+        "precision": 0.8251038301799724,
+        "recall": 0.9044006069802731,
+        "f1-score": 0.862934362934363,
+        "support": 1977
+      },
+      "Education & Reference": {
+        "precision": 0.6439444076770351,
+        "recall": 0.49642857142857144,
+        "f1-score": 0.560645347162201,
+        "support": 1960
+      },
+      "Entertainment & Music": {
+        "precision": 0.7064310260186549,
+        "recall": 0.7360613810741689,
+        "f1-score": 0.7209418837675351,
+        "support": 1955
+      },
+      "Family & Relationships": {
+        "precision": 0.7182971014492754,
+        "recall": 0.8071246819338422,
+        "f1-score": 0.7601246105919003,
+        "support": 1965
+      },
+      "Health": {
+        "precision": 0.7610579115367077,
+        "recall": 0.8489318413021363,
+        "f1-score": 0.8025967780716519,
+        "support": 1966
+      },
+      "Politics & Government": {
+        "precision": 0.7711132437619962,
+        "recall": 0.8173957273652085,
+        "f1-score": 0.7935802469135802,
+        "support": 1966
+      },
+      "Science & Mathematics": {
+        "precision": 0.7456647398843931,
+        "recall": 0.7885888945491595,
+        "f1-score": 0.7665263679128497,
+        "support": 1963
+      },
+      "Society & Culture": {
+        "precision": 0.6496559633027523,
+        "recall": 0.5783563042368556,
+        "f1-score": 0.6119362678908993,
+        "support": 1959
       },
       "Sports": {
-        "precision": 0.9856475300400535,
-        "recall": 0.9843333333333333,
-        "f1-score": 0.9849899933288859,
-        "support": 3000
-      },
-      "World": {
-        "precision": 0.9446836700894335,
-        "recall": 0.9506666666666667,
-        "f1-score": 0.9476657252035222,
-        "support": 3000
+        "precision": 0.8888339920948617,
+        "recall": 0.9118094272681196,
+        "f1-score": 0.9001751313485113,
+        "support": 1973
       },
       "macro avg": {
-        "precision": 0.9419496349986932,
-        "recall": 0.94175,
-        "f1-score": 0.9417194857705183,
-        "support": 12000
+        "precision": 0.735401365502004,
+        "recall": 0.7416287768464619,
+        "f1-score": 0.7359195215862595,
+        "support": 19670
       }
     }
   }
