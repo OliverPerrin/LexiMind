@@ -1,13 +1,13 @@
-"""
-Prediction heads for Transformer models.
+"""Prediction heads for Transformer models.
 
-Includes:
-- ClassificationHead: sequence-level classification with simple pooling (mean/cls/max).
-- TokenClassificationHead: per-token classification (e.g., NER).
-- LMHead: language-modeling head mapping hidden states to vocabulary logits. Optional weight tying to an Embedding.
-- ProjectionHead: small projection MLP for representation learning / contrastive heads.
+This module provides task-specific output heads:
+- ClassificationHead: Sequence-level classification with pooling (mean/cls/max)
+- TokenClassificationHead: Per-token classification (NER, POS tagging)
+- LMHead: Language modeling logits with optional weight tying
+- ProjectionHead: MLP for representation learning / contrastive tasks
 
-Keep these heads minimal, well-tested, and easy to compose on top of encoder/decoder outputs.
+Author: Oliver Perrin
+Date: 2025-10-23
 """
 
 from typing import Literal, Optional
@@ -117,12 +117,12 @@ class LMHead(nn.Module):
 
         if tie_embedding is not None:
             # Validate sizes
-            assert (
-                tie_embedding.num_embeddings == vocab_size
-            ), "vocab size mismatch for weight tying"
-            assert (
-                tie_embedding.embedding_dim == d_model
-            ), "embedding dim must match d_model for weight tying"
+            assert tie_embedding.num_embeddings == vocab_size, (
+                "vocab size mismatch for weight tying"
+            )
+            assert tie_embedding.embedding_dim == d_model, (
+                "embedding dim must match d_model for weight tying"
+            )
             # Tie weights: point the projection weight to the embedding weight Tensor
             # Remove the existing projection parameter in favor of the embedding weight
             # This keeps the same Parameter object, so updates affect both modules.

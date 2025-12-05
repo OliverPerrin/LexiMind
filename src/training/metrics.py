@@ -1,4 +1,13 @@
-"""Metric helpers used during training and evaluation."""
+"""
+Training and evaluation metrics for LexiMind.
+
+Provides metric computation utilities for all task types: accuracy for topic
+classification, multi-label F1 for emotion detection, and ROUGE/BLEU for
+summarization quality assessment.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,13 @@
-"""Dataset definitions for the LexiMind multitask training pipeline."""
+"""
+Dataset definitions for the LexiMind multitask training pipeline.
+
+Defines PyTorch Dataset classes and data loading utilities for summarization,
+emotion classification, and topic classification tasks. Supports both JSON
+array and JSONL file formats.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

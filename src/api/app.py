@@ -1,4 +1,11 @@
-"""FastAPI application entrypoint."""
+"""
+FastAPI application factory for LexiMind.
+
+Creates and configures the REST API application.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from fastapi import FastAPI
 

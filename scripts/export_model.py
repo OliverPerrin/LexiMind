@@ -1,4 +1,12 @@
-"""Rebuild and export the trained multitask model for downstream use."""
+"""
+Model export script for LexiMind.
+
+Rebuilds the multitask model from configuration and exports trained weights
+for deployment or distribution.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

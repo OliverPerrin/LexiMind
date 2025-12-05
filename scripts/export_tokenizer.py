@@ -1,4 +1,12 @@
-"""Export the FLAN-T5 tokenizer to the artifacts directory for reproducible inference."""
+"""
+Tokenizer export script for LexiMind.
+
+Saves the FLAN-T5 tokenizer to the artifacts directory for reproducible
+inference without requiring network access.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

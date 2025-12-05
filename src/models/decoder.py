@@ -1,16 +1,17 @@
-"""
-Transformer Decoder (Pre-LN) - implementation.
+"""Transformer Decoder implementation (Pre-LN).
 
-Implements:
-- create_causal_mask
-- TransformerDecoderLayer
-- TransformerDecoder (stack + naive greedy decoding)
+This module implements the decoder component of the Transformer architecture:
+- create_causal_mask: Generate causal attention masks
+- TransformerDecoderLayer: Single decoder block with self-attn + cross-attn + FFN
+- TransformerDecoder: Full stack with embeddings, positional encoding, and generation
 
-Conventions:
-- Masks are boolean: True = allowed, False = masked.
-- MultiHeadAttention expects masks broadcastable to (B, num_heads, T_q, T_k).
-- This decoder uses Pre-LN (RMSNorm before each sublayer).
-- RMSNorm is just simpler than LayerNorm and more computationally efficient, it's become the modern convention. These reasons are why I used it here.
+Design notes:
+- Pre-LN with RMSNorm for training stability
+- Masks are boolean: True = attend, False = mask
+- Supports T5-style relative position bias
+
+Author: Oliver Perrin
+Date: 2025-10-23
 """
 
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
