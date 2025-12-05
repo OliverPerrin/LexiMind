@@ -11,10 +11,20 @@ Date: December 2025
 from __future__ import annotations
 
 import json
+import logging
+import os
 import sys
 import time
+import warnings
 from pathlib import Path
-from typing import Any, Dict, Sequence
+from typing import Dict, Sequence, cast
+
+# Suppress torch inductor warnings that mess up progress bars
+os.environ.setdefault("TORCH_LOGS", "-all")
+warnings.filterwarnings("ignore", category=UserWarning, module="torch._inductor")
+warnings.filterwarnings("ignore", category=FutureWarning, module="mlflow")
+logging.getLogger("torch._inductor").setLevel(logging.ERROR)
+logging.getLogger("torch._dynamo").setLevel(logging.ERROR)
 
 import hydra
 import torch
@@ -82,14 +92,14 @@ def limit_samples(splits: Dict[str, list], cfg: DictConfig) -> None:
 # --------------- Model Compilation ---------------
 
 
-def compile_model(model: torch.nn.Module) -> Any:
-    """Compile model with aot_eager backend (stable, avoids inductor NaN issues)."""
-    try:
-        compiled = torch.compile(model, backend="aot_eager")
-        print("✓ Compiled with aot_eager")
-        return compiled
-    except Exception:
-        return model
+def compile_model(model: torch.nn.Module) -> torch.nn.Module:
+    """Compile model with inductor backend (default mode, no CUDA graphs)."""
+    from src.training.safe_compile import apply_safe_config, compile_model_safe
+
+    # Apply safe configuration first
+    apply_safe_config()
+    # Compile with default mode (inductor without CUDA graphs)
+    return compile_model_safe(model, mode="default")
 
 
 # --------------- Main ---------------
@@ -100,6 +110,11 @@ def main(cfg: DictConfig) -> None:
     start_time = time.perf_counter()
     print(OmegaConf.to_yaml(cfg))
     set_seed(cfg.seed)
+
+    # Benchmark mode: skip saving checkpoints (for speed testing)
+    benchmark_mode = cfg.get("benchmark", False)
+    if benchmark_mode:
+        print("⚡ BENCHMARK MODE: Checkpoints will NOT be saved")
 
     # Enable TF32 for Ampere+ GPUs (RTX 30xx/40xx) - ~2x matmul speedup
     if torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8:
@@ -242,9 +257,13 @@ def main(cfg: DictConfig) -> None:
 
     # Compile encoder/decoder for faster training (skip heads - small overhead)
     if model.encoder is not None:
-        model.encoder = compile_model(model.encoder)
+        from src.models.encoder import TransformerEncoder
+
+        model.encoder = cast(TransformerEncoder, compile_model(model.encoder))
     if model.decoder is not None:
-        model.decoder = compile_model(model.decoder)
+        from src.models.decoder import TransformerDecoder
+
+        model.decoder = cast(TransformerDecoder, compile_model(model.decoder))
 
     # --------------- Optimizer & Trainer ---------------
 
@@ -272,6 +291,8 @@ def main(cfg: DictConfig) -> None:
     # --------------- Train ---------------
 
     def save_checkpoint(epoch: int, model: torch.nn.Module, history: Dict) -> None:
+        if benchmark_mode:
+            return  # Skip saving in benchmark mode
         path = Path(cfg.checkpoint_out).parent / f"epoch_{epoch}.pt"
         path.parent.mkdir(parents=True, exist_ok=True)
         save_state(model, str(path))
@@ -280,6 +301,14 @@ def main(cfg: DictConfig) -> None:
     history = trainer.fit(train_loaders, val_loaders, checkpoint_callback=save_checkpoint)
 
     # --------------- Save Outputs ---------------
+
+    if benchmark_mode:
+        total_time = time.perf_counter() - start_time
+        print(f"\n{'=' * 50}")
+        print(f"⚡ Benchmark complete in {total_time:.1f}s")
+        print("  (No files saved in benchmark mode)")
+        print(f"{'=' * 50}")
+        return
 
     # Best checkpoint
     ckpt_path = Path(cfg.checkpoint_out)

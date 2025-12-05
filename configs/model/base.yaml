@@ -1,8 +1,8 @@
 # FLAN-T5-base architecture
-# 12 encoder layers, 12 decoder layers, 768 hidden dim
+# 6 encoder layers, 6 decoder layers, 768 hidden dim
 d_model: 768
-num_encoder_layers: 12
-num_decoder_layers: 12
+num_encoder_layers: 6   # T5-base has 6 layers
+num_decoder_layers: 6   # T5-base has 6 layers
 num_attention_heads: 12
 ffn_dim: 2048  # T5 uses d_ff = 2048 for base model
 dropout: 0.1

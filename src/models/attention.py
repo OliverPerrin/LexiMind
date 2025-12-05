@@ -13,7 +13,7 @@ Date: 2025-10-23
 """
 
 import math
-from typing import Optional, Tuple
+from typing import Optional, Tuple, cast
 
 import torch
 import torch.nn as nn
@@ -280,8 +280,10 @@ class RotaryEmbedding(nn.Module):
         seq_len = x.shape[2]
         # Slice cos/sin to current sequence length
         # unsqueeze to broadcast over batch and heads: (1, 1, seq_len, dim)
-        cos = self.cos[:seq_len, :].unsqueeze(0).unsqueeze(0)
-        sin = self.sin[:seq_len, :].unsqueeze(0).unsqueeze(0)
+        cos_buf = cast(torch.Tensor, self.cos)
+        sin_buf = cast(torch.Tensor, self.sin)
+        cos = cos_buf[:seq_len, :].unsqueeze(0).unsqueeze(0)
+        sin = sin_buf[:seq_len, :].unsqueeze(0).unsqueeze(0)
 
         return (x * cos) + (self._rotate_half(x) * sin)
 

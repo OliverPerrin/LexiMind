@@ -18,7 +18,7 @@ from pathlib import Path
 from statistics import fmean
 from typing import Dict, Iterable, List, Sequence, Tuple
 
-from rouge_score import rouge_scorer
+from rouge_score import rouge_scorer  # type: ignore[import-untyped]
 from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

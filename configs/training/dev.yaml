@@ -4,15 +4,18 @@
 # Use: python scripts/train.py training=dev
 
 dataloader:
-  batch_size: 8          # Safe for 12GB VRAM - no shared memory spillover
+  batch_size: 14
   shuffle: true
-  num_workers: 4
+  num_workers: 6
   pin_memory: true
+  persistent_workers: true
+  prefetch_factor: 4
 
 optimizer:
   name: adamw
-  lr: 5.0e-5              # Higher LR for fast convergence
+  lr: 2.0e-5
   weight_decay: 0.01
+  eps: 1.0e-6
 
 scheduler:
   name: cosine
@@ -21,12 +24,12 @@ scheduler:
 trainer:
   max_epochs: 1
   gradient_clip_norm: 1.0
-  gradient_accumulation_steps: 1  # No accumulation - maximize throughput
-  validation_max_length: 64
+  gradient_accumulation_steps: 4
+  validation_max_length: 128
   label_smoothing: 0.1
   task_weights:
     summarization: 1.0
     emotion: 1.0
     topic: 1.0
-  max_train_samples: 2000
-  max_val_samples: 200
+  max_train_samples: 1000
+  max_val_samples: 100
