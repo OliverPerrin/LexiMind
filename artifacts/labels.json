@@ -1,16 +1,44 @@
 {
   "emotion": [
+    "admiration",
+    "amusement",
     "anger",
+    "annoyance",
+    "approval",
+    "caring",
+    "confusion",
+    "curiosity",
+    "desire",
+    "disappointment",
+    "disapproval",
+    "disgust",
+    "embarrassment",
+    "excitement",
     "fear",
+    "gratitude",
+    "grief",
     "joy",
     "love",
+    "nervousness",
+    "neutral",
+    "optimism",
+    "pride",
+    "realization",
+    "relief",
+    "remorse",
     "sadness",
     "surprise"
   ],
   "topic": [
-    "Business",
-    "Sci/Tech",
-    "Sports",
-    "World"
+    "Business & Finance",
+    "Computers & Internet",
+    "Education & Reference",
+    "Entertainment & Music",
+    "Family & Relationships",
+    "Health",
+    "Politics & Government",
+    "Science & Mathematics",
+    "Society & Culture",
+    "Sports"
   ]
 }
