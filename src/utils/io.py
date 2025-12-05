@@ -1,4 +1,11 @@
-"""Checkpoint IO helpers."""
+"""
+Checkpoint I/O utilities for LexiMind.
+
+Handles model state serialization with support for torch.compile artifacts.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from pathlib import Path
 

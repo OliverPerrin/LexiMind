@@ -1,8 +1,15 @@
-"""Task-aware DataLoader builders for the LexiMind multitask suite."""
+"""
+DataLoader builders for LexiMind.
+
+Task-specific collators and factory functions for summarization, emotion, and topic.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 
-from typing import List
+from typing import Dict, List
 
 import torch
 from torch.utils.data import DataLoader
@@ -17,9 +24,11 @@ from .dataset import (
 )
 from .tokenization import Tokenizer
 
+# --------------- Collators ---------------
+
 
 class SummarizationCollator:
-    """Prepare encoder-decoder batches for abstractive summarization."""
+    """Prepare encoder-decoder batches for seq2seq summarization."""
 
     def __init__(
         self,
@@ -32,36 +41,24 @@ class SummarizationCollator:
         self.max_source_length = max_source_length
         self.max_target_length = max_target_length
 
-    def __call__(self, batch: List[SummarizationExample]) -> dict[str, torch.Tensor]:
-        sources = [example.source for example in batch]
-        targets = [example.summary for example in batch]
+    def __call__(self, batch: List[SummarizationExample]) -> Dict[str, torch.Tensor]:
+        sources = [ex.source for ex in batch]
+        targets = [ex.summary for ex in batch]
 
-        source_enc = self.tokenizer.batch_encode(sources, max_length=self.max_source_length)
-        target_enc = self.tokenizer.batch_encode(targets, max_length=self.max_target_length)
+        src_enc = self.tokenizer.batch_encode(sources, max_length=self.max_source_length)
+        tgt_enc = self.tokenizer.batch_encode(targets, max_length=self.max_target_length)
 
-        # target_enc["input_ids"] is [BOS, A, B, EOS, PAD...]
-        # We want:
-        # tgt_ids (decoder input): [BOS, A, B, EOS] (drop last PAD or EOS if full)
-        # labels (target): [A, B, EOS, PAD] (drop first BOS)
+        # Shift targets: tgt_ids = [BOS, A, B], labels = [A, B, EOS]
+        ids = tgt_enc["input_ids"]
+        mask = tgt_enc["attention_mask"]
 
-        ids = target_enc["input_ids"]
-        mask = target_enc["attention_mask"]
-
-        # Slice to create shifted inputs/targets
-        # tgt_ids: everything except the last token
         tgt_ids = ids[:, :-1]
-
-        # labels: everything except the first token (BOS)
         labels = ids[:, 1:].clone()
-
-        # Adjust mask for labels to ignore padding
-        # The mask corresponds to the original ids. We slice it to match labels.
-        labels_mask = mask[:, 1:]
-        labels[labels_mask == 0] = -100
+        labels[mask[:, 1:] == 0] = -100  # Mask padding in loss
 
         return {
-            "src_ids": source_enc["input_ids"],
-            "src_mask": source_enc["attention_mask"],
+            "src_ids": src_enc["input_ids"],
+            "src_mask": src_enc["attention_mask"],
             "tgt_ids": tgt_ids,
             "labels": labels,
         }
@@ -77,11 +74,13 @@ class EmotionCollator:
         self.binarizer = dataset.binarizer
         self.max_length = max_length
 
-    def __call__(self, batch: List[EmotionExample]) -> dict[str, torch.Tensor]:
-        texts = [example.text for example in batch]
+    def __call__(self, batch: List[EmotionExample]) -> Dict[str, torch.Tensor]:
+        texts = [ex.text for ex in batch]
         encoded = self.tokenizer.batch_encode(texts, max_length=self.max_length)
-        label_array = self.binarizer.transform([example.emotions for example in batch])
-        labels = torch.as_tensor(label_array, dtype=torch.float32)
+        labels = torch.as_tensor(
+            self.binarizer.transform([ex.emotions for ex in batch]),
+            dtype=torch.float32,
+        )
         return {
             "input_ids": encoded["input_ids"],
             "attention_mask": encoded["attention_mask"],
@@ -90,7 +89,7 @@ class EmotionCollator:
 
 
 class TopicCollator:
-    """Prepare batches for topic classification using the projection head."""
+    """Prepare batches for single-label topic classification."""
 
     def __init__(
         self, tokenizer: Tokenizer, dataset: TopicDataset, *, max_length: int | None = None
@@ -99,17 +98,21 @@ class TopicCollator:
         self.encoder = dataset.encoder
         self.max_length = max_length
 
-    def __call__(self, batch: List[TopicExample]) -> dict[str, torch.Tensor]:
-        texts = [example.text for example in batch]
+    def __call__(self, batch: List[TopicExample]) -> Dict[str, torch.Tensor]:
+        texts = [ex.text for ex in batch]
         encoded = self.tokenizer.batch_encode(texts, max_length=self.max_length)
         labels = torch.as_tensor(
-            self.encoder.transform([example.topic for example in batch]), dtype=torch.long
+            self.encoder.transform([ex.topic for ex in batch]),
+            dtype=torch.long,
         )
         return {
             "input_ids": encoded["input_ids"],
             "attention_mask": encoded["attention_mask"],
             "labels": labels,
         }
+
+
+# --------------- Factory Functions ---------------
 
 
 def build_summarization_dataloader(
@@ -123,6 +126,7 @@ def build_summarization_dataloader(
     num_workers: int = 0,
     pin_memory: bool = False,
 ) -> DataLoader:
+    """Create dataloader for summarization task."""
     collator = SummarizationCollator(
         tokenizer,
         max_source_length=max_source_length,
@@ -135,6 +139,7 @@ def build_summarization_dataloader(
         collate_fn=collator,
         num_workers=num_workers,
         pin_memory=pin_memory,
+        persistent_workers=num_workers > 0,  # Keep workers alive between epochs
     )
 
 
@@ -148,6 +153,7 @@ def build_emotion_dataloader(
     num_workers: int = 0,
     pin_memory: bool = False,
 ) -> DataLoader:
+    """Create dataloader for emotion classification task."""
     collator = EmotionCollator(tokenizer, dataset, max_length=max_length)
     return DataLoader(
         dataset,
@@ -156,6 +162,7 @@ def build_emotion_dataloader(
         collate_fn=collator,
         num_workers=num_workers,
         pin_memory=pin_memory,
+        persistent_workers=num_workers > 0,
     )
 
 
@@ -169,6 +176,7 @@ def build_topic_dataloader(
     num_workers: int = 0,
     pin_memory: bool = False,
 ) -> DataLoader:
+    """Create dataloader for topic classification task."""
     collator = TopicCollator(tokenizer, dataset, max_length=max_length)
     return DataLoader(
         dataset,
@@ -177,4 +185,5 @@ def build_topic_dataloader(
         collate_fn=collator,
         num_workers=num_workers,
         pin_memory=pin_memory,
+        persistent_workers=num_workers > 0,
     )

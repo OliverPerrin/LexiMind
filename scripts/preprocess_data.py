@@ -1,4 +1,13 @@
-"""Preprocess raw datasets into JSONL splits for LexiMind training."""
+"""
+Data preprocessing script for LexiMind.
+
+Transforms raw datasets into standardized JSONL splits for training. Handles
+summarization, emotion classification, topic classification, and book paragraph
+extraction with text cleaning.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

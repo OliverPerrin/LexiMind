@@ -1,4 +1,11 @@
-"""Randomness helpers."""
+"""
+Randomness utilities for LexiMind.
+
+Provides seed management for reproducibility.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 import random
 

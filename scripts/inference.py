@@ -1,4 +1,12 @@
-"""Run inference with the multitask model."""
+"""
+Inference script for the LexiMind multitask model.
+
+Command-line interface for running summarization, emotion detection, and topic
+classification on arbitrary text inputs.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

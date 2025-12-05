@@ -1,4 +1,12 @@
-"""Utility script to evaluate LexiMind summaries with ROUGE."""
+"""
+ROUGE evaluation script for LexiMind.
+
+Computes ROUGE-1, ROUGE-2, and ROUGE-L scores on summarization outputs
+with support for batched inference and customizable metrics.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 

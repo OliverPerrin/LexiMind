@@ -1,5 +1,11 @@
-"""
-Position-wise Feed-Forward Network.
+"""Position-wise Feed-Forward Network.
+
+This module implements the FFN sublayer used in Transformer blocks:
+- Standard FFN: Two linear layers with activation (GELU/ReLU)
+- Gated FFN: SwiGLU (LLaMA-style) or Gated-GELU (T5/FLAN-T5 style)
+
+Author: Oliver Perrin
+Date: 2025-10-23
 """
 
 from typing import Literal, Optional

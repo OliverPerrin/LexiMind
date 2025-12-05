@@ -1,4 +1,11 @@
-"""API schemas."""
+"""
+Pydantic schemas for LexiMind API.
+
+Defines request and response models for the REST API.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from pydantic import BaseModel
 

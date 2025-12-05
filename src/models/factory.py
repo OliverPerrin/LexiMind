@@ -1,4 +1,14 @@
-"""Factory helpers to assemble multitask models for inference/training."""
+"""Factory helpers to assemble multitask models.
+
+This module provides model construction and weight loading utilities:
+- ModelConfig: Dataclass for architecture hyperparameters
+- load_model_config: Load configuration from YAML
+- build_multitask_model: Construct full model with task heads
+- Weight loading: Transfer pretrained T5/FLAN-T5 or LLaMA weights
+
+Author: Oliver Perrin
+Date: 2025-10-23
+"""
 
 from __future__ import annotations
 

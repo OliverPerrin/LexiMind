@@ -1,4 +1,12 @@
-"""Download datasets used by LexiMind."""
+"""
+Dataset download script for LexiMind.
+
+Downloads training datasets from various sources including HuggingFace Hub,
+Kaggle, and Project Gutenberg. Handles automatic conversion to JSONL format.
+
+Author: Oliver Perrin
+Date: December 2025
+"""
 
 from __future__ import annotations
 
