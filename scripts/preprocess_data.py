@@ -141,24 +141,42 @@ def preprocess_summarization(raw_dir: Path, processed_dir: Path) -> None:
         return
 
     for split in ("train", "validation", "test"):
-        source_path = _resolve_csv(raw_dir, f"{split}.csv")
-        if source_path is None:
+        # Check for JSONL first (from new download script), then CSV (legacy)
+        jsonl_path = raw_dir / f"{split}.jsonl"
+        csv_path = _resolve_csv(raw_dir, f"{split}.csv")
+
+        if jsonl_path.exists():
+            source_path = jsonl_path
+            is_jsonl = True
+        elif csv_path is not None:
+            source_path = csv_path
+            is_jsonl = False
+        else:
             print(f"Skipping summarization split '{split}' (file not found)")
             continue
 
         output_path = processed_dir / f"{split}.jsonl"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         print(f"Writing summarization split '{split}' to {output_path}")
-        with (
-            source_path.open("r", encoding="utf-8", newline="") as source_handle,
-            output_path.open("w", encoding="utf-8") as sink,
-        ):
-            reader = csv.DictReader(source_handle)
-            for row in reader:
-                article = row.get("article") or row.get("Article") or ""
-                highlights = row.get("highlights") or row.get("summary") or ""
-                payload = {"source": article.strip(), "summary": highlights.strip()}
-                sink.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+        with output_path.open("w", encoding="utf-8") as sink:
+            if is_jsonl:
+                # Process JSONL format (from new download script)
+                for row in _read_jsonl(source_path):
+                    source = str(row.get("source") or row.get("article") or "")
+                    summary = str(row.get("summary") or row.get("highlights") or "")
+                    if source and summary:
+                        payload = {"source": source.strip(), "summary": summary.strip()}
+                        sink.write(json.dumps(payload, ensure_ascii=False) + "\n")
+            else:
+                # Process CSV format (legacy)
+                with source_path.open("r", encoding="utf-8", newline="") as source_handle:
+                    reader = csv.DictReader(source_handle)
+                    for row in reader:
+                        article = str(row.get("article") or row.get("Article") or "")
+                        highlights = str(row.get("highlights") or row.get("summary") or "")
+                        payload = {"source": article.strip(), "summary": highlights.strip()}
+                        sink.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
 
 def preprocess_emotion(raw_dir: Path, processed_dir: Path, cleaner: BasicTextCleaner) -> None:

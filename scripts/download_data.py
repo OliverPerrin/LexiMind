@@ -1,8 +1,11 @@
 """
 Dataset download script for LexiMind.
 
-Downloads training datasets from various sources including HuggingFace Hub,
-Kaggle, and Project Gutenberg. Handles automatic conversion to JSONL format.
+Downloads training datasets from HuggingFace Hub and Project Gutenberg:
+- GoEmotions: 28 emotion labels (43K samples)
+- Yahoo Answers: 10 topic labels (1.4M samples, subset to 200K)
+- CNN/DailyMail + BookSum: Summarization (100K + 9.6K samples)
+- Gutenberg: Classic books for inference demos
 
 Author: Oliver Perrin
 Date: December 2025
@@ -12,15 +15,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import socket
 import sys
 from pathlib import Path
-from subprocess import CalledProcessError, run
-from typing import Iterable, Iterator, cast
+from typing import Any, cast
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from datasets import ClassLabel, Dataset, DatasetDict, load_dataset
+from datasets import ClassLabel, DatasetDict, load_dataset
+from datasets import Sequence as DatasetSequence
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -29,228 +34,338 @@ if str(PROJECT_ROOT) not in sys.path:
 from src.utils.config import load_yaml
 
 DOWNLOAD_TIMEOUT = 60
-DEFAULT_SUMMARIZATION_DATASET = "gowrishankarp/newspaper-text-summarization-cnn-dailymail"
-DEFAULT_EMOTION_DATASET = "dair-ai/emotion"
-DEFAULT_TOPIC_DATASET = "ag_news"
-DEFAULT_BOOK_URL = "https://www.gutenberg.org/cache/epub/1342/pg1342.txt"
-DEFAULT_BOOK_OUTPUT = "data/raw/books/pride_and_prejudice.txt"
+
+# --------------- Label Definitions ---------------
+
+EMOTION_LABELS = [
+    "admiration",
+    "amusement",
+    "anger",
+    "annoyance",
+    "approval",
+    "caring",
+    "confusion",
+    "curiosity",
+    "desire",
+    "disappointment",
+    "disapproval",
+    "disgust",
+    "embarrassment",
+    "excitement",
+    "fear",
+    "gratitude",
+    "grief",
+    "joy",
+    "love",
+    "nervousness",
+    "optimism",
+    "pride",
+    "realization",
+    "relief",
+    "remorse",
+    "sadness",
+    "surprise",
+    "neutral",
+]
+
+TOPIC_LABELS = [
+    "Society & Culture",
+    "Science & Mathematics",
+    "Health",
+    "Education & Reference",
+    "Computers & Internet",
+    "Sports",
+    "Business & Finance",
+    "Entertainment & Music",
+    "Family & Relationships",
+    "Politics & Government",
+]
 
 
-def kaggle_download(dataset: str, output_dir: str) -> None:
-    target = Path(output_dir)
-    target.mkdir(parents=True, exist_ok=True)
-    try:
-        run(
-            [
-                "kaggle",
-                "datasets",
-                "download",
-                "-d",
-                dataset,
-                "-p",
-                str(target),
-                "--unzip",
-            ],
-            check=True,
-        )
-    except CalledProcessError as error:
-        raise RuntimeError(
-            "Kaggle download failed. Verify that the Kaggle CLI is authenticated,"
-            " you have accepted the dataset terms on kaggle.com, and your kaggle.json"
-            " credentials are located in %USERPROFILE%/.kaggle."
-        ) from error
+# --------------- Utility Functions ---------------
+
+
+def _write_jsonl(records: list[dict], destination: Path, desc: str = "Writing") -> None:
+    """Write records to JSONL file with progress bar."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open("w", encoding="utf-8") as f:
+        for record in tqdm(records, desc=desc, leave=False):
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
 def gutenberg_download(url: str, output_path: str) -> None:
+    """Download a text file from Project Gutenberg."""
     target = Path(output_path)
     target.parent.mkdir(parents=True, exist_ok=True)
     try:
-        with urlopen(url, timeout=DOWNLOAD_TIMEOUT) as response, target.open("wb") as handle:
-            chunk = response.read(8192)
-            while chunk:
-                handle.write(chunk)
-                chunk = response.read(8192)
-    except (URLError, socket.timeout, OSError) as error:
-        raise RuntimeError(f"Failed to download '{url}' to '{target}': {error}") from error
+        with urlopen(url, timeout=DOWNLOAD_TIMEOUT) as response:
+            content = response.read()
+            target.write_bytes(content)
+    except (URLError, socket.timeout, OSError) as e:
+        raise RuntimeError(f"Failed to download '{url}': {e}") from e
+
+
+# --------------- Emotion Dataset (GoEmotions) ---------------
+
+
+def download_emotion_dataset(output_dir: Path, config: dict) -> None:
+    """Download GoEmotions dataset with 28 emotion labels."""
+    print("\n�� Downloading GoEmotions (28 emotions)...")
+
+    dataset_name = config.get("dataset", "google-research-datasets/go_emotions")
+    dataset_config = config.get("config", "simplified")
+
+    ds = cast(DatasetDict, load_dataset(dataset_name, dataset_config))
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Get label names from dataset
+    label_feature = ds["train"].features.get("labels")
+    inner_feature = getattr(label_feature, "feature", None)
+    if isinstance(label_feature, DatasetSequence) and isinstance(inner_feature, ClassLabel):
+        label_names = cast(list[str], inner_feature.names)
+    else:
+        label_names = EMOTION_LABELS
+
+    for split_name, split in ds.items():
+        records = []
+        for item in tqdm(split, desc=f"Processing {split_name}", leave=False):
+            row = cast(dict[str, Any], item)
+            text = row.get("text", "")
+            label_indices = row.get("labels", [])
+            # Convert indices to label names
+            emotions = [label_names[i] for i in label_indices if 0 <= i < len(label_names)]
+            if text and emotions:
+                records.append({"text": text, "emotions": emotions})
+
+        output_path = output_dir / f"{split_name}.jsonl"
+        _write_jsonl(records, output_path, f"Writing {split_name}")
+        print(f"   ✓ {split_name}: {len(records):,} samples -> {output_path}")
+
+    # Save label names
+    labels_path = output_dir / "labels.json"
+    labels_path.write_text(json.dumps(label_names, indent=2))
+    print(f"   ✓ Labels ({len(label_names)}): {labels_path}")
+
+
+# --------------- Topic Dataset (Yahoo Answers) ---------------
+
+
+def download_topic_dataset(output_dir: Path, config: dict) -> None:
+    """Download Yahoo Answers dataset with 10 topic labels."""
+    print("\n📥 Downloading Yahoo Answers (10 topics)...")
+
+    dataset_name = config.get("dataset", "yahoo_answers_topics")
+    max_samples = config.get("max_samples", 200000)
+
+    ds = cast(DatasetDict, load_dataset(dataset_name))
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Get label names
+    label_feature = ds["train"].features.get("topic")
+    if isinstance(label_feature, ClassLabel):
+        label_names = label_feature.names
+    else:
+        label_names = TOPIC_LABELS
+
+    for split_name, split in ds.items():
+        # Determine sample limit for this split
+        if split_name == "train":
+            limit = max_samples
+        else:
+            limit = min(len(split), max_samples // 10)
+
+        # Random sample if needed
+        indices = list(range(len(split)))
+        if len(indices) > limit:
+            random.seed(42)
+            indices = random.sample(indices, limit)
+
+        records = []
+        for idx in tqdm(indices, desc=f"Processing {split_name}", leave=False):
+            item = cast(dict[str, Any], split[idx])
+            # Combine question and best answer for richer text
+            question = item.get("question_title", "") + " " + item.get("question_content", "")
+            answer = item.get("best_answer", "")
+            text = (question + " " + answer).strip()
+
+            topic_idx = item.get("topic", 0)
+            topic = label_names[topic_idx] if 0 <= topic_idx < len(label_names) else str(topic_idx)
+
+            if text and len(text) > 50:  # Filter very short texts
+                records.append({"text": text, "topic": topic})
+
+        output_path = output_dir / f"{split_name}.jsonl"
+        _write_jsonl(records, output_path, f"Writing {split_name}")
+        print(f"   ✓ {split_name}: {len(records):,} samples -> {output_path}")
+
+    # Save label names
+    labels_path = output_dir / "labels.json"
+    labels_path.write_text(json.dumps(label_names, indent=2))
+    print(f"   ✓ Labels ({len(label_names)}): {labels_path}")
+
+
+# --------------- Summarization Dataset (CNN/DailyMail + BookSum) ---------------
+
+
+def download_summarization_datasets(output_dir: Path, config: list[dict]) -> None:
+    """Download summarization datasets (CNN/DailyMail and BookSum)."""
+    print("\n📥 Downloading Summarization datasets...")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    all_train, all_val, all_test = [], [], []
+
+    for ds_config in config:
+        name = ds_config.get("name", "unknown")
+        dataset_name = ds_config.get("dataset")
+        dataset_config = ds_config.get("config")
+        source_field = ds_config.get("source_field", "article")
+        target_field = ds_config.get("target_field", "highlights")
+        max_samples = ds_config.get("max_samples")
+
+        print(f"\n   Loading {name}...")
+
+        if not dataset_name:
+            print(f"      ✗ Skipping {name}: no dataset specified")
+            continue
+
+        if dataset_config:
+            ds = cast(DatasetDict, load_dataset(str(dataset_name), str(dataset_config)))
+        else:
+            ds = cast(DatasetDict, load_dataset(str(dataset_name)))
+
+        for split_name, split in ds.items():
+            split_str = str(split_name)
+            # Determine limit
+            limit = max_samples if max_samples else len(split)
+            if split_str != "train":
+                limit = min(len(split), limit // 10)
+
+            indices = list(range(min(len(split), limit)))
+
+            records = []
+            for idx in tqdm(indices, desc=f"{name}/{split_str}", leave=False):
+                item = cast(dict[str, Any], split[idx])
+                source = item.get(source_field, "")
+                target = item.get(target_field, "")
+
+                if source and target and len(str(source)) > 100:
+                    records.append({"source": source, "summary": target})
+
+            # Route to appropriate split
+            if "train" in split_str:
+                all_train.extend(records)
+            elif "val" in split_str or "validation" in split_str:
+                all_val.extend(records)
+            else:
+                all_test.extend(records)
+
+            print(f"      ✓ {split_name}: {len(records):,} samples")
+
+    # Write combined files
+    if all_train:
+        _write_jsonl(all_train, output_dir / "train.jsonl", "Writing train")
+        print(f"   ✓ Combined train: {len(all_train):,} samples")
+    if all_val:
+        _write_jsonl(all_val, output_dir / "validation.jsonl", "Writing validation")
+        print(f"   ✓ Combined validation: {len(all_val):,} samples")
+    if all_test:
+        _write_jsonl(all_test, output_dir / "test.jsonl", "Writing test")
+        print(f"   ✓ Combined test: {len(all_test):,} samples")
+
+
+# --------------- Book Downloads (Gutenberg) ---------------
+
+
+def download_books(books_dir: Path, config: list[dict]) -> None:
+    """Download classic books from Project Gutenberg."""
+    print("\n📥 Downloading Gutenberg books...")
+
+    books_dir.mkdir(parents=True, exist_ok=True)
+
+    for book in config:
+        name = book.get("name", "unknown")
+        url = book.get("url")
+        output = book.get("output", str(books_dir / f"{name}.txt"))
+
+        if not url:
+            continue
+
+        output_path = Path(output)
+        if output_path.exists():
+            print(f"   ✓ {name}: already exists")
+            continue
+
+        try:
+            print(f"   ⏳ {name}: downloading...")
+            gutenberg_download(url, str(output_path))
+            print(f"   ✓ {name}: {output_path}")
+        except Exception as e:
+            print(f"   ✗ {name}: {e}")
+
+
+# --------------- Main Entry Point ---------------
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Download datasets required for LexiMind training")
+    parser = argparse.ArgumentParser(description="Download LexiMind training datasets")
     parser.add_argument(
-        "--config",
-        default="configs/data/datasets.yaml",
-        help="Path to the dataset configuration YAML.",
+        "--config", default="configs/data/datasets.yaml", help="Dataset config path"
     )
     parser.add_argument(
-        "--skip-kaggle",
-        action="store_true",
-        help="Skip downloading the Kaggle summarization dataset.",
+        "--skip-summarization", action="store_true", help="Skip summarization datasets"
     )
-    parser.add_argument(
-        "--skip-book", action="store_true", help="Skip downloading Gutenberg book texts."
-    )
+    parser.add_argument("--skip-emotion", action="store_true", help="Skip emotion dataset")
+    parser.add_argument("--skip-topic", action="store_true", help="Skip topic dataset")
+    parser.add_argument("--skip-books", action="store_true", help="Skip Gutenberg books")
     return parser.parse_args()
-
-
-def _safe_load_config(path: str | None) -> dict:
-    if not path:
-        return {}
-    config_path = Path(path)
-    if not config_path.exists():
-        raise FileNotFoundError(f"Config file not found: {config_path}")
-    return load_yaml(str(config_path)).data
-
-
-def _write_jsonl(records: Iterable[dict[str, object]], destination: Path) -> None:
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    with destination.open("w", encoding="utf-8") as handle:
-        for record in records:
-            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
-
-
-def _emotion_records(
-    dataset_split: Dataset, label_names: list[str] | None
-) -> Iterator[dict[str, object]]:
-    for item in dataset_split:
-        data = dict(item)
-        text = data.get("text", "")
-        label_value = data.get("label")
-
-        def resolve_label(index: object) -> str:
-            if isinstance(index, int) and label_names and 0 <= index < len(label_names):
-                return label_names[index]
-            return str(index)
-
-        if isinstance(label_value, list):
-            labels = [resolve_label(idx) for idx in label_value]
-        else:
-            labels = [resolve_label(label_value)]
-        yield {"text": text, "emotions": labels}
-
-
-def _topic_records(
-    dataset_split: Dataset, label_names: list[str] | None
-) -> Iterator[dict[str, object]]:
-    for item in dataset_split:
-        data = dict(item)
-        text = data.get("text") or data.get("content") or ""
-        label_value = data.get("label")
-
-        def resolve_topic(raw: object) -> str:
-            if label_names:
-                idx: int | None = None
-                if isinstance(raw, int):
-                    idx = raw
-                elif isinstance(raw, str):
-                    try:
-                        idx = int(raw)
-                    except ValueError:
-                        idx = None
-                if idx is not None and 0 <= idx < len(label_names):
-                    return label_names[idx]
-            return str(raw) if raw is not None else ""
-
-        if isinstance(label_value, list):
-            topic = resolve_topic(label_value[0]) if label_value else ""
-        else:
-            topic = resolve_topic(label_value)
-        yield {"text": text, "topic": topic}
 
 
 def main() -> None:
     args = parse_args()
-    config = _safe_load_config(args.config)
 
-    raw_paths = config.get("raw", {}) if isinstance(config, dict) else {}
-    downloads_cfg = config.get("downloads", {}) if isinstance(config, dict) else {}
+    # Load config
+    config_path = Path(args.config)
+    if not config_path.exists():
+        print(f"Config not found: {config_path}")
+        sys.exit(1)
 
-    summarization_cfg = (
-        downloads_cfg.get("summarization", {}) if isinstance(downloads_cfg, dict) else {}
-    )
-    summarization_dataset = summarization_cfg.get("dataset", DEFAULT_SUMMARIZATION_DATASET)
-    summarization_output = summarization_cfg.get(
-        "output", raw_paths.get("summarization", "data/raw/summarization")
-    )
+    config = load_yaml(str(config_path)).data
+    raw_paths = config.get("raw", {})
+    downloads = config.get("downloads", {})
 
-    if not args.skip_kaggle and summarization_dataset:
-        print(
-            f"Downloading summarization dataset '{summarization_dataset}' -> {summarization_output}"
-        )
-        kaggle_download(summarization_dataset, summarization_output)
-    else:
-        print("Skipping Kaggle summarization download.")
+    print("=" * 60)
+    print("LexiMind Dataset Download")
+    print("=" * 60)
 
-    books_root = Path(raw_paths.get("books", "data/raw/books"))
-    books_root.mkdir(parents=True, exist_ok=True)
+    # Download emotion dataset
+    if not args.skip_emotion:
+        emotion_config = downloads.get("emotion", {})
+        emotion_dir = Path(raw_paths.get("emotion", "data/raw/emotion"))
+        download_emotion_dataset(emotion_dir, emotion_config)
 
-    books_entries: list[dict[str, object]] = []
-    if isinstance(downloads_cfg, dict):
-        raw_entries = downloads_cfg.get("books")
-        if isinstance(raw_entries, list):
-            books_entries = [entry for entry in raw_entries if isinstance(entry, dict)]
+    # Download topic dataset
+    if not args.skip_topic:
+        topic_config = downloads.get("topic", {})
+        topic_dir = Path(raw_paths.get("topic", "data/raw/topic"))
+        download_topic_dataset(topic_dir, topic_config)
 
-    if not args.skip_book:
-        if not books_entries:
-            books_entries = [
-                {
-                    "name": "pride_and_prejudice",
-                    "url": DEFAULT_BOOK_URL,
-                    "output": DEFAULT_BOOK_OUTPUT,
-                }
-            ]
-        for entry in books_entries:
-            name = str(entry.get("name") or "gutenberg_text")
-            url = str(entry.get("url") or DEFAULT_BOOK_URL)
-            output_value = entry.get("output")
-            destination = (
-                Path(output_value)
-                if isinstance(output_value, str) and output_value
-                else books_root / f"{name}.txt"
-            )
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            print(f"Downloading Gutenberg text '{name}' from {url} -> {destination}")
-            gutenberg_download(url, str(destination))
-    else:
-        print("Skipping Gutenberg downloads.")
-    emotion_cfg = downloads_cfg.get("emotion", {}) if isinstance(downloads_cfg, dict) else {}
-    emotion_name = emotion_cfg.get("dataset", DEFAULT_EMOTION_DATASET)
-    emotion_dir = Path(raw_paths.get("emotion", "data/raw/emotion"))
-    emotion_dir.mkdir(parents=True, exist_ok=True)
-    print(f"Downloading emotion dataset '{emotion_name}' -> {emotion_dir}")
-    emotion_dataset = cast(DatasetDict, load_dataset(emotion_name))
-    first_emotion_key = next(iter(emotion_dataset.keys()), None) if emotion_dataset else None
-    emotion_label_feature = (
-        emotion_dataset[first_emotion_key].features.get("label")
-        if first_emotion_key is not None
-        else None
-    )
-    emotion_label_names = (
-        emotion_label_feature.names if isinstance(emotion_label_feature, ClassLabel) else None
-    )
-    for split_name, split in emotion_dataset.items():
-        output_path = emotion_dir / f"{str(split_name)}.jsonl"
-        _write_jsonl(_emotion_records(split, emotion_label_names), output_path)
+    # Download summarization datasets
+    if not args.skip_summarization:
+        summ_config = downloads.get("summarization", [])
+        if isinstance(summ_config, list):
+            summ_dir = Path(raw_paths.get("summarization", "data/raw/summarization"))
+            download_summarization_datasets(summ_dir, summ_config)
 
-    topic_cfg = downloads_cfg.get("topic", {}) if isinstance(downloads_cfg, dict) else {}
-    topic_name = topic_cfg.get("dataset", DEFAULT_TOPIC_DATASET)
-    topic_dir = Path(raw_paths.get("topic", "data/raw/topic"))
-    topic_dir.mkdir(parents=True, exist_ok=True)
-    print(f"Downloading topic dataset '{topic_name}' -> {topic_dir}")
-    topic_dataset = cast(DatasetDict, load_dataset(topic_name))
-    first_topic_key = next(iter(topic_dataset.keys()), None) if topic_dataset else None
-    topic_label_feature = (
-        topic_dataset[first_topic_key].features.get("label")
-        if first_topic_key is not None
-        else None
-    )
-    topic_label_names = (
-        topic_label_feature.names if isinstance(topic_label_feature, ClassLabel) else None
-    )
-    for split_name, split in topic_dataset.items():
-        output_path = topic_dir / f"{str(split_name)}.jsonl"
-        _write_jsonl(_topic_records(split, topic_label_names), output_path)
+    # Download books
+    if not args.skip_books:
+        books_config = downloads.get("books", [])
+        if isinstance(books_config, list):
+            books_dir = Path(raw_paths.get("books", "data/raw/books"))
+            download_books(books_dir, books_config)
 
-    print("Download routine finished.")
+    print("\n" + "=" * 60)
+    print("✅ Download complete!")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
