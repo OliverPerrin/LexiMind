@@ -1,86 +1,52 @@
-"""
-Safe torch.compile configuration that prevents NaN issues.
+"""Safe defaults for `torch.compile` to reduce instability in tests and training."""
 
-Author: Oliver Perrin
-Date: December 2025
-"""
+from __future__ import annotations
+
+from typing import Any
 
 import torch
+
+
+def _set_attr(obj: object, name: str, value: Any) -> None:
+    """Set attribute on dynamic objects only if it exists (keeps static checkers quiet)."""
+
+    target = getattr(obj, name, None)
+    if target is not None:
+        setattr(obj, name, value)
 
 
 def compile_model_safe(
     model: torch.nn.Module,
     mode: str = "default",
+    dynamic: bool | None = None,
 ) -> torch.nn.Module:
+    """Safely compile model with inductor backend.
+
+    Parameters mirror `torch.compile` but default to conservative settings.
     """
-    Compile model with inductor backend and safety guardrails.
 
-    Uses 'default' mode which gives inductor speedups without CUDA graphs.
-    CUDA graphs (reduce-overhead mode) don't work with dynamic shapes or
-    shared embeddings like in T5.
-
-    Args:
-        model: Model to compile
-        mode: Compilation mode ("default" recommended, avoid "reduce-overhead")
-
-    Returns:
-        Compiled model (or original if compilation fails)
-    """
-    if not torch.cuda.is_available():
-        print("⚠ CUDA not available, skipping compilation")
-        return model
-
-    try:
-        # Configure for stability
-        torch._dynamo.config.suppress_errors = True
-        torch._dynamo.config.cache_size_limit = 64  # Allow more graph variations
-
-        # Disable aggressive optimizations that can cause NaNs
-        if hasattr(torch, "_inductor"):
-            cfg = torch._inductor.config
-            if hasattr(cfg, "epilogue_fusion"):
-                cfg.epilogue_fusion = False
-            if hasattr(cfg, "coordinate_descent_tuning"):
-                cfg.coordinate_descent_tuning = False
-            if hasattr(cfg, "force_fuse_int_mm_with_mul"):
-                cfg.force_fuse_int_mm_with_mul = False
-            # Explicitly disable CUDA graphs
-            if hasattr(cfg, "triton"):
-                if hasattr(cfg.triton, "cudagraphs"):
-                    cfg.triton.cudagraphs = False
-                if hasattr(cfg.triton, "max_autotune_gemm"):
-                    cfg.triton.max_autotune_gemm = False
-
-        # Compile with inductor (no CUDA graphs)
-        compiled = torch.compile(model, mode=mode, fullgraph=False, dynamic=True)
-        print(f"✓ Compiled with inductor ({mode} mode)")
-        return compiled
-
-    except Exception as e:
-        print(f"⚠ Inductor compilation failed: {e}")
-        print("  Falling back to aot_eager")
-        try:
-            return torch.compile(model, backend="aot_eager")
-        except Exception:
-            print("  Using uncompiled model")
-            return model
+    return torch.compile(model, backend="inductor", mode=mode, dynamic=dynamic)
 
 
-def apply_safe_config():
-    """Apply safe configuration to torch._inductor before any compilation."""
-    if hasattr(torch, "_inductor"):
-        cfg = torch._inductor.config
-        if hasattr(cfg, "epilogue_fusion"):
-            cfg.epilogue_fusion = False
-        if hasattr(cfg, "coordinate_descent_tuning"):
-            cfg.coordinate_descent_tuning = False
-        if hasattr(cfg, "triton"):
-            if hasattr(cfg.triton, "cudagraphs"):
-                cfg.triton.cudagraphs = False
-            if hasattr(cfg.triton, "max_autotune_gemm"):
-                cfg.triton.max_autotune_gemm = False
+def apply_safe_config() -> None:
+    """Apply conservative torch._inductor and torch._dynamo settings if present."""
 
-    # Dynamo config for stability
-    torch._dynamo.config.suppress_errors = True
-    torch._dynamo.config.cache_size_limit = 64
+    inductor = getattr(torch, "_inductor", None)
+    cfg = getattr(inductor, "config", None) if inductor is not None else None
+
+    if cfg is not None:
+        _set_attr(cfg, "epilogue_fusion", False)
+        _set_attr(cfg, "coordinate_descent_tuning", False)
+        triton_cfg = getattr(cfg, "triton", None)
+        if triton_cfg is not None:
+            _set_attr(triton_cfg, "cudagraphs", False)
+            _set_attr(triton_cfg, "max_autotune_gemm", False)
+
+    dynamo_cfg = getattr(torch, "_dynamo", None)
+    if dynamo_cfg is not None:
+        dyn_config = getattr(dynamo_cfg, "config", None)
+        if dyn_config is not None:
+            _set_attr(dyn_config, "suppress_errors", True)
+            _set_attr(dyn_config, "cache_size_limit", 64)
+
     print("✓ Applied safe inductor configuration")

@@ -34,7 +34,7 @@ def test_attention_visualization():
     V = torch.eye(seq_len, d_k).unsqueeze(0)  # Identity-like
 
     # Compute attention
-    output, weights = attention(Q, K, V, return_attn_weights=True)
+    _output, weights = attention(Q, K, V, return_attn_weights=True)
 
     # Plot attention weights
     plt.figure(figsize=(8, 6))

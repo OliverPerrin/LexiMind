@@ -13,15 +13,17 @@ Author: Oliver Perrin
 Date: 2025-10-23
 """
 
-from typing import List, Literal, Optional, Tuple, Union
+from typing import List, Literal, Optional, Tuple, Union, cast
 
 import torch
 import torch.nn as nn
+from torch.utils.checkpoint import checkpoint
 
 # Encoder implementation
 from .attention import MultiHeadAttention, T5RelativePositionBias
 from .feedforward import FeedForward
 from .positional_encoding import LearnedPositionalEncoding, PositionalEncoding
+from .t5_layer_norm import T5LayerNorm
 
 
 class TransformerEncoderLayer(nn.Module):
@@ -65,8 +67,8 @@ class TransformerEncoderLayer(nn.Module):
             quantization=quantization,
         )
 
-        self.norm1 = nn.RMSNorm(d_model)
-        self.norm2 = nn.RMSNorm(d_model)
+        self.norm1 = T5LayerNorm(d_model)
+        self.norm2 = T5LayerNorm(d_model)
 
         self.dropout1 = nn.Dropout(dropout)
         self.dropout2 = nn.Dropout(dropout)
@@ -153,12 +155,14 @@ class TransformerEncoder(nn.Module):
         use_learned_pos_enc: bool = False,
         activation: Literal["gelu", "relu", "swiglu", "gated-gelu"] = "gated-gelu",
         use_relative_position_bias: bool = False,  # T5-style relative position bias
+        gradient_checkpointing: bool = False,
     ):
         super().__init__()
         self.vocab_size = vocab_size
         self.d_model = d_model
         self.pad_token_id = pad_token_id
         self.use_relative_position_bias = use_relative_position_bias
+        self.gradient_checkpointing = gradient_checkpointing
 
         # Token embedding (only used if forward receives token ids)
         self.embedding = nn.Embedding(vocab_size, d_model, padding_idx=pad_token_id)
@@ -201,8 +205,8 @@ class TransformerEncoder(nn.Module):
             ]
         )
 
-        # Final RMSNorm for Pre-LN stacks (recommended)
-        self.final_norm = nn.RMSNorm(d_model)
+        # Final T5LayerNorm for Pre-LN stacks
+        self.final_norm = T5LayerNorm(d_model)
 
         # Dropout applied after embedding + positional encoding (paper uses this)
         self.input_dropout = nn.Dropout(dropout)
@@ -282,7 +286,25 @@ class TransformerEncoder(nn.Module):
 
         # Pass through each encoder layer (optionally collect attn)
         for layer in self.layers:
-            x, attn = layer(x, mask=mask, collect_attn=collect_attn, position_bias=position_bias)
+            if self.gradient_checkpointing and self.training:
+                # Gradient checkpointing requires the inputs to require grad
+                # We use a lambda to pass keyword arguments
+                def create_custom_forward(module):
+                    def custom_forward(*inputs):
+                        return module(*inputs, mask=mask, collect_attn=collect_attn, position_bias=position_bias)
+                    return custom_forward
+
+                x, attn = cast(
+                    Tuple[torch.Tensor, Optional[torch.Tensor]],
+                    checkpoint(
+                        create_custom_forward(layer),
+                        x,
+                        use_reentrant=False,
+                    ),
+                )
+            else:
+                x, attn = layer(x, mask=mask, collect_attn=collect_attn, position_bias=position_bias)
+            
             if collect_attn:
                 attn_weights_per_layer.append(attn)
 

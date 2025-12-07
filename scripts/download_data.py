@@ -85,6 +85,59 @@ TOPIC_LABELS = [
 # --------------- Utility Functions ---------------
 
 
+def _normalize_label(label: object, label_names: list[str]) -> str:
+    """Convert a label index or raw value into a string name.
+
+    - Valid integer indices are mapped to label_names.
+    - Everything else is stringified for robustness.
+    """
+
+    if isinstance(label, int) and 0 <= label < len(label_names):
+        return label_names[label]
+    return str(label)
+
+
+def _emotion_records(dataset_split: Any, label_names: list[str]) -> list[dict[str, object]]:
+    """Yield emotion records with resilient label handling."""
+
+    records: list[dict[str, object]] = []
+    for row in dataset_split:
+        text = str(getattr(row, "text", None) or row.get("text", ""))
+        raw_labels = getattr(row, "label", None) or row.get("label") or row.get("labels", [])
+
+        # Normalize to list
+        if isinstance(raw_labels, list):
+            label_values = raw_labels
+        elif raw_labels is None:
+            label_values = []
+        else:
+            label_values = [raw_labels]
+
+        emotions = [_normalize_label(lbl, label_names) for lbl in label_values]
+        if text:
+            records.append({"text": text, "emotions": emotions})
+    return records
+
+
+def _topic_records(dataset_split: Any, label_names: list[str]) -> list[dict[str, object]]:
+    """Yield topic records with resilient label handling."""
+
+    records: list[dict[str, object]] = []
+    for row in dataset_split:
+        text = str(getattr(row, "text", None) or row.get("text", ""))
+        raw_label = getattr(row, "label", None) or row.get("label") or row.get("topic")
+
+        if isinstance(raw_label, list):
+            label_value = raw_label[0] if raw_label else ""
+        else:
+            label_value = raw_label
+
+        topic = _normalize_label(label_value, label_names) if label_value is not None else ""
+        if text:
+            records.append({"text": text, "topic": topic})
+    return records
+
+
 def _write_jsonl(records: list[dict], destination: Path, desc: str = "Writing") -> None:
     """Write records to JSONL file with progress bar."""
     destination.parent.mkdir(parents=True, exist_ok=True)
