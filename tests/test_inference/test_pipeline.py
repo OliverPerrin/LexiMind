@@ -2,10 +2,17 @@
 
 from __future__ import annotations
 
+import sys
+import warnings
 from pathlib import Path
 from typing import cast
 
+import pytest
 import torch
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.data.tokenization import Tokenizer, TokenizerConfig
 from src.inference.pipeline import (
@@ -15,6 +22,21 @@ from src.inference.pipeline import (
     TopicPrediction,
 )
 from src.utils.labels import LabelMetadata
+
+# Silence noisy DeprecationWarnings from underlying tokenizer bindings used in tests
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings(
+    "ignore",
+    message=r"builtin type SwigPy.*has no __module__ attribute",
+    category=DeprecationWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    category=DeprecationWarning,
+    module=r"importlib\\._bootstrap",
+)
+
+pytestmark = pytest.mark.filterwarnings("ignore::DeprecationWarning")
 
 
 def _local_tokenizer_config() -> TokenizerConfig:
@@ -48,7 +70,7 @@ class DummyDecoder(torch.nn.Module):
         device: torch.device,
         **kwargs: object,
     ) -> torch.Tensor:
-        seq = self.sequence.to(device)
+        seq = cast(torch.Tensor, self.sequence).to(device)
         if seq.numel() > max_len:
             seq = seq[:max_len]
         batch = memory.size(0)
@@ -70,9 +92,9 @@ class DummyModel(torch.nn.Module):
     ) -> torch.Tensor:  # pragma: no cover - simple dispatch
         batch = inputs["input_ids"].size(0)
         if task == "emotion":
-            return self._emotion_logits.unsqueeze(0).repeat(batch, 1)
+            return cast(torch.Tensor, self._emotion_logits).unsqueeze(0).repeat(batch, 1)
         if task == "topic":
-            return self._topic_logits.unsqueeze(0).repeat(batch, 1)
+            return cast(torch.Tensor, self._topic_logits).unsqueeze(0).repeat(batch, 1)
         raise KeyError(task)
 
 
@@ -85,7 +107,7 @@ def _build_pipeline() -> InferencePipeline:
         tokenizer=tokenizer,
         emotion_labels=metadata.emotion,
         topic_labels=metadata.topic,
-        config=InferenceConfig(summary_max_length=12),
+        config=InferenceConfig(summary_max_length=12, summary_formatting=False),
     )
 
 

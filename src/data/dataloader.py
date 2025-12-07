@@ -48,13 +48,16 @@ class SummarizationCollator:
         src_enc = self.tokenizer.batch_encode(sources, max_length=self.max_source_length)
         tgt_enc = self.tokenizer.batch_encode(targets, max_length=self.max_target_length)
 
-        # Shift targets: tgt_ids = [BOS, A, B], labels = [A, B, EOS]
         ids = tgt_enc["input_ids"]
         mask = tgt_enc["attention_mask"]
 
-        tgt_ids = ids[:, :-1]
-        labels = ids[:, 1:].clone()
-        labels[mask[:, 1:] == 0] = -100  # Mask padding in loss
+        # Create labels for loss: mask padding with -100
+        labels = ids.clone()
+        labels[mask == 0] = -100
+
+        # Create decoder inputs from original ids (no -100)
+        # prepare_decoder_inputs shifts right and adds BOS
+        tgt_ids = self.tokenizer.prepare_decoder_inputs(ids)
 
         return {
             "src_ids": src_enc["input_ids"],

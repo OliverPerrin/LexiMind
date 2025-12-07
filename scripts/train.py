@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import sys
 import time
 import warnings
@@ -51,7 +52,7 @@ from src.data.tokenization import Tokenizer, TokenizerConfig
 from src.models.factory import ModelConfig, build_multitask_model
 from src.training.trainer import Trainer, TrainerConfig
 from src.training.utils import set_seed
-from src.utils.io import save_state
+from src.utils.io import load_state, save_state
 from src.utils.labels import LabelMetadata, save_label_metadata
 
 # --------------- Data Loading ---------------
@@ -93,12 +94,13 @@ def limit_samples(splits: Dict[str, list], cfg: DictConfig) -> None:
 
 
 def compile_model(model: torch.nn.Module) -> torch.nn.Module:
-    """Compile model with inductor backend (default mode, no CUDA graphs)."""
+    """Compile model with inductor backend (optimized for speed)."""
+    print(f"  -> Enabling torch.compile for {model.__class__.__name__}...")
     from src.training.safe_compile import apply_safe_config, compile_model_safe
 
     # Apply safe configuration first
     apply_safe_config()
-    # Compile with default mode (inductor without CUDA graphs)
+    # Compile with default mode (inductor) - most stable
     return compile_model_safe(model, mode="default")
 
 
@@ -148,10 +150,12 @@ def main(cfg: DictConfig) -> None:
     # --------------- Tokenizer & Datasets ---------------
 
     tok_cfg = data_cfg.get("tokenizer", {})
+    # Allow training overrides for max_length to run shorter dev sweeps
+    override_max_len = cfg.training.get("tokenizer_max_length")
     tokenizer = Tokenizer(
         TokenizerConfig(
             pretrained_model_name=tok_cfg.get("pretrained_model_name", "google/flan-t5-base"),
-            max_length=int(tok_cfg.get("max_length", 512)),
+            max_length=int(override_max_len or tok_cfg.get("max_length", 512)),
             lower=bool(tok_cfg.get("lower", False)),
         )
     )
@@ -238,6 +242,7 @@ def main(cfg: DictConfig) -> None:
     device = torch.device(cfg.device)
     model_cfg = ModelConfig(
         d_model=cfg.model.d_model,
+        vocab_size=getattr(cfg.model, "vocab_size", None),  # Override tokenizer vocab if specified
         num_encoder_layers=cfg.model.num_encoder_layers,
         num_decoder_layers=cfg.model.num_decoder_layers,
         num_attention_heads=cfg.model.num_attention_heads,
@@ -255,12 +260,41 @@ def main(cfg: DictConfig) -> None:
         config=model_cfg,
     ).to(device)
 
+    # If Training Crashes: Resume from checkpoint if provided (load before compile to avoid key mismatches)
+    start_epoch = 1
+    resume_path = cfg.get("resume_from")
+    if resume_path:
+        ckpt_path = Path(resume_path)
+        if ckpt_path.exists():
+            print(f"\n↩Resuming from checkpoint: {ckpt_path}")
+            load_state(model, str(ckpt_path))
+            # Parse epoch number robustly from filename (e.g., epoch_5.pt)
+            epoch_num = None
+            try:
+                # Prefer stem (no suffix); fallback to any digit sequence in name
+                digits = re.findall(r"\d+", ckpt_path.stem)
+                if digits:
+                    epoch_num = int(digits[-1])
+            except Exception:
+                epoch_num = None
+
+            if epoch_num is not None:
+                start_epoch = epoch_num + 1
+                print(f"  -> Starting from epoch {start_epoch}")
+            else:
+                print("  -> Could not parse epoch number; starting from epoch 1")
+                start_epoch = 1
+        else:
+            print(f"⚠ Resume checkpoint not found: {ckpt_path}. Starting from scratch.")
+
     # Compile encoder/decoder for faster training (skip heads - small overhead)
-    if model.encoder is not None:
+    compile_encoder = bool(cfg.training.get("compile_encoder", True))
+    compile_decoder = bool(cfg.training.get("compile_decoder", True))
+    if compile_encoder and model.encoder is not None:
         from src.models.encoder import TransformerEncoder
 
         model.encoder = cast(TransformerEncoder, compile_model(model.encoder))
-    if model.decoder is not None:
+    if compile_decoder and model.decoder is not None:
         from src.models.decoder import TransformerDecoder
 
         model.decoder = cast(TransformerDecoder, compile_model(model.decoder))
@@ -268,21 +302,30 @@ def main(cfg: DictConfig) -> None:
     # --------------- Optimizer & Trainer ---------------
 
     opt_cfg = cfg.training.get("optimizer", {})
+    sched_cfg = cfg.training.get("scheduler", {})
     optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=float(opt_cfg.get("lr", 3e-5)),
         weight_decay=float(opt_cfg.get("weight_decay", 0.01)),
     )
 
+    # Clamp start_epoch to max_epochs to avoid empty loop
+    max_epochs = int(trainer_cfg.get("max_epochs", 1))
+    if start_epoch > max_epochs:
+        print(f"⚠ resume_from points past max_epochs ({max_epochs}); nothing to train. Setting start_epoch to {max_epochs}")
+        start_epoch = max_epochs
+
     trainer = Trainer(
         model=model,
         optimizer=optimizer,
         config=TrainerConfig(
-            max_epochs=int(trainer_cfg.get("max_epochs", 1)),
+            max_epochs=max_epochs,
             gradient_clip_norm=float(trainer_cfg.get("gradient_clip_norm", 1.0)),
             task_weights=trainer_cfg.get("task_weights"),
             label_smoothing=float(trainer_cfg.get("label_smoothing", 0.0)),
             gradient_accumulation_steps=int(trainer_cfg.get("gradient_accumulation_steps", 1)),
+            scheduler_type=str(sched_cfg.get("name", "constant")),
+            warmup_steps=int(sched_cfg.get("warmup_steps", 0)),
         ),
         device=device,
         tokenizer=tokenizer,
@@ -298,7 +341,12 @@ def main(cfg: DictConfig) -> None:
         save_state(model, str(path))
 
     print("\nStarting training...")
-    history = trainer.fit(train_loaders, val_loaders, checkpoint_callback=save_checkpoint)
+    history = trainer.fit(
+        train_loaders,
+        val_loaders,
+        checkpoint_callback=save_checkpoint,
+        start_epoch=start_epoch,
+    )
 
     # --------------- Save Outputs ---------------
 

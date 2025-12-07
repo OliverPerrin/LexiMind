@@ -18,10 +18,12 @@ from typing import Any, Dict, List, Literal, Optional, Tuple, Union, cast
 
 import torch
 import torch.nn as nn
+from torch.utils.checkpoint import checkpoint
 
 from .attention import MultiHeadAttention, T5RelativePositionBias
 from .feedforward import FeedForward
 from .positional_encoding import LearnedPositionalEncoding, PositionalEncoding
+from .t5_layer_norm import T5LayerNorm
 
 
 def create_causal_mask(seq_len: int, device: Optional[torch.device] = None) -> torch.Tensor:
@@ -77,9 +79,9 @@ class TransformerDecoderLayer(nn.Module):
             quantization=quantization,
         )
 
-        self.norm1 = nn.RMSNorm(d_model)
-        self.norm2 = nn.RMSNorm(d_model)
-        self.norm3 = nn.RMSNorm(d_model)
+        self.norm1 = T5LayerNorm(d_model)
+        self.norm2 = T5LayerNorm(d_model)
+        self.norm3 = T5LayerNorm(d_model)
 
         self.dropout1 = nn.Dropout(dropout)
         self.dropout2 = nn.Dropout(dropout)
@@ -189,6 +191,7 @@ class TransformerDecoder(nn.Module):
         use_learned_pos_enc: bool = False,
         activation: Literal["gelu", "relu", "swiglu", "gated-gelu"] = "gated-gelu",
         use_relative_position_bias: bool = False,  # T5-style relative position bias
+        gradient_checkpointing: bool = False,
     ):
         super().__init__()
         self.vocab_size = vocab_size
@@ -196,8 +199,10 @@ class TransformerDecoder(nn.Module):
         self.pad_token_id = pad_token_id
         self.num_heads = num_heads
         self.use_relative_position_bias = use_relative_position_bias
+        self.gradient_checkpointing = gradient_checkpointing
 
         self.embedding = nn.Embedding(vocab_size, d_model, padding_idx=pad_token_id)
+        # Note: T5 does NOT scale logits (scaling factor removed)
 
         # Positional encoding (disabled when using relative position bias for T5)
         self.self_relative_position_bias: Optional[T5RelativePositionBias] = None
@@ -238,8 +243,8 @@ class TransformerDecoder(nn.Module):
             ]
         )
 
-        self.final_norm = nn.RMSNorm(d_model)
-        self.output_projection = nn.Linear(d_model, vocab_size)
+        self.final_norm = T5LayerNorm(d_model)
+        self.output_projection = nn.Linear(d_model, vocab_size, bias=False)  # T5 has no bias
         self.input_dropout = nn.Dropout(dropout)
 
     def _build_padding_mask_from_ids(self, input_ids: torch.Tensor) -> torch.Tensor:
@@ -252,6 +257,18 @@ class TransformerDecoder(nn.Module):
         """
         assert self.pad_token_id is not None, "pad_token_id must be set to build mask from ids"
         pad_mask = input_ids != self.pad_token_id  # (B, T)
+
+        # Always allow attending to the first token (BOS), even if it is pad_token_id
+        # Avoid in-place mutation for better torch.compile compatibility
+        if pad_mask.size(1) > 0:
+            # Create a mask for the first column (B, 1)
+            first_col_mask = torch.zeros_like(pad_mask[:, :1], dtype=torch.bool)
+            first_col_mask[:] = True
+            # Combine: pad_mask OR (column==0)
+            # We can do this by creating a column index tensor
+            col_indices = torch.arange(pad_mask.size(1), device=pad_mask.device).unsqueeze(0)
+            pad_mask = pad_mask | (col_indices == 0)
+
         attn_mask = pad_mask.unsqueeze(1) & pad_mask.unsqueeze(2)  # (B, T, T)
         return attn_mask
 
@@ -263,7 +280,7 @@ class TransformerDecoder(nn.Module):
         memory_mask: Optional[torch.Tensor] = None,
         collect_attn: bool = False,
         skip_padding_mask: bool = False,  # Set True during generation to avoid masking start token
-    ) -> Union[torch.Tensor, Tuple[torch.Tensor, List[Dict[str, torch.Tensor]]]]:
+    ) -> Union[torch.Tensor, Tuple[torch.Tensor, List[Dict[str, Optional[torch.Tensor]]]]]:
         """
         Args:
             inputs: (B, T) token ids or (B, T, d_model) embeddings
@@ -304,6 +321,12 @@ class TransformerDecoder(nn.Module):
         else:
             # Ensure boolean and device alignment; accept (B, T, T) or (B,1,T,T) or (1,1,T,T)
             tgt_mask = tgt_mask.to(dtype=torch.bool, device=x.device)
+            # If tgt_mask is just causal (T, T), expand it
+            if tgt_mask.dim() == 2:
+                tgt_mask = tgt_mask.unsqueeze(0).unsqueeze(0)
+            elif tgt_mask.dim() == 3:
+                tgt_mask = tgt_mask.unsqueeze(1)
+
 
         # Normalize memory_mask dtype/device and expand simple shapes
         if memory_mask is not None:
@@ -313,7 +336,7 @@ class TransformerDecoder(nn.Module):
             elif memory_mask.dim() == 3:  # (B, T, S) -> (B, 1, T, S)
                 memory_mask = memory_mask.unsqueeze(1)
 
-        attn_list: List[Dict[str, torch.Tensor]] = []
+        attn_list: List[Dict[str, Optional[torch.Tensor]]] = []
 
         # Compute relative position biases (T5-style)
         # Note: T5 uses relative position bias for self-attention but NOT for cross-attention
@@ -328,19 +351,37 @@ class TransformerDecoder(nn.Module):
 
         # Pass through decoder layers
         for layer in self.layers:
-            x, attn = layer(
-                x,
-                memory,
-                tgt_mask=tgt_mask,
-                memory_mask=memory_mask,
-                collect_attn=collect_attn,
-                self_attn_position_bias=self_position_bias,
-                cross_attn_position_bias=cross_position_bias,
-            )
+            if self.gradient_checkpointing and self.training:
+                # Gradient checkpointing requires the inputs to require grad
+                def create_custom_forward(module):
+                    def custom_forward(*inputs):
+                        return module(*inputs, tgt_mask=tgt_mask, memory_mask=memory_mask, collect_attn=collect_attn, self_attn_position_bias=self_position_bias, cross_attn_position_bias=cross_position_bias)
+                    return custom_forward
+
+                x, attn = cast(
+                    Tuple[torch.Tensor, Dict[str, Optional[torch.Tensor]]],
+                    checkpoint(
+                        create_custom_forward(layer),
+                        x,
+                        memory,
+                        use_reentrant=False,
+                    ),
+                )
+            else:
+                x, attn = layer(
+                    x,
+                    memory,
+                    tgt_mask=tgt_mask,
+                    memory_mask=memory_mask,
+                    collect_attn=collect_attn,
+                    self_attn_position_bias=self_position_bias,
+                    cross_attn_position_bias=cross_position_bias,
+                )
             if collect_attn:
                 attn_list.append(attn)
 
         x = self.final_norm(x)
+        # T5 does NOT scale logits - direct projection to vocabulary
         logits = self.output_projection(x)  # (B, T, vocab)
 
         if collect_attn:

@@ -4,10 +4,10 @@ Gradio demo for LexiMind multi-task NLP model.
 Showcases the model's capabilities across three tasks:
 - Summarization: Generates concise summaries of input text
 - Emotion Detection: Multi-label emotion classification
-- Topic Classification: Categorizes text into news topics
+- Topic Classification: Categorizes text into topics
 
 Author: Oliver Perrin
-Date: 2025-12-04
+Date: 2025-12-05
 """
 
 from __future__ import annotations
@@ -38,24 +38,12 @@ logger = get_logger(__name__)
 
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 EVAL_REPORT_PATH = OUTPUTS_DIR / "evaluation_report.json"
+TRAINING_HISTORY_PATH = OUTPUTS_DIR / "training_history.json"
 
 SAMPLE_TEXTS = [
-    (
-        "Artificial intelligence is rapidly transforming technology. "
-        "Machine learning algorithms process vast amounts of data, identifying "
-        "patterns with unprecedented accuracy. From healthcare to finance, AI is "
-        "revolutionizing industries worldwide."
-    ),
-    (
-        "The team's incredible comeback in the final quarter left fans in tears of joy. "
-        "After trailing by 20 points, they scored three consecutive touchdowns to secure "
-        "their first championship victory in over a decade."
-    ),
-    (
-        "Global markets tumbled today as investors reacted to rising inflation concerns. "
-        "The Federal Reserve hinted at potential interest rate hikes, sending shockwaves "
-        "through technology and banking sectors."
-    ),
+    "Global markets tumbled today as investors reacted to rising inflation concerns. The Federal Reserve hinted at potential interest rate hikes, sending shockwaves through technology and banking sectors. Analysts predict continued volatility as economic uncertainty persists.",
+    "Scientists at MIT have developed a breakthrough quantum computing chip that operates at room temperature. This advancement could revolutionize drug discovery, cryptography, and artificial intelligence. The research team published their findings in Nature.",
+    "The championship game ended in dramatic fashion as the underdog team scored in the final seconds to secure victory. Fans rushed the field in celebration, marking the team's first title in 25 years.",
 ]
 
 # --------------- Pipeline Management ---------------
@@ -94,27 +82,62 @@ def get_pipeline():
 def analyze(text: str) -> tuple[str, str, str]:
     """Run all three tasks and return formatted results."""
     if not text or not text.strip():
-        return "Enter text above", "", ""
+        return "Please enter text above to analyze.", "", ""
 
     try:
         pipe = get_pipeline()
 
         # Run tasks
-        summary = pipe.summarize([text], max_length=128)[0].strip() or "(empty)"
-        emotions = pipe.predict_emotions([text], threshold=0.5)[0]
+        summary = pipe.summarize([text], max_length=128)[0].strip()
+        if not summary:
+            summary = "(Unable to generate summary)"
+
+        emotions = pipe.predict_emotions([text], threshold=0.3)[0]  # Lower threshold
         topic = pipe.predict_topics([text])[0]
 
-        # Format emotions
+        # Format emotions with emoji
+        emotion_emoji = {
+            "joy": "😊",
+            "love": "❤️",
+            "anger": "😠",
+            "fear": "😨",
+            "sadness": "😢",
+            "surprise": "😲",
+            "neutral": "😐",
+            "admiration": "🤩",
+            "amusement": "😄",
+            "annoyance": "😤",
+            "approval": "👍",
+            "caring": "🤗",
+            "confusion": "😕",
+            "curiosity": "🤔",
+            "desire": "😍",
+            "disappointment": "😞",
+            "disapproval": "👎",
+            "disgust": "🤢",
+            "embarrassment": "😳",
+            "excitement": "🎉",
+            "gratitude": "🙏",
+            "grief": "😭",
+            "nervousness": "��",
+            "optimism": "🌟",
+            "pride": "🦁",
+            "realization": "💡",
+            "relief": "😌",
+            "remorse": "😔",
+        }
+
         if emotions.labels:
-            emotion_str = " • ".join(
-                f"**{lbl}** ({score:.0%})"
-                for lbl, score in zip(emotions.labels, emotions.scores, strict=True)
-            )
+            emotion_parts = []
+            for lbl, score in zip(emotions.labels[:5], emotions.scores[:5], strict=False):
+                emoji = emotion_emoji.get(lbl.lower(), "•")
+                emotion_parts.append(f"{emoji} **{lbl.title()}** ({score:.0%})")
+            emotion_str = "\n".join(emotion_parts)
         else:
-            emotion_str = "No strong emotions detected"
+            emotion_str = "😐 No strong emotions detected"
 
         # Format topic
-        topic_str = f"**{topic.label}** ({topic.confidence:.0%})"
+        topic_str = f"**{topic.label}**\n\nConfidence: {topic.confidence:.0%}"
 
         return summary, emotion_str, topic_str
 
@@ -125,75 +148,138 @@ def analyze(text: str) -> tuple[str, str, str]:
 
 def load_metrics() -> str:
     """Load evaluation metrics and format as markdown."""
-    if not EVAL_REPORT_PATH.exists():
-        return "No evaluation report found."
+    # Load evaluation report
+    eval_metrics = {}
+    if EVAL_REPORT_PATH.exists():
+        try:
+            with open(EVAL_REPORT_PATH) as f:
+                eval_metrics = json.load(f)
+        except Exception:
+            pass
 
-    try:
-        with open(EVAL_REPORT_PATH) as f:
-            r = json.load(f)
+    # Load training history
+    train_metrics = {}
+    if TRAINING_HISTORY_PATH.exists():
+        try:
+            with open(TRAINING_HISTORY_PATH) as f:
+                train_metrics = json.load(f)
+        except Exception:
+            pass
 
-        return f"""
-### Overall Performance
+    # Get final validation metrics
+    val_final = train_metrics.get("val_epoch_3", {})
 
-| Task | Metric | Score |
-|------|--------|-------|
-| **Emotion** | F1 Macro | **{r["emotion"]["f1_macro"]:.1%}** |
-| **Topic** | Accuracy | **{r["topic"]["accuracy"]:.1%}** |
-| **Summarization** | ROUGE-Like | {r["summarization"]["rouge_like"]:.1%} |
-| **Summarization** | BLEU | {r["summarization"]["bleu"]:.1%} |
+    md = """
+## 📈 Model Performance
 
-### Topic Classification (per-class)
+### Training Results (3 Epochs)
+
+| Task | Metric | Final Score |
+|------|--------|-------------|
+| **Topic Classification** | Accuracy | **{topic_acc:.1%}** |
+| **Emotion Detection** | F1 (training) | {emo_f1:.1%} |
+| **Summarization** | ROUGE-like | {rouge:.1%} |
+
+### Evaluation Results
+
+| Metric | Value |
+|--------|-------|
+| Topic Accuracy | **{eval_topic:.1%}** |
+| Emotion F1 (macro) | {eval_emo:.1%} |
+| ROUGE-like | {eval_rouge:.1%} |
+| BLEU | {eval_bleu:.3f} |
+
+---
+
+### Topic Classification Details
 
 | Category | Precision | Recall | F1 |
 |----------|-----------|--------|-----|
-| Business | {r["topic"]["classification_report"]["Business"]["precision"]:.1%} | {r["topic"]["classification_report"]["Business"]["recall"]:.1%} | {r["topic"]["classification_report"]["Business"]["f1-score"]:.1%} |
-| Sci/Tech | {r["topic"]["classification_report"]["Sci/Tech"]["precision"]:.1%} | {r["topic"]["classification_report"]["Sci/Tech"]["recall"]:.1%} | {r["topic"]["classification_report"]["Sci/Tech"]["f1-score"]:.1%} |
-| Sports | {r["topic"]["classification_report"]["Sports"]["precision"]:.1%} | {r["topic"]["classification_report"]["Sports"]["recall"]:.1%} | {r["topic"]["classification_report"]["Sports"]["f1-score"]:.1%} |
-| World | {r["topic"]["classification_report"]["World"]["precision"]:.1%} | {r["topic"]["classification_report"]["World"]["recall"]:.1%} | {r["topic"]["classification_report"]["World"]["f1-score"]:.1%} |
-"""
-    except Exception as e:
-        return f"Error loading metrics: {e}"
+""".format(
+        topic_acc=val_final.get("topic_accuracy", 0),
+        emo_f1=val_final.get("emotion_f1", 0),
+        rouge=val_final.get("summarization_rouge_like", 0),
+        eval_topic=eval_metrics.get("topic", {}).get("accuracy", 0),
+        eval_emo=eval_metrics.get("emotion", {}).get("f1_macro", 0),
+        eval_rouge=eval_metrics.get("summarization", {}).get("rouge_like", 0),
+        eval_bleu=eval_metrics.get("summarization", {}).get("bleu", 0),
+    )
+
+    # Add per-class metrics
+    topic_report = eval_metrics.get("topic", {}).get("classification_report", {})
+    for cat, metrics in topic_report.items():
+        if cat in ["macro avg", "weighted avg", "micro avg"]:
+            continue
+        if isinstance(metrics, dict):
+            md += f"| {cat} | {metrics.get('precision', 0):.1%} | {metrics.get('recall', 0):.1%} | {metrics.get('f1-score', 0):.1%} |\n"
+
+    return md
+
+
+def get_viz_path(filename: str) -> str | None:
+    """Get visualization path if file exists."""
+    path = OUTPUTS_DIR / filename
+    return str(path) if path.exists() else None
 
 
 # --------------- Gradio Interface ---------------
 
 with gr.Blocks(
-    title="LexiMind Demo",
+    title="LexiMind - Multi-Task NLP",
     theme=gr.themes.Soft(),
-    css=".output-box { min-height: 80px; }",
 ) as demo:
     gr.Markdown(
         """
         # 🧠 LexiMind
         ### Multi-Task Transformer for Document Analysis
         
-        A custom encoder-decoder Transformer trained on summarization, emotion detection,
-        and topic classification. Built from scratch with PyTorch.
+        A custom encoder-decoder Transformer trained on **summarization**, **emotion detection** (28 classes),
+        and **topic classification** (10 categories). Built from scratch with PyTorch.
+        
+        > ⚠️ **Note**: Summarization is experimental - the model works best on news-style articles.
         """
     )
 
     # --------------- Try It Tab ---------------
     with gr.Tab("🚀 Try It"):
         with gr.Row():
-            with gr.Column(scale=2):
+            with gr.Column(scale=3):
                 text_input = gr.Textbox(
-                    label="Input Text",
-                    lines=5,
-                    placeholder="Enter text to analyze...",
+                    label="📝 Input Text",
+                    lines=6,
+                    placeholder="Enter or paste text to analyze (works best with news articles)...",
                     value=SAMPLE_TEXTS[0],
                 )
+                analyze_btn = gr.Button(
+                    "🔍 Analyze",
+                    variant="primary",
+                    size="sm",
+                )
+
+                gr.Markdown("**Sample Texts** (click to use):")
                 with gr.Row():
-                    analyze_btn = gr.Button("Analyze", variant="primary", scale=2)
-                    gr.Examples(
-                        examples=[[t] for t in SAMPLE_TEXTS],
-                        inputs=text_input,
-                        label="Examples",
-                    )
+                    sample1_btn = gr.Button("📰 Markets", size="sm", variant="secondary")
+                    sample2_btn = gr.Button("🔬 Science", size="sm", variant="secondary")
+                    sample3_btn = gr.Button("🏆 Sports", size="sm", variant="secondary")
+
+                sample1_btn.click(fn=lambda: SAMPLE_TEXTS[0], outputs=text_input)
+                sample2_btn.click(fn=lambda: SAMPLE_TEXTS[1], outputs=text_input)
+                sample3_btn.click(fn=lambda: SAMPLE_TEXTS[2], outputs=text_input)
 
             with gr.Column(scale=2):
-                summary_out = gr.Textbox(label="📝 Summary", lines=3, elem_classes="output-box")
-                emotion_out = gr.Markdown(label="😊 Emotions")
-                topic_out = gr.Markdown(label="📂 Topic")
+                gr.Markdown("### Results")
+                summary_out = gr.Textbox(
+                    label="📝 Summary",
+                    lines=3,
+                    interactive=False,
+                )
+                with gr.Row():
+                    with gr.Column():
+                        gr.Markdown("**😊 Emotions**")
+                        emotion_out = gr.Markdown(value="*Run analysis*")
+                    with gr.Column():
+                        gr.Markdown("**📂 Topic**")
+                        topic_out = gr.Markdown(value="*Run analysis*")
 
         analyze_btn.click(
             fn=analyze,
@@ -203,9 +289,35 @@ with gr.Blocks(
 
     # --------------- Metrics Tab ---------------
     with gr.Tab("📊 Metrics"):
-        gr.Markdown(load_metrics())
-        gr.Markdown("### Confusion Matrix")
-        gr.Image(str(OUTPUTS_DIR / "topic_confusion_matrix.png"), label="Topic Classification")
+        with gr.Row():
+            with gr.Column(scale=2):
+                gr.Markdown(load_metrics())
+            with gr.Column(scale=1):
+                confusion_path = get_viz_path("topic_confusion_matrix.png")
+                if confusion_path:
+                    gr.Image(confusion_path, label="Confusion Matrix", show_label=True)
+
+    # --------------- Visualizations Tab ---------------
+    with gr.Tab("🎨 Visualizations"):
+        gr.Markdown("### Model Internals")
+
+        with gr.Row():
+            attn_path = get_viz_path("attention_visualization.png")
+            if attn_path:
+                gr.Image(attn_path, label="Self-Attention Pattern")
+
+            pos_path = get_viz_path("positional_encoding_heatmap.png")
+            if pos_path:
+                gr.Image(pos_path, label="Positional Encodings")
+
+        with gr.Row():
+            multi_path = get_viz_path("multihead_attention_visualization.png")
+            if multi_path:
+                gr.Image(multi_path, label="Multi-Head Attention")
+
+            single_path = get_viz_path("single_vs_multihead.png")
+            if single_path:
+                gr.Image(single_path, label="Single vs Multi-Head Comparison")
 
     # --------------- Architecture Tab ---------------
     with gr.Tab("🔧 Architecture"):
@@ -213,28 +325,34 @@ with gr.Blocks(
             """
             ### Model Architecture
             
-            - **Base**: Custom Transformer (encoder-decoder)
-            - **Initialized from**: FLAN-T5-base weights
-            - **Encoder**: 6 layers, 768 hidden dim, 12 attention heads
-            - **Decoder**: 6 layers with cross-attention
-            - **Task Heads**: Classification heads for emotion/topic
+            | Component | Configuration |
+            |-----------|---------------|
+            | **Base** | Custom Transformer (encoder-decoder) |
+            | **Initialization** | FLAN-T5-base weights |
+            | **Encoder** | 6 layers, 768 hidden dim, 12 heads |
+            | **Decoder** | 6 layers with cross-attention |
+            | **Activation** | Gated-GELU |
+            | **Position** | Relative position bias |
             
-            ### Training
+            ### Training Configuration
             
-            - **Optimizer**: AdamW with cosine LR schedule
-            - **Mixed Precision**: bfloat16 with TF32
-            - **Compilation**: torch.compile with inductor backend
+            | Setting | Value |
+            |---------|-------|
+            | **Optimizer** | AdamW (lr=2e-5, wd=0.01) |
+            | **Scheduler** | Cosine with 1000 warmup steps |
+            | **Batch Size** | 14 × 3 accumulation = 42 effective |
+            | **Precision** | TF32 (Ampere GPU) |
+            | **Compilation** | torch.compile (inductor) |
+            
+            ### Datasets
+            
+            | Task | Dataset | Size |
+            |------|---------|------|
+            | **Summarization** | CNN/DailyMail + BookSum | ~110K |
+            | **Emotion** | GoEmotions | ~43K (28 labels) |
+            | **Topic** | Yahoo Answers | ~200K (10 classes) |
             """
         )
-        with gr.Row():
-            gr.Image(
-                str(OUTPUTS_DIR / "attention_visualization.png"),
-                label="Self-Attention Pattern",
-            )
-            gr.Image(
-                str(OUTPUTS_DIR / "positional_encoding_heatmap.png"),
-                label="Positional Encodings",
-            )
 
     # --------------- About Tab ---------------
     with gr.Tab("ℹ️ About"):
@@ -242,22 +360,28 @@ with gr.Blocks(
             """
             ### About LexiMind
             
-            LexiMind is a multi-task NLP model designed to demonstrate end-to-end
-            machine learning engineering skills:
+            LexiMind is a **portfolio project** demonstrating end-to-end machine learning engineering:
             
-            - **Custom Transformer** implementation from scratch
-            - **Multi-task learning** with shared encoder
-            - **Production-ready** inference pipeline
-            - **Comprehensive evaluation** with multiple metrics
+            ✅ Custom Transformer implementation from scratch  
+            ✅ Multi-task learning with shared encoder  
+            ✅ Production-ready inference pipeline  
+            ✅ Comprehensive evaluation and visualization  
+            ✅ CI/CD with GitHub Actions  
+            
+            ### Known Limitations
+            
+            - **Summarization** quality is limited (needs more training epochs)
+            - **Emotion detection** has low F1 due to class imbalance in GoEmotions
+            - Best results on **news-style text** (training domain)
             
             ### Links
             
             - 🔗 [GitHub Repository](https://github.com/OliverPerrin/LexiMind)
-            - 🤗 [HuggingFace Space](https://huggingface.co/spaces/OliverPerrin/LexiMind)
+            - 🤗 [Model on HuggingFace](https://huggingface.co/OliverPerrin/LexiMind-Model)
             
-            ### Author
+            ---
             
-            **Oliver Perrin** - Machine Learning Engineer
+            **Built by Oliver Perrin** | December 2025
             """
         )
 

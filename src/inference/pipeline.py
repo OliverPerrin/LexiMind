@@ -69,6 +69,7 @@ class InferenceConfig:
 
     summary_max_length: int = 128
     summary_repetition_penalty: float = 1.2  # Penalize repeated tokens
+    summary_formatting: bool = True  # Apply text cleanup/formatting to generated summaries
     emotion_threshold: float = 0.5
     device: str | None = None
 
@@ -164,6 +165,8 @@ class InferencePipeline:
 
         # Decode and format summaries
         raw_summaries = self.tokenizer.decode_batch(generated.tolist())
+        if not self.config.summary_formatting:
+            return raw_summaries
         return [_format_summary(s) for s in raw_summaries]
 
     # --------------- Emotion ---------------

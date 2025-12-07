@@ -1,35 +1,45 @@
 # Development/Testing Configuration for FLAN-T5-base
 # Fast iteration for debugging and testing changes
-# Training time: ~3-5 minutes on RTX 4070 12GB
+# VRAM Usage: ~8-9GB peak (12GB available)
+# Training time: ~10-15 minutes on RTX 4070 12GB
 # Use: python scripts/train.py training=dev
 
 dataloader:
-  batch_size: 14
+  batch_size: 5  # Conservative for 12GB VRAM
   shuffle: true
-  num_workers: 6
+  num_workers: 4
   pin_memory: true
   persistent_workers: true
-  prefetch_factor: 4
+  prefetch_factor: 2
 
 optimizer:
   name: adamw
-  lr: 2.0e-5
+  lr: 5.0e-5  # Higher LR for faster convergence in dev
   weight_decay: 0.01
-  eps: 1.0e-6
+  eps: 1.0e-8
+  betas: [0.9, 0.999]
 
 scheduler:
   name: cosine
-  warmup_steps: 50
+  warmup_steps: 100  # ~2% of training steps for smoother start
 
 trainer:
-  max_epochs: 1
+  max_epochs: 3
   gradient_clip_norm: 1.0
-  gradient_accumulation_steps: 4
+  gradient_accumulation_steps: 12  # Effective batch: 60 (5*12)
   validation_max_length: 128
   label_smoothing: 0.1
   task_weights:
     summarization: 1.0
-    emotion: 1.0
-    topic: 1.0
-  max_train_samples: 1000
-  max_val_samples: 100
+    emotion: 0.5
+    topic: 0.5
+  max_train_samples: 3000  # 3k samples for better validation
+  max_val_samples: 300
+  early_stopping_patience: 5  # Stop if no improvement
+  log_grad_norm_frequency: 100
+
+# Disable compile for faster startup in dev
+compile_encoder: false
+compile_decoder: false
+
+tokenizer_max_length: 512

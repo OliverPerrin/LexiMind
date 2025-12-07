@@ -14,15 +14,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, Optional, cast
+from typing import Any, Literal, Optional, cast
 
 import torch
 from transformers import T5ForConditionalGeneration
 
 from ..data.tokenization import Tokenizer
 from ..utils.config import load_yaml
-from .decoder import TransformerDecoder
-from .encoder import TransformerEncoder
+from .decoder import TransformerDecoder, TransformerDecoderLayer
+from .encoder import TransformerEncoder, TransformerEncoderLayer
 from .heads import ClassificationHead, LMHead
 from .multitask import MultiTaskModel
 
@@ -35,6 +35,7 @@ class ModelConfig:
     """Configuration describing the transformer architecture."""
 
     d_model: int = 768
+    vocab_size: Optional[int] = None  # Override tokenizer vocab size (e.g., 32128 for FLAN-T5)
     num_encoder_layers: int = 12
     num_decoder_layers: int = 12
     num_attention_heads: int = 12
@@ -50,6 +51,7 @@ class ModelConfig:
     use_relative_position_bias: bool = (
         False  # T5-style relative position bias (use True for T5/FLAN-T5)
     )
+    gradient_checkpointing: bool = False
 
     def __post_init__(self):
         if self.d_model % self.num_attention_heads != 0:
@@ -77,6 +79,7 @@ def load_model_config(path: Optional[str | Path]) -> ModelConfig:
     data = load_yaml(str(path)).data
     return ModelConfig(
         d_model=int(data.get("d_model", 512)),
+        vocab_size=data.get("vocab_size", None),  # Optional vocab size override
         num_encoder_layers=int(data.get("num_encoder_layers", 6)),
         num_decoder_layers=int(data.get("num_decoder_layers", 6)),
         num_attention_heads=int(data.get("num_attention_heads", 8)),
@@ -88,6 +91,7 @@ def load_model_config(path: Optional[str | Path]) -> ModelConfig:
         use_learned_pos_enc=bool(data.get("use_learned_pos_enc", True)),
         activation=str(data.get("activation", "gelu")),
         use_relative_position_bias=bool(data.get("use_relative_position_bias", False)),
+        gradient_checkpointing=bool(data.get("gradient_checkpointing", False)),
     )
 
 
@@ -107,11 +111,10 @@ def _load_pretrained_weights(
       -> We zero-initialize the bias terms
     """
     print(f"Loading pretrained weights from {model_name}...")
-    t5 = T5ForConditionalGeneration.from_pretrained(model_name)
+    t5 = T5ForConditionalGeneration.from_pretrained(model_name)  # type: ignore[attr-defined]
 
     # Load shared embeddings (T5 uses shared embeddings for encoder and decoder)
     # Note: T5's vocab is padded to multiple of 128 for efficiency (32100 -> 32128)
-    # Our model uses the tokenizer's actual vocab size, so we only copy the valid tokens
     print("Transferring shared token embeddings...")
     shared_embeddings = t5.shared.weight.data
     our_vocab_size = encoder.embedding.weight.size(0)
@@ -124,6 +127,19 @@ def _load_pretrained_weights(
         print(f"  Copying first {min_vocab} token embeddings...")
         encoder.embedding.weight.data[:min_vocab].copy_(shared_embeddings[:min_vocab])
         decoder.embedding.weight.data[:min_vocab].copy_(shared_embeddings[:min_vocab])
+
+        # Initialize any extra tokens (e.g., tokens 32100-32127) with small random values
+        if our_vocab_size > t5_vocab_size:
+            print(
+                f"  Initializing {our_vocab_size - t5_vocab_size} extra padding tokens with small values..."
+            )
+            # Use small random initialization for stability (mean of existing embeddings ±  small noise)
+            mean_emb = shared_embeddings.mean(dim=0, keepdim=True)
+            encoder.embedding.weight.data[t5_vocab_size:].normal_(mean=0.0, std=0.02)
+            encoder.embedding.weight.data[t5_vocab_size:] += mean_emb
+            decoder.embedding.weight.data[t5_vocab_size:].copy_(
+                encoder.embedding.weight.data[t5_vocab_size:]
+            )
     else:
         encoder.embedding.weight.data.copy_(shared_embeddings)
         decoder.embedding.weight.data.copy_(shared_embeddings)
@@ -136,11 +152,13 @@ def _load_pretrained_weights(
     print("Transferring encoder weights...")
     t5_encoder = t5.encoder
 
-    for custom_layer, t5_layer in zip(encoder.layers, t5_encoder.block, strict=False):
-        t5_self_attn = t5_layer.layer[0].SelfAttention
-        t5_ffn = t5_layer.layer[1].DenseReluDense
-        t5_norm1 = t5_layer.layer[0].layer_norm
-        t5_norm2 = t5_layer.layer[1].layer_norm
+    for custom_layer_untyped, t5_layer in zip(encoder.layers, t5_encoder.block, strict=False):
+        custom_layer = cast(TransformerEncoderLayer, custom_layer_untyped)
+        t5_block = cast(Any, t5_layer)
+        t5_self_attn = t5_block.layer[0].SelfAttention
+        t5_ffn = t5_block.layer[1].DenseReluDense
+        t5_norm1 = t5_block.layer[0].layer_norm
+        t5_norm2 = t5_block.layer[1].layer_norm
 
         # Self-attention (T5 has no bias in attention projections)
         custom_layer.self_attn.W_Q.weight.data.copy_(t5_self_attn.q.weight.data)
@@ -190,7 +208,7 @@ def _load_pretrained_weights(
     if hasattr(encoder, "relative_position_bias") and encoder.relative_position_bias is not None:
         print("Transferring encoder relative position bias...")
         t5_enc_rel_bias = (
-            t5_encoder.block[0].layer[0].SelfAttention.relative_attention_bias.weight.data
+            cast(Any, t5_encoder.block[0]).layer[0].SelfAttention.relative_attention_bias.weight.data
         )
         encoder.relative_position_bias.relative_attention_bias.weight.data.copy_(t5_enc_rel_bias)
 
@@ -198,13 +216,15 @@ def _load_pretrained_weights(
     print("Transferring decoder weights...")
     t5_decoder = t5.decoder
 
-    for custom_layer, t5_layer in zip(decoder.layers, t5_decoder.block, strict=False):
-        t5_self_attn = t5_layer.layer[0].SelfAttention
-        t5_cross_attn = t5_layer.layer[1].EncDecAttention
-        t5_ffn = t5_layer.layer[2].DenseReluDense
-        t5_norm1 = t5_layer.layer[0].layer_norm
-        t5_norm2 = t5_layer.layer[1].layer_norm
-        t5_norm3 = t5_layer.layer[2].layer_norm
+    for custom_layer_untyped, t5_layer in zip(decoder.layers, t5_decoder.block, strict=False):
+        custom_layer = cast(TransformerDecoderLayer, custom_layer_untyped)
+        t5_block = cast(Any, t5_layer)
+        t5_self_attn = t5_block.layer[0].SelfAttention
+        t5_cross_attn = t5_block.layer[1].EncDecAttention
+        t5_ffn = t5_block.layer[2].DenseReluDense
+        t5_norm1 = t5_block.layer[0].layer_norm
+        t5_norm2 = t5_block.layer[1].layer_norm
+        t5_norm3 = t5_block.layer[2].layer_norm
 
         # Self-attention
         custom_layer.self_attn.W_Q.weight.data.copy_(t5_self_attn.q.weight.data)
@@ -265,7 +285,7 @@ def _load_pretrained_weights(
     ):
         print("Transferring decoder self-attention relative position bias...")
         t5_dec_self_rel_bias = (
-            t5_decoder.block[0].layer[0].SelfAttention.relative_attention_bias.weight.data
+            cast(Any, t5_decoder.block[0]).layer[0].SelfAttention.relative_attention_bias.weight.data
         )
         decoder.self_relative_position_bias.relative_attention_bias.weight.data.copy_(
             t5_dec_self_rel_bias
@@ -278,7 +298,7 @@ def _load_pretrained_weights(
         print("Transferring decoder cross-attention relative position bias...")
         # Cross-attention relative position bias is in EncDecAttention of first block
         t5_dec_cross_rel_bias = (
-            t5_decoder.block[0].layer[1].EncDecAttention.relative_attention_bias.weight.data
+            cast(Any, t5_decoder.block[0]).layer[1].EncDecAttention.relative_attention_bias.weight.data
         )
         decoder.cross_relative_position_bias.relative_attention_bias.weight.data.copy_(
             t5_dec_cross_rel_bias
@@ -367,9 +387,9 @@ def _load_llama_weights(
     num_layers = min(len(encoder.layers), len(llama.model.layers))
 
     for i in range(num_layers):
-        llama_layer = llama.model.layers[i]
-        enc_layer = encoder.layers[i]
-        dec_layer = decoder.layers[i]
+        llama_layer = cast(Any, llama.model.layers[i])
+        enc_layer = cast(TransformerEncoderLayer, encoder.layers[i])
+        dec_layer = cast(TransformerDecoderLayer, decoder.layers[i])
 
         # --- Self-Attention ---
         # Llama: q_proj, k_proj, v_proj, o_proj
@@ -460,15 +480,19 @@ def build_multitask_model(
     if hasattr(tokenizer, "config") and hasattr(tokenizer.config, "max_length"):
         max_len = tokenizer.config.max_length
     elif hasattr(tokenizer, "model_max_length"):
-        max_len = tokenizer.model_max_length
+        max_len = cast(Any, tokenizer).model_max_length
     else:
         max_len = 512  # Default fallback
 
     # Cast activation to the literal type for mypy
     activation = cast(ActivationType, cfg.activation)
 
+    # Use cfg.vocab_size (32128) instead of tokenizer.vocab_size (32100)
+    # to match FLAN-T5's padded vocabulary
+    vocab_size = cfg.vocab_size if cfg.vocab_size is not None else tokenizer.vocab_size
+
     encoder = TransformerEncoder(
-        vocab_size=tokenizer.vocab_size,
+        vocab_size=vocab_size,
         d_model=cfg.d_model,
         num_layers=cfg.num_encoder_layers,
         num_heads=cfg.num_attention_heads,
@@ -480,9 +504,10 @@ def build_multitask_model(
         use_learned_pos_enc=cfg.use_learned_pos_enc,
         activation=activation,
         use_relative_position_bias=cfg.use_relative_position_bias,
+        gradient_checkpointing=cfg.gradient_checkpointing,
     )
     decoder = TransformerDecoder(
-        vocab_size=tokenizer.vocab_size,
+        vocab_size=vocab_size,
         d_model=cfg.d_model,
         num_layers=cfg.num_decoder_layers,
         num_heads=cfg.num_attention_heads,
@@ -494,6 +519,7 @@ def build_multitask_model(
         use_learned_pos_enc=cfg.use_learned_pos_enc,
         activation=activation,
         use_relative_position_bias=cfg.use_relative_position_bias,
+        gradient_checkpointing=cfg.gradient_checkpointing,
     )
 
     # Load pretrained weights if requested (but allow override for inference)
@@ -513,12 +539,14 @@ def build_multitask_model(
             )
             _load_pretrained_weights(encoder, decoder, cfg.pretrained_model_name)
 
+    # T5 uses separate embeddings and lm_head (tie_word_embeddings=False)
+    # Both are initialized from pretrained weights if use_pretrained=True
+    # We do NOT tie them here - they remain independent for better flexibility
+
     model = MultiTaskModel(encoder=encoder, decoder=decoder, decoder_outputs_logits=True)
     model.add_head(
         "summarization",
-        LMHead(
-            d_model=cfg.d_model, vocab_size=tokenizer.vocab_size, tie_embedding=decoder.embedding
-        ),
+        LMHead(d_model=cfg.d_model, vocab_size=vocab_size, tie_embedding=decoder.embedding),
     )
     model.add_head(
         "emotion",
