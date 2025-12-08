@@ -65,13 +65,13 @@ def get_pipeline():
             repo_id="OliverPerrin/LexiMind-Model",
             filename="best.pt",
             local_dir="checkpoints",
-            local_dir_use_symlinks=False,
         )
 
     _pipeline, _ = create_inference_pipeline(
         tokenizer_dir="artifacts/hf_tokenizer/",
         checkpoint_path="checkpoints/best.pt",
         labels_path="artifacts/labels.json",
+        model_config_path="configs/model/base.yaml",
     )
     return _pipeline
 
