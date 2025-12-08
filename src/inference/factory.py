@@ -58,7 +58,8 @@ def create_inference_pipeline(
 
     tokenizer = Tokenizer(resolved_tokenizer_config)
 
-    # Default to base config if not specified (checkpoint was trained with base config)
+    # Default to the base config because the published checkpoints were trained
+    # with the 12-layer FLAN-T5-base alignment (vocab 32128, rel pos bias).
     if model_config_path is None:
         model_config_path = (
             Path(__file__).resolve().parent.parent.parent / "configs" / "model" / "base.yaml"
