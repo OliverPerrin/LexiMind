@@ -1,20 +1,23 @@
 """
 Gradio demo for LexiMind multi-task NLP model.
 
-Showcases the model's capabilities across three tasks:
-- Summarization: Generates concise summaries of input text
-- Emotion Detection: Multi-label emotion classification
-- Topic Classification: Categorizes text into topics
+Redesigned to showcase the model's capabilities on training data:
+- Browse classic literature and news articles
+- Filter by topic and emotion
+- View real-time summaries and classifications
+- Compare model outputs across different texts
 
 Author: Oliver Perrin
-Date: 2025-12-05
+Date: 2025-12-05, Updated: 2026-01-12
 """
 
 from __future__ import annotations
 
 import json
+import random
 import sys
 from pathlib import Path
+from typing import Any
 
 import gradio as gr
 
@@ -37,14 +40,115 @@ logger = get_logger(__name__)
 # --------------- Constants ---------------
 
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+DATA_DIR = PROJECT_ROOT / "data" / "processed"
+BOOKS_DIR = DATA_DIR / "books"
+SUMMARIZATION_DIR = DATA_DIR / "summarization"
+
 EVAL_REPORT_PATH = OUTPUTS_DIR / "evaluation_report.json"
 TRAINING_HISTORY_PATH = OUTPUTS_DIR / "training_history.json"
 
-SAMPLE_TEXTS = [
-    "Global markets tumbled today as investors reacted to rising inflation concerns. The Federal Reserve hinted at potential interest rate hikes, sending shockwaves through technology and banking sectors. Analysts predict continued volatility as economic uncertainty persists.",
-    "Scientists at MIT have developed a breakthrough quantum computing chip that operates at room temperature. This advancement could revolutionize drug discovery, cryptography, and artificial intelligence. The research team published their findings in Nature.",
-    "The championship game ended in dramatic fashion as the underdog team scored in the final seconds to secure victory. Fans rushed the field in celebration, marking the team's first title in 25 years.",
-]
+# Emotion display with emojis
+EMOTION_EMOJI = {
+    "joy": "😊", "love": "❤️", "anger": "😠", "fear": "😨",
+    "sadness": "😢", "surprise": "😲", "neutral": "😐",
+    "admiration": "🤩", "amusement": "😄", "annoyance": "😤",
+    "approval": "👍", "caring": "🤗", "confusion": "😕",
+    "curiosity": "🤔", "desire": "😍", "disappointment": "😞",
+    "disapproval": "👎", "disgust": "🤢", "embarrassment": "😳",
+    "excitement": "🎉", "gratitude": "🙏", "grief": "😭",
+    "nervousness": "😰", "optimism": "🌟", "pride": "🦁",
+    "realization": "💡", "relief": "😌", "remorse": "😔",
+}
+
+# Topic display with emojis
+TOPIC_EMOJI = {
+    "World": "🌍", "Sports": "🏆", "Business": "💼", 
+    "Sci/Tech": "🔬", "Science & Mathematics": "🔬",
+    "Education & Reference": "📚", "Entertainment & Music": "🎬",
+    "Health": "🏥", "Family & Relationships": "👨‍👩‍👧",
+    "Society & Culture": "🏛️", "Politics & Government": "🗳️",
+    "Computers & Internet": "💻",
+}
+
+# --------------- Data Loading ---------------
+
+
+def load_books_data() -> list[dict[str, Any]]:
+    """Load book paragraphs from JSONL files."""
+    books = []
+    library_path = BOOKS_DIR / "library.json"
+    
+    if library_path.exists():
+        with open(library_path) as f:
+            library = json.load(f)
+            
+        for book_info in library.get("books", []):
+            title = book_info["title"]
+            jsonl_name = book_info["filename"].replace(".txt", ".jsonl")
+            jsonl_path = BOOKS_DIR / jsonl_name
+            
+            if jsonl_path.exists():
+                paragraphs = []
+                with open(jsonl_path) as f:
+                    for line in f:
+                        if line.strip():
+                            para = json.loads(line)
+                            # Only include paragraphs with substantial content
+                            if para.get("token_count", 0) > 50:
+                                paragraphs.append(para)
+                
+                if paragraphs:
+                    books.append({
+                        "title": title,
+                        "paragraphs": paragraphs[:20],  # Limit to first 20 substantial paragraphs
+                        "word_count": book_info.get("word_count", 0),
+                    })
+    
+    return books
+
+
+def load_news_data(split: str = "validation", max_items: int = 100) -> list[dict[str, Any]]:
+    """Load news articles from summarization dataset."""
+    articles = []
+    data_path = SUMMARIZATION_DIR / f"{split}.jsonl"
+    
+    if data_path.exists():
+        with open(data_path) as f:
+            for i, line in enumerate(f):
+                if i >= max_items:
+                    break
+                if line.strip():
+                    article = json.loads(line)
+                    # Only include articles with reasonable length
+                    source = article.get("source", "")
+                    if len(source) > 200:
+                        articles.append({
+                            "text": source,
+                            "reference_summary": article.get("summary", ""),
+                            "id": i,
+                        })
+    
+    return articles
+
+
+# Cache the loaded data
+_books_cache: list[dict] | None = None
+_news_cache: list[dict] | None = None
+
+
+def get_books() -> list[dict]:
+    global _books_cache
+    if _books_cache is None:
+        _books_cache = load_books_data()
+    return _books_cache
+
+
+def get_news() -> list[dict]:
+    global _news_cache
+    if _news_cache is None:
+        _news_cache = load_news_data()
+    return _news_cache
+
 
 # --------------- Pipeline Management ---------------
 
@@ -76,68 +180,38 @@ def get_pipeline():
     return _pipeline
 
 
-# --------------- Core Functions ---------------
+# --------------- Core Analysis Functions ---------------
 
 
-def analyze(text: str) -> tuple[str, str, str]:
+def analyze_text(text: str) -> tuple[str, str, str]:
     """Run all three tasks and return formatted results."""
     if not text or not text.strip():
-        return "Please enter text above to analyze.", "", ""
+        return "Please enter or select text to analyze.", "", ""
 
     try:
         pipe = get_pipeline()
 
         # Run tasks
-        summary = pipe.summarize([text], max_length=128)[0].strip()
+        summary = pipe.summarize([text], max_length=150)[0].strip()
         if not summary:
             summary = "(Unable to generate summary)"
 
-        emotions = pipe.predict_emotions([text], threshold=0.3)[0]  # Lower threshold
+        emotions = pipe.predict_emotions([text], threshold=0.3)[0]
         topic = pipe.predict_topics([text])[0]
 
-        # Format emotions with emoji
-        emotion_emoji = {
-            "joy": "😊",
-            "love": "❤️",
-            "anger": "😠",
-            "fear": "😨",
-            "sadness": "😢",
-            "surprise": "😲",
-            "neutral": "😐",
-            "admiration": "🤩",
-            "amusement": "😄",
-            "annoyance": "😤",
-            "approval": "👍",
-            "caring": "🤗",
-            "confusion": "😕",
-            "curiosity": "🤔",
-            "desire": "😍",
-            "disappointment": "😞",
-            "disapproval": "👎",
-            "disgust": "🤢",
-            "embarrassment": "😳",
-            "excitement": "🎉",
-            "gratitude": "🙏",
-            "grief": "😭",
-            "nervousness": "��",
-            "optimism": "🌟",
-            "pride": "🦁",
-            "realization": "💡",
-            "relief": "😌",
-            "remorse": "😔",
-        }
-
+        # Format emotions
         if emotions.labels:
             emotion_parts = []
             for lbl, score in zip(emotions.labels[:5], emotions.scores[:5], strict=False):
-                emoji = emotion_emoji.get(lbl.lower(), "•")
+                emoji = EMOTION_EMOJI.get(lbl.lower(), "•")
                 emotion_parts.append(f"{emoji} **{lbl.title()}** ({score:.0%})")
             emotion_str = "\n".join(emotion_parts)
         else:
             emotion_str = "😐 No strong emotions detected"
 
         # Format topic
-        topic_str = f"**{topic.label}**\n\nConfidence: {topic.confidence:.0%}"
+        topic_emoji = TOPIC_EMOJI.get(topic.label, "📄")
+        topic_str = f"{topic_emoji} **{topic.label}**\n\nConfidence: {topic.confidence:.0%}"
 
         return summary, emotion_str, topic_str
 
@@ -146,9 +220,85 @@ def analyze(text: str) -> tuple[str, str, str]:
         return f"Error: {e}", "", ""
 
 
+# --------------- Book Browser Functions ---------------
+
+
+def get_book_titles() -> list[str]:
+    """Get list of available book titles."""
+    books = get_books()
+    return [b["title"] for b in books]
+
+
+def get_book_excerpt(title: str, paragraph_idx: int = 0) -> str:
+    """Get a specific paragraph from a book."""
+    books = get_books()
+    for book in books:
+        if book["title"] == title:
+            paragraphs = book["paragraphs"]
+            if 0 <= paragraph_idx < len(paragraphs):
+                text = paragraphs[paragraph_idx].get("text", "")
+                return str(text) if text else ""
+    return ""
+
+
+def get_book_info(title: str) -> str:
+    """Get book metadata."""
+    books = get_books()
+    for book in books:
+        if book["title"] == title:
+            num_paras = len(book["paragraphs"])
+            word_count = book["word_count"]
+            return f"**{title}**\n\n📖 {word_count:,} words | {num_paras} excerpts available"
+    return ""
+
+
+def on_book_select(title: str) -> tuple[str, str, int]:
+    """Handle book selection - return first excerpt and info."""
+    info = get_book_info(title)
+    excerpt = get_book_excerpt(title, 0)
+    return info, excerpt, 0
+
+
+def on_paragraph_change(title: str, idx: int) -> str:
+    """Handle paragraph slider change."""
+    return get_book_excerpt(title, int(idx))
+
+
+def get_max_paragraphs(title: str) -> int:
+    """Get the number of paragraphs for a book."""
+    books = get_books()
+    for book in books:
+        if book["title"] == title:
+            return len(book["paragraphs"]) - 1
+    return 0
+
+
+# --------------- News Browser Functions ---------------
+
+
+def get_random_news() -> tuple[str, str]:
+    """Get a random news article and its reference summary."""
+    news = get_news()
+    if news:
+        article = random.choice(news)
+        return article["text"], article.get("reference_summary", "")
+    return "", ""
+
+
+def get_news_by_index(idx: int) -> tuple[str, str]:
+    """Get news article by index."""
+    news = get_news()
+    if 0 <= idx < len(news):
+        article = news[idx]
+        return article["text"], article.get("reference_summary", "")
+    return "", ""
+
+
+# --------------- Metrics Loading ---------------
+
+
 def load_metrics() -> str:
     """Load evaluation metrics and format as markdown."""
-    # Load evaluation report
     eval_metrics = {}
     if EVAL_REPORT_PATH.exists():
         try:
@@ -157,7 +307,6 @@ def load_metrics() -> str:
         except Exception:
             pass
 
-    # Load training history
     train_metrics = {}
     if TRAINING_HISTORY_PATH.exists():
         try:
@@ -166,18 +315,17 @@ def load_metrics() -> str:
         except Exception:
             pass
 
-    # Get final validation metrics
     val_final = train_metrics.get("val_epoch_3", {})
 
     md = """
 ## 📈 Model Performance
 
-### Training Results (3 Epochs)
+### Training Results
 
-| Task | Metric | Final Score |
-|------|--------|-------------|
+| Task | Metric | Score |
+|------|--------|-------|
 | **Topic Classification** | Accuracy | **{topic_acc:.1%}** |
-| **Emotion Detection** | F1 (training) | {emo_f1:.1%} |
+| **Emotion Detection** | F1 | {emo_f1:.1%} |
 | **Summarization** | ROUGE-like | {rouge:.1%} |
 
 ### Evaluation Results
@@ -188,13 +336,6 @@ def load_metrics() -> str:
 | Emotion F1 (macro) | {eval_emo:.1%} |
 | ROUGE-like | {eval_rouge:.1%} |
 | BLEU | {eval_bleu:.3f} |
-
----
-
-### Topic Classification Details
-
-| Category | Precision | Recall | F1 |
-|----------|-----------|--------|-----|
 """.format(
         topic_acc=val_final.get("topic_accuracy", 0),
         emo_f1=val_final.get("emotion_f1", 0),
@@ -205,21 +346,7 @@ def load_metrics() -> str:
         eval_bleu=eval_metrics.get("summarization", {}).get("bleu", 0),
     )
 
-    # Add per-class metrics
-    topic_report = eval_metrics.get("topic", {}).get("classification_report", {})
-    for cat, metrics in topic_report.items():
-        if cat in ["macro avg", "weighted avg", "micro avg"]:
-            continue
-        if isinstance(metrics, dict):
-            md += f"| {cat} | {metrics.get('precision', 0):.1%} | {metrics.get('recall', 0):.1%} | {metrics.get('f1-score', 0):.1%} |\n"
-
     return md
-
-
-def get_viz_path(filename: str) -> str | None:
-    """Get visualization path if file exists."""
-    path = OUTPUTS_DIR / filename
-    return str(path) if path.exists() else None
 
 
 # --------------- Gradio Interface ---------------
@@ -227,161 +354,295 @@ def get_viz_path(filename: str) -> str | None:
 with gr.Blocks(
     title="LexiMind - Multi-Task NLP",
     theme=gr.themes.Soft(),
+    css="""
+    .book-card { padding: 10px; border-radius: 8px; background: #f0f4f8; }
+    .results-panel { min-height: 200px; }
+    """
 ) as demo:
     gr.Markdown(
         """
         # 🧠 LexiMind
         ### Multi-Task Transformer for Document Analysis
         
-        A custom encoder-decoder Transformer trained on **summarization**, **emotion detection** (28 classes),
-        and **topic classification** (10 categories). Built from scratch with PyTorch.
+        Explore classic literature and news articles with AI-powered analysis:
+        - 📝 **Summarization** - Generate concise summaries
+        - 😊 **Emotion Detection** - Identify emotional tones  
+        - 📂 **Topic Classification** - Categorize by subject
         
-        > ⚠️ **Note**: Summarization is experimental - the model works best on news-style articles.
+        > Built with a custom Transformer initialized from FLAN-T5 weights.
         """
     )
 
-    # --------------- Try It Tab ---------------
-    with gr.Tab("🚀 Try It"):
+    # ===================== TAB 1: EXPLORE BOOKS =====================
+    with gr.Tab("📚 Explore Books"):
+        gr.Markdown(
+            """
+            ### Classic Literature Collection
+            Browse excerpts from classic novels and see how LexiMind analyzes them.
+            Select a book, navigate through excerpts, and click **Analyze** to run the model.
+            """
+        )
+        
+        with gr.Row():
+            with gr.Column(scale=1):
+                book_dropdown = gr.Dropdown(
+                    choices=get_book_titles(),
+                    label="📖 Select a Book",
+                    value=get_book_titles()[0] if get_book_titles() else None,
+                )
+                book_info = gr.Markdown(elem_classes=["book-card"])
+                
+                para_slider = gr.Slider(
+                    minimum=0,
+                    maximum=19,
+                    step=1,
+                    value=0,
+                    label="📄 Excerpt Number",
+                    info="Navigate through different parts of the book"
+                )
+                
+                analyze_book_btn = gr.Button("🔍 Analyze This Excerpt", variant="primary")
+            
+            with gr.Column(scale=2):
+                book_excerpt = gr.Textbox(
+                    label="📜 Book Excerpt",
+                    lines=10,
+                    max_lines=15,
+                    interactive=False,
+                )
+                
+                with gr.Row():
+                    with gr.Column():
+                        book_summary = gr.Textbox(
+                            label="📝 Generated Summary",
+                            lines=4,
+                            interactive=False,
+                        )
+                    with gr.Column():
+                        with gr.Row():
+                            book_emotions = gr.Markdown(
+                                label="😊 Emotions",
+                                value="*Click Analyze*",
+                            )
+                            book_topic = gr.Markdown(
+                                label="📂 Topic", 
+                                value="*Click Analyze*",
+                            )
+
+        # Book event handlers
+        book_dropdown.change(
+            fn=on_book_select,
+            inputs=[book_dropdown],
+            outputs=[book_info, book_excerpt, para_slider],
+        )
+        
+        para_slider.change(
+            fn=on_paragraph_change,
+            inputs=[book_dropdown, para_slider],
+            outputs=[book_excerpt],
+        )
+        
+        analyze_book_btn.click(
+            fn=analyze_text,
+            inputs=[book_excerpt],
+            outputs=[book_summary, book_emotions, book_topic],
+        )
+        
+        # Initialize with first book
+        demo.load(
+            fn=on_book_select,
+            inputs=[book_dropdown],
+            outputs=[book_info, book_excerpt, para_slider],
+        )
+
+    # ===================== TAB 2: EXPLORE NEWS =====================
+    with gr.Tab("📰 Explore News"):
+        gr.Markdown(
+            """
+            ### CNN/DailyMail News Articles
+            Explore news articles from the training dataset. Compare the model's 
+            generated summary with the original human-written summary.
+            """
+        )
+        
+        with gr.Row():
+            with gr.Column(scale=1):
+                news_slider = gr.Slider(
+                    minimum=0,
+                    maximum=99,
+                    step=1,
+                    value=0,
+                    label="📰 Article Number",
+                )
+                random_news_btn = gr.Button("🎲 Random Article", variant="secondary")
+                analyze_news_btn = gr.Button("🔍 Analyze Article", variant="primary")
+                
+                gr.Markdown("### Reference Summary")
+                gr.Markdown("*Original human-written summary from the dataset:*")
+                reference_summary = gr.Textbox(
+                    label="",
+                    lines=4,
+                    interactive=False,
+                    show_label=False,
+                )
+            
+            with gr.Column(scale=2):
+                news_text = gr.Textbox(
+                    label="📰 News Article",
+                    lines=12,
+                    max_lines=15,
+                    interactive=False,
+                )
+                
+                with gr.Row():
+                    with gr.Column():
+                        news_summary = gr.Textbox(
+                            label="📝 LexiMind Summary",
+                            lines=4,
+                            interactive=False,
+                        )
+                    with gr.Column():
+                        with gr.Row():
+                            news_emotions = gr.Markdown(
+                                label="😊 Emotions",
+                                value="*Click Analyze*",
+                            )
+                            news_topic = gr.Markdown(
+                                label="📂 Topic",
+                                value="*Click Analyze*",
+                            )
+
+        # News event handlers
+        news_slider.change(
+            fn=get_news_by_index,
+            inputs=[news_slider],
+            outputs=[news_text, reference_summary],
+        )
+        
+        random_news_btn.click(
+            fn=get_random_news,
+            outputs=[news_text, reference_summary],
+        )
+        
+        analyze_news_btn.click(
+            fn=analyze_text,
+            inputs=[news_text],
+            outputs=[news_summary, news_emotions, news_topic],
+        )
+        
+        # Initialize with first article
+        demo.load(
+            fn=lambda: get_news_by_index(0),
+            outputs=[news_text, reference_summary],
+        )
+
+    # ===================== TAB 3: FREE TEXT =====================
+    with gr.Tab("✏️ Free Text"):
+        gr.Markdown(
+            """
+            ### Try Your Own Text
+            Enter any text to analyze. Note that the model performs best on 
+            **news-style articles** and **literary prose** similar to the training data.
+            """
+        )
+        
         with gr.Row():
             with gr.Column(scale=3):
-                text_input = gr.Textbox(
-                    label="📝 Input Text",
-                    lines=6,
-                    placeholder="Enter or paste text to analyze (works best with news articles)...",
-                    value=SAMPLE_TEXTS[0],
+                free_text_input = gr.Textbox(
+                    label="📝 Enter Text",
+                    lines=8,
+                    placeholder="Paste or type your text here...\n\nThe model works best with news articles or literary passages.",
                 )
-                analyze_btn = gr.Button(
-                    "🔍 Analyze",
-                    variant="primary",
-                    size="sm",
-                )
-
-                gr.Markdown("**Sample Texts** (click to use):")
+                
                 with gr.Row():
-                    sample1_btn = gr.Button("📰 Markets", size="sm", variant="secondary")
-                    sample2_btn = gr.Button("🔬 Science", size="sm", variant="secondary")
-                    sample3_btn = gr.Button("🏆 Sports", size="sm", variant="secondary")
-
-                sample1_btn.click(fn=lambda: SAMPLE_TEXTS[0], outputs=text_input)
-                sample2_btn.click(fn=lambda: SAMPLE_TEXTS[1], outputs=text_input)
-                sample3_btn.click(fn=lambda: SAMPLE_TEXTS[2], outputs=text_input)
-
+                    analyze_free_btn = gr.Button("🔍 Analyze", variant="primary")
+                    clear_btn = gr.Button("🗑️ Clear", variant="secondary")
+                
+                gr.Markdown("**Sample texts:**")
+                with gr.Row():
+                    sample1 = gr.Button("📈 Business News", size="sm")
+                    sample2 = gr.Button("🔬 Science News", size="sm")
+                    sample3 = gr.Button("🏆 Sports News", size="sm")
+            
             with gr.Column(scale=2):
-                gr.Markdown("### Results")
-                summary_out = gr.Textbox(
+                free_summary = gr.Textbox(
                     label="📝 Summary",
-                    lines=3,
+                    lines=4,
                     interactive=False,
                 )
                 with gr.Row():
-                    with gr.Column():
-                        gr.Markdown("**😊 Emotions**")
-                        emotion_out = gr.Markdown(value="*Run analysis*")
-                    with gr.Column():
-                        gr.Markdown("**📂 Topic**")
-                        topic_out = gr.Markdown(value="*Run analysis*")
+                    free_emotions = gr.Markdown(value="*Enter text and click Analyze*")
+                    free_topic = gr.Markdown(value="")
 
-        analyze_btn.click(
-            fn=analyze,
-            inputs=text_input,
-            outputs=[summary_out, emotion_out, topic_out],
+        # Sample texts
+        SAMPLES = {
+            "business": "Global markets tumbled today as investors reacted to rising inflation concerns. The Federal Reserve hinted at potential interest rate hikes, sending shockwaves through technology and banking sectors. Analysts predict continued volatility as economic uncertainty persists. Major indices fell by over 2%, with tech stocks leading the decline.",
+            "science": "Scientists at MIT have developed a breakthrough quantum computing chip that operates at room temperature. This advancement could revolutionize drug discovery, cryptography, and artificial intelligence. The research team published their findings in Nature, demonstrating stable qubit operations for over 100 microseconds.",
+            "sports": "The championship game ended in dramatic fashion as the underdog team scored in the final seconds to secure victory. Fans rushed the field in celebration, marking the team's first title in 25 years. The winning goal came from a rookie player who had only joined the team this season.",
+        }
+        
+        sample1.click(fn=lambda: SAMPLES["business"], outputs=free_text_input)
+        sample2.click(fn=lambda: SAMPLES["science"], outputs=free_text_input)
+        sample3.click(fn=lambda: SAMPLES["sports"], outputs=free_text_input)
+        clear_btn.click(fn=lambda: ("", "", "", ""), outputs=[free_text_input, free_summary, free_emotions, free_topic])
+        
+        analyze_free_btn.click(
+            fn=analyze_text,
+            inputs=[free_text_input],
+            outputs=[free_summary, free_emotions, free_topic],
         )
 
-    # --------------- Metrics Tab ---------------
+    # ===================== TAB 4: METRICS =====================
     with gr.Tab("📊 Metrics"):
         with gr.Row():
             with gr.Column(scale=2):
                 gr.Markdown(load_metrics())
             with gr.Column(scale=1):
-                confusion_path = get_viz_path("topic_confusion_matrix.png")
-                if confusion_path:
-                    gr.Image(confusion_path, label="Confusion Matrix", show_label=True)
+                confusion_path = OUTPUTS_DIR / "topic_confusion_matrix.png"
+                if confusion_path.exists():
+                    gr.Image(str(confusion_path), label="Topic Confusion Matrix")
 
-    # --------------- Visualizations Tab ---------------
-    with gr.Tab("🎨 Visualizations"):
-        gr.Markdown("### Model Internals")
-
-        with gr.Row():
-            attn_path = get_viz_path("attention_visualization.png")
-            if attn_path:
-                gr.Image(attn_path, label="Self-Attention Pattern")
-
-            pos_path = get_viz_path("positional_encoding_heatmap.png")
-            if pos_path:
-                gr.Image(pos_path, label="Positional Encodings")
-
-        with gr.Row():
-            multi_path = get_viz_path("multihead_attention_visualization.png")
-            if multi_path:
-                gr.Image(multi_path, label="Multi-Head Attention")
-
-            single_path = get_viz_path("single_vs_multihead.png")
-            if single_path:
-                gr.Image(single_path, label="Single vs Multi-Head Comparison")
-
-    # --------------- Architecture Tab ---------------
-    with gr.Tab("🔧 Architecture"):
-        gr.Markdown(
-            """
-            ### Model Architecture
-            
-            | Component | Configuration |
-            |-----------|---------------|
-            | **Base** | Custom Transformer (encoder-decoder) |
-            | **Initialization** | FLAN-T5-base weights |
-            | **Encoder** | 6 layers, 768 hidden dim, 12 heads |
-            | **Decoder** | 6 layers with cross-attention |
-            | **Activation** | Gated-GELU |
-            | **Position** | Relative position bias |
-            
-            ### Training Configuration
-            
-            | Setting | Value |
-            |---------|-------|
-            | **Optimizer** | AdamW (lr=2e-5, wd=0.01) |
-            | **Scheduler** | Cosine with 1000 warmup steps |
-            | **Batch Size** | 14 × 3 accumulation = 42 effective |
-            | **Precision** | TF32 (Ampere GPU) |
-            | **Compilation** | torch.compile (inductor) |
-            
-            ### Datasets
-            
-            | Task | Dataset | Size |
-            |------|---------|------|
-            | **Summarization** | CNN/DailyMail + BookSum | ~110K |
-            | **Emotion** | GoEmotions | ~43K (28 labels) |
-            | **Topic** | Yahoo Answers | ~200K (10 classes) |
-            """
-        )
-
-    # --------------- About Tab ---------------
+    # ===================== TAB 5: ABOUT =====================
     with gr.Tab("ℹ️ About"):
         gr.Markdown(
             """
             ### About LexiMind
             
-            LexiMind is a **portfolio project** demonstrating end-to-end machine learning engineering:
+            LexiMind is a **multi-task NLP system** built from scratch with PyTorch,
+            demonstrating end-to-end machine learning engineering.
             
-            ✅ Custom Transformer implementation from scratch  
-            ✅ Multi-task learning with shared encoder  
-            ✅ Production-ready inference pipeline  
-            ✅ Comprehensive evaluation and visualization  
-            ✅ CI/CD with GitHub Actions  
+            #### 🏗️ Architecture
             
-            ### Known Limitations
+            - **Custom Transformer** encoder-decoder (12 layers each)
+            - **Pre-LN with RMSNorm** for training stability
+            - **T5 Relative Position Bias** for sequence modeling
+            - **FLAN-T5-base** weight initialization
+            - **Task-specific heads**: LM head (summarization), Classification heads (emotion, topic)
             
-            - **Summarization** quality is limited (needs more training epochs)
-            - **Emotion detection** has low F1 due to class imbalance in GoEmotions
-            - Best results on **news-style text** (training domain)
+            #### 📚 Training Data
             
-            ### Links
+            | Task | Dataset | Description |
+            |------|---------|-------------|
+            | Summarization | CNN/DailyMail | ~100K news articles with summaries |
+            | Emotion | GoEmotions | Multi-label emotion classification |
+            | Topic | AG News | 4-class news categorization |
+            | Books | Project Gutenberg | 8 classic novels for evaluation |
             
-            - 🔗 [GitHub Repository](https://github.com/OliverPerrin/LexiMind)
-            - 🤗 [Model on HuggingFace](https://huggingface.co/OliverPerrin/LexiMind-Model)
+            #### ⚠️ Known Limitations
+            
+            - **Domain-specific**: Best results on news articles and literary text
+            - **Summarization quality**: Limited by model size and training data
+            - **Generalization**: May struggle with very different text styles
+            
+            #### 🔗 Links
+            
+            - [GitHub Repository](https://github.com/OliverPerrin/LexiMind)
+            - [Model on HuggingFace](https://huggingface.co/OliverPerrin/LexiMind-Model)
+            - [HuggingFace Space](https://huggingface.co/spaces/OliverPerrin/LexiMind)
             
             ---
             
-            **Built by Oliver Perrin** | December 2025
+            **Built by Oliver Perrin** | Appalachian State University | 2025-2026
             """
         )
 
@@ -389,5 +650,12 @@ with gr.Blocks(
 # --------------- Entry Point ---------------
 
 if __name__ == "__main__":
-    get_pipeline()  # Pre-load to fail fast if checkpoint missing
+    # Pre-load pipeline and data
+    logger.info("Loading inference pipeline...")
+    get_pipeline()
+    logger.info("Loading book data...")
+    get_books()
+    logger.info("Loading news data...")
+    get_news()
+    logger.info("Starting Gradio server...")
     demo.launch(server_name="0.0.0.0", server_port=7860)

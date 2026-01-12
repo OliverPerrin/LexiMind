@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import torch
 
@@ -25,7 +25,10 @@ def compile_model_safe(
     Parameters mirror `torch.compile` but default to conservative settings.
     """
 
-    return torch.compile(model, backend="inductor", mode=mode, dynamic=dynamic)
+    return cast(
+        torch.nn.Module,
+        torch.compile(model, backend="inductor", mode=mode, dynamic=dynamic),
+    )
 
 
 def apply_safe_config() -> None:

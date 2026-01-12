@@ -64,3 +64,7 @@ ehthumbs_vista.db
 # Config overrides
 configs/local/*.png
 *.pt
+
+# Backup/private files
+scripts/demo_gradio_old.py
+docs/paper.tex
