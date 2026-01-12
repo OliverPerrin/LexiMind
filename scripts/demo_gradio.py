@@ -40,9 +40,11 @@ logger = get_logger(__name__)
 # --------------- Constants ---------------
 
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
-DATA_DIR = PROJECT_ROOT / "data" / "processed"
-BOOKS_DIR = DATA_DIR / "books"
-SUMMARIZATION_DIR = DATA_DIR / "summarization"
+# Demo data is stored in artifacts/demo_data (committed to git)
+# Full data in data/processed/ is gitignored
+DEMO_DATA_DIR = PROJECT_ROOT / "artifacts" / "demo_data"
+BOOKS_DIR = DEMO_DATA_DIR
+NEWS_FILE = DEMO_DATA_DIR / "news_samples.jsonl"
 
 EVAL_REPORT_PATH = OUTPUTS_DIR / "evaluation_report.json"
 TRAINING_HISTORY_PATH = OUTPUTS_DIR / "training_history.json"
@@ -107,13 +109,12 @@ def load_books_data() -> list[dict[str, Any]]:
     return books
 
 
-def load_news_data(split: str = "validation", max_items: int = 100) -> list[dict[str, Any]]:
-    """Load news articles from summarization dataset."""
+def load_news_data(max_items: int = 100) -> list[dict[str, Any]]:
+    """Load news articles from demo data samples."""
     articles = []
-    data_path = SUMMARIZATION_DIR / f"{split}.jsonl"
     
-    if data_path.exists():
-        with open(data_path) as f:
+    if NEWS_FILE.exists():
+        with open(NEWS_FILE) as f:
             for i, line in enumerate(f):
                 if i >= max_items:
                     break

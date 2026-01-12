@@ -1,0 +1,185 @@
+{
+  "books": [
+    {
+      "title": "Alice In Wonderland",
+      "filename": "alice_in_wonderland.txt",
+      "topic": "Education & Reference",
+      "emotions": [
+        {
+          "label": "neutral",
+          "score": 0.4709815740585327
+        },
+        {
+          "label": "disgust",
+          "score": 0.40108823776245117
+        },
+        {
+          "label": "desire",
+          "score": 0.39630722999572754
+        }
+      ],
+      "summary": "Patty and the Rabbit-Guardians are a great deal of fun, and they're very happy to see them. Then they've been talking about how they'll be able to get into the book, and he's got a nice conversation with her. Marie and Lucy are both excited about their new book, and she finds that he is very happy to see the rabbit. She asks her to go to the house with a a small horned horse. The narrator tells them that if he was. Sickness is a commonplace, but the jar is labelled \"Oliver's jar\" and he wonders what happened to her. He tells her that she has been unable to get into the house. She asks her questions about how she can be seen.",
+      "word_count": 26525,
+      "chunks_analyzed": 5
+    },
+    {
+      "title": "Dracula",
+      "filename": "dracula.txt",
+      "topic": "Education & Reference",
+      "emotions": [
+        {
+          "label": "neutral",
+          "score": 0.489966607093811
+        },
+        {
+          "label": "confusion",
+          "score": 0.41637797355651857
+        },
+        {
+          "label": "curiosity",
+          "score": 0.41272881627082825
+        }
+      ],
+      "summary": "On's Reveal of the American Society of Nations is a announcing its new book, \"The Dailygraph\" and \"Scene 1\", \"summary\": \"Mr. James Quincey's novelist, a man who has been married to. X, \"\"summary\": \"The next day, the narrator is in the book, and the sarcasticness of the king's death is a very important part of the story. The king has been given to the emperor of London. Marie, who is a famous Frenchman, has been a very successful businessman. He is also a great example of the history of the country's natives. He says that he will be able to see the world in the world. He tells him that if.",
+      "word_count": 161321,
+      "chunks_analyzed": 5
+    },
+    {
+      "title": "Frankenstein",
+      "filename": "frankenstein.txt",
+      "topic": "Education & Reference",
+      "emotions": [
+        {
+          "label": "neutral",
+          "score": 0.48008409738540647
+        },
+        {
+          "label": "admiration",
+          "score": 0.40495116710662843
+        },
+        {
+          "label": "curiosity",
+          "score": 0.3941798686981201
+        }
+      ],
+      "summary": "Marsale, who is a member of the British Parliament, has been thrown out of London. He is now in the middle of the world and he is ready to take his own home. The next day, he finds that he has been taken into the house of the King'. S of a dark and beautiful light, which is the most important thing to be seen in the world. The sun is a shining light, but the sun is not able to penetrate the earth. He says that the moon is buried in the darkness of the sky. He asks him to. Sing and a few others are also among the most famous destinations in the world. The journey is largely centered on the island of the island, which is a very important part of the world's history. The voyage is based on the idea that he has been able to.",
+      "word_count": 75042,
+      "chunks_analyzed": 5
+    },
+    {
+      "title": "Great Gatsby",
+      "filename": "great_gatsby.txt",
+      "topic": "Education & Reference",
+      "emotions": [
+        {
+          "label": "neutral",
+          "score": 0.47320727109909055
+        },
+        {
+          "label": "admiration",
+          "score": 0.35445165634155273
+        },
+        {
+          "label": "confusion",
+          "score": 0.3524926960468292
+        }
+      ],
+      "summary": "Ford's a friend of the former slaves, who had been abused by the people in the world. He says that he has never been able to speak to anyone, but he knows that if you have a good deal of humor, it will be difficult to get out. Sey, meanwhile, is the most important thing to do for the future. He says that he's not a politician, but rather a political remark. He asks why he was a lawyer and he thinks it's a good idea to. Old-fashioned, and a very good thing. He isn't really happy with his own feelings, but he has been able to convince him that the world is in uniform and he can't be ablebodied. He says he wants to know what he saw.",
+      "word_count": 48208,
+      "chunks_analyzed": 5
+    },
+    {
+      "title": "Moby Dick",
+      "filename": "moby_dick.txt",
+      "topic": "Science & Mathematics",
+      "emotions": [
+        {
+          "label": "neutral",
+          "score": 0.5163363695144654
+        },
+        {
+          "label": "confusion",
+          "score": 0.5041335344314575
+        },
+        {
+          "label": "realization",
+          "score": 0.48740431666374207
+        }
+      ],
+      "summary": "And-Bag, \"The King of the Kingdom, is a fictional character in the novel's series of events. The story is based on the fact that the king has been given to the King of England, who is he a member of the family of the British. Day-day-Day/Shortcuts: The Greatest of the Arctic lands in the New York City, where he is a frightened of the wild horses and dogs. Then they are announcing their arrival at the seaside town of the island's. S are also known as the \"Scene\" and \"The Great Intended\": \"Another adversity is that he has been a great success in his own life, but it's not quite enough to justify the death of the whale. The Count.",
+      "word_count": 212796,
+      "chunks_analyzed": 5
+    },
+    {
+      "title": "Pride And Prejudice",
+      "filename": "pride_and_prejudice.txt",
+      "topic": "Education & Reference",
+      "emotions": [
+        {
+          "label": "neutral",
+          "score": 0.47385218143463137
+        },
+        {
+          "label": "admiration",
+          "score": 0.37997636795043943
+        },
+        {
+          "label": "curiosity",
+          "score": 0.36388261914253234
+        }
+      ],
+      "summary": "Mayweathere, and Jane Austen's letters are written by David Beckham and Johnston. He is also known as a \"Theodore Roosevelt\" and the author of the novel, which is a book that has been published in England. Then, he writes about how. Ly, and the novel's a bit more than usual. The reader is surprised by the fact that the novel has been given to the same kind of humor, but it is not quite clear how much love is going to be done. The author is a very good book about the events of the. By-law, \"summary\": \"As a result of the fact that he is not a very wealthy person, he has no chance to be given a new book. He says that if he had been a little more a few years ago.",
+      "word_count": 127359,
+      "chunks_analyzed": 5
+    },
+    {
+      "title": "Sherlock Holmes",
+      "filename": "sherlock_holmes.txt",
+      "topic": "Education & Reference",
+      "emotions": [
+        {
+          "label": "neutral",
+          "score": 0.46702048778533933
+        },
+        {
+          "label": "admiration",
+          "score": 0.4131287157535553
+        },
+        {
+          "label": "gratitude",
+          "score": 0.3907733917236328
+        }
+      ],
+      "summary": "Debian's \"Scandal\": \"The Adventures of Sherlock Holmes\" is a series of stories that are written by Arthur Conan Doyle and Arthur Cummings. The story is based on the novel, which is titled \"The Legend of Sherlock Watson\" The plot is. And a sneer, who is a very good friend of the king. He says that his wife is able to make her feel more comfortable in the house. He tells him that he has been a long-term relationship with the man who has been married to. The narrator is a very happy and happy woman, but she is still able to see the man who has been abused by the police. She is also a member of the family of the former slaves, and she is now living in the same house with her husband.",
+      "word_count": 104506,
+      "chunks_analyzed": 5
+    },
+    {
+      "title": "War And Peace",
+      "filename": "war_and_peace.txt",
+      "topic": "Education & Reference",
+      "emotions": [
+        {
+          "label": "neutral",
+          "score": 0.5148317575454712
+        },
+        {
+          "label": "curiosity",
+          "score": 0.4963506042957306
+        },
+        {
+          "label": "confusion",
+          "score": 0.4826125681400299
+        }
+      ],
+      "summary": "In's earliest literary fiction, \"The story of the novel\" is a novel that has been published in the novel's first novel, \"Aspiringly\". The author's book is based on the previous novel, which is titled \"Survivor. Stupets\": \"Assured, we can see the first book of the novel's novel, \"The Greatest\": The story is a great deal of time to be taken to the end of the series, but it's not quite enough to. Stuppleary\": \"Assured that the new novel is not yet known as \"The\" character of the novel, he is also a great deal of humor and charmer. The story is a very important piece of paper, which is part of the story.",
+      "word_count": 563286,
+      "chunks_analyzed": 5
+    }
+  ],
+  "metadata": {
+    "total_books": 8,
+    "chunk_size": 1000,
+    "chunks_per_book": 5
+  }
+}
