@@ -76,7 +76,7 @@ TOPIC_EMOJI = {
 
 
 def load_books_data() -> list[dict[str, Any]]:
-    """Load book paragraphs from JSONL files."""
+    """Load book data including pre-computed summaries from library.json."""
     books = []
     library_path = BOOKS_DIR / "library.json"
     
@@ -104,6 +104,9 @@ def load_books_data() -> list[dict[str, Any]]:
                         "title": title,
                         "paragraphs": paragraphs[:20],  # Limit to first 20 substantial paragraphs
                         "word_count": book_info.get("word_count", 0),
+                        "summary": book_info.get("summary", ""),
+                        "topic": book_info.get("topic", ""),
+                        "emotions": book_info.get("emotions", []),
                     })
     
     return books
@@ -200,13 +203,18 @@ def analyze_text(text: str) -> tuple[str, str, str]:
         emotions = pipe.predict_emotions([text], threshold=0.3)[0]
         topic = pipe.predict_topics([text])[0]
 
-        # Format emotions
+        # Format emotions - sort by score descending (not alphabetical)
         if emotions.labels:
+            # Pair labels with scores and sort by score descending
+            paired = list(zip(emotions.labels, emotions.scores, strict=False))
+            paired_sorted = sorted(paired, key=lambda x: x[1], reverse=True)[:5]
+            
             emotion_parts = []
-            for lbl, score in zip(emotions.labels[:5], emotions.scores[:5], strict=False):
+            for lbl, score in paired_sorted:
                 emoji = EMOTION_EMOJI.get(lbl.lower(), "•")
                 emotion_parts.append(f"{emoji} **{lbl.title()}** ({score:.0%})")
-            emotion_str = "\n".join(emotion_parts)
+            # Use double newline for proper Markdown paragraph breaks
+            emotion_str = "  \n".join(emotion_parts)
         else:
             emotion_str = "😐 No strong emotions detected"
 
@@ -249,15 +257,47 @@ def get_book_info(title: str) -> str:
         if book["title"] == title:
             num_paras = len(book["paragraphs"])
             word_count = book["word_count"]
-            return f"**{title}**\n\n📖 {word_count:,} words | {num_paras} excerpts available"
+            topic = book.get("topic", "Unknown")
+            return f"**{title}**\n\n📖 {word_count:,} words | {num_paras} excerpts\n\n📂 Topic: {topic}"
     return ""
 
 
-def on_book_select(title: str) -> tuple[str, str, int]:
-    """Handle book selection - return first excerpt and info."""
+def get_book_summary_and_emotions(title: str) -> tuple[str, str, str]:
+    """Get pre-computed book summary and emotions from library.json."""
+    books = get_books()
+    for book in books:
+        if book["title"] == title:
+            # Get summary
+            summary = book.get("summary", "No summary available.")
+            
+            # Get topic
+            topic = book.get("topic", "Unknown")
+            topic_emoji = TOPIC_EMOJI.get(topic, "📄")
+            topic_str = f"{topic_emoji} **{topic}**"
+            
+            # Get emotions - already sorted by score in library.json
+            emotions = book.get("emotions", [])
+            if emotions:
+                emotion_parts = []
+                for emo in emotions[:5]:
+                    label = emo.get("label", "")
+                    score = emo.get("score", 0)
+                    emoji = EMOTION_EMOJI.get(label.lower(), "•")
+                    emotion_parts.append(f"{emoji} **{label.title()}** ({score:.0%})")
+                emotion_str = "  \n".join(emotion_parts)
+            else:
+                emotion_str = "😐 No strong emotions detected"
+            
+            return summary, emotion_str, topic_str
+    return "No summary available.", "", ""
+
+
+def on_book_select(title: str) -> tuple[str, str, str, str, str]:
+    """Handle book selection - return book info, excerpt, and pre-computed analysis."""
     info = get_book_info(title)
     excerpt = get_book_excerpt(title, 0)
-    return info, excerpt, 0
+    summary, emotions, topic = get_book_summary_and_emotions(title)
+    return info, excerpt, summary, emotions, topic
 
 
 def on_paragraph_change(title: str, idx: int) -> str:
@@ -356,7 +396,8 @@ with gr.Blocks(
     title="LexiMind - Multi-Task NLP",
     theme=gr.themes.Soft(),
     css="""
-    .book-card { padding: 10px; border-radius: 8px; background: #f0f4f8; }
+    .book-card { padding: 12px; border-radius: 8px; background: #2d3748; color: #f7fafc; }
+    .book-card p { color: #f7fafc !important; }
     .results-panel { min-height: 200px; }
     """
 ) as demo:
@@ -379,8 +420,8 @@ with gr.Blocks(
         gr.Markdown(
             """
             ### Classic Literature Collection
-            Browse excerpts from classic novels and see how LexiMind analyzes them.
-            Select a book, navigate through excerpts, and click **Analyze** to run the model.
+            Select a book to see LexiMind's **whole-book analysis**: summary, emotions, and topic.
+            You can also browse excerpts and analyze them individually.
             """
         )
         
@@ -393,48 +434,61 @@ with gr.Blocks(
                 )
                 book_info = gr.Markdown(elem_classes=["book-card"])
                 
+                gr.Markdown("---")
+                gr.Markdown("**📄 Browse Excerpts:**")
                 para_slider = gr.Slider(
                     minimum=0,
                     maximum=19,
                     step=1,
                     value=0,
-                    label="📄 Excerpt Number",
+                    label="Excerpt Number",
                     info="Navigate through different parts of the book"
                 )
                 
-                analyze_book_btn = gr.Button("🔍 Analyze This Excerpt", variant="primary")
+                analyze_excerpt_btn = gr.Button("🔍 Analyze This Excerpt", variant="secondary", size="sm")
             
             with gr.Column(scale=2):
-                book_excerpt = gr.Textbox(
-                    label="📜 Book Excerpt",
-                    lines=10,
-                    max_lines=15,
+                gr.Markdown("#### 📝 Book Summary")
+                book_summary = gr.Textbox(
+                    label="",
+                    lines=4,
                     interactive=False,
+                    show_label=False,
                 )
                 
                 with gr.Row():
                     with gr.Column():
-                        book_summary = gr.Textbox(
-                            label="📝 Generated Summary",
-                            lines=4,
+                        gr.Markdown("#### 😊 Emotions")
+                        book_emotions = gr.Markdown(value="*Select a book*")
+                    with gr.Column():
+                        gr.Markdown("#### 📂 Topic")
+                        book_topic = gr.Markdown(value="*Select a book*")
+                
+                gr.Markdown("---")
+                gr.Markdown("#### 📜 Book Excerpt")
+                book_excerpt = gr.Textbox(
+                    label="",
+                    lines=6,
+                    max_lines=10,
+                    interactive=False,
+                    show_label=False,
+                )
+                
+                with gr.Row():
+                    with gr.Column():
+                        excerpt_summary = gr.Textbox(
+                            label="📝 Excerpt Summary",
+                            lines=3,
                             interactive=False,
                         )
                     with gr.Column():
-                        with gr.Row():
-                            book_emotions = gr.Markdown(
-                                label="😊 Emotions",
-                                value="*Click Analyze*",
-                            )
-                            book_topic = gr.Markdown(
-                                label="📂 Topic", 
-                                value="*Click Analyze*",
-                            )
+                        excerpt_emotions = gr.Markdown(value="*Click Analyze Excerpt*")
 
         # Book event handlers
         book_dropdown.change(
             fn=on_book_select,
             inputs=[book_dropdown],
-            outputs=[book_info, book_excerpt, para_slider],
+            outputs=[book_info, book_excerpt, book_summary, book_emotions, book_topic],
         )
         
         para_slider.change(
@@ -443,17 +497,17 @@ with gr.Blocks(
             outputs=[book_excerpt],
         )
         
-        analyze_book_btn.click(
+        analyze_excerpt_btn.click(
             fn=analyze_text,
             inputs=[book_excerpt],
-            outputs=[book_summary, book_emotions, book_topic],
+            outputs=[excerpt_summary, excerpt_emotions, book_topic],
         )
         
         # Initialize with first book
         demo.load(
             fn=on_book_select,
             inputs=[book_dropdown],
-            outputs=[book_info, book_excerpt, para_slider],
+            outputs=[book_info, book_excerpt, book_summary, book_emotions, book_topic],
         )
 
     # ===================== TAB 2: EXPLORE NEWS =====================
