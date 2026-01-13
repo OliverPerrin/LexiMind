@@ -49,7 +49,8 @@ EVAL_REPORT_PATH = OUTPUTS_DIR / "evaluation_report.json"
 TRAINING_HISTORY_PATH = OUTPUTS_DIR / "training_history.json"
 
 # Emotion display - clean labels without emojis for research aesthetic
-EMOTION_LABELS = {\n    "joy": "Joy", "love": "Love", "anger": "Anger", "fear": "Fear",
+EMOTION_LABELS = {
+    "joy": "Joy", "love": "Love", "anger": "Anger", "fear": "Fear",
     "sadness": "Sadness", "surprise": "Surprise", "neutral": "Neutral",
     "admiration": "Admiration", "amusement": "Amusement", "annoyance": "Annoyance",
     "approval": "Approval", "caring": "Caring", "confusion": "Confusion",

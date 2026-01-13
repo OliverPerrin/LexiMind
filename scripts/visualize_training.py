@@ -410,7 +410,6 @@ def plot_learning_rate(run) -> None:
         # Estimate total steps from training loss history
         train_loss = client.get_metric_history(run.info.run_id, "train_total_loss")
         if train_loss:
-            epochs_completed = len(train_loss)
             # Estimate ~800 steps per epoch based on typical config
             estimated_steps_per_epoch = 800
             total_steps = max_epochs * estimated_steps_per_epoch
@@ -447,7 +446,7 @@ def plot_learning_rate(run) -> None:
                 transform=ax.transAxes, ha="right", va="bottom",
                 fontsize=9, color="gray", style="italic")
     else:
-        steps = [m.step for m in lr_metrics]
+        steps = np.array([m.step for m in lr_metrics])
         values = [m.value for m in lr_metrics]
 
         # Fill under curve for visual appeal
