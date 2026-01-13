@@ -18,9 +18,9 @@ This project is built with industry-standard MLOps practices, including configur
 
 ## Core Features
 
-* **Abstractive Summarization:** Generates concise, coherent summaries of long-form text using encoder-decoder attention.
-* **Emotion Classification:** Identifies emotions (Joy, Sadness, Anger, Fear, Love, Surprise) conveyed in a document.
-* **Topic Clustering:** Classifies documents into thematic categories (World, Sports, Business, Sci/Tech).
+* **Abstractive Summarization:** Generates concise, coherent summaries of long-form text using encoder-decoder attention. Trained on CNN/DailyMail (news) and BookSum (literary).
+* **Emotion Classification:** Identifies 28 emotions from Google's GoEmotions dataset (admiration, amusement, anger, joy, love, etc.).
+* **Topic Classification:** Classifies documents into 4 categories (World, Sports, Business, Sci/Tech) using AG News.
 
 ## Model Architecture
 
@@ -53,7 +53,7 @@ A shared encoder-decoder backbone with task-specific heads:
 ## Technical Specifications
 
 | Component | Specification |
-|-----------|--------------|
+| --------- | -------------- |
 | Architecture | Encoder-Decoder Transformer |
 | Pre-trained Base | google/flan-t5-base |
 | Hidden Dimension | 768 |
@@ -89,12 +89,13 @@ A shared encoder-decoder backbone with task-specific heads:
    poetry install
    ```
 
-3. **Download and preprocess data:**
+3. **Download datasets:**
 
    ```bash
    poetry run python scripts/download_data.py
-   poetry run python scripts/preprocess_data.py
    ```
+
+   This downloads CNN/DailyMail, BookSum, GoEmotions, AG News, and Gutenberg books.
 
 ## Usage
 
@@ -107,9 +108,9 @@ Available configurations:
 * `model=base` - FLAN-T5-base (default, 12 layers)
 * `model=small` - Smaller model for testing (no pretrained weights)
 * `model=large` - FLAN-T5-large (24 layers, requires more VRAM)
-* `training=dev` - Quick development run
-* `training=medium` - Balanced training (~2-3 hours on RTX 4070)
-* `training=full` - Full training run
+* `training=dev` - Quick development run (~10-15 min)
+* `training=medium` - Balanced training (~45-60 min on RTX 4070)
+* `training=full` - Full training run (~3-4 hours, or ~24h for max data)
 
 ### Training
 
@@ -135,7 +136,8 @@ Experiments are automatically tracked with MLflow. View results with `mlflow ui`
 ### Evaluation
 
 ```bash
-poetry run python scripts/evaluate.py --checkpoint checkpoints/best.pt
+# Run inference on test data
+poetry run python scripts/inference.py "Your text to analyze"
 ```
 
 ### Inference & Demo
@@ -164,19 +166,28 @@ docker run -p 7860:7860 leximind
 ├── configs/            # Hydra configuration files
 │   ├── model/          # Model architectures (base, small, large)
 │   ├── training/       # Training configs (dev, medium, full)
-│   └── data/           # Dataset configurations
+│   └── data/           # Dataset paths
+├── data/
+│   └── processed/      # Training data (downloaded via scripts/download_data.py)
+│       ├── summarization/  # CNN/DailyMail + BookSum
+│       ├── emotion/        # GoEmotions (28 labels)
+│       ├── topic/          # AG News (4 categories)
+│       └── books/          # Gutenberg prose chunks
 ├── src/
 │   ├── models/         # Custom Transformer implementation
 │   │   ├── encoder.py  # TransformerEncoder with Pre-LN RMSNorm
 │   │   ├── decoder.py  # TransformerDecoder with KV-cache
 │   │   ├── attention.py # Multi-Head Attention with FlashAttention
 │   │   └── factory.py  # Model building with FLAN-T5 weight loading
-│   ├── data/           # Data loading and preprocessing
-│   ├── training/       # Training loop with mixed precision
+│   ├── data/           # Dataset classes and dataloaders
+│   ├── training/       # Trainer with AMP and gradient accumulation
 │   └── inference/      # Inference pipeline
-├── scripts/            # Entry points
-├── tests/              # Unit tests
-└── notebooks/          # Analysis notebooks
+├── scripts/
+│   ├── train.py        # Main training script
+│   ├── download_data.py # Dataset downloader
+│   ├── inference.py    # CLI inference
+│   └── demo_gradio.py  # Web demo
+└── tests/              # Unit tests
 ```
 
 ## Code Quality

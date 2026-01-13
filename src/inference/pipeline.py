@@ -11,13 +11,12 @@ Date: December 2025
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, fields, replace
+from dataclasses import dataclass
 from typing import Any, Dict, List, Sequence, cast
 
 import torch
 import torch.nn.functional as F
 
-from ..data.preprocessing import Batch, TextPreprocessor
 from ..data.tokenization import Tokenizer
 
 # --------------- Text Formatting ---------------
@@ -97,7 +96,6 @@ class InferencePipeline:
         model: torch.nn.Module,
         tokenizer: Tokenizer,
         *,
-        preprocessor: TextPreprocessor | None = None,
         emotion_labels: Sequence[str] | None = None,
         topic_labels: Sequence[str] | None = None,
         config: InferenceConfig | None = None,
@@ -117,7 +115,6 @@ class InferencePipeline:
         self.model.to(self.device)
         self.model.eval()
 
-        self.preprocessor = preprocessor or TextPreprocessor(tokenizer=tokenizer)
         self.emotion_labels = list(emotion_labels) if emotion_labels else None
         self.topic_labels = list(topic_labels) if topic_labels else None
 
@@ -128,9 +125,9 @@ class InferencePipeline:
         if not texts:
             return []
 
-        batch = self._to_device(self.preprocessor.batch_encode(texts))
-        src_ids = batch.input_ids
-        src_mask = batch.attention_mask
+        encoded = self.tokenizer.batch_encode(list(texts))
+        src_ids = encoded["input_ids"].to(self.device)
+        src_mask = encoded["attention_mask"].to(self.device)
         max_len = max_length or self.config.summary_max_length
 
         model = cast(Any, self.model)
@@ -183,8 +180,10 @@ class InferencePipeline:
         if not self.emotion_labels:
             raise RuntimeError("emotion_labels required for emotion prediction")
 
-        batch = self._to_device(self.preprocessor.batch_encode(texts))
-        inputs = self._model_inputs(batch)
+        encoded = self.tokenizer.batch_encode(list(texts))
+        input_ids = encoded["input_ids"].to(self.device)
+        attention_mask = encoded["attention_mask"].to(self.device)
+        inputs = {"input_ids": input_ids, "attention_mask": attention_mask}
         thresh = threshold or self.config.emotion_threshold
 
         with torch.inference_mode():
@@ -215,8 +214,10 @@ class InferencePipeline:
         if not self.topic_labels:
             raise RuntimeError("topic_labels required for topic prediction")
 
-        batch = self._to_device(self.preprocessor.batch_encode(texts))
-        inputs = self._model_inputs(batch)
+        encoded = self.tokenizer.batch_encode(list(texts))
+        input_ids = encoded["input_ids"].to(self.device)
+        attention_mask = encoded["attention_mask"].to(self.device)
+        inputs = {"input_ids": input_ids, "attention_mask": attention_mask}
 
         with torch.inference_mode():
             logits = self.model.forward("topic", inputs)
@@ -248,20 +249,4 @@ class InferencePipeline:
         }
 
     # --------------- Helpers ---------------
-
-    def _to_device(self, batch: Batch) -> Batch:
-        """Move batch tensors to device with non_blocking for speed."""
-        updates = {}
-        for f in fields(batch):
-            val = getattr(batch, f.name)
-            if torch.is_tensor(val):
-                updates[f.name] = val.to(self.device, non_blocking=True)
-        return replace(batch, **updates) if updates else batch
-
-    @staticmethod
-    def _model_inputs(batch: Batch) -> Dict[str, torch.Tensor]:
-        """Extract model inputs from batch."""
-        inputs = {"input_ids": batch.input_ids}
-        if batch.attention_mask is not None:
-            inputs["attention_mask"] = batch.attention_mask
-        return inputs
+    # (helper methods removed - encoding now happens inline)

@@ -15,7 +15,6 @@ from typing import Tuple
 
 import torch
 
-from ..data.preprocessing import TextPreprocessor
 from ..data.tokenization import Tokenizer, TokenizerConfig
 from ..models.factory import build_multitask_model, load_model_config
 from ..utils.io import load_state
@@ -94,6 +93,5 @@ def create_inference_pipeline(
         emotion_labels=labels.emotion,
         topic_labels=labels.topic,
         device=device,
-        preprocessor=TextPreprocessor(tokenizer=tokenizer, lowercase=tokenizer.config.lower),
     )
     return pipeline, labels

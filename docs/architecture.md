@@ -4,12 +4,9 @@
 
 LexiMind couples a from-scratch Transformer implementation with a modern data and inference stack. The project consists of three major layers:
 
-1. **Data & Preprocessing** – lightweight text cleaning built on top of scikit-learn
-   primitives and a Hugging Face tokenizer wrapper with deterministic batching helpers.
-2. **Model Composition** – the bespoke encoder/decoder stack with task heads assembled via
-   `MultiTaskModel`, plus `models.factory.build_multitask_model` to rebuild the network from
-   configuration files.
-3. **Inference & Serving** – a multi-task pipeline capable of summarization, emotion, and topic classification; surfaced through a CLI and FastAPI service with a Gradio UI.
+1. **Data & Tokenization** – HuggingFace tokenizer wrapper with tensor-aware batching and T5-specific decoder input preparation.
+2. **Model Composition** – the bespoke encoder/decoder stack with task heads assembled via `MultiTaskModel`, plus `models.factory.build_multitask_model` to rebuild the network from configuration files.
+3. **Inference & Serving** – a multi-task pipeline capable of summarization, emotion, and topic classification; surfaced through a CLI and Gradio UI.
 
 ## Custom Transformer Stack
 
@@ -44,11 +41,20 @@ The `factory.py` module loads weights from FLAN-T5-base, which uses a compatible
 - `src/models/multitask.py` – Routes inputs to task-specific heads
 - `src/models/factory.py` – Builds models and loads FLAN-T5 weights
 
-## Data, Tokenization, and Preprocessing
+## Data, Tokenization, and Datasets
 
 - `src/data/tokenization.py` wraps `AutoTokenizer` (configured for FLAN-T5) to provide tensor-aware batching and helper utilities for decoder input shifting.
-- `src/data/preprocessing.py` introduces `TextPreprocessor`, layering a `BasicTextCleaner` with optional scikit-learn transformers.
-- `src/data/dataset.py` and `src/data/dataloader.py` define strongly typed dataset containers and collators.
+- `src/data/dataset.py` and `src/data/dataloader.py` define strongly typed dataset containers and task-specific collators.
+- `scripts/download_data.py` fetches and processes training data from HuggingFace datasets.
+
+### Training Datasets
+
+| Task | Dataset | Size | Labels |
+| ---- | ------- | ---- | ------ |
+| Summarization | CNN/DailyMail + BookSum | ~110K | Text→Summary |
+| Emotion | GoEmotions | ~43K | 28 emotions (multi-label) |
+| Topic | AG News | ~120K | 4 categories |
+| Books | Gutenberg (prose chunks) | ~30K | Literary text |
 
 ### T5 Tokenizer Differences
 
@@ -62,6 +68,8 @@ The `factory.py` module loads weights from FLAN-T5-base, which uses a compatible
   - Mixed precision training (bfloat16 on Ampere/Ada GPUs)
   - Gradient accumulation for larger effective batch sizes
   - Per-task loss weighting and label smoothing
+  - Early stopping based on validation loss
+  - Cosine learning rate schedule with warmup
 - **torch.compile:** JIT compilation with Inductor backend for 20-40% speedup
 - Metrics in `src/training/metrics.py` include accuracy, multi-label F1, and ROUGE-like overlap
 
@@ -70,11 +78,12 @@ The `factory.py` module loads weights from FLAN-T5-base, which uses a compatible
 - `src/inference/pipeline.py` exposes summarization, emotion, and topic predictions with shared pre-processing, generation, and thresholding logic.
 - `src/inference/factory.py` rebuilds the full pipeline using the exported tokenizer artifact
 - The CLI (`scripts/inference.py`) drives the pipeline from the command line
-- Gradio demo (`scripts/demo_gradio.py`) provides a web interface
+- Gradio demo (`scripts/demo_gradio.py`) provides an interactive web interface
 
 ## Key Decisions
 
 - **Custom Transformer + Pre-trained Weights:** Building from scratch demonstrates deep understanding while leveraging FLAN-T5's language knowledge
 - **Pre-LN RMSNorm:** Modern architecture used by LLaMA, T5 v1.1, and other 2023-2025 models
+- **Simplified Training:** Removed NaN detection and gradient monitoring (Windows workarounds no longer needed on WSL/Linux)
+- **Clean Dataset Pipeline:** AG News (4 clean categories) instead of Yahoo Answers (10 messy categories); BookSum for literary summarization
 - **Tokenizer Artifact Preference:** Inference favors `artifacts/hf_tokenizer` for reproducibility
-- **Sklearn-friendly Preprocessing:** Optional `TransformerMixin` injection for custom cleaning

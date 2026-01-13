@@ -20,7 +20,7 @@ import torch
 from transformers import T5ForConditionalGeneration
 
 from ..data.tokenization import Tokenizer
-from ..utils.config import load_yaml
+from ..utils.core import load_yaml
 from .decoder import TransformerDecoder, TransformerDecoderLayer
 from .encoder import TransformerEncoder, TransformerEncoderLayer
 from .heads import ClassificationHead, LMHead

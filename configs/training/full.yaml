@@ -1,11 +1,11 @@
 # Full Training Configuration for FLAN-T5-base
-# Complete training run on all available data
-# VRAM Usage: ~10-11GB peak (12GB available)
-# Training time: ~3-4 hours on RTX 4070 12GB with torch.compile
+# Complete training run with capped samples for reasonable time
+# VRAM Usage: ~11GB peak (12GB available)
+# Training time: ~2 hours on RTX 4070 12GB with torch.compile
 # Use: python scripts/train.py training=full
 
 dataloader:
-  batch_size: 6  # Conservative for 12GB VRAM with torch.compile overhead
+  batch_size: 6  # Keep at 6 to stay within 12GB VRAM
   shuffle: true
   num_workers: 4
   pin_memory: true
@@ -14,27 +14,28 @@ dataloader:
 
 optimizer:
   name: adamw
-  lr: 3.0e-5  # Higher LR with larger effective batch
+  lr: 5.0e-5  # Slightly higher LR for faster convergence
   weight_decay: 0.01
   eps: 1.0e-6
   betas: [0.9, 0.999]
 
 scheduler:
   name: cosine
-  warmup_steps: 1000  # ~1% warmup for stability
+  warmup_steps: 500  # Less warmup needed
 
 trainer:
-  max_epochs: 8  # More epochs for full dataset
+  max_epochs: 5  # Converges by epoch 4-5
   gradient_clip_norm: 1.0
-  gradient_accumulation_steps: 16  # Effective batch: 96 (6*16)
+  gradient_accumulation_steps: 10  # Effective batch: 60 (6*10)
   validation_max_length: 128
   label_smoothing: 0.1
   task_weights:
-    summarization: 1.5  # Prioritize summarization quality
+    summarization: 1.2  # Balanced weights
     emotion: 1.0
-    topic: 0.8
-  # No max_samples - use full dataset
-  early_stopping_patience: 3  # Stop if plateaus
+    topic: 1.0
+  max_train_samples: 50000  # Cap training for speed
+  max_val_samples: 3000     # Faster validation
+  early_stopping_patience: 3
   log_grad_norm_frequency: 100
 
 # Enable torch.compile for maximum speed

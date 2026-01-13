@@ -1,77 +1,13 @@
-# Dataset configuration for LexiMind
-# Expanded dataset support for comprehensive emotion and topic classification
-
-raw:
-  summarization: data/raw/summarization
-  emotion: data/raw/emotion
-  topic: data/raw/topic
-  books: data/raw/books
+# Dataset paths for LexiMind
+# Data is downloaded via: python scripts/download_data.py
 
 processed:
-  summarization: data/processed/summarization
-  emotion: data/processed/emotion
-  topic: data/processed/topic
-  books: data/processed/books
+  summarization: data/processed/summarization  # CNN/DailyMail + BookSum
+  emotion: data/processed/emotion              # GoEmotions (28 labels)
+  topic: data/processed/topic                  # AG News (4 labels)
+  books: data/processed/books                  # Gutenberg prose chunks
 
 tokenizer:
   pretrained_model_name: google/flan-t5-base
   max_length: 512
   lower: false
-
-# Dataset download configuration
-downloads:
-  # Summarization: CNN/DailyMail (287K) + BookSum (9.6K)
-  summarization:
-    - name: cnn_dailymail
-      dataset: cnn_dailymail
-      config: "3.0.0"
-      source_field: article
-      target_field: highlights
-      max_samples: 100000  # Subset for training time
-    - name: booksum
-      dataset: kmfoda/booksum
-      source_field: chapter
-      target_field: summary
-      max_samples: 9600  # Full dataset
-
-  # Emotions: GoEmotions (28 emotions, 43K samples)
-  emotion:
-    dataset: google-research-datasets/go_emotions
-    config: simplified
-    text_field: text
-    label_field: labels
-    multi_label: true
-
-  # Topics: Yahoo Answers (10 topics, 1.4M samples)
-  topic:
-    dataset: yahoo_answers_topics
-    text_field: best_answer  # Use the answer text
-    label_field: topic
-    max_samples: 200000  # Subset for reasonable training time
-
-  # Project Gutenberg books for inference demos
-  books:
-    - name: pride_and_prejudice
-      url: https://www.gutenberg.org/cache/epub/1342/pg1342.txt
-      output: data/raw/books/pride_and_prejudice.txt
-    - name: frankenstein
-      url: https://www.gutenberg.org/cache/epub/84/pg84.txt
-      output: data/raw/books/frankenstein.txt
-    - name: sherlock_holmes
-      url: https://www.gutenberg.org/cache/epub/1661/pg1661.txt
-      output: data/raw/books/sherlock_holmes.txt
-    - name: moby_dick
-      url: https://www.gutenberg.org/cache/epub/2701/pg2701.txt
-      output: data/raw/books/moby_dick.txt
-    - name: dracula
-      url: https://www.gutenberg.org/cache/epub/345/pg345.txt
-      output: data/raw/books/dracula.txt
-    - name: alice_in_wonderland
-      url: https://www.gutenberg.org/cache/epub/11/pg11.txt
-      output: data/raw/books/alice_in_wonderland.txt
-    - name: great_gatsby
-      url: https://www.gutenberg.org/cache/epub/64317/pg64317.txt
-      output: data/raw/books/great_gatsby.txt
-    - name: war_and_peace
-      url: https://www.gutenberg.org/cache/epub/2600/pg2600.txt
-      output: data/raw/books/war_and_peace.txt

@@ -9,14 +9,13 @@ Date: December 2025
 
 from __future__ import annotations
 
+import logging
 from functools import lru_cache
 from pathlib import Path
 
 from fastapi import HTTPException, status
 
-from ..utils.logging import get_logger
-
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 from ..inference.factory import create_inference_pipeline
 from ..inference.pipeline import InferencePipeline

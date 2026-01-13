@@ -14,12 +14,15 @@ Date: 2025-12-05, Updated: 2026-01-12
 from __future__ import annotations
 
 import json
+import logging
 import random
 import sys
 from pathlib import Path
 from typing import Any
 
 import gradio as gr
+
+logger = logging.getLogger(__name__)
 
 # --------------- Path Setup ---------------
 
@@ -32,10 +35,6 @@ if str(PROJECT_ROOT) not in sys.path:
 from huggingface_hub import hf_hub_download
 
 from src.inference.factory import create_inference_pipeline
-from src.utils.logging import configure_logging, get_logger
-
-configure_logging()
-logger = get_logger(__name__)
 
 # --------------- Constants ---------------
 
