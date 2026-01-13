@@ -5,12 +5,19 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-# Copy project files
-COPY . .
+# Copy only requirements first (for better caching)
+COPY requirements-demo.txt .
 
-# Install dependencies via pip (which reads pyproject.toml)
+# Install CPU-only dependencies (fast, ~30s instead of ~3min)
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir .
+    pip install --no-cache-dir -r requirements-demo.txt
+
+# Copy source code
+COPY src/ src/
+COPY scripts/demo_gradio.py scripts/
+COPY configs/ configs/
+COPY artifacts/ artifacts/
+COPY checkpoints/ checkpoints/
 
 # Set environment variables for Gradio
 ENV GRADIO_SERVER_NAME="0.0.0.0"

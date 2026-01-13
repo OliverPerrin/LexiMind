@@ -1,0 +1,30 @@
+# Minimal requirements for HuggingFace Spaces demo (CPU-only)
+# This reduces build time from ~3 min to ~30 sec
+
+# Core ML - CPU-only torch (no CUDA = ~100MB instead of ~2GB)
+--index-url https://download.pytorch.org/whl/cpu
+torch>=2.0.0
+
+# Reset to default PyPI for remaining packages
+--extra-index-url https://pypi.org/simple
+
+# Model and tokenization
+transformers>=4.30.0
+tokenizers>=0.13.0
+sentencepiece>=0.1.99
+safetensors>=0.4.0
+
+# Web interface
+gradio>=4.0,<5.0
+
+# Data processing
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Config
+pyyaml>=6.0
+omegaconf>=2.3.0
+hydra-core>=1.3.0
+
+# HuggingFace Hub (for downloading model)
+huggingface_hub>=0.20.0
