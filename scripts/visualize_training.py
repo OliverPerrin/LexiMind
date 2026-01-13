@@ -397,11 +397,55 @@ def plot_learning_rate(run) -> None:
 
     fig, ax = plt.subplots(figsize=(12, 5))
 
-    if not lr_metrics:
-        ax.text(0.5, 0.5, "No learning rate data available",
-                ha="center", va="center", fontsize=14, color="gray")
-        ax.set_xlim(0, 1)
-        ax.set_ylim(0, 1)
+    if not lr_metrics or len(lr_metrics) < 2:
+        # No LR data logged - generate theoretical schedule from config
+        logger.info("  No LR metrics found - generating theoretical schedule...")
+        
+        # Get config from run params
+        params = run.data.params
+        lr_max = float(params.get("learning_rate", params.get("lr", 5e-5)))
+        warmup_steps = int(params.get("warmup_steps", 500))
+        max_epochs = int(params.get("max_epochs", 5))
+        
+        # Estimate total steps from training loss history
+        train_loss = client.get_metric_history(run.info.run_id, "train_total_loss")
+        if train_loss:
+            epochs_completed = len(train_loss)
+            # Estimate ~800 steps per epoch based on typical config
+            estimated_steps_per_epoch = 800
+            total_steps = max_epochs * estimated_steps_per_epoch
+        else:
+            total_steps = 4000  # Default fallback
+        
+        # Generate cosine schedule with warmup
+        steps = np.arange(0, total_steps)
+        values = []
+        for step in steps:
+            if step < warmup_steps:
+                lr = lr_max * (step / max(1, warmup_steps))
+            else:
+                progress = (step - warmup_steps) / max(1, total_steps - warmup_steps)
+                lr = lr_max * max(0.1, 0.5 * (1 + np.cos(np.pi * progress)))
+            values.append(lr)
+        
+        ax.fill_between(steps, values, alpha=0.3, color=COLORS["primary"])
+        ax.plot(steps, values, linewidth=2.5, color=COLORS["primary"], label="Cosine + Warmup")
+        
+        # Mark warmup region
+        ax.axvline(warmup_steps, color=COLORS["secondary"], linestyle="--",
+                   alpha=0.7, linewidth=2, label=f"Warmup End ({warmup_steps})")
+        ax.axvspan(0, warmup_steps, alpha=0.1, color=COLORS["highlight"])
+        
+        # Add annotation
+        ax.annotate(f"Peak LR: {lr_max:.1e}", xy=(warmup_steps, lr_max),
+                    xytext=(warmup_steps + 200, lr_max * 0.9),
+                    fontsize=10, color=COLORS["dark"],
+                    arrowprops=dict(arrowstyle="->", color=COLORS["dark"], alpha=0.5))
+        
+        ax.legend(loc="upper right")
+        ax.text(0.98, 0.02, "(Theoretical - actual LR not logged)",
+                transform=ax.transAxes, ha="right", va="bottom",
+                fontsize=9, color="gray", style="italic")
     else:
         steps = [m.step for m in lr_metrics]
         values = [m.value for m in lr_metrics]
@@ -410,8 +454,9 @@ def plot_learning_rate(run) -> None:
         ax.fill_between(steps, values, alpha=0.3, color=COLORS["primary"])
         ax.plot(steps, values, linewidth=2.5, color=COLORS["primary"])
 
-        # Mark warmup region
-        warmup_steps = 1000  # From config
+        # Mark warmup region (get from params if available)
+        params = run.data.params
+        warmup_steps = int(params.get("warmup_steps", 500))
         if warmup_steps < max(steps):
             ax.axvline(warmup_steps, color=COLORS["secondary"], linestyle="--",
                        alpha=0.7, linewidth=2, label="Warmup End")
@@ -419,9 +464,8 @@ def plot_learning_rate(run) -> None:
                        label="Warmup Phase")
             ax.legend(loc="upper right")
 
-        # Scientific notation for y-axis if needed
-        ax.ticklabel_format(axis="y", style="scientific", scilimits=(-3, 3))
-
+    # Scientific notation for y-axis if needed
+    ax.ticklabel_format(axis="y", style="scientific", scilimits=(-3, 3))
     ax.set_xlabel("Step")
     ax.set_ylabel("Learning Rate")
     ax.set_title("Learning Rate Schedule (Cosine Annealing with Warmup)")

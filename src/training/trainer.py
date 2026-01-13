@@ -262,6 +262,9 @@ class Trainer:
                     self.optimizer.zero_grad()
                     if self.scheduler:
                         self.scheduler.step()
+                        # Log learning rate to MLflow
+                        current_lr = self.scheduler.get_last_lr()[0]
+                        mlflow.log_metric("learning_rate", current_lr, step=self.global_step)
                     self.global_step += 1
 
                 if step_loss > 0:
@@ -398,6 +401,9 @@ class Trainer:
             "gradient_clip_norm": self.config.gradient_clip_norm,
             "label_smoothing": self.config.label_smoothing,
             "task_weights": str(self.config.task_weights),
+            "warmup_steps": self.config.warmup_steps,
+            "scheduler_type": self.config.scheduler_type,
+            "learning_rate": self.optimizer.param_groups[0]["lr"],
         })
 
     def _log_metrics(self, metrics: Dict[str, float], prefix: str, epoch: int) -> None:

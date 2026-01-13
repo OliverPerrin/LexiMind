@@ -30,9 +30,9 @@ trainer:
   validation_max_length: 128
   label_smoothing: 0.1
   task_weights:
-    summarization: 1.2  # Balanced weights
-    emotion: 1.0
-    topic: 1.0
+    summarization: 1.0  # Reduced from 1.2 to give emotion room
+    emotion: 1.5        # Increased to prevent degradation
+    topic: 0.8          # Reduced since topic already near SOTA
   max_train_samples: 50000  # Cap training for speed
   max_val_samples: 3000     # Faster validation
   early_stopping_patience: 3

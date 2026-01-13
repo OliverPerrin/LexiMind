@@ -25,6 +25,7 @@ class ClassificationHead(nn.Module):
         num_labels: number of output classes
         pooler: one of 'mean', 'cls', 'max' - how to pool the sequence
         dropout: dropout probability before final linear layer
+        hidden_dim: optional intermediate dimension for 2-layer MLP (improves capacity)
     """
 
     def __init__(
@@ -33,12 +34,23 @@ class ClassificationHead(nn.Module):
         num_labels: int,
         pooler: Literal["mean", "cls", "max"] = "mean",
         dropout: float = 0.1,
+        hidden_dim: Optional[int] = None,
     ):
         super().__init__()
         assert pooler in ("mean", "cls", "max"), "pooler must be 'mean'|'cls'|'max'"
         self.pooler = pooler
         self.dropout = nn.Dropout(dropout)
-        self.out_proj = nn.Linear(d_model, num_labels)
+        
+        # Optional 2-layer MLP for more capacity (useful for multi-label)
+        if hidden_dim is not None:
+            self.out_proj = nn.Sequential(
+                nn.Linear(d_model, hidden_dim),
+                nn.GELU(),
+                nn.Dropout(dropout),
+                nn.Linear(hidden_dim, num_labels),
+            )
+        else:
+            self.out_proj = nn.Linear(d_model, num_labels)
 
     def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
         """

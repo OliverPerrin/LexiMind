@@ -548,10 +548,15 @@ def build_multitask_model(
         "summarization",
         LMHead(d_model=cfg.d_model, vocab_size=vocab_size, tie_embedding=decoder.embedding),
     )
+    # Emotion head with 2-layer MLP for better multi-label capacity (28 classes)
     model.add_head(
         "emotion",
         ClassificationHead(
-            d_model=cfg.d_model, num_labels=num_emotions, pooler="mean", dropout=cfg.dropout
+            d_model=cfg.d_model, 
+            num_labels=num_emotions, 
+            pooler="mean", 
+            dropout=cfg.dropout,
+            hidden_dim=cfg.d_model // 2,  # 384-dim hidden layer
         ),
     )
     model.add_head(
