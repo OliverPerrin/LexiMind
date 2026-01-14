@@ -19,11 +19,23 @@ import gradio as gr
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
-CATALOG_PATH = PROJECT_ROOT / "data" / "catalog.json"
 
-# For HF Space, catalog may be in root
-if not CATALOG_PATH.exists():
-    CATALOG_PATH = Path("data/catalog.json")
+# Try multiple paths for catalog (local dev vs HF Space)
+CATALOG_PATHS = [
+    PROJECT_ROOT / "data" / "catalog.json",  # Local: /home/.../LexiMind/data/catalog.json
+    Path("data/catalog.json"),                # HF Space: /app/data/catalog.json
+    Path("/app/data/catalog.json"),           # HF Space absolute
+    SCRIPT_DIR / ".." / "data" / "catalog.json",  # Relative from script
+]
+
+CATALOG_PATH = None
+for path in CATALOG_PATHS:
+    if path.exists():
+        CATALOG_PATH = path
+        break
+
+if CATALOG_PATH is None:
+    raise FileNotFoundError(f"Could not find catalog.json. Tried: {CATALOG_PATHS}")
 
 with open(CATALOG_PATH) as f:
     CATALOG = json.load(f)
