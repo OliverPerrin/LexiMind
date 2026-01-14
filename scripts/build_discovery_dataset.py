@@ -15,19 +15,18 @@ Preprocessing includes:
 import json
 import random
 import re
-from pathlib import Path
+import sys
 from collections import defaultdict
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import torch
 from datasets import Dataset
 from tqdm import tqdm
 
-# Add project root to path
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
 from src.inference.factory import create_inference_pipeline
-
 
 # --------------- Text Quality Filters ---------------
 
