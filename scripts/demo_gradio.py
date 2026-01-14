@@ -5,46 +5,34 @@ Browse books and research papers by topic or emotion.
 Pre-analyzed summaries help you find what to read next.
 
 Author: Oliver Perrin
-Date: 2026-01-13
+Date: 2026-01-14
 """
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 import gradio as gr
+from datasets import load_dataset
 
-# --------------- Load Catalog ---------------
+# --------------- Load Dataset from HuggingFace Hub ---------------
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent
+print("Loading discovery dataset from HuggingFace Hub...")
+dataset = load_dataset("OliverPerrin/LexiMind-Discovery", split="train")
+print(f"Loaded {len(dataset)} items")
 
-# Try multiple paths for catalog (local dev vs HF Space)
-CATALOG_PATHS = [
-    PROJECT_ROOT / "data" / "catalog.json",  # Local: /home/.../LexiMind/data/catalog.json
-    Path("data/catalog.json"),                # HF Space: /app/data/catalog.json
-    Path("/app/data/catalog.json"),           # HF Space absolute
-    SCRIPT_DIR / ".." / "data" / "catalog.json",  # Relative from script
-]
+# Convert to list for easier filtering
+ALL_ITEMS = [dict(item) for item in dataset]
 
-CATALOG_PATH = None
-for path in CATALOG_PATHS:
-    if path.exists():
-        CATALOG_PATH = path
-        break
+# Extract unique topics and emotions
+TOPICS = sorted(set(item["topic"] for item in ALL_ITEMS if item.get("topic")))
+EMOTIONS = sorted(set(item["emotion"] for item in ALL_ITEMS if item.get("emotion")))
 
-if CATALOG_PATH is None:
-    raise FileNotFoundError(f"Could not find catalog.json. Tried: {CATALOG_PATHS}")
+# Group by source type
+BOOKS = [item for item in ALL_ITEMS if item.get("source_type") == "literary"]
+PAPERS = [item for item in ALL_ITEMS if item.get("source_type") == "academic"]
 
-with open(CATALOG_PATH) as f:
-    CATALOG = json.load(f)
-
-BOOKS = CATALOG["books"]
-PAPERS = CATALOG["papers"]
-ALL_ITEMS = BOOKS + PAPERS
-TOPICS = CATALOG["topics"]
-EMOTIONS = CATALOG["emotions"]
+print(f"Topics: {TOPICS}")
+print(f"Emotions: {EMOTIONS}")
+print(f"Books: {len(BOOKS)}, Papers: {len(PAPERS)}")
 
 
 # --------------- Filter Functions ---------------
@@ -58,31 +46,50 @@ def get_items_by_topic(topic: str) -> list[dict]:
 
 
 def get_items_by_emotion(emotion: str) -> list[dict]:
-    """Get all items containing an emotion."""
+    """Get all items matching an emotion."""
     if emotion == "All":
         return ALL_ITEMS
-    return [item for item in ALL_ITEMS if emotion.lower() in [e.lower() for e in item.get("emotions", [])]]
+    return [item for item in ALL_ITEMS if item.get("emotion") == emotion]
 
 
 def format_item_card(item: dict) -> str:
     """Format an item as a markdown card."""
-    is_book = "author" in item
+    title = item.get("title", "Unknown")
+    source_type = item.get("source_type", "unknown")
+    dataset_name = item.get("dataset", "").title()
     
-    if is_book:
-        author_line = f"**{item['author']}** ({item['year']})"
-    else:
-        authors = item.get("authors", ["Unknown"])
-        author_line = f"**{', '.join(authors)}** ({item['year']})"
+    # Icon based on type
+    icon = "📖" if source_type == "literary" else "📄"
     
-    emotions = ", ".join(e.title() for e in item.get("emotions", []))
+    # Topic and emotion with confidence
+    topic = item.get("topic", "Unknown")
+    topic_conf = item.get("topic_confidence", 0)
+    emotion = item.get("emotion", "Unknown")
+    emotion_conf = item.get("emotion_confidence", 0)
     
-    return f"""### {item['title']}
+    # Summary (generated or reference)
+    summary = item.get("generated_summary", "")
+    if not summary:
+        summary = item.get("reference_summary", "No summary available.")
+    
+    # Preview of original text
+    text_preview = item.get("text", "")[:300] + "..." if len(item.get("text", "")) > 300 else item.get("text", "")
+    
+    return f"""### {icon} {title}
 
-{author_line}
+**Source:** {dataset_name} &nbsp;|&nbsp; **Type:** {source_type.title()}
 
-📚 **Topic:** {item['topic']} &nbsp;|&nbsp; 💭 **Emotions:** {emotions}
+🏷️ **Topic:** {topic} ({topic_conf:.0%}) &nbsp;|&nbsp; 💭 **Emotion:** {emotion.title()} ({emotion_conf:.0%})
 
-{item['summary']}
+**Summary:**
+> {summary}
+
+<details>
+<summary>📜 View Original Text Preview</summary>
+
+{text_preview}
+
+</details>
 
 ---
 """
@@ -95,20 +102,20 @@ def browse_by_topic(topic: str) -> str:
         return "No items found for this topic."
     
     # Group by type
-    books = [i for i in items if "author" in i]
-    papers = [i for i in items if "authors" in i]
+    literary = [i for i in items if i.get("source_type") == "literary"]
+    academic = [i for i in items if i.get("source_type") == "academic"]
     
     result = f"## {topic if topic != 'All' else 'All Topics'}\n\n"
-    result += f"*Found {len(items)} items ({len(books)} books, {len(papers)} papers)*\n\n"
+    result += f"*Found {len(items)} items ({len(literary)} literary, {len(academic)} academic)*\n\n"
     
-    if books:
-        result += "### 📖 Books\n\n"
-        for item in books:
+    if literary:
+        result += "### 📖 Literary Works\n\n"
+        for item in literary[:25]:  # Limit to avoid huge pages
             result += format_item_card(item)
     
-    if papers:
-        result += "### 📄 Research Papers\n\n"
-        for item in papers:
+    if academic:
+        result += "### 📄 Academic Papers\n\n"
+        for item in academic[:25]:
             result += format_item_card(item)
     
     return result
@@ -120,21 +127,46 @@ def browse_by_emotion(emotion: str) -> str:
     if not items:
         return "No items found for this emotion."
     
-    books = [i for i in items if "author" in i]
-    papers = [i for i in items if "authors" in i]
+    literary = [i for i in items if i.get("source_type") == "literary"]
+    academic = [i for i in items if i.get("source_type") == "academic"]
     
     result = f"## Feeling {emotion.title() if emotion != 'All' else 'All Emotions'}?\n\n"
-    result += f"*Found {len(items)} items ({len(books)} books, {len(papers)} papers)*\n\n"
+    result += f"*Found {len(items)} items ({len(literary)} literary, {len(academic)} academic)*\n\n"
     
-    if books:
-        result += "### 📖 Books\n\n"
-        for item in books:
+    if literary:
+        result += "### 📖 Literary Works\n\n"
+        for item in literary[:25]:
             result += format_item_card(item)
     
-    if papers:
-        result += "### 📄 Research Papers\n\n"
-        for item in papers:
+    if academic:
+        result += "### 📄 Academic Papers\n\n"
+        for item in academic[:25]:
             result += format_item_card(item)
+    
+    return result
+
+
+def search_items(query: str) -> str:
+    """Search items by text content."""
+    if not query or len(query) < 3:
+        return "Enter at least 3 characters to search."
+    
+    query_lower = query.lower()
+    matches = [
+        item for item in ALL_ITEMS
+        if query_lower in item.get("text", "").lower()
+        or query_lower in item.get("generated_summary", "").lower()
+        or query_lower in item.get("title", "").lower()
+    ]
+    
+    if not matches:
+        return f"No results found for '{query}'."
+    
+    result = f"## Search Results for '{query}'\n\n"
+    result += f"*Found {len(matches)} matching items*\n\n"
+    
+    for item in matches[:30]:
+        result += format_item_card(item)
     
     return result
 
@@ -154,9 +186,12 @@ with gr.Blocks(
         # 📚 LexiMind
         ### Discover Books & Papers by Topic or Emotion
         
-        Browse a curated collection of classic literature and research papers.
-        Each item has been analyzed for **topic classification**, **emotional tone**, 
-        and includes a **generated summary** to help you decide what to read next.
+        Browse 200 curated books and research papers from Project Gutenberg, 
+        BookSum, and arXiv. Each item has been analyzed by the LexiMind model for:
+        
+        - 🏷️ **Topic Classification** (Fiction, Science, History)
+        - 💭 **Emotion Detection** (love, joy, sadness, etc.)
+        - 📝 **AI-Generated Summaries**
         
         ---
         """
@@ -207,7 +242,28 @@ with gr.Blocks(
                 outputs=[emotion_results],
             )
         
-        # ===================== TAB 3: ABOUT =====================
+        # ===================== TAB 3: SEARCH =====================
+        with gr.Tab("🔍 Search"):
+            gr.Markdown("*Search through all books and papers by keyword*")
+            
+            search_input = gr.Textbox(
+                placeholder="Enter keywords to search...",
+                label="Search",
+                interactive=True,
+            )
+            
+            search_results = gr.Markdown(
+                value="Enter at least 3 characters to search.",
+                elem_classes=["result-box"],
+            )
+            
+            search_input.change(
+                fn=search_items,
+                inputs=[search_input],
+                outputs=[search_results],
+            )
+        
+        # ===================== TAB 4: ABOUT =====================
         with gr.Tab("ℹ️ About"):
             gr.Markdown(
                 """
@@ -237,10 +293,21 @@ with gr.Blocks(
                 | 20 Newsgroups + Gutenberg | Topic Classification |
                 | GoEmotions | Emotion Detection |
                 
+                ### Discovery Dataset
+                
+                This demo uses a curated sample of **200 items** from the training data:
+                - 100 Gutenberg books
+                - 80 arXiv academic papers
+                - 20 BookSum literary excerpts
+                
+                Each item was analyzed by the trained model to generate summaries, 
+                topics, and emotions.
+                
                 ### Links
                 
                 - 🔗 [GitHub](https://github.com/OliverPerrin/LexiMind)
                 - 🤗 [Model](https://huggingface.co/OliverPerrin/LexiMind-Model)
+                - 📊 [Discovery Dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery)
                 
                 ---
                 *Built by Oliver Perrin • Appalachian State University • 2025-2026*
