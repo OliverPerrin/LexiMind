@@ -1,316 +1,242 @@
 """
-LexiMind Demo - Multi-Task NLP Model
+LexiMind - Book & Paper Discovery
 
-A streamlined demo for showcasing the model to recruiters and engineers.
-Focuses on: live inference, model metrics, and training visualizations.
+Browse books and research papers by topic or emotion.
+Pre-analyzed summaries help you find what to read next.
 
 Author: Oliver Perrin
-Date: 2025-12-05, Updated: 2026-01-13
+Date: 2026-01-13
 """
 
 from __future__ import annotations
 
 import json
-import logging
-import sys
 from pathlib import Path
 
 import gradio as gr
 
-logger = logging.getLogger(__name__)
-
-# --------------- Path Setup ---------------
+# --------------- Load Catalog ---------------
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
+CATALOG_PATH = PROJECT_ROOT / "data" / "catalog.json"
 
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+# For HF Space, catalog may be in root
+if not CATALOG_PATH.exists():
+    CATALOG_PATH = Path("data/catalog.json")
 
-from huggingface_hub import hf_hub_download
+with open(CATALOG_PATH) as f:
+    CATALOG = json.load(f)
 
-from src.inference.factory import create_inference_pipeline
-
-# --------------- Constants ---------------
-
-OUTPUTS_DIR = PROJECT_ROOT / "outputs"
-TRAINING_HISTORY_PATH = OUTPUTS_DIR / "training_history.json"
-
-# --------------- Pipeline Management ---------------
-
-_pipeline = None
+BOOKS = CATALOG["books"]
+PAPERS = CATALOG["papers"]
+ALL_ITEMS = BOOKS + PAPERS
+TOPICS = CATALOG["topics"]
+EMOTIONS = CATALOG["emotions"]
 
 
-def get_pipeline():
-    """Lazy-load the inference pipeline, downloading checkpoint if needed."""
-    global _pipeline
-    if _pipeline is not None:
-        return _pipeline
-
-    checkpoint_path = Path("checkpoints/best.pt")
-
-    if not checkpoint_path.exists():
-        checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
-        hf_hub_download(
-            repo_id="OliverPerrin/LexiMind-Model",
-            filename="best.pt",
-            local_dir="checkpoints",
-        )
-
-    _pipeline, _ = create_inference_pipeline(
-        tokenizer_dir="artifacts/hf_tokenizer/",
-        checkpoint_path="checkpoints/best.pt",
-        labels_path="artifacts/labels.json",
-        model_config_path="configs/model/base.yaml",
-    )
-    return _pipeline
+# --------------- Filter Functions ---------------
 
 
-# --------------- Core Analysis Function ---------------
+def get_items_by_topic(topic: str) -> list[dict]:
+    """Get all items matching a topic."""
+    if topic == "All":
+        return ALL_ITEMS
+    return [item for item in ALL_ITEMS if item.get("topic") == topic]
 
 
-def analyze_text(text: str) -> tuple[str, str, str]:
-    """Run all three tasks and return formatted results."""
-    if not text or not text.strip():
-        return "Enter text above to analyze.", "", ""
-
-    try:
-        pipe = get_pipeline()
-
-        # Run tasks
-        summary = pipe.summarize([text], max_length=150)[0].strip()
-        if not summary:
-            summary = "(Unable to generate summary)"
-
-        emotions = pipe.predict_emotions([text], threshold=0.3)[0]
-        topic = pipe.predict_topics([text])[0]
-
-        # Format emotions with scores
-        if emotions.labels:
-            paired = list(zip(emotions.labels, emotions.scores, strict=False))
-            paired_sorted = sorted(paired, key=lambda x: x[1], reverse=True)[:5]
-            emotion_lines = [f"• **{lbl.title()}**: {score:.0%}" for lbl, score in paired_sorted]
-            emotion_str = "\n".join(emotion_lines)
-        else:
-            emotion_str = "No strong emotions detected"
-
-        # Format topic
-        topic_str = f"**{topic.label}** ({topic.confidence:.0%})"
-
-        return summary, emotion_str, topic_str
-
-    except Exception as e:
-        logger.error("Analysis failed: %s", e, exc_info=True)
-        return f"Error: {e}", "", ""
+def get_items_by_emotion(emotion: str) -> list[dict]:
+    """Get all items containing an emotion."""
+    if emotion == "All":
+        return ALL_ITEMS
+    return [item for item in ALL_ITEMS if emotion.lower() in [e.lower() for e in item.get("emotions", [])]]
 
 
-# --------------- Sample Texts ---------------
+def format_item_card(item: dict) -> str:
+    """Format an item as a markdown card."""
+    is_book = "author" in item
+    
+    if is_book:
+        author_line = f"**{item['author']}** ({item['year']})"
+    else:
+        authors = item.get("authors", ["Unknown"])
+        author_line = f"**{', '.join(authors)}** ({item['year']})"
+    
+    emotions = ", ".join(e.title() for e in item.get("emotions", []))
+    
+    return f"""### {item['title']}
 
-SAMPLES = {
-    "fiction": """The old lighthouse keeper had watched countless storms batter the rocky coast, 
-but nothing prepared him for what emerged from the fog that evening. A ship unlike any he'd 
-seen before - its hull seemingly made of living shadow - drifted silently toward the rocks. 
-He rang the warning bell, knowing somehow it wouldn't matter.""",
+{author_line}
 
-    "science": """Researchers at MIT have developed a breakthrough quantum computing chip that 
-operates at room temperature. This advancement could revolutionize drug discovery, cryptography, 
-and artificial intelligence. The research team published their findings in Nature, demonstrating 
-stable qubit operations for over 100 microseconds.""",
+📚 **Topic:** {item['topic']} &nbsp;|&nbsp; 💭 **Emotions:** {emotions}
 
-    "technology": """The new large language model demonstrates unprecedented reasoning capabilities, 
-solving complex mathematical proofs and generating functional code across multiple programming 
-languages. Benchmarks show it outperforms previous systems by significant margins on tasks 
-requiring multi-step logical inference and long-context understanding.""",
-}
+{item['summary']}
+
+---
+"""
+
+
+def browse_by_topic(topic: str) -> str:
+    """Browse items filtered by topic."""
+    items = get_items_by_topic(topic)
+    if not items:
+        return "No items found for this topic."
+    
+    # Group by type
+    books = [i for i in items if "author" in i]
+    papers = [i for i in items if "authors" in i]
+    
+    result = f"## {topic if topic != 'All' else 'All Topics'}\n\n"
+    result += f"*Found {len(items)} items ({len(books)} books, {len(papers)} papers)*\n\n"
+    
+    if books:
+        result += "### 📖 Books\n\n"
+        for item in books:
+            result += format_item_card(item)
+    
+    if papers:
+        result += "### 📄 Research Papers\n\n"
+        for item in papers:
+            result += format_item_card(item)
+    
+    return result
+
+
+def browse_by_emotion(emotion: str) -> str:
+    """Browse items filtered by emotion."""
+    items = get_items_by_emotion(emotion)
+    if not items:
+        return "No items found for this emotion."
+    
+    books = [i for i in items if "author" in i]
+    papers = [i for i in items if "authors" in i]
+    
+    result = f"## Feeling {emotion.title() if emotion != 'All' else 'All Emotions'}?\n\n"
+    result += f"*Found {len(items)} items ({len(books)} books, {len(papers)} papers)*\n\n"
+    
+    if books:
+        result += "### 📖 Books\n\n"
+        for item in books:
+            result += format_item_card(item)
+    
+    if papers:
+        result += "### 📄 Research Papers\n\n"
+        for item in papers:
+            result += format_item_card(item)
+    
+    return result
 
 
 # --------------- Gradio Interface ---------------
 
-with gr.Blocks(title="LexiMind") as demo:
+with gr.Blocks(
+    title="LexiMind",
+    theme=gr.themes.Soft(),
+    css="""
+    .result-box { max-height: 600px; overflow-y: auto; }
+    """
+) as demo:
     
     gr.Markdown(
         """
-        # LexiMind
-        ### Multi-Task Transformer for Document Understanding
+        # 📚 LexiMind
+        ### Discover Books & Papers by Topic or Emotion
         
-        A custom 272M parameter encoder-decoder model trained jointly on three NLP tasks.
-        Built from scratch in PyTorch, initialized from FLAN-T5-base weights.
+        Browse a curated collection of classic literature and research papers.
+        Each item has been analyzed for **topic classification**, **emotional tone**, 
+        and includes a **generated summary** to help you decide what to read next.
         
-        *Currently running development checkpoint - quality improves with longer training.*
+        ---
         """
     )
-
+    
     with gr.Tabs():
-        # ===================== TAB 1: LIVE DEMO =====================
-        with gr.Tab("Try It"):
-            with gr.Row():
-                with gr.Column(scale=2):
-                    text_input = gr.Textbox(
-                        label="Input Text",
-                        lines=6,
-                        placeholder="Paste a book excerpt, research abstract, or any text to analyze...",
-                    )
-                    with gr.Row():
-                        analyze_btn = gr.Button("Analyze", variant="primary")
-                        clear_btn = gr.Button("Clear")
-                    
-                    gr.Markdown("**Quick samples:**")
-                    with gr.Row():
-                        btn_fiction = gr.Button("Fiction", size="sm")
-                        btn_science = gr.Button("Science", size="sm")
-                        btn_tech = gr.Button("Technology", size="sm")
-                
-                with gr.Column(scale=2):
-                    summary_output = gr.Textbox(label="Generated Summary", lines=4, interactive=False)
-                    with gr.Row():
-                        emotions_output = gr.Markdown(label="Detected Emotions")
-                        topic_output = gr.Markdown(label="Topic Classification")
+        # ===================== TAB 1: BROWSE BY TOPIC =====================
+        with gr.Tab("🏷️ Browse by Topic"):
+            gr.Markdown("*Select a topic to explore related books and papers*")
             
-            # Event handlers
-            analyze_btn.click(analyze_text, inputs=[text_input], outputs=[summary_output, emotions_output, topic_output])
-            clear_btn.click(lambda: ("", "", "", ""), outputs=[text_input, summary_output, emotions_output, topic_output])
-            btn_fiction.click(lambda: SAMPLES["fiction"], outputs=[text_input])
-            btn_science.click(lambda: SAMPLES["science"], outputs=[text_input])
-            btn_tech.click(lambda: SAMPLES["technology"], outputs=[text_input])
-
-        # ===================== TAB 2: METRICS =====================
-        with gr.Tab("Metrics"):
-            gr.Markdown("### Training Results")
+            topic_dropdown = gr.Dropdown(
+                choices=["All"] + TOPICS,
+                value="All",
+                label="Select Topic",
+                interactive=True,
+            )
             
-            # Load metrics from training history
-            metrics_html = ""
-            if TRAINING_HISTORY_PATH.exists():
-                with open(TRAINING_HISTORY_PATH) as f:
-                    history = json.load(f)
-                # Get latest validation epoch
-                val_keys = [k for k in history.keys() if k.startswith("val_epoch")]
-                if val_keys:
-                    latest = sorted(val_keys)[-1]
-                    val = history[latest]
-                    epoch_num = latest.split("_")[-1]
-                    
-                    topic_acc = val.get('topic_accuracy', 0)
-                    emotion_f1 = val.get('emotion_f1', 0)
-                    rouge = val.get('summarization_rouge_like', 0)
-                    total_loss = val.get('total_loss', 0)
-                    
-                    metrics_html = f"""
-| Task | Metric | Score |
-|------|--------|-------|
-| **Topic Classification** | Accuracy | **{topic_acc:.1%}** |
-| **Emotion Detection** | F1 Score | {emotion_f1:.1%} |
-| **Summarization** | ROUGE-like | {rouge:.1%} |
-| **Total** | Val Loss | {total_loss:.3f} |
-
-*Results from epoch {epoch_num}*
-"""
-            else:
-                metrics_html = "*No training history found. Run training first.*"
+            topic_results = gr.Markdown(
+                value=browse_by_topic("All"),
+                elem_classes=["result-box"],
+            )
             
-            gr.Markdown(metrics_html)
+            topic_dropdown.change(
+                fn=browse_by_topic,
+                inputs=[topic_dropdown],
+                outputs=[topic_results],
+            )
+        
+        # ===================== TAB 2: BROWSE BY EMOTION =====================
+        with gr.Tab("💭 Browse by Emotion"):
+            gr.Markdown("*Find books and papers that evoke specific emotions*")
             
-            gr.Markdown("### Training Progress")
+            emotion_dropdown = gr.Dropdown(
+                choices=["All"] + [e.title() for e in EMOTIONS],
+                value="All",
+                label="Select Emotion",
+                interactive=True,
+            )
             
-            # Generate inline training chart using history data
-            if TRAINING_HISTORY_PATH.exists():
-                with open(TRAINING_HISTORY_PATH) as f:
-                    history = json.load(f)
-                
-                train_keys = sorted([k for k in history.keys() if k.startswith("train_epoch")])
-                val_keys = sorted([k for k in history.keys() if k.startswith("val_epoch")])
-                
-                if train_keys and val_keys:
-                    epochs = list(range(1, len(train_keys) + 1))
-                    train_loss = [history[k]["total_loss"] for k in train_keys]
-                    val_loss = [history[k]["total_loss"] for k in val_keys[:len(train_keys)]]
-                    topic_acc = [history[k].get("topic_accuracy", 0) * 100 for k in val_keys[:len(train_keys)]]
-                    
-                    # Create a simple text-based progress display
-                    progress_md = "**Loss Curve:**\n```\n"
-                    for i, (tl, vl) in enumerate(zip(train_loss, val_loss)):
-                        bar_len = int((1 - vl/max(val_loss)) * 20) + 1
-                        progress_md += f"Epoch {i+1}: Train={tl:.3f} Val={vl:.3f} {'█' * bar_len}\n"
-                    progress_md += "```\n\n"
-                    
-                    progress_md += "**Topic Accuracy:**\n```\n"
-                    for i, acc in enumerate(topic_acc):
-                        bar_len = int(acc / 5)
-                        progress_md += f"Epoch {i+1}: {acc:.1f}% {'█' * bar_len}\n"
-                    progress_md += "```"
-                    
-                    gr.Markdown(progress_md)
+            emotion_results = gr.Markdown(
+                value=browse_by_emotion("All"),
+                elem_classes=["result-box"],
+            )
             
-            # Show visualization images if they exist
-            with gr.Row():
-                loss_curve = OUTPUTS_DIR / "training_loss_curve.png"
-                if loss_curve.exists():
-                    gr.Image(str(loss_curve), label="Loss Curves", show_label=True)
-                
-                task_metrics = OUTPUTS_DIR / "task_metrics.png"
-                if task_metrics.exists():
-                    gr.Image(str(task_metrics), label="Task Metrics", show_label=True)
-            
-            with gr.Row():
-                lr_schedule = OUTPUTS_DIR / "learning_rate_schedule.png"
-                if lr_schedule.exists():
-                    gr.Image(str(lr_schedule), label="LR Schedule", show_label=True)
-                
-                dynamics = OUTPUTS_DIR / "training_dynamics.png"
-                if dynamics.exists():
-                    gr.Image(str(dynamics), label="Training Dynamics", show_label=True)
-
-        # ===================== TAB 3: ARCHITECTURE =====================
-        with gr.Tab("Architecture"):
+            emotion_dropdown.change(
+                fn=lambda e: browse_by_emotion(e.lower() if e != "All" else "All"),
+                inputs=[emotion_dropdown],
+                outputs=[emotion_results],
+            )
+        
+        # ===================== TAB 3: ABOUT =====================
+        with gr.Tab("ℹ️ About"):
             gr.Markdown(
                 """
-                ### Model Architecture
+                ### About LexiMind
                 
-                | Component | Details |
-                |-----------|---------|
-                | **Type** | Encoder-Decoder Transformer |
-                | **Parameters** | 272.5M |
-                | **Encoder** | 12 layers, 768 dim, 12 heads |
-                | **Decoder** | 12 layers, causal attention |
-                | **Normalization** | Pre-LN with RMSNorm |
-                | **Position** | T5 Relative Position Bias |
-                | **Initialization** | FLAN-T5-base weights |
+                LexiMind is a **272M parameter encoder-decoder transformer** trained on three tasks:
                 
-                ### Task Heads
+                | Task | Description |
+                |------|-------------|
+                | **Summarization** | Generate concise summaries of long texts |
+                | **Topic Classification** | Categorize into Fiction, Science, Technology, Philosophy, History, Business, Arts |
+                | **Emotion Detection** | Identify emotional tones (28 emotions from GoEmotions) |
                 
-                | Task | Output | Loss Function |
-                |------|--------|---------------|
-                | **Summarization** | Seq2seq generation | Cross-entropy + label smoothing |
-                | **Emotion** | 28-class multi-label | Binary cross-entropy |
-                | **Topic** | 7-class single-label | Cross-entropy |
+                ### Architecture
+                
+                - **Base:** FLAN-T5-base (Google)
+                - **Encoder:** 12 layers, 768 dim, 12 attention heads
+                - **Decoder:** 12 layers with causal attention
+                - **Position:** T5 relative position bias
+                - **Training:** Multi-task learning with task-specific heads
                 
                 ### Training Data
                 
-                | Dataset | Task | Size |
-                |---------|------|------|
-                | BookSum + arXiv | Summarization | ~40K |
-                | GoEmotions | Emotion | ~43K |
-                | 20 Newsgroups + Gutenberg | Topic | ~3.4K |
+                | Dataset | Task |
+                |---------|------|
+                | BookSum + arXiv | Summarization |
+                | 20 Newsgroups + Gutenberg | Topic Classification |
+                | GoEmotions | Emotion Detection |
                 
                 ### Links
                 
-                - **Code**: [github.com/OliverPerrin/LexiMind](https://github.com/OliverPerrin/LexiMind)
-                - **Model**: [huggingface.co/OliverPerrin/LexiMind-Model](https://huggingface.co/OliverPerrin/LexiMind-Model)
+                - 🔗 [GitHub](https://github.com/OliverPerrin/LexiMind)
+                - 🤗 [Model](https://huggingface.co/OliverPerrin/LexiMind-Model)
                 
                 ---
-                *Oliver Perrin • Appalachian State University • 2025-2026*
+                *Built by Oliver Perrin • Appalachian State University • 2025-2026*
                 """
             )
-            
-            # Show embedding visualization if exists
-            embedding_viz = OUTPUTS_DIR / "embedding_space.png"
-            if embedding_viz.exists():
-                gr.Image(str(embedding_viz), label="Embedding Space (t-SNE)")
 
 
 # --------------- Entry Point ---------------
 
 if __name__ == "__main__":
-    logger.info("Loading inference pipeline...")
-    get_pipeline()
-    logger.info("Starting Gradio server...")
     demo.launch(server_name="0.0.0.0", server_port=7860)

@@ -1,0 +1,168 @@
+{
+  "books": [
+    {
+      "id": "jungle-upton-sinclair",
+      "title": "The Jungle",
+      "author": "Upton Sinclair",
+      "year": 1906,
+      "topic": "Fiction",
+      "emotions": ["sadness", "fear", "anger"],
+      "summary": "Jurgis and Ona, Lithuanian immigrants, arrive in Chicago seeking the American dream. They find work in the brutal meatpacking industry, where dangerous conditions, wage theft, and exploitation crush their hopes. Through their suffering, Sinclair exposes the corruption of industrial capitalism and the desperate lives of working-class immigrants.",
+      "source": "Project Gutenberg"
+    },
+    {
+      "id": "as-you-like-it-shakespeare",
+      "title": "As You Like It",
+      "author": "William Shakespeare",
+      "year": 1599,
+      "topic": "Fiction",
+      "emotions": ["love", "joy", "amusement"],
+      "summary": "Rosalind, banished by her uncle Duke Frederick, flees to the Forest of Arden disguised as a young man named Ganymede. There she encounters Orlando, who is also in exile and hopelessly in love with her. Through wit, disguise, and pastoral comedy, the play explores love, identity, and the contrast between corrupt court life and idyllic nature.",
+      "source": "Project Gutenberg"
+    },
+    {
+      "id": "timon-of-athens-shakespeare",
+      "title": "Timon of Athens",
+      "author": "William Shakespeare",
+      "year": 1607,
+      "topic": "Fiction",
+      "emotions": ["anger", "disappointment", "disgust"],
+      "summary": "Timon, a wealthy Athenian lord, lavishes gifts on friends and artists with boundless generosity. When his fortune runs out, those same friends abandon him. Betrayed and bitter, Timon retreats to a cave as a misanthrope, cursing humanity until his death. The play is a dark meditation on false friendship, ingratitude, and the corruption of wealth.",
+      "source": "Project Gutenberg"
+    },
+    {
+      "id": "pride-prejudice-austen",
+      "title": "Pride and Prejudice",
+      "author": "Jane Austen",
+      "year": 1813,
+      "topic": "Fiction",
+      "emotions": ["love", "amusement", "annoyance"],
+      "summary": "Elizabeth Bennet, second of five sisters, initially despises the proud Mr. Darcy. Through misunderstandings, revelations, and personal growth, both overcome their flaws—his pride and her prejudice—to find love. Austen's wit illuminates Regency-era society, marriage, and class with sharp social commentary.",
+      "source": "Project Gutenberg"
+    },
+    {
+      "id": "frankenstein-shelley",
+      "title": "Frankenstein",
+      "author": "Mary Shelley",
+      "year": 1818,
+      "topic": "Fiction",
+      "emotions": ["fear", "sadness", "curiosity"],
+      "summary": "Victor Frankenstein, obsessed with creating life, assembles a creature from corpses and animates it. Horrified by his creation, he abandons it. The creature, intelligent but rejected by all, turns to vengeance. Shelley explores ambition, responsibility, isolation, and what makes us human in this foundational work of science fiction.",
+      "source": "Project Gutenberg"
+    },
+    {
+      "id": "war-peace-tolstoy",
+      "title": "War and Peace",
+      "author": "Leo Tolstoy",
+      "year": 1869,
+      "topic": "History",
+      "emotions": ["love", "fear", "sadness"],
+      "summary": "Against the backdrop of Napoleon's invasion of Russia, Tolstoy weaves the stories of aristocratic families—the Rostovs, Bolkonskys, and Bezukhovs. Through war and peace, love and loss, the novel explores fate, free will, and the forces that shape history. Pierre Bezukhov's spiritual journey anchors this epic meditation on life's meaning.",
+      "source": "Project Gutenberg"
+    },
+    {
+      "id": "divine-comedy-dante",
+      "title": "The Divine Comedy",
+      "author": "Dante Alighieri",
+      "year": 1320,
+      "topic": "Philosophy",
+      "emotions": ["fear", "admiration", "curiosity"],
+      "summary": "Dante journeys through Hell, Purgatory, and Paradise, guided first by Virgil, then by his beloved Beatrice. In Hell, he witnesses sinners suffering punishments fitting their crimes. Ascending through Purgatory's terraces of purification, he finally reaches Heaven's celestial spheres. The poem is an allegory of the soul's journey toward God.",
+      "source": "Project Gutenberg"
+    },
+    {
+      "id": "republic-plato",
+      "title": "The Republic",
+      "author": "Plato",
+      "year": -380,
+      "topic": "Philosophy",
+      "emotions": ["curiosity", "admiration"],
+      "summary": "Socrates and his interlocutors discuss justice, the ideal state, and the nature of the philosopher-king. Through the allegory of the cave, Plato illustrates the journey from ignorance to enlightenment. The dialogue examines education, art, and the soul's structure, establishing foundational concepts in Western philosophy.",
+      "source": "Project Gutenberg"
+    }
+  ],
+  "papers": [
+    {
+      "id": "attention-is-all-you-need",
+      "title": "Attention Is All You Need",
+      "authors": ["Vaswani et al."],
+      "year": 2017,
+      "topic": "Technology",
+      "emotions": ["curiosity", "admiration"],
+      "summary": "The Transformer architecture replaces recurrence and convolutions with self-attention mechanisms. Multi-head attention allows the model to jointly attend to information from different representation subspaces. The architecture achieves state-of-the-art results on machine translation while being more parallelizable and requiring less training time.",
+      "source": "arXiv"
+    },
+    {
+      "id": "bert-pretraining",
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers",
+      "authors": ["Devlin et al."],
+      "year": 2018,
+      "topic": "Technology",
+      "emotions": ["curiosity", "admiration"],
+      "summary": "BERT introduces bidirectional pre-training using masked language modeling and next sentence prediction. Unlike previous models that read text left-to-right, BERT considers context from both directions. Fine-tuning BERT achieves state-of-the-art results across eleven NLP tasks with minimal task-specific architecture changes.",
+      "source": "arXiv"
+    },
+    {
+      "id": "gpt-3-language-models",
+      "title": "Language Models are Few-Shot Learners",
+      "authors": ["Brown et al."],
+      "year": 2020,
+      "topic": "Technology",
+      "emotions": ["curiosity", "surprise", "admiration"],
+      "summary": "GPT-3, with 175 billion parameters, demonstrates that scaling language models dramatically improves few-shot learning. Given just a few examples in the prompt, GPT-3 performs competitively on tasks without fine-tuning. The paper raises questions about the nature of learning and the potential for emergent capabilities in large models.",
+      "source": "arXiv"
+    },
+    {
+      "id": "climate-change-synthesis",
+      "title": "Climate Change 2021: The Physical Science Basis",
+      "authors": ["IPCC Working Group I"],
+      "year": 2021,
+      "topic": "Science",
+      "emotions": ["fear", "sadness", "curiosity"],
+      "summary": "Global surface temperature has increased faster since 1970 than in any other 50-year period over at least the last 2000 years. Human influence has warmed the atmosphere, ocean, and land. Many changes are irreversible for centuries to millennia, especially in ocean and ice sheet systems. Limiting warming requires reaching net zero CO2 emissions.",
+      "source": "IPCC"
+    },
+    {
+      "id": "crispr-gene-editing",
+      "title": "A Programmable Dual-RNA-Guided DNA Endonuclease",
+      "authors": ["Jinek et al."],
+      "year": 2012,
+      "topic": "Science",
+      "emotions": ["curiosity", "excitement", "admiration"],
+      "summary": "The CRISPR-Cas9 system enables precise genome editing using guide RNAs to direct the Cas9 nuclease to specific DNA sequences. This programmable system allows researchers to cut, delete, or modify genes with unprecedented accuracy. The discovery revolutionized biology and earned the 2020 Nobel Prize in Chemistry.",
+      "source": "Science"
+    },
+    {
+      "id": "black-hole-image",
+      "title": "First M87 Event Horizon Telescope Results",
+      "authors": ["Event Horizon Telescope Collaboration"],
+      "year": 2019,
+      "topic": "Science",
+      "emotions": ["admiration", "surprise", "curiosity"],
+      "summary": "The Event Horizon Telescope captured the first direct image of a black hole's shadow, the supermassive black hole in galaxy M87. The asymmetric ring structure confirms predictions of general relativity. The image required combining data from eight radio telescopes worldwide to create an Earth-sized virtual telescope.",
+      "source": "Astrophysical Journal Letters"
+    },
+    {
+      "id": "wealth-of-nations",
+      "title": "The Wealth of Nations",
+      "authors": ["Adam Smith"],
+      "year": 1776,
+      "topic": "Business",
+      "emotions": ["curiosity", "admiration"],
+      "summary": "Smith argues that free markets, guided by the 'invisible hand' of self-interest, produce greater prosperity than mercantilism. Division of labor increases productivity dramatically. The work establishes foundations of classical economics, analyzing wages, profits, rent, and the role of government in maintaining competition and public goods.",
+      "source": "Public Domain"
+    },
+    {
+      "id": "art-of-war",
+      "title": "The Art of War",
+      "authors": ["Sun Tzu"],
+      "year": -500,
+      "topic": "History",
+      "emotions": ["curiosity", "admiration"],
+      "summary": "Sun Tzu's ancient treatise presents principles of military strategy emphasizing intelligence, deception, and winning without fighting when possible. 'Know your enemy and know yourself' underpins adaptable tactics. The text's wisdom extends beyond warfare to business, politics, and personal conflict resolution.",
+      "source": "Public Domain"
+    }
+  ],
+  "topics": ["Fiction", "Science", "Technology", "Philosophy", "History", "Business", "Arts"],
+  "emotions": ["admiration", "amusement", "anger", "annoyance", "curiosity", "disappointment", "disgust", "excitement", "fear", "joy", "love", "sadness", "surprise"]
+}
