@@ -1,92 +1,92 @@
 {
   "train_epoch_1": {
-    "summarization_loss": 3.7986922026081054,
-    "summarization_rouge_like": 0.38785950375542677,
-    "emotion_loss": 0.6569146523665603,
-    "emotion_f1": 0.0803471759769852,
-    "topic_loss": 1.3537324049331485,
-    "topic_accuracy": 0.4645228381729452,
-    "total_loss": 6.166948288969483
+    "summarization_loss": 4.343819652843475,
+    "summarization_rouge_like": 0.18423229737482247,
+    "emotion_loss": 0.4579651211887598,
+    "emotion_f1": 0.11036156222745776,
+    "topic_loss": 1.6671979689359664,
+    "topic_accuracy": 0.4339600000000011,
+    "total_loss": 6.364525709775378
   },
   "val_epoch_1": {
-    "summarization_loss": 3.1010914066140884,
-    "summarization_rouge_like": 0.4547831050626749,
-    "emotion_loss": 0.47831222164831,
-    "emotion_f1": 0.07989733061380237,
-    "topic_loss": 1.1463579110962023,
-    "topic_accuracy": 0.8397282174260592,
-    "total_loss": 5.021045794132517
+    "summarization_loss": 4.259150079727172,
+    "summarization_rouge_like": 0.17393867024365672,
+    "emotion_loss": 0.15817135846614838,
+    "emotion_f1": 0.07330303180590272,
+    "topic_loss": 0.8542358543872833,
+    "topic_accuracy": 0.7782222222222225,
+    "total_loss": 5.179795800936217
   },
   "train_epoch_2": {
-    "summarization_loss": 3.519661677836342,
-    "summarization_rouge_like": 0.40693338191007866,
-    "emotion_loss": 0.2990482480142052,
-    "emotion_f1": 0.25253565061903593,
-    "topic_loss": 0.5421501434865632,
-    "topic_accuracy": 0.8869290456763608,
-    "total_loss": 4.896552726604225
+    "summarization_loss": 4.103479218292236,
+    "summarization_rouge_like": 0.1940134706014566,
+    "emotion_loss": 0.15515640188455582,
+    "emotion_f1": 0.2337232402900234,
+    "topic_loss": 0.4888198138475418,
+    "topic_accuracy": 0.9067600000000139,
+    "total_loss": 4.7272696721971075
   },
   "val_epoch_2": {
-    "summarization_loss": 3.022662199944329,
-    "summarization_rouge_like": 0.45815133655381807,
-    "emotion_loss": 0.19708226060124037,
-    "emotion_f1": 0.302215425453955,
-    "topic_loss": 0.28093130860647425,
-    "topic_accuracy": 0.9172661870503583,
-    "total_loss": 4.009605495299369
+    "summarization_loss": 4.18841742515564,
+    "summarization_rouge_like": 0.17885957731314292,
+    "emotion_loss": 0.1549839802980423,
+    "emotion_f1": 0.3034666753411293,
+    "topic_loss": 0.4580393745005131,
+    "topic_accuracy": 0.852800000000002,
+    "total_loss": 4.787324895203119
   },
   "train_epoch_3": {
-    "summarization_loss": 3.456413923878735,
-    "summarization_rouge_like": 0.4113752870178118,
-    "emotion_loss": 0.18330693083835614,
-    "emotion_f1": 0.30698023489509907,
-    "topic_loss": 0.2889783758940973,
-    "topic_accuracy": 0.9169066474682156,
-    "total_loss": 4.525524954040441
+    "summarization_loss": 4.041395119285584,
+    "summarization_rouge_like": 0.1970914256375089,
+    "emotion_loss": 0.15249912014603614,
+    "emotion_f1": 0.24187604461871087,
+    "topic_loss": 0.21472855980992317,
+    "topic_accuracy": 0.9627200000000102,
+    "total_loss": 4.441926647352566
   },
   "val_epoch_3": {
-    "summarization_loss": 3.0019707325265275,
-    "summarization_rouge_like": 0.4592321986281997,
-    "emotion_loss": 0.16639868924014575,
-    "emotion_f1": 0.3015063897543531,
-    "topic_loss": 0.23863075083072524,
-    "topic_accuracy": 0.9280575539568332,
-    "total_loss": 3.9263884310885304
+    "summarization_loss": 4.16257409954071,
+    "summarization_rouge_like": 0.18115953723449993,
+    "emotion_loss": 0.15324361461400987,
+    "emotion_f1": 0.30253334194421766,
+    "topic_loss": 0.4939193711131811,
+    "topic_accuracy": 0.8632000000000015,
+    "total_loss": 4.7875750183522765
   },
   "train_epoch_4": {
-    "summarization_loss": 3.4258855361860663,
-    "summarization_rouge_like": 0.4135803384924355,
-    "emotion_loss": 0.16595664669032975,
-    "emotion_f1": 0.31446844452103895,
-    "topic_loss": 0.24658246585826152,
-    "topic_accuracy": 0.9276857851372029,
-    "total_loss": 4.441093933462159
+    "summarization_loss": 4.012135830116272,
+    "summarization_rouge_like": 0.19873380769300908,
+    "emotion_loss": 0.15166676665246487,
+    "emotion_f1": 0.24661330536156892,
+    "topic_loss": 0.14288409658223392,
+    "topic_accuracy": 0.9780000000000073,
+    "total_loss": 4.353943257360758
   },
   "val_epoch_4": {
-    "summarization_loss": 2.992023795628719,
-    "summarization_rouge_like": 0.4595829821013028,
-    "emotion_loss": 0.16106250848201253,
-    "emotion_f1": 0.299241534820635,
-    "topic_loss": 0.2258928704747765,
-    "topic_accuracy": 0.9280575539568333,
-    "total_loss": 3.8999928579198935
+    "summarization_loss": 4.1532666339874265,
+    "summarization_rouge_like": 0.18147128191578765,
+    "emotion_loss": 0.15282477751374246,
+    "emotion_f1": 0.2984000087380409,
+    "topic_loss": 0.5214869263619184,
+    "topic_accuracy": 0.8580000000000017,
+    "total_loss": 4.799693341347577
   },
   "train_epoch_5": {
-    "summarization_loss": 3.4150345063421232,
-    "summarization_rouge_like": 0.41468036090685273,
-    "emotion_loss": 0.1624394242665394,
-    "emotion_f1": 0.31033963250845154,
-    "topic_loss": 0.2336994289211126,
-    "topic_accuracy": 0.9319654427645914,
-    "total_loss": 4.4149524901606805
+    "summarization_loss": 4.002264401054382,
+    "summarization_rouge_like": 0.1992749810224614,
+    "emotion_loss": 0.15127245344221593,
+    "emotion_f1": 0.24676951464861632,
+    "topic_loss": 0.12673698243945836,
+    "topic_accuracy": 0.9796800000000072,
+    "total_loss": 4.330562667169272
   },
   "val_epoch_5": {
-    "summarization_loss": 2.9899252604523436,
-    "summarization_rouge_like": 0.45984993646884514,
-    "emotion_loss": 0.15985918722207026,
-    "emotion_f1": 0.2971099066666419,
-    "topic_loss": 0.22285484572162303,
-    "topic_accuracy": 0.9284572342126283,
-    "total_loss": 3.894081538897767
+    "summarization_loss": 4.149239055633545,
+    "summarization_rouge_like": 0.18202557571683906,
+    "emotion_loss": 0.15270190620422364,
+    "emotion_f1": 0.3021333419680595,
+    "topic_loss": 0.5217973904460669,
+    "topic_accuracy": 0.8580000000000011,
+    "total_loss": 4.795729827296732
   }
 }

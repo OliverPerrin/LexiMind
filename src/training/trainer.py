@@ -369,17 +369,19 @@ class Trainer:
                 if src_mask is not None:
                     src_mask = src_mask[:1]
 
-                # Generate
+                # Generate with anti-repetition
                 model: Any = self.model
                 enc_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
                 memory = model.encoder(src_ids, mask=enc_mask)
-                generated = model.decoder.greedy_decode_naive(
+                generated = model.decoder.greedy_decode(
                     memory=memory,
                     max_len=self.config.validation_max_length,
                     start_token_id=self.tokenizer.bos_token_id,
                     end_token_id=self.tokenizer.eos_token_id,
                     device=self.device,
                     memory_mask=src_mask,
+                    no_repeat_ngram_size=3,
+                    repetition_penalty=1.2,
                 )
 
                 src = self.tokenizer.decode(src_ids[0].tolist())

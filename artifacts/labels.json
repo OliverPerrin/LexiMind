@@ -30,9 +30,12 @@
     "surprise"
   ],
   "topic": [
+    "Arts",
     "Business",
-    "Sci/Tech",
-    "Sports",
-    "World"
+    "Fiction",
+    "History",
+    "Philosophy",
+    "Science",
+    "Technology"
   ]
 }

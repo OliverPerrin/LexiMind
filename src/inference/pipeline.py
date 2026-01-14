@@ -68,6 +68,7 @@ class InferenceConfig:
 
     summary_max_length: int = 128
     summary_repetition_penalty: float = 1.2  # Penalize repeated tokens
+    summary_length_penalty: float = 1.5  # Encourage EOS token as length increases (>1 = shorter)
     summary_formatting: bool = True  # Apply text cleanup/formatting to generated summaries
     emotion_threshold: float = 0.5
     device: str | None = None
@@ -157,6 +158,7 @@ class InferencePipeline:
                 ban_token_ids=[i for i in ban_ids if i is not None],
                 no_repeat_ngram_size=3,
                 repetition_penalty=self.config.summary_repetition_penalty,
+                length_penalty=self.config.summary_length_penalty,
                 memory_mask=src_mask,
             )
 

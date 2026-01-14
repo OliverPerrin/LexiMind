@@ -3,9 +3,9 @@
 Training script for LexiMind.
 
 Simple, clean training with multi-task learning across:
-- Summarization (CNN/DailyMail + BookSum)
+- Summarization (BookSum + arXiv papers)
 - Emotion classification (GoEmotions, 28 labels)
-- Topic classification (AG News, 4 labels)
+- Topic classification (Books + Papers, 8 labels: Fiction, Science, Technology, etc.)
 
 Usage:
     python scripts/train.py training=medium
@@ -89,11 +89,17 @@ def main(cfg: DictConfig) -> None:
     device = torch.device(cfg.device)
     
     # GPU optimizations for Ampere+
-    if device.type == "cuda" and torch.cuda.get_device_capability()[0] >= 8:
-        torch.set_float32_matmul_precision("high")
-        torch.backends.cuda.matmul.allow_tf32 = True
-        torch.backends.cudnn.allow_tf32 = True
-        print("✓ TF32 enabled for Ampere GPU")
+    if device.type == "cuda":
+        # Enable cudnn benchmark for fixed-size inputs (10-20% speedup)
+        torch.backends.cudnn.benchmark = True
+        
+        if torch.cuda.get_device_capability()[0] >= 8:
+            torch.set_float32_matmul_precision("high")
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
+            print("✓ TF32 + cudnn.benchmark enabled for Ampere GPU")
+        else:
+            print("✓ cudnn.benchmark enabled")
     
     # --------------- Load Data ---------------
     
@@ -187,6 +193,11 @@ def main(cfg: DictConfig) -> None:
     # --------------- Model ---------------
     
     print("\nBuilding model...")
+    
+    # Check for overrides in training config
+    grad_ckpt = cfg.training.get("gradient_checkpointing", cfg.model.get("gradient_checkpointing", False))
+    use_rel_pos = cfg.training.get("use_relative_position_bias", cfg.model.get("use_relative_position_bias", False))
+    
     model_cfg = ModelConfig(
         d_model=cfg.model.d_model,
         vocab_size=getattr(cfg.model, "vocab_size", None),
@@ -198,8 +209,14 @@ def main(cfg: DictConfig) -> None:
         use_pretrained=cfg.model.use_pretrained,
         pretrained_model_name=cfg.model.pretrained_model_name,
         activation=getattr(cfg.model, "activation", "gelu"),
-        use_relative_position_bias=getattr(cfg.model, "use_relative_position_bias", False),
+        use_relative_position_bias=use_rel_pos,
+        gradient_checkpointing=grad_ckpt,
     )
+    
+    if grad_ckpt:
+        print("  ✓ Gradient checkpointing enabled")
+    if not use_rel_pos:
+        print("  ✓ FlashAttention enabled (no relative position bias)")
     
     model = build_multitask_model(
         tokenizer,
@@ -210,6 +227,26 @@ def main(cfg: DictConfig) -> None:
     
     param_count = sum(p.numel() for p in model.parameters())
     print(f"  Parameters: {param_count:,} ({param_count/1e6:.1f}M)")
+    
+    # Freeze lower encoder layers (keeps pretrained language understanding, adapts upper layers)
+    freeze_layers = cfg.training.get("freeze_encoder_layers", 0)
+    if freeze_layers > 0:
+        frozen_params = 0
+        # Freeze embedding layer
+        if hasattr(model.encoder, 'embed_tokens'):
+            for p in model.encoder.embed_tokens.parameters():
+                p.requires_grad = False
+                frozen_params += p.numel()
+        # Freeze specified number of encoder layers
+        if hasattr(model.encoder, 'layers'):
+            for i, layer in enumerate(model.encoder.layers):
+                if i < freeze_layers:
+                    for p in layer.parameters():
+                        p.requires_grad = False
+                        frozen_params += p.numel()
+        trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+        print(f"  ✓ Frozen encoder layers 0-{freeze_layers-1} ({frozen_params/1e6:.1f}M params)")
+        print(f"  Trainable: {trainable:,} ({trainable/1e6:.1f}M)")
     
     # Resume from checkpoint?
     start_epoch = 1
@@ -223,12 +260,15 @@ def main(cfg: DictConfig) -> None:
             start_epoch = int(digits[-1]) + 1
     
     # Compile model for speed
+    # Note: "reduce-overhead" mode uses CUDA graphs which conflicts with gradient checkpointing
+    # Use "default" mode when checkpointing is enabled
+    compile_mode = "default" if grad_ckpt else "reduce-overhead"
     if cfg.training.get("compile_encoder", True):
-        model.encoder = torch.compile(model.encoder, backend="inductor")  # type: ignore[assignment]
-        print("  ✓ Encoder compiled")
+        model.encoder = torch.compile(model.encoder, mode=compile_mode)  # type: ignore[assignment]
+        print(f"  ✓ Encoder compiled ({compile_mode})")
     if cfg.training.get("compile_decoder", True):
-        model.decoder = torch.compile(model.decoder, backend="inductor")  # type: ignore[assignment]
-        print("  ✓ Decoder compiled")
+        model.decoder = torch.compile(model.decoder, mode=compile_mode)  # type: ignore[assignment]
+        print(f"  ✓ Decoder compiled ({compile_mode})")
     
     # --------------- Train ---------------
     
@@ -236,11 +276,16 @@ def main(cfg: DictConfig) -> None:
     opt_cfg = cfg.training.get("optimizer", {})
     sched_cfg = cfg.training.get("scheduler", {})
     
+    # Use fused AdamW on CUDA for ~5-10% speedup
+    use_fused = device.type == "cuda" and "fused" in torch.optim.AdamW.__init__.__code__.co_varnames
     optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=float(opt_cfg.get("lr", 3e-5)),
         weight_decay=float(opt_cfg.get("weight_decay", 0.01)),
+        fused=use_fused,
     )
+    if use_fused:
+        print("  ✓ Fused AdamW optimizer")
     
     trainer = Trainer(
         model=model,

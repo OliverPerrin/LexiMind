@@ -1,11 +1,11 @@
 # Development/Testing Configuration for FLAN-T5-base
-# Fast iteration for debugging and testing changes
-# VRAM Usage: ~8-9GB peak (12GB available)
-# Training time: ~10-15 minutes on RTX 4070 12GB
+# FAST iteration for debugging - optimized for speed
+# VRAM Usage: ~9-10GB peak (12GB available)
+# Training time: ~5 minutes on RTX 4070 12GB
 # Use: python scripts/train.py training=dev
 
 dataloader:
-  batch_size: 5  # Conservative for 12GB VRAM
+  batch_size: 10  # Optimal with FlashAttention
   shuffle: true
   num_workers: 4
   pin_memory: true
@@ -14,32 +14,42 @@ dataloader:
 
 optimizer:
   name: adamw
-  lr: 5.0e-5  # Higher LR for faster convergence in dev
+  lr: 5.0e-5
   weight_decay: 0.01
   eps: 1.0e-8
   betas: [0.9, 0.999]
 
 scheduler:
   name: cosine
-  warmup_steps: 100  # ~2% of training steps for smoother start
+  warmup_steps: 50  # Less warmup for short runs
 
 trainer:
   max_epochs: 3
   gradient_clip_norm: 1.0
-  gradient_accumulation_steps: 12  # Effective batch: 60 (5*12)
+  gradient_accumulation_steps: 6  # Effective batch: 60 (10*6)
   validation_max_length: 128
-  label_smoothing: 0.1
+  label_smoothing: 0.0  # Simpler backward graph for dev
   task_weights:
     summarization: 1.0
-    emotion: 0.5
-    topic: 0.5
-  max_train_samples: 3000  # 3k samples for better validation
+    emotion: 1.5
+    topic: 0.5  # Reduced - topic already saturated at 86%
+  max_train_samples: 3000
   max_val_samples: 300
-  early_stopping_patience: 5  # Stop if no improvement
+  early_stopping_patience: 5
   log_grad_norm_frequency: 100
 
-# Disable compile for faster startup in dev
-compile_encoder: false
-compile_decoder: false
+# Enable compile for speed (worth the startup cost)
+compile_encoder: true
+compile_decoder: true
 
-tokenizer_max_length: 512
+# Speed optimizations
+tokenizer_max_length: 256
+gradient_checkpointing: true
+
+# FLAN-T5 has NO learned positional embeddings - only relative position bias
+# Disabling this causes repetition loops (model can't track sequence position)
+use_relative_position_bias: true
+
+# Freeze lower encoder layers (0-5) to preserve pretrained knowledge
+# Upper layers (6-11) adapt to summarization style
+freeze_encoder_layers: 6

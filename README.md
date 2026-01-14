@@ -18,9 +18,9 @@ This project is built with industry-standard MLOps practices, including configur
 
 ## Core Features
 
-* **Abstractive Summarization:** Generates concise, coherent summaries of long-form text using encoder-decoder attention. Trained on CNN/DailyMail (news) and BookSum (literary).
+* **Abstractive Summarization:** Generates concise, coherent summaries of long-form text using encoder-decoder attention. Trained on BookSum (literary) and arXiv (academic papers).
 * **Emotion Classification:** Identifies 28 emotions from Google's GoEmotions dataset (admiration, amusement, anger, joy, love, etc.).
-* **Topic Classification:** Classifies documents into 4 categories (World, Sports, Business, Sci/Tech) using AG News.
+* **Topic Classification:** Classifies documents into 8 categories (Fiction, Science, Technology, Philosophy, History, Psychology, Business, Arts).
 
 ## Model Architecture
 

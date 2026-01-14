@@ -1,11 +1,11 @@
 # Medium Configuration for FLAN-T5-base
-# Balanced approach - good results in reasonable time
-# VRAM Usage: ~9-10GB peak (12GB available)
-# Training time: ~45-60 minutes on RTX 4070 12GB with torch.compile
+# Balanced: good quality with reasonable speed
+# VRAM Usage: ~8-9GB (12GB available)
+# Training time: ~25-35 minutes on RTX 4070 12GB
 # Use: python scripts/train.py training=medium
 
 dataloader:
-  batch_size: 6  # Conservative for 12GB VRAM with torch.compile
+  batch_size: 10  # Optimal for RTX 4070 12GB
   shuffle: true
   num_workers: 4
   pin_memory: true
@@ -14,32 +14,41 @@ dataloader:
 
 optimizer:
   name: adamw
-  lr: 3.0e-5  # Balanced LR for quality
+  lr: 3.0e-5  # Slightly lower LR for stability
   weight_decay: 0.01
   eps: 1.0e-6
   betas: [0.9, 0.999]
 
 scheduler:
   name: cosine
-  warmup_steps: 500  # ~2% warmup for 25k steps
+  warmup_steps: 300
 
 trainer:
-  max_epochs: 5  # More epochs for better convergence
+  max_epochs: 5
   gradient_clip_norm: 1.0
-  gradient_accumulation_steps: 12  # Effective batch: 72 (6*12)
+  gradient_accumulation_steps: 6  # Effective batch: 60 (10*6)
   validation_max_length: 128
   label_smoothing: 0.1
   task_weights:
-    summarization: 1.2  # Slightly prioritize summarization
-    emotion: 0.8
-    topic: 0.8
-  max_train_samples: 25000  # 25k samples - good balance
+    summarization: 1.0
+    emotion: 1.5
+    topic: 0.5  # Reduced - topic already saturated at 86%
+  max_train_samples: 25000
   max_val_samples: 2500
   early_stopping_patience: 3
   log_grad_norm_frequency: 100
 
-# Enable torch.compile for 1.5-2x speedup
 compile_encoder: true
 compile_decoder: true
 
-tokenizer_max_length: 512
+# Balance: shorter sequences but keep T5's relative position bias for quality
+tokenizer_max_length: 384
+gradient_checkpointing: true
+
+# FLAN-T5 has NO learned positional embeddings - only relative position bias
+# Disabling this causes repetition loops (model can't track sequence position)
+use_relative_position_bias: true
+
+# Freeze lower encoder layers (0-5) to preserve pretrained knowledge
+# Upper layers (6-11) adapt to summarization style
+freeze_encoder_layers: 6

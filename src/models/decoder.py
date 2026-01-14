@@ -445,10 +445,15 @@ class TransformerDecoder(nn.Module):
         ban_token_ids: Optional[List[int]] = None,
         no_repeat_ngram_size: int = 0,
         repetition_penalty: float = 1.0,
+        length_penalty: float = 1.0,
         memory_mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         """
         Greedy decoding with KV caching for O(N) complexity.
+        
+        Args:
+            length_penalty: Values > 1.0 encourage shorter sequences by boosting EOS probability
+                           as sequence length increases. Default 1.0 (no penalty).
         """
         if device is None:
             device = memory.device
@@ -518,6 +523,13 @@ class TransformerDecoder(nn.Module):
 
                     if banned_for_this_batch:
                         next_step_logits[b, list(banned_for_this_batch)] = float("-inf")
+
+            # Length penalty to boost EOS probability as sequence grows (encourages shorter outputs)
+            if length_penalty != 1.0 and end_token_id is not None and generated.size(1) >= min_len:
+                # Scale EOS logit based on current length relative to max
+                length_ratio = generated.size(1) / max_len
+                eos_boost = length_penalty * length_ratio  # Grows as we approach max_len
+                next_step_logits[:, end_token_id] = next_step_logits[:, end_token_id] + eos_boost
 
             # Greedy selection
             next_token = next_step_logits.argmax(dim=-1, keepdim=True)  # (B, 1)

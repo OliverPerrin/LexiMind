@@ -51,9 +51,9 @@ The `factory.py` module loads weights from FLAN-T5-base, which uses a compatible
 
 | Task | Dataset | Size | Labels |
 | ---- | ------- | ---- | ------ |
-| Summarization | CNN/DailyMail + BookSum | ~110K | Text→Summary |
+| Summarization | BookSum + arXiv | ~90K | Text→Summary |
 | Emotion | GoEmotions | ~43K | 28 emotions (multi-label) |
-| Topic | AG News | ~120K | 4 categories |
+| Topic | Books + Papers | ~50K | 8 categories (Fiction, Science, Technology, etc.) |
 | Books | Gutenberg (prose chunks) | ~30K | Literary text |
 
 ### T5 Tokenizer Differences

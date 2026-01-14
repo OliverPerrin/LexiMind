@@ -107,20 +107,20 @@ def analyze_text(text: str) -> tuple[str, str, str]:
 # --------------- Sample Texts ---------------
 
 SAMPLES = {
-    "business": """Global markets tumbled today as investors reacted to rising inflation concerns. 
-The Federal Reserve hinted at potential interest rate hikes, sending shockwaves through technology 
-and banking sectors. Analysts predict continued volatility as economic uncertainty persists. 
-Major indices fell by over 2%, with tech stocks leading the decline.""",
+    "fiction": """The old lighthouse keeper had watched countless storms batter the rocky coast, 
+but nothing prepared him for what emerged from the fog that evening. A ship unlike any he'd 
+seen before - its hull seemingly made of living shadow - drifted silently toward the rocks. 
+He rang the warning bell, knowing somehow it wouldn't matter.""",
 
-    "science": """Scientists at MIT have developed a breakthrough quantum computing chip that 
+    "science": """Researchers at MIT have developed a breakthrough quantum computing chip that 
 operates at room temperature. This advancement could revolutionize drug discovery, cryptography, 
 and artificial intelligence. The research team published their findings in Nature, demonstrating 
 stable qubit operations for over 100 microseconds.""",
 
-    "sports": """The championship game ended in dramatic fashion as the underdog team scored in 
-the final seconds to secure victory. Fans rushed the field in celebration, marking the team's 
-first title in 25 years. The winning goal came from a rookie player who had only joined the 
-team this season.""",
+    "technology": """The new large language model demonstrates unprecedented reasoning capabilities, 
+solving complex mathematical proofs and generating functional code across multiple programming 
+languages. Benchmarks show it outperforms previous systems by significant margins on tasks 
+requiring multi-step logical inference and long-context understanding.""",
 }
 
 
@@ -146,7 +146,7 @@ with gr.Blocks(title="LexiMind") as demo:
                     text_input = gr.Textbox(
                         label="Input Text",
                         lines=6,
-                        placeholder="Paste a news article or any text to analyze...",
+                        placeholder="Paste a book excerpt, research abstract, or any text to analyze...",
                     )
                     with gr.Row():
                         analyze_btn = gr.Button("Analyze", variant="primary")
@@ -154,9 +154,9 @@ with gr.Blocks(title="LexiMind") as demo:
                     
                     gr.Markdown("**Quick samples:**")
                     with gr.Row():
-                        btn_business = gr.Button("Business", size="sm")
+                        btn_fiction = gr.Button("Fiction", size="sm")
                         btn_science = gr.Button("Science", size="sm")
-                        btn_sports = gr.Button("Sports", size="sm")
+                        btn_tech = gr.Button("Technology", size="sm")
                 
                 with gr.Column(scale=2):
                     summary_output = gr.Textbox(label="Generated Summary", lines=4, interactive=False)
@@ -167,9 +167,9 @@ with gr.Blocks(title="LexiMind") as demo:
             # Event handlers
             analyze_btn.click(analyze_text, inputs=[text_input], outputs=[summary_output, emotions_output, topic_output])
             clear_btn.click(lambda: ("", "", "", ""), outputs=[text_input, summary_output, emotions_output, topic_output])
-            btn_business.click(lambda: SAMPLES["business"], outputs=[text_input])
+            btn_fiction.click(lambda: SAMPLES["fiction"], outputs=[text_input])
             btn_science.click(lambda: SAMPLES["science"], outputs=[text_input])
-            btn_sports.click(lambda: SAMPLES["sports"], outputs=[text_input])
+            btn_tech.click(lambda: SAMPLES["technology"], outputs=[text_input])
 
         # ===================== TAB 2: METRICS =====================
         with gr.Tab("Metrics"):
