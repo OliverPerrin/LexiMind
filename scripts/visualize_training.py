@@ -127,7 +127,8 @@ def get_mlflow_client():
         raise ImportError("MLflow not installed. Install with: pip install mlflow")
     import mlflow
     import mlflow.tracking
-    mlflow.set_tracking_uri(f"file://{MLRUNS_DIR}")
+    # Use SQLite database (same as trainer.py)
+    mlflow.set_tracking_uri("sqlite:///mlruns.db")
     return mlflow.tracking.MlflowClient()
 
 

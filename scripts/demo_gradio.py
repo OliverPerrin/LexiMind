@@ -135,6 +135,8 @@ with gr.Blocks(title="LexiMind") as demo:
         
         A custom 272M parameter encoder-decoder model trained jointly on three NLP tasks.
         Built from scratch in PyTorch, initialized from FLAN-T5-base weights.
+        
+        *Currently running development checkpoint - quality improves with longer training.*
         """
     )
 
@@ -176,7 +178,7 @@ with gr.Blocks(title="LexiMind") as demo:
             gr.Markdown("### Training Results")
             
             # Load metrics from training history
-            metrics_md = "| Task | Metric | Score |\n|------|--------|-------|\n"
+            metrics_html = ""
             if TRAINING_HISTORY_PATH.exists():
                 with open(TRAINING_HISTORY_PATH) as f:
                     history = json.load(f)
@@ -185,13 +187,60 @@ with gr.Blocks(title="LexiMind") as demo:
                 if val_keys:
                     latest = sorted(val_keys)[-1]
                     val = history[latest]
-                    metrics_md += f"| Topic Classification | Accuracy | **{val.get('topic_accuracy', 0):.1%}** |\n"
-                    metrics_md += f"| Emotion Detection | F1 Score | {val.get('emotion_f1', 0):.1%} |\n"
-                    metrics_md += f"| Summarization | ROUGE-like | {val.get('summarization_rouge_like', 0):.1%} |\n"
+                    epoch_num = latest.split("_")[-1]
+                    
+                    topic_acc = val.get('topic_accuracy', 0)
+                    emotion_f1 = val.get('emotion_f1', 0)
+                    rouge = val.get('summarization_rouge_like', 0)
+                    total_loss = val.get('total_loss', 0)
+                    
+                    metrics_html = f"""
+| Task | Metric | Score |
+|------|--------|-------|
+| **Topic Classification** | Accuracy | **{topic_acc:.1%}** |
+| **Emotion Detection** | F1 Score | {emotion_f1:.1%} |
+| **Summarization** | ROUGE-like | {rouge:.1%} |
+| **Total** | Val Loss | {total_loss:.3f} |
+
+*Results from epoch {epoch_num}*
+"""
+            else:
+                metrics_html = "*No training history found. Run training first.*"
             
-            gr.Markdown(metrics_md)
+            gr.Markdown(metrics_html)
             
-            gr.Markdown("### Training Visualizations")
+            gr.Markdown("### Training Progress")
+            
+            # Generate inline training chart using history data
+            if TRAINING_HISTORY_PATH.exists():
+                with open(TRAINING_HISTORY_PATH) as f:
+                    history = json.load(f)
+                
+                train_keys = sorted([k for k in history.keys() if k.startswith("train_epoch")])
+                val_keys = sorted([k for k in history.keys() if k.startswith("val_epoch")])
+                
+                if train_keys and val_keys:
+                    epochs = list(range(1, len(train_keys) + 1))
+                    train_loss = [history[k]["total_loss"] for k in train_keys]
+                    val_loss = [history[k]["total_loss"] for k in val_keys[:len(train_keys)]]
+                    topic_acc = [history[k].get("topic_accuracy", 0) * 100 for k in val_keys[:len(train_keys)]]
+                    
+                    # Create a simple text-based progress display
+                    progress_md = "**Loss Curve:**\n```\n"
+                    for i, (tl, vl) in enumerate(zip(train_loss, val_loss)):
+                        bar_len = int((1 - vl/max(val_loss)) * 20) + 1
+                        progress_md += f"Epoch {i+1}: Train={tl:.3f} Val={vl:.3f} {'█' * bar_len}\n"
+                    progress_md += "```\n\n"
+                    
+                    progress_md += "**Topic Accuracy:**\n```\n"
+                    for i, acc in enumerate(topic_acc):
+                        bar_len = int(acc / 5)
+                        progress_md += f"Epoch {i+1}: {acc:.1f}% {'█' * bar_len}\n"
+                    progress_md += "```"
+                    
+                    gr.Markdown(progress_md)
+            
+            # Show visualization images if they exist
             with gr.Row():
                 loss_curve = OUTPUTS_DIR / "training_loss_curve.png"
                 if loss_curve.exists():
@@ -232,15 +281,15 @@ with gr.Blocks(title="LexiMind") as demo:
                 |------|--------|---------------|
                 | **Summarization** | Seq2seq generation | Cross-entropy + label smoothing |
                 | **Emotion** | 28-class multi-label | Binary cross-entropy |
-                | **Topic** | 4-class single-label | Cross-entropy |
+                | **Topic** | 7-class single-label | Cross-entropy |
                 
                 ### Training Data
                 
                 | Dataset | Task | Size |
                 |---------|------|------|
-                | CNN/DailyMail | Summarization | ~100K |
+                | BookSum + arXiv | Summarization | ~40K |
                 | GoEmotions | Emotion | ~43K |
-                | AG News | Topic | ~120K |
+                | 20 Newsgroups + Gutenberg | Topic | ~3.4K |
                 
                 ### Links
                 
