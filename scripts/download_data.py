@@ -113,10 +113,71 @@ def write_jsonl(records: list[dict[str, Any]], path: Path, desc: str = "Writing"
     print(f"  ✓ {len(records):,} samples → {path}")
 
 
+# ============== ENGLISH LANGUAGE FILTER ==============
+
+# Common English words for detection
+ENGLISH_WORDS = {
+    "the", "and", "of", "to", "a", "in", "that", "is", "was", "he", "she", "it",
+    "for", "with", "as", "his", "her", "they", "be", "at", "on", "have", "had",
+    "this", "but", "not", "from", "by", "or", "an", "said", "were", "been",
+    "would", "could", "which", "their", "there", "what", "when", "who", "will",
+    "more", "if", "no", "out", "so", "up", "into", "than", "them", "can", "only",
+    "other", "new", "some", "very", "just", "over", "such", "also", "its", "then",
+}
+
+# Non-English language patterns
+NON_ENGLISH_PATTERNS = [
+    # French
+    r"\b(le|la|les|un|une|des|du|et|est|sont|dans|pour|avec|sur|qui|que|ce|cette|nous|vous|ils|elles|je|tu|il|elle|être|avoir)\b",
+    # German
+    r"\b(der|die|das|ein|eine|und|ist|nicht|mit|von|zu|den|dem|auf|für|als|auch|oder|nach|bei|nur|noch|wie|mehr|aber|wenn|hat|kann|ich|sie|er|wir|ihr|es|sich|sein)\b",
+    # Spanish
+    r"\b(el|la|los|las|un|una|que|por|para|con|del|al|es|en|se|no|más|como|pero|su|sus|le|lo|te|me|nos)\b",
+    # Italian
+    r"\b(il|lo|la|gli|le|che|per|con|del|della|di|da|non|sono|anche|più|ma|se|mi|ti|ci)\b",
+    # Latin
+    r"\b(et|in|ad|cum|de|ex|per|pro|sub|ab|ante|post|inter|contra|super|trans|apud)\b",
+]
+
+
+def is_english_text(text: str, min_ratio: float = 0.08, max_foreign: int = 5) -> bool:
+    """
+    Check if text is primarily English.
+    
+    Args:
+        text: Text to check
+        min_ratio: Minimum ratio of common English words
+        max_foreign: Maximum number of foreign word matches before rejecting
+    
+    Returns:
+        True if text appears to be English
+    """
+    if not text or len(text) < 100:
+        return False
+    
+    text_lower = text.lower()
+    words = text_lower.split()
+    
+    if len(words) < 20:
+        return False
+    
+    # Check for excessive non-English words
+    for pattern in NON_ENGLISH_PATTERNS:
+        matches = len(re.findall(pattern, text_lower))
+        if matches > max_foreign:
+            return False
+    
+    # Check for sufficient English words
+    english_count = sum(1 for w in words if w.strip(".,!?;:'\"") in ENGLISH_WORDS)
+    ratio = english_count / len(words)
+    
+    return ratio >= min_ratio
+
+
 # ============== SUMMARIZATION: BOOKS + ARXIV ==============
 
 def download_booksum(max_samples: int = 40000) -> list[dict[str, Any]]:
-    """Download BookSum - literary chapter summarization."""
+    """Download BookSum - literary chapter summarization (English only)."""
     print("\n📖 Loading BookSum (literary summarization)...")
     
     all_records: list[dict[str, Any]] = []
@@ -129,19 +190,28 @@ def download_booksum(max_samples: int = 40000) -> list[dict[str, Any]]:
         indices = random.sample(range(len(data)), min(len(data), limit))
         
         records = []
+        skipped_language = 0
         for i in tqdm(indices, desc=f"BookSum {split}", leave=False):
             item = data[i]
             chapter = item.get("chapter", "")
             summary = item.get("summary_text") or item.get("summary", "")
-            if chapter and summary and len(chapter) > 300:
-                records.append({
-                    "source": chapter[:4000],
-                    "summary": summary,
-                    "type": "literary",
-                    "split": split,
-                })
+            
+            if not (chapter and summary and len(chapter) > 300):
+                continue
+            
+            # Filter: English only
+            if not is_english_text(chapter):
+                skipped_language += 1
+                continue
+            
+            records.append({
+                "source": chapter[:4000],
+                "summary": summary,
+                "type": "literary",
+                "split": split,
+            })
         all_records.extend(records)
-        print(f"    {split}: {len(records):,}")
+        print(f"    {split}: {len(records):,} (skipped {skipped_language} non-English)")
     
     return all_records
 
@@ -162,7 +232,7 @@ def clean_arxiv_text(text: str) -> str:
 
 def download_arxiv_summarization(max_samples: int = 50000) -> list[dict[str, Any]]:
     """
-    Download arXiv papers for academic summarization only.
+    Download arXiv papers for academic summarization only (English only).
     Note: This dataset doesn't have categories, so can't be used for topic classification.
     
     Returns: summarization_records
@@ -173,6 +243,7 @@ def download_arxiv_summarization(max_samples: int = 50000) -> list[dict[str, Any
     arxiv = load_dataset("ccdv/arxiv-summarization", split="train")
     
     summ_records: list[dict[str, Any]] = []
+    skipped_language = 0
     
     indices = list(range(len(arxiv)))
     random.shuffle(indices)
@@ -199,6 +270,11 @@ def download_arxiv_summarization(max_samples: int = 50000) -> list[dict[str, Any
         if '@' in abstract or '@' in article[:500]:
             continue
         
+        # Filter: English only
+        if not is_english_text(article[:1000]):
+            skipped_language += 1
+            continue
+        
         # Summarization: article → abstract
         if article and len(article) > 500:
             summ_records.append({
@@ -207,7 +283,7 @@ def download_arxiv_summarization(max_samples: int = 50000) -> list[dict[str, Any
                 "type": "academic",
             })
     
-    print(f"    Summarization: {len(summ_records):,}")
+    print(f"    Summarization: {len(summ_records):,} (skipped {skipped_language} non-English)")
     
     return summ_records
 
@@ -402,7 +478,7 @@ def download_topics(max_samples: int = 50000) -> None:
 
 
 def download_gutenberg_topics(max_samples: int = 30000) -> list[dict[str, Any]]:
-    """Extract topic-labeled samples from Gutenberg books."""
+    """Extract topic-labeled samples from Gutenberg books (English only)."""
     print("\n📚 Loading Gutenberg for topic classification...")
     
     try:
@@ -412,6 +488,7 @@ def download_gutenberg_topics(max_samples: int = 30000) -> list[dict[str, Any]]:
         gutenberg = load_dataset("pg19", split="train")
     
     records: list[dict[str, Any]] = []
+    skipped_language = 0
     
     indices = list(range(len(gutenberg)))
     random.shuffle(indices)
@@ -450,6 +527,11 @@ def download_gutenberg_topics(max_samples: int = 30000) -> list[dict[str, Any]]:
             for para in paragraphs[5:]:  # Skip front matter
                 para = para.strip()
                 if 200 < len(para) < 1500 and para.count('.') >= 2:
+                    # Filter: English only
+                    if not is_english_text(para):
+                        skipped_language += 1
+                        break
+                    
                     records.append({
                         "text": para,
                         "topic": topic,
@@ -457,7 +539,7 @@ def download_gutenberg_topics(max_samples: int = 30000) -> list[dict[str, Any]]:
                     })
                     break
     
-    print(f"    Gutenberg topics: {len(records):,}")
+    print(f"    Gutenberg topics: {len(records):,} (skipped {skipped_language} non-English)")
     return records
 
 
@@ -502,7 +584,7 @@ GUTENBERG_JUNK_REGEX = re.compile("|".join(GUTENBERG_JUNK_PATTERNS), re.IGNORECA
 
 
 def is_clean_prose(text: str) -> bool:
-    """Check if text is clean literary prose."""
+    """Check if text is clean literary prose (English only)."""
     if len(text) < 300 or len(text) > 3000:
         return False
     if GUTENBERG_JUNK_REGEX.search(text):
@@ -515,12 +597,15 @@ def is_clean_prose(text: str) -> bool:
     digit_ratio = sum(1 for c in text if c.isdigit()) / max(len(text), 1)
     if digit_ratio > 0.1:
         return False
+    # English filter
+    if not is_english_text(text):
+        return False
     return True
 
 
 def download_gutenberg(max_samples: int = 30000) -> None:
-    """Download Gutenberg books for language modeling."""
-    print("\n📚 Downloading Gutenberg Books...")
+    """Download Gutenberg books for language modeling (English only)."""
+    print("\n📚 Downloading Gutenberg Books (English only)...")
     out_dir = OUTPUT_DIR / "books"
     out_dir.mkdir(parents=True, exist_ok=True)
     

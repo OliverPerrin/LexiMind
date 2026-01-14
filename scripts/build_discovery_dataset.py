@@ -45,37 +45,85 @@ GARBAGE_PATTERNS = [
     r"transcriber",          # Transcriber notes
     r"eBook",                # eBook references
     r"©|copyright",          # Copyright notices
+    r"^INDEX",               # Index pages
+    r"^\d+\.\s+\w+,\s+\d+",  # Index entries like "1. Name, 234"
+    r"(syn\.|var\.|sp\.)",   # Botanical abbreviations
+    r"[A-Z][a-z]+aceae",     # Botanical family names
+    r"\(\s*syn\s+",          # Synonym references
 ]
 
-# Non-English indicators
+# Non-English indicators (expanded)
 NON_ENGLISH_PATTERNS = [
-    r"\b(le|la|les|un|une|des|du|de la|au|aux)\b",  # French articles
-    r"\b(der|die|das|ein|eine|und|ist|nicht)\b",     # German
-    r"\b(el|la|los|las|un|una|que|por|para)\b",      # Spanish
-    r"\b(il|lo|la|gli|le|un|una|che|per|con)\b",     # Italian
-    r"[àâäéèêëïîôùûüÿœæ]{3,}",                       # Multiple French accents
+    r"\b(le|la|les|un|une|des|du|de la|au|aux|et|est|sont|dans|pour|avec|sur|qui|que)\b",  # French
+    r"\b(der|die|das|ein|eine|und|ist|nicht|mit|von|zu|den|dem|auf|für|als|auch|oder|nach|bei|nur|noch|wie|mehr|aber|wenn|so|hat|kann|ich|sie|er|wir|ihr|es|sich|sein)\b",  # German (expanded)
+    r"\b(el|la|los|las|un|una|que|por|para|con|del|al|es|en|se|no|más|como|pero|su|sus)\b",  # Spanish
+    r"\b(il|lo|la|gli|le|un|una|che|per|con|del|della|di|da|non|sono|è|anche|più|ma|se)\b",  # Italian
+    r"[àâäéèêëïîôùûüÿœæäöüß]{2,}",  # Accented chars (German ß, umlauts)
+    r"\b[A-Z][a-z]+ü[a-z]+\b",  # German words with ü
+    r"\b[A-Z][a-z]+ö[a-z]+\b",  # German words with ö  
+    r"\b[A-Z][a-z]+ä[a-z]+\b",  # German words with ä
 ]
+
+# Patterns that indicate index/glossary/list content (not narrative)
+INDEX_PATTERNS = [
+    r"^\s*\d+\s*$",           # Just numbers
+    r"^[A-Z][a-z]+,\s+\d+",   # "Word, 123" index entries
+    r"(\d+,\s*)+\d+",         # Lists of page numbers
+    r"^[A-Z]{2,}\s+",         # ALL CAPS words at start
+    r"^\s*[-•]\s+",           # Bullet points
+    r"p\.\s*\d+",             # Page references
+]
+
 
 def is_english(text: str) -> bool:
     """Check if text appears to be English."""
     text_lower = text.lower()
     
-    # Check for non-English patterns
+    # Check for non-English patterns - stricter threshold
     for pattern in NON_ENGLISH_PATTERNS:
         matches = len(re.findall(pattern, text_lower, re.IGNORECASE))
-        if matches > 5:  # Too many non-English words
+        if matches > 3:  # Stricter: was 5
             return False
     
     # Check English word ratio
-    english_words = ["the", "and", "of", "to", "a", "in", "that", "is", "was", "he", "she", "it", "for", "with", "as", "his", "her", "they", "be", "at", "on", "have", "had", "this", "but", "not", "from", "by", "or", "an"]
+    english_words = ["the", "and", "of", "to", "a", "in", "that", "is", "was", "he", "she", "it", "for", "with", "as", "his", "her", "they", "be", "at", "on", "have", "had", "this", "but", "not", "from", "by", "or", "an", "said", "were", "been", "would", "could", "which", "their", "there", "what", "when", "who", "will", "more", "if", "no", "out", "so", "up", "into", "than", "them", "can", "only", "other", "new", "some", "very", "just", "over", "such", "also", "its", "then", "two", "first", "any", "these", "may", "after", "most", "made", "before", "should", "now", "where", "those", "being", "has", "between", "own", "under"]
     words = text_lower.split()
-    if len(words) < 20:
+    if len(words) < 30:  # Stricter: was 20
         return False
     
     english_count = sum(1 for w in words if w in english_words)
     ratio = english_count / len(words)
     
-    return ratio > 0.05  # At least 5% common English words
+    return ratio > 0.08  # Stricter: was 0.05
+
+
+def is_narrative_text(text: str) -> bool:
+    """Check if text is actual narrative (not index/glossary/list)."""
+    lines = text.strip().split('\n')
+    
+    # Count lines that look like index entries
+    index_lines = 0
+    for line in lines:
+        for pattern in INDEX_PATTERNS:
+            if re.search(pattern, line):
+                index_lines += 1
+                break
+    
+    # If more than 30% are index-like, reject
+    if len(lines) > 0 and index_lines / len(lines) > 0.3:
+        return False
+    
+    # Must have actual sentences with verbs
+    # Check for common verbs
+    verb_patterns = r"\b(is|are|was|were|have|has|had|do|does|did|will|would|could|should|may|might|can|said|says|went|came|made|took|saw|knew|thought|found|gave|told|asked|seemed|felt|looked|heard|began|kept|left|called|turned|wanted|tried|needed|used|believe|think|know|see|want|need|find|give|tell|become|leave|put|mean|keep|let|begin|seem|help|show|hear|play|run|move|live|read|write|learn|speak|bring|hold|stand|set|pay|meet|lead|understand|watch|follow|stop|create|speak|allow|add|spend|grow|open|walk|offer|remember|consider|appear|buy|wait|serve|die|send|build|stay|fall|cut|reach|kill|remain|suggest|raise|pass|sell|require|report|decide|pull)\b"
+    verb_count = len(re.findall(verb_patterns, text.lower()))
+    
+    # Should have at least 1 verb per 50 words
+    words = len(text.split())
+    if words > 0 and verb_count / words < 0.02:
+        return False
+    
+    return True
 
 
 def is_quality_text(text: str) -> bool:
@@ -86,17 +134,21 @@ def is_quality_text(text: str) -> bool:
             return False
     
     # Must have reasonable length
-    if len(text) < 200:
+    if len(text) < 300:  # Stricter: was 200
         return False
     
     # Must have sentences (not just fragments)
     sentences = re.split(r'[.!?]+', text)
-    if len(sentences) < 3:
+    if len(sentences) < 4:  # Stricter: was 3
         return False
     
     # Check for too many special characters
     special_ratio = len(re.findall(r'[^\w\s.,!?\'"()-]', text)) / len(text)
-    if special_ratio > 0.1:
+    if special_ratio > 0.08:  # Stricter: was 0.1
+        return False
+    
+    # Must be narrative, not index/list
+    if not is_narrative_text(text):
         return False
     
     return True
