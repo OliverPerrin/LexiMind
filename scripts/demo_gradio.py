@@ -10,25 +10,27 @@ Date: 2026-01-14
 
 from __future__ import annotations
 
+from typing import Any
+
 import gradio as gr
-from datasets import load_dataset
+from datasets import Dataset, load_dataset
 
 # --------------- Load Dataset from HuggingFace Hub ---------------
 
 print("Loading discovery dataset from HuggingFace Hub...")
-dataset = load_dataset("OliverPerrin/LexiMind-Discovery", split="train")
-print(f"Loaded {len(dataset)} items")
+_dataset: Dataset = load_dataset("OliverPerrin/LexiMind-Discovery", split="train")  # type: ignore[assignment]
+print(f"Loaded {len(_dataset)} items")
 
-# Convert to list for easier filtering
-ALL_ITEMS = [dict(item) for item in dataset]
+# Convert to list of dicts for easier filtering
+ALL_ITEMS: list[dict[str, Any]] = [dict(row) for row in _dataset]
 
 # Extract unique topics and emotions
-TOPICS = sorted(set(item["topic"] for item in ALL_ITEMS if item.get("topic")))
-EMOTIONS = sorted(set(item["emotion"] for item in ALL_ITEMS if item.get("emotion")))
+TOPICS: list[str] = sorted(set(str(item["topic"]) for item in ALL_ITEMS if item.get("topic")))
+EMOTIONS: list[str] = sorted(set(str(item["emotion"]) for item in ALL_ITEMS if item.get("emotion")))
 
 # Group by source type
-BOOKS = [item for item in ALL_ITEMS if item.get("source_type") == "literary"]
-PAPERS = [item for item in ALL_ITEMS if item.get("source_type") == "academic"]
+BOOKS: list[dict[str, Any]] = [item for item in ALL_ITEMS if item.get("source_type") == "literary"]
+PAPERS: list[dict[str, Any]] = [item for item in ALL_ITEMS if item.get("source_type") == "academic"]
 
 print(f"Topics: {TOPICS}")
 print(f"Emotions: {EMOTIONS}")
