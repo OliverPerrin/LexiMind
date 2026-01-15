@@ -7,7 +7,7 @@ num_encoder_layers: 12   # T5-base has 12 layers
 num_decoder_layers: 12   # T5-base has 12 layers
 num_attention_heads: 12
 ffn_dim: 2048  # T5 uses d_ff = 2048 for base model
-dropout: 0.1
+dropout: 0.15  # Increased from 0.1 for better regularization
 activation: gated-gelu  # T5/FLAN-T5 uses gated-gelu (GELU activation with gating, not SwiGLU)
 use_pretrained: true
 pretrained_model_name: google/flan-t5-base

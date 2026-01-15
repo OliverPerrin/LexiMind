@@ -196,6 +196,11 @@ def download_booksum(max_samples: int = 40000) -> list[dict[str, Any]]:
             chapter = item.get("chapter", "")
             summary = item.get("summary_text") or item.get("summary", "")
             
+            # Extract book title from book_id (e.g., "The Last of the Mohicans.chapters 1-2")
+            book_id = item.get("book_id", "")
+            book_title = book_id.split(".")[0] if "." in book_id else book_id
+            chapter_name = item.get("summary_id", "") or item.get("summary_name", "")
+            
             if not (chapter and summary and len(chapter) > 300):
                 continue
             
@@ -209,6 +214,8 @@ def download_booksum(max_samples: int = 40000) -> list[dict[str, Any]]:
                 "summary": summary,
                 "type": "literary",
                 "split": split,
+                "title": book_title,
+                "chapter": chapter_name,
             })
         all_records.extend(records)
         print(f"    {split}: {len(records):,} (skipped {skipped_language} non-English)")
@@ -228,6 +235,26 @@ def clean_arxiv_text(text: str) -> str:
     text = re.sub(r'\\[a-zA-Z]+\{[^}]*\}', '', text)
     text = re.sub(r'\\[a-zA-Z]+', '', text)
     return text.strip()
+
+
+def extract_paper_title(abstract: str) -> str:
+    """Extract a meaningful title from the first sentence of an abstract."""
+    # Clean the abstract first
+    abstract = clean_arxiv_text(abstract)
+    
+    # Get the first sentence (up to first period, question mark, or newline)
+    first_sentence = re.split(r'[.!?\n]', abstract)[0].strip()
+    
+    # Truncate if too long
+    if len(first_sentence) > 100:
+        # Try to cut at a natural word boundary
+        first_sentence = first_sentence[:100].rsplit(' ', 1)[0] + '...'
+    
+    # Capitalize first letter
+    if first_sentence:
+        first_sentence = first_sentence[0].upper() + first_sentence[1:]
+    
+    return first_sentence or "Untitled Paper"
 
 
 def download_arxiv_summarization(max_samples: int = 50000) -> list[dict[str, Any]]:
@@ -277,10 +304,14 @@ def download_arxiv_summarization(max_samples: int = 50000) -> list[dict[str, Any
         
         # Summarization: article → abstract
         if article and len(article) > 500:
+            # Extract title from abstract
+            paper_title = extract_paper_title(abstract)
+            
             summ_records.append({
                 "source": article[:4000],
                 "summary": abstract,
                 "type": "academic",
+                "title": paper_title,
             })
     
     print(f"    Summarization: {len(summ_records):,} (skipped {skipped_language} non-English)")
@@ -624,10 +655,19 @@ def download_gutenberg(max_samples: int = 30000) -> None:
         
         item = gutenberg[i]
         text = item.get("TEXT", "") or item.get("text", "")
-        metadata = item.get("METADATA", {}) or {}
+        metadata_raw = item.get("METADATA", "") or "{}"
+        
+        # Parse metadata - it's stored as JSON string
+        try:
+            metadata = json.loads(metadata_raw) if isinstance(metadata_raw, str) else metadata_raw
+        except (json.JSONDecodeError, TypeError):
+            metadata = {}
+        
+        # Extract title and author
         title = metadata.get("title", "") if isinstance(metadata, dict) else ""
+        author = metadata.get("author", "") if isinstance(metadata, dict) else ""
         if not title:
-            title = item.get("title", f"Book_{i}")
+            title = item.get("title", f"Unknown Book #{i}")
         
         if not text or len(text) < 1000:
             continue
@@ -636,7 +676,12 @@ def download_gutenberg(max_samples: int = 30000) -> None:
         for para in paragraphs:
             para = para.strip()
             if is_clean_prose(para):
-                records.append({"text": para, "title": title, "type": "gutenberg"})
+                records.append({
+                    "text": para, 
+                    "title": title, 
+                    "author": author,
+                    "type": "gutenberg"
+                })
                 if len(records) >= max_samples:
                     break
     

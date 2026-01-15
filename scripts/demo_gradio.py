@@ -61,7 +61,12 @@ def format_item_card(item: dict) -> str:
     dataset_name = item.get("dataset", "").title()
     
     # Icon based on type
-    icon = "📖" if source_type == "literary" else "📄"
+    if source_type == "academic":
+        icon = "📄"
+        type_label = "Research Paper"
+    else:
+        icon = "📖"
+        type_label = "Literature"
     
     # Topic and emotion with confidence
     topic = item.get("topic", "Unknown")
@@ -74,20 +79,30 @@ def format_item_card(item: dict) -> str:
     if not summary:
         summary = item.get("reference_summary", "No summary available.")
     
-    # Preview of original text
-    text_preview = item.get("text", "")[:300] + "..." if len(item.get("text", "")) > 300 else item.get("text", "")
+    # Truncate summary if too long
+    if len(summary) > 400:
+        summary = summary[:400].rsplit(' ', 1)[0] + "..."
     
-    return f"""### {icon} {title}
+    # Preview of original text
+    text_preview = item.get("text", "")[:400] + "..." if len(item.get("text", "")) > 400 else item.get("text", "")
+    
+    # Confidence badges
+    topic_badge = "🟢" if topic_conf > 0.6 else "🟡" if topic_conf > 0.3 else "🔴"
+    emotion_badge = "🟢" if emotion_conf > 0.6 else "🟡" if emotion_conf > 0.3 else "🔴"
+    
+    return f"""### {icon} **{title}**
 
-**Source:** {dataset_name} &nbsp;|&nbsp; **Type:** {source_type.title()}
+<small>*{type_label}* from {dataset_name}</small>
 
-🏷️ **Topic:** {topic} ({topic_conf:.0%}) &nbsp;|&nbsp; 💭 **Emotion:** {emotion.title()} ({emotion_conf:.0%})
+| Topic | Emotion |
+|-------|---------|
+| {topic_badge} {topic} ({topic_conf:.0%}) | {emotion_badge} {emotion.title()} ({emotion_conf:.0%}) |
 
-**Summary:**
+**AI Summary:**
 > {summary}
 
 <details>
-<summary>📜 View Original Text Preview</summary>
+<summary>📜 View Original Text</summary>
 
 {text_preview}
 
@@ -179,24 +194,34 @@ with gr.Blocks(
     title="LexiMind",
     theme=gr.themes.Soft(),
     css="""
-    .result-box { max-height: 600px; overflow-y: auto; }
+    .result-box { max-height: 700px; overflow-y: auto; }
+    h3 { margin-top: 0.5em !important; }
     """
 ) as demo:
     
     gr.Markdown(
         """
-        # 📚 LexiMind
-        ### Discover Books & Papers by Topic or Emotion
+        # 📚 LexiMind - Literary Discovery
+        ### Find Books & Research Papers by Topic or Emotional Tone
         
-        Browse 200 curated books and research papers from Project Gutenberg, 
-        BookSum, and arXiv. Each item has been analyzed by the LexiMind model for:
+        Explore **{total_count}** items analyzed by the LexiMind multi-task transformer:
         
-        - 🏷️ **Topic Classification** (Fiction, Science, History)
-        - 💭 **Emotion Detection** (love, joy, sadness, etc.)
-        - 📝 **AI-Generated Summaries**
+        | Source | Count | Examples |
+        |--------|-------|----------|
+        | 📖 Classic Literature | {lit_count} | Gutenberg books, BookSum novels |
+        | 📄 Research Papers | {paper_count} | arXiv scientific papers |
+        
+        **Model Capabilities:**
+        - 🏷️ **Topic Classification**: Fiction, Science, History, Philosophy, etc.
+        - 💭 **Emotion Detection**: 28 emotions from GoEmotions
+        - 📝 **Abstractive Summaries**: AI-generated summaries of each text
         
         ---
-        """
+        """.format(
+            total_count=len(ALL_ITEMS),
+            lit_count=len(BOOKS),
+            paper_count=len(PAPERS)
+        )
     )
     
     with gr.Tabs():

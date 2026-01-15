@@ -180,6 +180,10 @@ def load_books(data_dir: Path, max_per_book: int = 1) -> list[dict]:
     """Load book excerpts with quality filtering."""
     books_file = data_dir / "books" / "train.jsonl"
     
+    if not books_file.exists():
+        print(f"  Warning: {books_file} not found")
+        return []
+    
     # Group by title
     by_title = defaultdict(list)
     with open(books_file) as f:
@@ -200,9 +204,18 @@ def load_books(data_dir: Path, max_per_book: int = 1) -> list[dict]:
     for title, excerpts in by_title.items():
         excerpts.sort(key=lambda x: len(x["text"]), reverse=True)
         for excerpt in excerpts[:max_per_book]:
+            # Use real title, clean up if it's just an ID
+            display_title = title
+            if title.startswith("Book_") or title.startswith("Unknown Book"):
+                display_title = f"Classic Literature #{title.split('_')[-1] if '_' in title else 'Unknown'}"
+            
+            author = excerpt.get("author", "")
+            if author:
+                display_title = f"{display_title} by {author}"
+            
             samples.append({
-                "id": f"book_{title}",
-                "title": title.replace("Book_", "Gutenberg #"),
+                "id": f"book_{hash(title) % 100000}",
+                "title": display_title,
                 "text": excerpt["text"][:2000],
                 "source_type": "literary",
                 "dataset": "gutenberg"
@@ -215,6 +228,10 @@ def load_books(data_dir: Path, max_per_book: int = 1) -> list[dict]:
 def load_academic_papers(data_dir: Path, max_samples: int = 100) -> list[dict]:
     """Load academic paper samples with quality filtering."""
     summ_file = data_dir / "summarization" / "train.jsonl"
+    
+    if not summ_file.exists():
+        print(f"  Warning: {summ_file} not found")
+        return []
     
     academic = []
     with open(summ_file) as f:
@@ -229,8 +246,18 @@ def load_academic_papers(data_dir: Path, max_samples: int = 100) -> list[dict]:
             if len(text) < 500:
                 continue
             
+            # Use real title from data if available
+            title = item.get("title", "")
+            if not title:
+                # Generate title from first sentence of summary
+                summary = item.get("summary", "")
+                title = summary.split('.')[0][:80] if summary else f"Research Paper"
+                if len(title) > 60:
+                    title = title[:60].rsplit(' ', 1)[0] + "..."
+            
             academic.append({
                 "text": text[:2000],
+                "title": title,
                 "reference_summary": item.get("summary", "")[:500]
             })
     
@@ -241,7 +268,7 @@ def load_academic_papers(data_dir: Path, max_samples: int = 100) -> list[dict]:
     for i, item in enumerate(samples):
         results.append({
             "id": f"paper_{i}",
-            "title": f"Academic Paper #{i+1}",
+            "title": item["title"],
             "text": item["text"],
             "source_type": "academic",
             "dataset": "arxiv",
@@ -256,6 +283,10 @@ def load_literary(data_dir: Path, max_samples: int = 50) -> list[dict]:
     """Load literary samples from BookSum with quality filtering."""
     summ_file = data_dir / "summarization" / "train.jsonl"
     
+    if not summ_file.exists():
+        print(f"  Warning: {summ_file} not found")
+        return []
+    
     literary = []
     with open(summ_file) as f:
         for line in f:
@@ -269,8 +300,20 @@ def load_literary(data_dir: Path, max_samples: int = 50) -> list[dict]:
             if len(text) < 500:
                 continue
             
+            # Use real book title and chapter from data
+            title = item.get("title", "")
+            chapter = item.get("chapter", "")
+            
+            if title and chapter:
+                display_title = f"{title} - {chapter}"
+            elif title:
+                display_title = title
+            else:
+                display_title = "Classic Literature"
+            
             literary.append({
                 "text": text[:2000],
+                "title": display_title,
                 "reference_summary": item.get("summary", "")[:500]
             })
     
@@ -281,7 +324,7 @@ def load_literary(data_dir: Path, max_samples: int = 50) -> list[dict]:
     for i, item in enumerate(samples):
         results.append({
             "id": f"literary_{i}",
-            "title": f"Literary Excerpt #{i+1}",
+            "title": item["title"],
             "text": item["text"],
             "source_type": "literary",
             "dataset": "booksum",
@@ -406,9 +449,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-dir", type=Path, default=Path("data/processed"))
     parser.add_argument("--checkpoint", type=Path, default=Path("checkpoints/best.pt"))
-    parser.add_argument("--num-books", type=int, default=150, help="Number of books to include")
-    parser.add_argument("--num-papers", type=int, default=100, help="Number of academic papers")
-    parser.add_argument("--num-literary", type=int, default=50, help="Number of BookSum excerpts")
+    parser.add_argument("--num-books", type=int, default=300, help="Number of books to include")
+    parser.add_argument("--num-papers", type=int, default=200, help="Number of academic papers")
+    parser.add_argument("--num-literary", type=int, default=100, help="Number of BookSum excerpts")
     parser.add_argument("--output", type=Path, default=Path("data/discovery_dataset.jsonl"))
     parser.add_argument("--push-to-hub", action="store_true", help="Push to HuggingFace Hub")
     parser.add_argument("--hub-repo", type=str, default="OliverPerrin/LexiMind-Discovery")
@@ -419,13 +462,17 @@ def main():
     # Load samples from each source
     books = load_books(args.data_dir, max_per_book=1)
     random.seed(42)
-    books = random.sample(books, min(args.num_books, len(books)))
+    books = random.sample(books, min(args.num_books, len(books))) if books else []
     
     papers = load_academic_papers(args.data_dir, args.num_papers)
     literary = load_literary(args.data_dir, args.num_literary)
     
     all_samples = books + papers + literary
     print(f"\nTotal samples: {len(all_samples)}")
+    
+    if not all_samples:
+        print("ERROR: No samples loaded! Check if data/processed exists and has data.")
+        return
     
     # Load model and run inference
     print(f"\nLoading model from {args.checkpoint}...")
@@ -453,7 +500,7 @@ def main():
         dataset.push_to_hub(
             args.hub_repo,
             private=False,
-            commit_message="Rebuild with quality filtering and diverse emotions"
+            commit_message="Rebuild with real titles and improved quality"
         )
         print(f"Dataset available at: https://huggingface.co/datasets/{args.hub_repo}")
     
