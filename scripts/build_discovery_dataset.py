@@ -52,6 +52,23 @@ GARBAGE_PATTERNS = [
     r"\(\s*syn\s+",          # Synonym references
 ]
 
+# Patterns that indicate technical manuals/instructions (not narrative)
+TECHNICAL_PATTERNS = [
+    r"\d+\.\s+It\s+(is|has|can)",  # Numbered features "1. It is a..."
+    r"^\d+(st|nd|rd|th)\.",        # "1st. 2nd. 3rd."
+    r"Mesh\.?\s*\d+",              # Mesh sizes (pottery)
+    r"\d+\s*(oz|lb|kg|g|ml|mm|cm|inch)",  # Measurements
+    r"Parts?\s*:?\s*\d+",          # "Parts: 50"
+    r"Method of Using",            # Instructions
+    r"How to\s+\w+",               # How-to guides
+    r"Step\s+\d+",                 # Step-by-step
+    r"wire.*address",              # Business instructions
+    r"orders?\s+should\s+be",      # Order instructions  
+    r"specifications?",            # Technical specs
+    r"(Front|Back)\s+Focus",       # Camera terms
+    r"Rack and Pinion",            # Mechanical terms
+]
+
 # Non-English indicators (expanded)
 NON_ENGLISH_PATTERNS = [
     r"\b(le|la|les|un|une|des|du|de la|au|aux|et|est|sont|dans|pour|avec|sur|qui|que)\b",  # French
@@ -73,6 +90,14 @@ INDEX_PATTERNS = [
     r"^\s*[-•]\s+",           # Bullet points
     r"p\.\s*\d+",             # Page references
 ]
+
+
+def is_technical_manual(text: str) -> bool:
+    """Check if text appears to be a technical manual/instructions."""
+    for pattern in TECHNICAL_PATTERNS:
+        if re.search(pattern, text, re.IGNORECASE | re.MULTILINE):
+            return True
+    return False
 
 
 def is_english(text: str) -> bool:
@@ -132,6 +157,10 @@ def is_quality_text(text: str) -> bool:
     for pattern in GARBAGE_PATTERNS:
         if re.search(pattern, text, re.IGNORECASE | re.MULTILINE):
             return False
+    
+    # Reject technical manuals/instructions
+    if is_technical_manual(text):
+        return False
     
     # Must have reasonable length
     if len(text) < 300:  # Stricter: was 200
