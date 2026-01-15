@@ -221,4 +221,4 @@ poetry run pytest
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+GNU License - see [LICENSE](LICENSE) for details.
