@@ -1,5 +1,6 @@
 FROM python:3.10-slim
 
+# Force rebuild: 2026-01-16-v2
 WORKDIR /app
 
 # Install system dependencies
