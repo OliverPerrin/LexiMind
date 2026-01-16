@@ -74,10 +74,17 @@ def format_item_card(item: dict) -> str:
     emotion = item.get("emotion", "Unknown")
     emotion_conf = item.get("emotion_confidence", 0)
     
-    # Summary (generated or reference)
-    summary = item.get("generated_summary", "")
+    # Summary - check if using reference or generated
+    use_reference = item.get("use_reference_summary", False)
+    if use_reference or source_type == "literary":
+        summary = item.get("reference_summary", "")
+        summary_label = "📚 **Human Summary** (from BookSum):"
+    else:
+        summary = item.get("generated_summary", "")
+        summary_label = "🤖 **AI-Generated Summary:**"
+    
     if not summary:
-        summary = item.get("reference_summary", "No summary available.")
+        summary = "No summary available."
     
     # Truncate summary if too long
     if len(summary) > 400:
@@ -98,7 +105,7 @@ def format_item_card(item: dict) -> str:
 |-------|---------|
 | {topic_badge} {topic} ({topic_conf:.0%}) | {emotion_badge} {emotion.title()} ({emotion_conf:.0%}) |
 
-**AI Summary:**
+{summary_label}
 > {summary}
 
 <details>

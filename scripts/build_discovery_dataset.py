@@ -309,41 +309,109 @@ def load_academic_papers(data_dir: Path, max_samples: int = 100) -> list[dict]:
 
 
 def load_literary(data_dir: Path, max_samples: int = 50) -> list[dict]:
-    """Load literary samples from BookSum with quality filtering."""
+    """Load literary samples from BookSum with quality filtering.
+    
+    Filters out:
+    - Shakespeare and Early Modern English (model hallucinates on these)
+    - Plays (dramatic format doesn't summarize well)
+    - Very short excerpts
+    
+    Uses human-written reference summaries from BookSum since the model
+    performs poorly on literary text summarization.
+    """
     summ_file = data_dir / "summarization" / "train.jsonl"
     
     if not summ_file.exists():
         print(f"  Warning: {summ_file} not found")
         return []
     
+    # Shakespeare and plays to exclude (model hallucinates on Early Modern English)
+    EXCLUDED_TITLES = {
+        # Shakespeare
+        "King Lear", "Hamlet", "Macbeth", "Othello", "Romeo and Juliet",
+        "A Midsummer Night's Dream", "The Tempest", "Julius Caesar",
+        "The Merchant of Venice", "Twelfth Night", "Much Ado About Nothing",
+        "As You Like It", "The Taming of the Shrew", "Antony and Cleopatra",
+        "Coriolanus", "Cymbeline", "Timon of Athens", "Troilus and Cressida",
+        "Measure for Measure", "All's Well That Ends Well", "Pericles",
+        "The Winter's Tale", "The Comedy of Errors", "Two Gentlemen of Verona",
+        "Love's Labour's Lost", "The Merry Wives of Windsor", "Henry IV",
+        "Henry V", "Henry VI", "Henry VIII", "Richard II", "Richard III",
+        "King John", "Titus Andronicus",
+        # French plays (dramatic format)
+        "Tartuffe", "Phaedra", "Cyrano de Bergerac", "Cyrano De Bergerac",
+        "Le Misanthrope", "The School for Wives", "The Miser", "The Imaginary Invalid",
+        "Andromaque", "Britannicus", "Bérénice", "Le Cid",
+        # Greek/Roman plays
+        "Oedipus Rex", "Oedipus the King", "Antigone", "Electra", "Medea",
+        "The Bacchae", "The Oresteia", "Agamemnon", "Prometheus Bound",
+        # Other classic plays
+        "The Importance of Being Earnest", "Pygmalion", "Doctor Faustus",
+        "Waiting for Godot", "Death of a Salesman", "A Streetcar Named Desire",
+        "The Glass Menagerie", "Our Town", "Long Day's Journey Into Night",
+        "Who's Afraid of Virginia Woolf", "The Crucible", "Cat on a Hot Tin Roof",
+        # Verse/poetic epics that don't summarize well
+        "Idylls of the King", "Paradise Lost", "Paradise Regained",
+        "The Divine Comedy", "Inferno", "Purgatorio", "Paradiso",
+        "The Faerie Queene", "Beowulf",
+    }
+    
+    # Patterns indicating play/dramatic text
+    PLAY_PATTERNS = [
+        r"^(SCENE|ACT|Enter|Exit|Exeunt)\s",
+        r"^\[.*\]$",  # Stage directions
+        r"^[A-Z]{2,}\.\s",  # Character names like "HAMLET."
+        r"Alarum|Flourish|Sennet",  # Stage directions
+    ]
+    
+    def is_play_text(text: str) -> bool:
+        """Check if text appears to be a play/dramatic format."""
+        lines = text.split('\n')[:10]
+        play_indicators = 0
+        for line in lines:
+            for pattern in PLAY_PATTERNS:
+                if re.search(pattern, line.strip()):
+                    play_indicators += 1
+        return play_indicators >= 2
+    
     literary = []
+    seen_books = set()  # Track unique books (not chapters)
+    
     with open(summ_file) as f:
         for line in f:
             item = json.loads(line)
             if item.get("type") != "literary":
                 continue
             
+            title = item.get("title", "")
+            
+            # Skip excluded titles (Shakespeare, plays)
+            if any(excluded.lower() in title.lower() for excluded in EXCLUDED_TITLES):
+                continue
+            
+            # Skip if already have this book (want unique books, not chapters)
+            if title in seen_books:
+                continue
+            
             text = clean_text(item["source"])
+            summary = item.get("summary", "")
+            
+            # Quality filters
             if not is_english(text):
                 continue
             if len(text) < 500:
                 continue
+            if len(summary) < 100:
+                continue
+            if is_play_text(text):
+                continue
             
-            # Use real book title and chapter from data
-            title = item.get("title", "")
-            chapter = item.get("chapter", "")
-            
-            if title and chapter:
-                display_title = f"{title} - {chapter}"
-            elif title:
-                display_title = title
-            else:
-                display_title = "Classic Literature"
+            seen_books.add(title)
             
             literary.append({
                 "text": text[:2000],
-                "title": display_title,
-                "reference_summary": item.get("summary", "")[:500]
+                "title": title,  # Just book title, not chapter
+                "reference_summary": summary[:800]  # Use human summary
             })
     
     random.seed(42)
@@ -357,10 +425,11 @@ def load_literary(data_dir: Path, max_samples: int = 50) -> list[dict]:
             "text": item["text"],
             "source_type": "literary",
             "dataset": "booksum",
-            "reference_summary": item["reference_summary"]
+            "reference_summary": item["reference_summary"],
+            "use_reference_summary": True  # Flag to use human summary
         })
     
-    print(f"  Loaded {len(results)} BookSum literary excerpts")
+    print(f"  Loaded {len(results)} BookSum literary works (unique books, no plays)")
     return results
 
 
@@ -411,10 +480,16 @@ def run_inference(pipeline, samples: list[dict], min_topic_conf: float = 0.3) ->
     
     for sample in tqdm(samples, desc="Running inference"):
         text = sample["text"]
+        source_type = sample.get("source_type", "")
         
-        # Generate summary
-        summaries = pipeline.summarize([text], max_length=150)
-        summary = summaries[0] if summaries else ""
+        # For literary content, use reference summary (model hallucinates on novels)
+        # For academic content, use model-generated summary (works well)
+        if source_type == "literary" and sample.get("use_reference_summary"):
+            summary = sample.get("reference_summary", "")
+        else:
+            # Generate summary with model
+            summaries = pipeline.summarize([text], max_length=150)
+            summary = summaries[0] if summaries else ""
         
         # Get topic - require minimum confidence
         topic_results = pipeline.predict_topics([text])
