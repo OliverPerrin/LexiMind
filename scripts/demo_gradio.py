@@ -26,16 +26,33 @@ print(f"Loaded {len(_dataset)} items")
 # Convert to list of dicts for easier filtering
 ALL_ITEMS: list[dict[str, Any]] = [dict(row) for row in _dataset]
 
-# Extract unique topics and emotions
-TOPICS: list[str] = sorted(set(str(item["topic"]) for item in ALL_ITEMS if item.get("topic")))
-EMOTIONS: list[str] = sorted(set(str(item["emotion"]) for item in ALL_ITEMS if item.get("emotion")))
+# Extract unique topics and emotions FROM THE DATASET (what model predicted)
+DATASET_TOPICS: list[str] = sorted(set(str(item["topic"]) for item in ALL_ITEMS if item.get("topic")))
+DATASET_EMOTIONS: list[str] = sorted(set(str(item["emotion"]) for item in ALL_ITEMS if item.get("emotion")))
+
+# Load ALL possible labels from labels.json (what the model CAN predict)
+_labels_path = Path(__file__).parent.parent / "artifacts" / "labels.json"
+if _labels_path.exists():
+    with open(_labels_path) as f:
+        _labels = json.load(f)
+    ALL_TOPICS: list[str] = _labels.get("topic", DATASET_TOPICS)
+    ALL_EMOTIONS: list[str] = _labels.get("emotion", DATASET_EMOTIONS)
+else:
+    ALL_TOPICS = DATASET_TOPICS
+    ALL_EMOTIONS = DATASET_EMOTIONS
+
+# Use dataset-observed values for dropdown filtering
+TOPICS = DATASET_TOPICS
+EMOTIONS = DATASET_EMOTIONS
 
 # Group by source type
 BOOKS: list[dict[str, Any]] = [item for item in ALL_ITEMS if item.get("source_type") == "literary"]
 PAPERS: list[dict[str, Any]] = [item for item in ALL_ITEMS if item.get("source_type") == "academic"]
 
-print(f"Topics: {TOPICS}")
-print(f"Emotions: {EMOTIONS}")
+print(f"Dataset Topics ({len(TOPICS)}): {TOPICS}")
+print(f"Dataset Emotions ({len(EMOTIONS)}): {EMOTIONS}")
+print(f"All Model Topics ({len(ALL_TOPICS)}): {ALL_TOPICS}")
+print(f"All Model Emotions ({len(ALL_EMOTIONS)}): {ALL_EMOTIONS}")
 print(f"Books: {len(BOOKS)}, Papers: {len(PAPERS)}")
 
 # --------------- Load Evaluation Metrics ---------------
@@ -394,15 +411,37 @@ since descriptions paraphrase rather than quote the source text.*
                 gr.Markdown("*Emotion detection metrics not available.*")
             
             # Dataset Statistics
-            gr.Markdown("#### 📈 Dataset Statistics")
+            gr.Markdown("#### 📈 Dataset & Model Statistics")
+            
+            # Build topic list with indicators for observed vs possible
+            topic_list = ", ".join([
+                f"**{t}**" if t in TOPICS else t for t in ALL_TOPICS
+            ])
+            emotion_list = ", ".join([
+                f"**{e}**" if e in EMOTIONS else e for e in ALL_EMOTIONS
+            ])
+            
             gr.Markdown(f"""
 | Statistic | Value |
 |-----------|-------|
-| Total Items | {len(ALL_ITEMS)} |
+| Total Discovery Items | {len(ALL_ITEMS)} |
 | Literary Works | {len(BOOKS)} |
-| Academic Papers | {len(PAPERS)} |
-| Unique Topics | {len(TOPICS)} |
-| Unique Emotions | {len(EMOTIONS)} |
+| Academic Papers (arXiv) | {len(PAPERS)} |
+| Topics in Dataset | {len(TOPICS)} of {len(ALL_TOPICS)} possible |
+| Emotions in Dataset | {len(EMOTIONS)} of {len(ALL_EMOTIONS)} possible |
+
+**All Model Topics ({len(ALL_TOPICS)}):** {topic_list}
+
+**All Model Emotions ({len(ALL_EMOTIONS)}):** {emotion_list}
+
+*Bold items appear in the discovery dataset. The model can predict all listed labels.*
+
+---
+
+**Note on Content Types:**
+- 📄 **Academic Papers** include CS/AI papers (Technology), Physics/Math (Science), Economics (Business)
+- 📖 **Literary Works** include novels (Fiction), biographies (History), philosophical texts (Philosophy)
+- Technical blogs and tutorials would be classified under **Technology**
 """)
         
         # ===================== TAB 5: ABOUT =====================

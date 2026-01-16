@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Force rebuild: 2026-01-16-v2
+# Force rebuild: 2026-01-16-v3
 WORKDIR /app
 
 # Install system dependencies
@@ -19,6 +19,7 @@ COPY scripts/demo_gradio.py scripts/
 COPY configs/ configs/
 COPY artifacts/ artifacts/
 COPY checkpoints/ checkpoints/
+COPY outputs/evaluation_report.json outputs/
 
 # Set environment variables for Gradio
 ENV GRADIO_SERVER_NAME="0.0.0.0"
