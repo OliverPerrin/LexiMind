@@ -1,0 +1,26 @@
+{
+  "summarization": {
+    "rouge_like": 0.21057591687577476,
+    "rouge1": 0.21057591687577476,
+    "rouge2": 0,
+    "rougeL": 0,
+    "bleu4": 0,
+    "bertscore_f1": 0,
+    "loss": 3.89890168094635
+  },
+  "topic": {
+    "accuracy": 0.883822222222223,
+    "f1": 0.883822222222223,
+    "precision": 0,
+    "recall": 0,
+    "loss": 0.39885642248392106
+  },
+  "emotion": {
+    "f1": 0.2789894984960556,
+    "precision": 0,
+    "recall": 0,
+    "loss": 0.1520903602540493
+  },
+  "best_epoch": "val_epoch_5",
+  "total_loss": 4.3264654325693845
+}
