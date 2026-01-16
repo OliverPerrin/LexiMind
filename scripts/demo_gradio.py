@@ -10,6 +10,8 @@ Date: 2026-01-14
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 import gradio as gr
@@ -35,6 +37,18 @@ PAPERS: list[dict[str, Any]] = [item for item in ALL_ITEMS if item.get("source_t
 print(f"Topics: {TOPICS}")
 print(f"Emotions: {EMOTIONS}")
 print(f"Books: {len(BOOKS)}, Papers: {len(PAPERS)}")
+
+# --------------- Load Evaluation Metrics ---------------
+
+METRICS: dict[str, Any] = {}
+_metrics_path = Path(__file__).parent.parent / "outputs" / "evaluation_report.json"
+if _metrics_path.exists():
+    try:
+        with open(_metrics_path) as f:
+            METRICS = json.load(f)
+        print(f"Loaded evaluation metrics from {_metrics_path}")
+    except Exception as e:
+        print(f"Warning: Could not load metrics: {e}")
 
 
 # --------------- Filter Functions ---------------
@@ -78,10 +92,10 @@ def format_item_card(item: dict) -> str:
     use_reference = item.get("use_reference_summary", False)
     if use_reference or source_type == "literary":
         summary = item.get("reference_summary", "")
-        summary_label = "📚 **Human Summary** (from BookSum):"
+        summary_label = "📚 **Book Description** (Goodreads-style):"
     else:
         summary = item.get("generated_summary", "")
-        summary_label = "🤖 **AI-Generated Summary:**"
+        summary_label = "🤖 **AI-Generated Description:**"
     
     if not summary:
         summary = "No summary available."
@@ -215,13 +229,13 @@ with gr.Blocks(
         
         | Source | Count | Description |
         |--------|-------|-------------|
-        | 📖 Literature | {lit_count} | Classic novels from BookSum (with chapter summaries) |
+        | 📖 Literature | {lit_count} | Classic books with Goodreads-style descriptions |
         | 📄 Research | {paper_count} | Scientific papers from arXiv |
         
         **Model Capabilities:**
         - 🏷️ **Topic Classification**: Fiction, Science, History, Philosophy, Arts, Business, Technology
         - 💭 **Emotion Detection**: 28 emotions (joy, sadness, anger, fear, surprise, love, etc.)
-        - 📝 **Abstractive Summaries**: AI-generated summaries of each text
+        - 📝 **Book Descriptions**: Back-cover style summaries of what texts are about
         
         ---
         """.format(
@@ -297,7 +311,101 @@ with gr.Blocks(
                 outputs=[search_results],
             )
         
-        # ===================== TAB 4: ABOUT =====================
+        # ===================== TAB 4: METRICS =====================
+        with gr.Tab("📊 Model Metrics"):
+            gr.Markdown(
+                """
+                ### Evaluation Metrics
+                
+                LexiMind is evaluated using comprehensive metrics across all three tasks.
+                Metrics are computed on held-out validation data.
+                """
+            )
+            
+            # Summarization Metrics
+            gr.Markdown("#### 📝 Summarization Metrics")
+            
+            if METRICS.get("summarization"):
+                summ = METRICS["summarization"]
+                summ_md = """
+| Metric | Score | Description |
+|--------|-------|-------------|
+| **ROUGE-1** | {rouge1:.4f} | Unigram overlap with reference |
+| **ROUGE-2** | {rouge2:.4f} | Bigram overlap with reference |
+| **ROUGE-L** | {rougeL:.4f} | Longest common subsequence |
+| **BLEU-4** | {bleu4:.4f} | 4-gram precision score |
+| **BERTScore F1** | {bertscore:.4f} | Semantic similarity (contextual) |
+
+*Note: For back-cover style descriptions, BERTScore is more meaningful than ROUGE 
+since descriptions paraphrase rather than quote the source text.*
+""".format(
+                    rouge1=summ.get("rouge_rouge1", summ.get("rouge1", 0)),
+                    rouge2=summ.get("rouge_rouge2", summ.get("rouge2", 0)),
+                    rougeL=summ.get("rouge_rougeL", summ.get("rougeL", 0)),
+                    bleu4=summ.get("bleu4", 0),
+                    bertscore=summ.get("bertscore_f1", 0),
+                )
+                gr.Markdown(summ_md)
+            else:
+                gr.Markdown("*Summarization metrics not available. Run evaluation script.*")
+            
+            # Topic Classification Metrics
+            gr.Markdown("#### 🏷️ Topic Classification Metrics")
+            
+            if METRICS.get("topic"):
+                topic = METRICS["topic"]
+                topic_md = """
+| Metric | Score |
+|--------|-------|
+| **Accuracy** | {accuracy:.2%} |
+| **Macro F1** | {f1:.4f} |
+| **Precision** | {precision:.4f} |
+| **Recall** | {recall:.4f} |
+""".format(
+                    accuracy=topic.get("accuracy", 0),
+                    f1=topic.get("f1", topic.get("macro_f1", 0)),
+                    precision=topic.get("precision", 0),
+                    recall=topic.get("recall", 0),
+                )
+                gr.Markdown(topic_md)
+            else:
+                gr.Markdown("*Topic classification metrics not available.*")
+            
+            # Emotion Detection Metrics
+            gr.Markdown("#### 💭 Emotion Detection Metrics")
+            
+            if METRICS.get("emotion"):
+                emotion = METRICS["emotion"]
+                emotion_md = """
+| Metric | Score |
+|--------|-------|
+| **Multi-label F1** | {f1:.4f} |
+| **Precision** | {precision:.4f} |
+| **Recall** | {recall:.4f} |
+
+*Emotion detection uses 28 labels from GoEmotions. Multiple emotions can be assigned to each text.*
+""".format(
+                    f1=emotion.get("f1", emotion.get("multilabel_f1", 0)),
+                    precision=emotion.get("precision", 0),
+                    recall=emotion.get("recall", 0),
+                )
+                gr.Markdown(emotion_md)
+            else:
+                gr.Markdown("*Emotion detection metrics not available.*")
+            
+            # Dataset Statistics
+            gr.Markdown("#### 📈 Dataset Statistics")
+            gr.Markdown(f"""
+| Statistic | Value |
+|-----------|-------|
+| Total Items | {len(ALL_ITEMS)} |
+| Literary Works | {len(BOOKS)} |
+| Academic Papers | {len(PAPERS)} |
+| Unique Topics | {len(TOPICS)} |
+| Unique Emotions | {len(EMOTIONS)} |
+""")
+        
+        # ===================== TAB 5: ABOUT =====================
         with gr.Tab("ℹ️ About"):
             gr.Markdown(
                 """
@@ -307,7 +415,7 @@ with gr.Blocks(
                 
                 | Task | Description |
                 |------|-------------|
-                | **Summarization** | Generate concise summaries of long texts |
+                | **Book Descriptions** | Generate back-cover style descriptions of what books are about |
                 | **Topic Classification** | Categorize into Fiction, Science, Technology, Philosophy, History, Business, Arts |
                 | **Emotion Detection** | Identify emotional tones (28 emotions from GoEmotions) |
                 
@@ -321,21 +429,24 @@ with gr.Blocks(
                 
                 ### Training Data
                 
-                | Dataset | Task |
-                |---------|------|
-                | BookSum + arXiv | Summarization |
-                | 20 Newsgroups + Gutenberg | Topic Classification |
-                | GoEmotions | Emotion Detection |
+                | Dataset | Task | Description |
+                |---------|------|-------------|
+                | Goodreads (711k+ blurbs) | Book Descriptions | Back-cover style descriptions matched with Gutenberg texts |
+                | arXiv | Paper Abstracts | Scientific paper summarization |
+                | 20 Newsgroups + Gutenberg | Topic Classification | Multi-domain topic categorization |
+                | GoEmotions | Emotion Detection | 28-class multi-label emotion classification |
                 
-                ### Discovery Dataset
+                ### Key Design Decision
                 
-                This demo uses a curated sample of **200 items** from the training data:
-                - 100 Gutenberg books
-                - 80 arXiv academic papers
-                - 20 BookSum literary excerpts
+                LexiMind generates **back-cover style descriptions** (what a book is about) rather than 
+                plot summaries (what happens in the book). This is achieved by training on Goodreads 
+                descriptions paired with Project Gutenberg book texts.
                 
-                Each item was analyzed by the trained model to generate summaries, 
-                topics, and emotions.
+                ### Evaluation Metrics
+                
+                - **ROUGE-1/2/L**: Lexical overlap (expected range: 0.15-0.25 for descriptions)
+                - **BLEU-4**: N-gram precision
+                - **BERTScore**: Semantic similarity using contextual embeddings (key metric for paraphrasing)
                 
                 ### Links
                 
