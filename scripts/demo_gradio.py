@@ -206,14 +206,14 @@ with gr.Blocks(
         
         Explore **{total_count}** items analyzed by the LexiMind multi-task transformer:
         
-        | Source | Count | Examples |
-        |--------|-------|----------|
-        | 📖 Classic Literature | {lit_count} | Gutenberg books, BookSum novels |
-        | 📄 Research Papers | {paper_count} | arXiv scientific papers |
+        | Source | Count | Description |
+        |--------|-------|-------------|
+        | 📖 Literature | {lit_count} | Classic novels from BookSum (with chapter summaries) |
+        | 📄 Research | {paper_count} | Scientific papers from arXiv |
         
         **Model Capabilities:**
-        - 🏷️ **Topic Classification**: Fiction, Science, History, Philosophy, etc.
-        - 💭 **Emotion Detection**: 28 emotions from GoEmotions
+        - 🏷️ **Topic Classification**: Fiction, Science, History, Philosophy, Arts, Business, Technology
+        - 💭 **Emotion Detection**: 28 emotions (joy, sadness, anger, fear, surprise, love, etc.)
         - 📝 **Abstractive Summaries**: AI-generated summaries of each text
         
         ---

@@ -478,9 +478,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-dir", type=Path, default=Path("data/processed"))
     parser.add_argument("--checkpoint", type=Path, default=Path("checkpoints/best.pt"))
-    parser.add_argument("--num-books", type=int, default=300, help="Number of books to include")
-    parser.add_argument("--num-papers", type=int, default=200, help="Number of academic papers")
-    parser.add_argument("--num-literary", type=int, default=100, help="Number of BookSum excerpts")
+    parser.add_argument("--num-papers", type=int, default=300, help="Number of academic papers")
+    parser.add_argument("--num-literary", type=int, default=300, help="Number of BookSum excerpts")
     parser.add_argument("--output", type=Path, default=Path("data/discovery_dataset.jsonl"))
     parser.add_argument("--push-to-hub", action="store_true", help="Push to HuggingFace Hub")
     parser.add_argument("--hub-repo", type=str, default="OliverPerrin/LexiMind-Discovery")
@@ -489,15 +488,15 @@ def main():
     print("Loading data samples with quality filtering...")
     
     # Load samples from each source
-    books = load_books(args.data_dir, max_per_book=1)
-    random.seed(42)
-    books = random.sample(books, min(args.num_books, len(books))) if books else []
+    # NOTE: We only use BookSum literary content (trained for summarization)
+    # Gutenberg excerpts were only used for language modeling, NOT summarization
+    # The model hallucinates garbage when asked to summarize random Gutenberg paragraphs
     
     papers = load_academic_papers(args.data_dir, args.num_papers)
     literary = load_literary(args.data_dir, args.num_literary)
     
-    all_samples = books + papers + literary
-    print(f"\nTotal samples: {len(all_samples)}")
+    all_samples = papers + literary
+    print(f"\nTotal samples: {len(all_samples)} ({len(papers)} papers, {len(literary)} literary)")
     
     if not all_samples:
         print("ERROR: No samples loaded! Check if data/processed exists and has data.")
