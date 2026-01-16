@@ -10,15 +10,20 @@ Focus: Books, Academic Papers, Technical Writing
 - YES literary text, research, technical writing
 
 Datasets:
-- BookSum for literary summarization
-- arXiv for academic paper summarization  
-- Project Gutenberg for literary language
+- Goodreads + Gutenberg for book descriptions (back-cover style blurbs)
+- arXiv for academic paper summarization (abstracts)
+- Project Gutenberg for literary language modeling
 - GoEmotions for emotion classification (28 labels)
 - Custom topic classification: Fiction, Science, Technology, etc.
 
+Key Design Decision:
+Book "summarization" uses Goodreads descriptions which describe what the book
+is ABOUT (like a back cover), not plot summaries. This trains the model to
+answer "What is this book about?" rather than "What happens in this book?"
+
 Usage:
     python scripts/download_data.py              # Download all
-    python scripts/download_data.py --task arxiv # Download specific task
+    python scripts/download_data.py --task summarization  # Just summarization
     python scripts/download_data.py --max-arxiv 50000
 
 Author: Oliver Perrin
@@ -139,6 +144,137 @@ NON_ENGLISH_PATTERNS = [
     r"\b(et|in|ad|cum|de|ex|per|pro|sub|ab|ante|post|inter|contra|super|trans|apud)\b",
 ]
 
+# ============== TEXT QUALITY FILTERS ==============
+
+# Patterns that indicate garbage/metadata text
+GARBAGE_PATTERNS = [
+    r"^Page \d+:",           # Page corrections
+    r"changed to",           # Errata
+    r"Punctuation has been", # Editorial notes
+    r"^\[.*\]$",             # Bracketed notes
+    r"^Note\.?[-—]",         # Notes
+    r"^follows:",            # "as follows:"
+    r"CHAPTER [IVXLC]+\.",   # Chapter headers only
+    r"^\*\*\*",              # Project Gutenberg markers
+    r"^End of.*Project",     # End markers
+    r"^Produced by",         # Production credits
+    r"transcriber",          # Transcriber notes
+    r"eBook",                # eBook references
+    r"©|copyright",          # Copyright notices
+    r"^INDEX",               # Index pages
+    r"^\d+\.\s+\w+,\s+\d+",  # Index entries like "1. Name, 234"
+    r"(syn\.|var\.|sp\.)",   # Botanical abbreviations
+    r"[A-Z][a-z]+aceae",     # Botanical family names
+    r"\(\s*syn\s+",          # Synonym references
+]
+
+# Patterns that indicate technical manuals/instructions (not narrative)
+TECHNICAL_PATTERNS = [
+    r"\d+\.\s+It\s+(is|has|can)",  # Numbered features "1. It is a..."
+    r"^\d+(st|nd|rd|th)\.",        # "1st. 2nd. 3rd."
+    r"Mesh\.?\s*\d+",              # Mesh sizes (pottery)
+    r"\d+\s*(oz|lb|kg|g|ml|mm|cm|inch)",  # Measurements
+    r"Parts?\s*:?\s*\d+",          # "Parts: 50"
+    r"Method of Using",            # Instructions
+    r"How to\s+\w+",               # How-to guides
+    r"Step\s+\d+",                 # Step-by-step
+    r"wire.*address",              # Business instructions
+    r"orders?\s+should\s+be",      # Order instructions  
+    r"specifications?",            # Technical specs
+    r"(Front|Back)\s+Focus",       # Camera terms
+    r"Rack and Pinion",            # Mechanical terms
+]
+
+# Shakespeare and plays to exclude (model hallucinates on Early Modern English)
+EXCLUDED_TITLES = {
+    # Shakespeare
+    "King Lear", "Hamlet", "Macbeth", "Othello", "Romeo and Juliet",
+    "A Midsummer Night's Dream", "The Tempest", "Julius Caesar",
+    "The Merchant of Venice", "Twelfth Night", "Much Ado About Nothing",
+    "As You Like It", "The Taming of the Shrew", "Antony and Cleopatra",
+    "Coriolanus", "Cymbeline", "Timon of Athens", "Troilus and Cressida",
+    "Measure for Measure", "All's Well That Ends Well", "Pericles",
+    "The Winter's Tale", "The Comedy of Errors", "Two Gentlemen of Verona",
+    "Love's Labour's Lost", "The Merry Wives of Windsor", "Henry IV",
+    "Henry V", "Henry VI", "Henry VIII", "Richard II", "Richard III",
+    "King John", "Titus Andronicus",
+    # French plays
+    "Tartuffe", "Phaedra", "Cyrano de Bergerac", "Cyrano De Bergerac",
+    "Le Misanthrope", "The School for Wives", "The Miser", "The Imaginary Invalid",
+    "Andromaque", "Britannicus", "Bérénice", "Le Cid",
+    # Greek/Roman plays
+    "Oedipus Rex", "Oedipus the King", "Antigone", "Electra", "Medea",
+    "The Bacchae", "The Oresteia", "Agamemnon", "Prometheus Bound",
+    # Other classic plays
+    "The Importance of Being Earnest", "Pygmalion", "Doctor Faustus",
+    "Waiting for Godot", "Death of a Salesman", "A Streetcar Named Desire",
+    "The Glass Menagerie", "Our Town", "Long Day's Journey Into Night",
+    "Who's Afraid of Virginia Woolf", "The Crucible", "Cat on a Hot Tin Roof",
+    # Verse/poetic epics
+    "Idylls of the King", "Paradise Lost", "Paradise Regained",
+    "The Divine Comedy", "Inferno", "Purgatorio", "Paradiso",
+    "The Faerie Queene", "Beowulf",
+}
+
+
+def is_technical_manual(text: str) -> bool:
+    """Check if text appears to be a technical manual/instructions."""
+    for pattern in TECHNICAL_PATTERNS:
+        if re.search(pattern, text, re.IGNORECASE | re.MULTILINE):
+            return True
+    return False
+
+
+def is_quality_text(text: str) -> bool:
+    """Check if text is quality content (not metadata/garbage)."""
+    # Check for garbage patterns
+    for pattern in GARBAGE_PATTERNS:
+        if re.search(pattern, text, re.IGNORECASE | re.MULTILINE):
+            return False
+    
+    # Reject technical manuals/instructions
+    if is_technical_manual(text):
+        return False
+    
+    # Must have reasonable length
+    if len(text) < 300:
+        return False
+    
+    # Must have sentences (not just fragments)
+    sentences = re.split(r'[.!?]+', text)
+    if len(sentences) < 4:
+        return False
+    
+    # Check for too many special characters
+    special_ratio = len(re.findall(r'[^\w\s.,!?\'"()-]', text)) / max(len(text), 1)
+    if special_ratio > 0.08:
+        return False
+    
+    return True
+
+
+def is_excluded_title(title: str) -> bool:
+    """Check if title should be excluded (plays, epics, etc.)."""
+    title_lower = title.lower()
+    return any(excluded.lower() in title_lower for excluded in EXCLUDED_TITLES)
+
+
+def is_play_text(text: str) -> bool:
+    """Check if text appears to be a play/dramatic format."""
+    play_patterns = [
+        r"^(SCENE|ACT|Enter|Exit|Exeunt)\s",
+        r"^\[.*\]$",  # Stage directions
+        r"^[A-Z]{2,}\.\s",  # Character names like "HAMLET."
+        r"Alarum|Flourish|Sennet",  # Stage directions
+    ]
+    lines = text.split('\n')[:10]
+    play_indicators = 0
+    for line in lines:
+        for pattern in play_patterns:
+            if re.search(pattern, line.strip()):
+                play_indicators += 1
+    return play_indicators >= 2
+
 
 def is_english_text(text: str, min_ratio: float = 0.08, max_foreign: int = 5) -> bool:
     """
@@ -174,11 +310,194 @@ def is_english_text(text: str, min_ratio: float = 0.08, max_foreign: int = 5) ->
     return ratio >= min_ratio
 
 
+def normalize_title(title: str) -> str:
+    """Normalize a book title for matching."""
+    # Remove common prefixes/suffixes
+    title = re.sub(r'^(The|A|An)\s+', '', title, flags=re.IGNORECASE)
+    title = re.sub(r'\s*\([^)]*\)\s*', '', title)  # Remove parentheticals
+    title = re.sub(r'\s*:.+$', '', title)  # Remove subtitles
+    title = re.sub(r'[^\w\s]', '', title)  # Remove punctuation
+    return title.lower().strip()
+
+
 # ============== SUMMARIZATION: BOOKS + ARXIV ==============
 
-def download_booksum(max_samples: int = 40000) -> list[dict[str, Any]]:
-    """Download BookSum - literary chapter summarization (English only)."""
-    print("\n📖 Loading BookSum (literary summarization)...")
+def download_goodreads_descriptions() -> dict[str, dict]:
+    """
+    Download Goodreads book descriptions - back-cover style blurbs.
+    
+    These are "what the book is about" descriptions, not plot summaries.
+    Returns dict mapping normalized title -> {title, description}
+    """
+    print("\n📚 Loading Goodreads book descriptions...")
+    
+    descriptions = {}
+    
+    # Try multiple sources
+    datasets_to_try = [
+        "booksouls/goodreads-book-descriptions",
+        "Skelebor/book_titles_and_descriptions_en_clean",
+    ]
+    
+    for ds_name in datasets_to_try:
+        try:
+            print(f"    Loading {ds_name}...")
+            ds = load_dataset(ds_name, split="train")
+            
+            for item in tqdm(ds, desc="Goodreads", leave=False):
+                title = item.get("title", "")
+                description = item.get("description", "")
+                
+                if not title or not description:
+                    continue
+                
+                # Skip very short descriptions (not useful for training)
+                if len(description) < 100:
+                    continue
+                
+                # Skip very long descriptions (truncate later)
+                if len(description) > 2000:
+                    description = description[:2000]
+                
+                # Skip plays and excluded titles
+                if is_excluded_title(title):
+                    continue
+                
+                # Skip non-English descriptions
+                if not is_english_text(description):
+                    continue
+                
+                norm_title = normalize_title(title)
+                if norm_title and norm_title not in descriptions:
+                    descriptions[norm_title] = {
+                        "title": title,
+                        "description": description,
+                    }
+            
+            print(f"    Loaded {len(descriptions):,} descriptions from {ds_name}")
+        except Exception as e:
+            print(f"    {ds_name} failed: {e}")
+    
+    print(f"    Total: {len(descriptions):,} unique book descriptions")
+    return descriptions
+
+
+def download_book_descriptions(
+    goodreads_descriptions: dict[str, dict],
+    max_samples: int = 20000
+) -> list[dict[str, Any]]:
+    """
+    Download book description data by matching Gutenberg texts with Goodreads descriptions.
+    
+    This gives us (book_excerpt, book_description) training pairs where descriptions
+    are back-cover style "what is this book about" blurbs, not plot summaries.
+    """
+    print("\n📖 Matching Gutenberg books with Goodreads descriptions...")
+    
+    try:
+        gutenberg = load_dataset("sedthh/gutenberg_english", split="train")
+    except Exception:
+        gutenberg = load_dataset("pg19", split="train")
+    
+    records: list[dict[str, Any]] = []
+    matched_titles = set()
+    skipped_quality = 0
+    skipped_play = 0
+    
+    indices = list(range(len(gutenberg)))
+    random.shuffle(indices)
+    
+    for i in tqdm(indices, desc="Matching books", leave=False):
+        if len(records) >= max_samples:
+            break
+        
+        item = gutenberg[i]
+        text = item.get("TEXT", "") or item.get("text", "")
+        metadata_raw = item.get("METADATA", "") or "{}"
+        
+        # Parse metadata
+        try:
+            metadata = json.loads(metadata_raw) if isinstance(metadata_raw, str) else metadata_raw
+        except (json.JSONDecodeError, TypeError):
+            metadata = {}
+        
+        # Get title
+        title = metadata.get("title", "") if isinstance(metadata, dict) else ""
+        if not title:
+            continue
+        
+        # Check if we have a Goodreads description for this book
+        norm_title = normalize_title(title)
+        if norm_title not in goodreads_descriptions:
+            continue
+        
+        # Skip if already matched this book
+        if norm_title in matched_titles:
+            continue
+        
+        goodreads_data = goodreads_descriptions[norm_title]
+        
+        # Skip plays and excluded titles
+        if is_excluded_title(title):
+            skipped_play += 1
+            continue
+        
+        if not text or len(text) < 2000:
+            continue
+        
+        # Get a clean excerpt from the book (skip front matter)
+        paragraphs = re.split(r'\n\s*\n', text)
+        excerpt_parts = []
+        total_len = 0
+        
+        for para in paragraphs[10:]:  # Skip front matter
+            para = para.strip()
+            if len(para) < 100:
+                continue
+            
+            # Quality check on paragraph
+            if not is_english_text(para):
+                continue
+            if is_play_text(para):
+                skipped_play += 1
+                break
+            if not is_quality_text(para) and len(para) > 300:
+                skipped_quality += 1
+                continue
+            
+            excerpt_parts.append(para)
+            total_len += len(para)
+            
+            if total_len >= 3000:
+                break
+        
+        if total_len < 1000:
+            continue
+        
+        book_excerpt = "\n\n".join(excerpt_parts)[:4000]
+        matched_titles.add(norm_title)
+        
+        records.append({
+            "source": book_excerpt,
+            "summary": goodreads_data["description"][:800],  # Back-cover blurbs are shorter
+            "type": "literary",
+            "title": goodreads_data["title"],
+        })
+    
+    print(f"    Matched {len(records):,} books with descriptions")
+    print(f"    Skipped: {skipped_quality} quality, {skipped_play} plays")
+    
+    return records
+
+
+# Keep BookSum for additional literary training (chapter summaries are still useful)
+def download_booksum(max_samples: int = 20000) -> list[dict[str, Any]]:
+    """Download BookSum - literary chapter summarization (English only, quality filtered).
+    
+    Note: These are chapter-level plot summaries, useful as supplementary training data.
+    The primary book training comes from Goodreads descriptions (back-cover style).
+    """
+    print("\n📖 Loading BookSum (supplementary literary data)...")
     
     all_records: list[dict[str, Any]] = []
     booksum = load_dataset("kmfoda/booksum")
@@ -191,6 +510,9 @@ def download_booksum(max_samples: int = 40000) -> list[dict[str, Any]]:
         
         records = []
         skipped_language = 0
+        skipped_excluded = 0
+        skipped_play = 0
+        
         for i in tqdm(indices, desc=f"BookSum {split}", leave=False):
             item = data[i]
             chapter = item.get("chapter", "")
@@ -204,9 +526,23 @@ def download_booksum(max_samples: int = 40000) -> list[dict[str, Any]]:
             if not (chapter and summary and len(chapter) > 300):
                 continue
             
+            # Filter: excluded titles (Shakespeare, plays, etc.)
+            if is_excluded_title(book_title):
+                skipped_excluded += 1
+                continue
+            
+            # Filter: play text format
+            if is_play_text(chapter):
+                skipped_play += 1
+                continue
+            
             # Filter: English only
             if not is_english_text(chapter):
                 skipped_language += 1
+                continue
+            
+            # Filter: quality text
+            if not is_quality_text(chapter):
                 continue
             
             records.append({
@@ -218,7 +554,7 @@ def download_booksum(max_samples: int = 40000) -> list[dict[str, Any]]:
                 "chapter": chapter_name,
             })
         all_records.extend(records)
-        print(f"    {split}: {len(records):,} (skipped {skipped_language} non-English)")
+        print(f"    {split}: {len(records):,} (skipped {skipped_language} non-English, {skipped_excluded} excluded, {skipped_play} plays)")
     
     return all_records
 
@@ -404,18 +740,29 @@ def download_topics_from_datasets(max_samples: int = 50000) -> list[dict[str, An
     return records
 
 
-def download_summarization(max_books: int = 40000, max_arxiv: int = 50000) -> None:
-    """Download all summarization data (books + arxiv, NO news)."""
+def download_summarization(max_books: int = 20000, max_arxiv: int = 50000) -> None:
+    """Download all summarization data (books + arxiv, NO news).
+    
+    Book data now uses Goodreads descriptions (back-cover blurbs) instead of
+    plot summaries. This trains the model to describe "what the book is about"
+    rather than summarizing the plot.
+    """
     print("\n📝 Downloading Summarization Data...")
     out_dir = OUTPUT_DIR / "summarization"
     
     all_records: list[dict[str, Any]] = []
     
-    # BookSum - literary
-    book_records = download_booksum(max_books)
+    # Goodreads descriptions - primary book training data (back-cover style)
+    goodreads_descriptions = download_goodreads_descriptions()
+    book_records = download_book_descriptions(goodreads_descriptions, max_books)
     all_records.extend(book_records)
     
-    # arXiv - academic (summarization only, no categories in this dataset)
+    # Optional: Add some BookSum for additional literary variety
+    # These are chapter summaries, not back-cover style, so keep limited
+    # booksum_records = download_booksum(max_books // 4)
+    # all_records.extend(booksum_records)
+    
+    # arXiv - academic (abstracts are already "what is this paper about")
     arxiv_summ = download_arxiv_summarization(max_arxiv)
     all_records.extend(arxiv_summ)
     
@@ -443,7 +790,12 @@ def download_summarization(max_books: int = 40000, max_arxiv: int = 50000) -> No
     write_jsonl(val_records, out_dir / "validation.jsonl", "val")
     write_jsonl(test_records, out_dir / "test.jsonl", "test")
     
+    # Print breakdown
+    literary_count = sum(1 for r in train_records + val_records + test_records if r.get("type") == "literary")
+    academic_count = sum(1 for r in train_records + val_records + test_records if r.get("type") == "academic")
     print(f"\n  ✓ Total summarization: {len(train_records) + len(val_records) + len(test_records):,}")
+    print(f"    Literary (book descriptions): {literary_count:,}")
+    print(f"    Academic (paper abstracts): {academic_count:,}")
 
 
 # ============== TOPIC CLASSIFICATION ==============

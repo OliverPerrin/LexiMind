@@ -1,92 +1,92 @@
 {
   "train_epoch_1": {
-    "summarization_loss": 4.305795139598846,
-    "summarization_rouge_like": 0.1897542916546258,
-    "emotion_loss": 0.46746078201532365,
-    "emotion_f1": 0.10305404872111976,
-    "topic_loss": 1.8422618747711181,
-    "topic_accuracy": 0.3508400000000005,
-    "total_loss": 5.928117250007391
+    "summarization_loss": 4.337589238357544,
+    "summarization_rouge_like": 0.1879255349350253,
+    "emotion_loss": 0.46719961771667,
+    "emotion_f1": 0.10263426738642156,
+    "topic_loss": 1.8465057809352874,
+    "topic_accuracy": 0.3392400000000004,
+    "total_loss": 5.961641555400193
   },
   "val_epoch_1": {
-    "summarization_loss": 4.001134026527405,
-    "summarization_rouge_like": 0.2056979416736606,
-    "emotion_loss": 0.15761724182963371,
-    "emotion_f1": 0.10913333570957184,
-    "topic_loss": 1.3971189131736756,
-    "topic_accuracy": 0.5776888888888889,
-    "total_loss": 4.936119345858693
+    "summarization_loss": 4.049011781692505,
+    "summarization_rouge_like": 0.2034169061442255,
+    "emotion_loss": 0.15742238980531692,
+    "emotion_f1": 0.10493333557248116,
+    "topic_loss": 1.4062236018180847,
+    "topic_accuracy": 0.5732444444444442,
+    "total_loss": 4.988257167309523
   },
   "train_epoch_2": {
-    "summarization_loss": 4.04213664188385,
-    "summarization_rouge_like": 0.20016824759703356,
-    "emotion_loss": 0.15370316863358022,
-    "emotion_f1": 0.2400115498200059,
-    "topic_loss": 0.9526138089179993,
-    "topic_accuracy": 0.7429200000000072,
-    "total_loss": 4.74899829929322
+    "summarization_loss": 4.083578112983703,
+    "summarization_rouge_like": 0.1976643239752401,
+    "emotion_loss": 0.15362880874574183,
+    "emotion_f1": 0.2406129123225808,
+    "topic_loss": 0.9754000782608986,
+    "topic_accuracy": 0.7247600000000052,
+    "total_loss": 4.8017213652327655
   },
   "val_epoch_2": {
-    "summarization_loss": 3.904770742416382,
-    "summarization_rouge_like": 0.20990994365480573,
-    "emotion_loss": 0.1540343547463417,
-    "emotion_f1": 0.3034275949001312,
-    "topic_loss": 0.6331685522794723,
-    "topic_accuracy": 0.8368000000000012,
-    "total_loss": 4.45240655067563
+    "summarization_loss": 3.9556797580718994,
+    "summarization_rouge_like": 0.20800790372227917,
+    "emotion_loss": 0.1543270833492279,
+    "emotion_f1": 0.3030942615568638,
+    "topic_loss": 0.6294559867382049,
+    "topic_accuracy": 0.8470222222222232,
+    "total_loss": 4.501898376464844
   },
   "train_epoch_3": {
-    "summarization_loss": 3.970578443431854,
-    "summarization_rouge_like": 0.20384922085018767,
-    "emotion_loss": 0.15174557501375674,
-    "emotion_f1": 0.253769249086082,
-    "topic_loss": 0.4669437208026648,
-    "topic_accuracy": 0.8916800000000127,
-    "total_loss": 4.431668666353822
+    "summarization_loss": 4.013701296997071,
+    "summarization_rouge_like": 0.20124694460046363,
+    "emotion_loss": 0.1518744811743498,
+    "emotion_f1": 0.2534809801559895,
+    "topic_loss": 0.4991990038275719,
+    "topic_accuracy": 0.8825600000000137,
+    "total_loss": 4.491112520672381
   },
   "val_epoch_3": {
-    "summarization_loss": 3.8658409719467164,
-    "summarization_rouge_like": 0.2123302463154155,
-    "emotion_loss": 0.15249984830617905,
-    "emotion_f1": 0.2953418803811073,
-    "topic_loss": 0.4755705908536911,
-    "topic_accuracy": 0.8688000000000011,
-    "total_loss": 4.33237603983283
+    "summarization_loss": 3.916879098892212,
+    "summarization_rouge_like": 0.20999463362408954,
+    "emotion_loss": 0.1531626036465168,
+    "emotion_f1": 0.29498851400613785,
+    "topic_loss": 0.4279452709853649,
+    "topic_accuracy": 0.8898222222222228,
+    "total_loss": 4.36059563985467
   },
   "train_epoch_4": {
-    "summarization_loss": 3.939709025001526,
-    "summarization_rouge_like": 0.20545136339295092,
-    "emotion_loss": 0.1507464952915907,
-    "emotion_f1": 0.26239547733552754,
-    "topic_loss": 0.33327342747747896,
-    "topic_accuracy": 0.9223200000000161,
-    "total_loss": 4.3324654816776516
+    "summarization_loss": 3.983973069667816,
+    "summarization_rouge_like": 0.2029009331004662,
+    "emotion_loss": 0.15108716808855532,
+    "emotion_f1": 0.2626448046594858,
+    "topic_loss": 0.3580647605985403,
+    "topic_accuracy": 0.913920000000016,
+    "total_loss": 4.389636202099919
   },
   "val_epoch_4": {
-    "summarization_loss": 3.8520261945724488,
-    "summarization_rouge_like": 0.21339747230535858,
-    "emotion_loss": 0.15169213128089903,
-    "emotion_f1": 0.2674609267115593,
-    "topic_loss": 0.45421803003549577,
-    "topic_accuracy": 0.8632000000000006,
-    "total_loss": 4.306673406511545
+    "summarization_loss": 3.9035442686080932,
+    "summarization_rouge_like": 0.21033612715351324,
+    "emotion_loss": 0.15223792135715486,
+    "emotion_f1": 0.282991696447134,
+    "topic_loss": 0.4027849786281586,
+    "topic_accuracy": 0.8786222222222232,
+    "total_loss": 4.333293639957905
   },
   "train_epoch_5": {
-    "summarization_loss": 3.9294944332122803,
-    "summarization_rouge_like": 0.20627772657470522,
-    "emotion_loss": 0.15019208360612393,
-    "emotion_f1": 0.26261078409552574,
-    "topic_loss": 0.2986248534411192,
-    "topic_accuracy": 0.9306800000000157,
-    "total_loss": 4.304094985342026
+    "summarization_loss": 3.973270378112793,
+    "summarization_rouge_like": 0.20338914910116973,
+    "emotion_loss": 0.15057664619088174,
+    "emotion_f1": 0.2615954305127263,
+    "topic_loss": 0.3245519582152367,
+    "topic_accuracy": 0.9218400000000136,
+    "total_loss": 4.361411326506734
   },
   "val_epoch_5": {
-    "summarization_loss": 3.847202296257019,
-    "summarization_rouge_like": 0.21367317669088942,
-    "emotion_loss": 0.15135289683938027,
-    "emotion_f1": 0.2654752122759819,
-    "topic_loss": 0.4457242044210434,
-    "topic_accuracy": 0.8684000000000005,
-    "total_loss": 4.297093743726611
+    "summarization_loss": 3.89890168094635,
+    "summarization_rouge_like": 0.21057591687577476,
+    "emotion_loss": 0.1520903602540493,
+    "emotion_f1": 0.2789894984960556,
+    "topic_loss": 0.39885642248392106,
+    "topic_accuracy": 0.883822222222223,
+    "total_loss": 4.3264654325693845
   }
 }

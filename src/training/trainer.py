@@ -29,7 +29,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from ..data.tokenization import Tokenizer
-from .metrics import accuracy, multilabel_f1, rouge_like
+from .metrics import accuracy, calculate_bleu, calculate_rouge, multilabel_f1, rouge_like
 
 # --------------- Configuration ---------------
 
@@ -315,10 +315,29 @@ class Trainer:
             label_smoothing=self.config.label_smoothing,
         )
 
-        # Quick ROUGE estimate
+        # Decode predictions and references
         preds = self.tokenizer.decode_batch(logits.argmax(dim=-1).tolist())
         refs = self._decode_labels(batch["labels"])
-        return loss, {"rouge_like": rouge_like(preds, refs)}
+        
+        # Calculate comprehensive metrics
+        metrics = {"rouge_like": rouge_like(preds, refs)}
+        
+        # Proper ROUGE scores (ROUGE-1, ROUGE-2, ROUGE-L)
+        try:
+            rouge_scores = calculate_rouge(preds, refs)
+            metrics["rouge1"] = rouge_scores["rouge1"]
+            metrics["rouge2"] = rouge_scores["rouge2"]
+            metrics["rougeL"] = rouge_scores["rougeL"]
+        except Exception:
+            pass  # Fall back to rouge_like only if rouge-score not installed
+        
+        # BLEU-4 score
+        try:
+            metrics["bleu4"] = calculate_bleu(preds, refs)
+        except Exception:
+            pass
+        
+        return loss, metrics
 
     def _forward_emotion(self, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
         """Multi-label emotion classification."""

@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 """Build a discovery dataset for the HuggingFace Space demo.
 
-This script extracts a diverse sample of books and academic papers from the
-training data, runs inference to generate summaries/topics/emotions, and
-uploads the result to HuggingFace Datasets.
+This script samples from the already-filtered training data (processed by
+download_data.py), runs inference to generate descriptions/topics/emotions,
+and uploads the result to HuggingFace Datasets.
 
-Preprocessing includes:
-- Filtering for English content only
-- Removing metadata, errata, and front matter
-- Requiring minimum text quality
-- Ensuring topic and emotion diversity
+The training data has already been filtered for:
+- English content only
+- Quality text (no metadata, errata, technical manuals)
+- No Shakespeare/plays (excluded titles)
+- Proper book descriptions (from Goodreads, not plot summaries)
 """
 
 import json
 import random
-import re
 import sys
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -28,234 +28,11 @@ from tqdm import tqdm
 
 from src.inference.factory import create_inference_pipeline
 
-# --------------- Text Quality Filters ---------------
-
-# Patterns that indicate garbage/metadata text
-GARBAGE_PATTERNS = [
-    r"^Page \d+:",           # Page corrections
-    r"changed to",           # Errata
-    r"Punctuation has been", # Editorial notes
-    r"^\[.*\]$",             # Bracketed notes
-    r"^Note\.?[-—]",         # Notes
-    r"^follows:",            # "as follows:"
-    r"CHAPTER [IVXLC]+\.",   # Chapter headers only
-    r"^\*\*\*",              # Project Gutenberg markers
-    r"^End of.*Project",     # End markers
-    r"^Produced by",         # Production credits
-    r"transcriber",          # Transcriber notes
-    r"eBook",                # eBook references
-    r"©|copyright",          # Copyright notices
-    r"^INDEX",               # Index pages
-    r"^\d+\.\s+\w+,\s+\d+",  # Index entries like "1. Name, 234"
-    r"(syn\.|var\.|sp\.)",   # Botanical abbreviations
-    r"[A-Z][a-z]+aceae",     # Botanical family names
-    r"\(\s*syn\s+",          # Synonym references
-]
-
-# Patterns that indicate technical manuals/instructions (not narrative)
-TECHNICAL_PATTERNS = [
-    r"\d+\.\s+It\s+(is|has|can)",  # Numbered features "1. It is a..."
-    r"^\d+(st|nd|rd|th)\.",        # "1st. 2nd. 3rd."
-    r"Mesh\.?\s*\d+",              # Mesh sizes (pottery)
-    r"\d+\s*(oz|lb|kg|g|ml|mm|cm|inch)",  # Measurements
-    r"Parts?\s*:?\s*\d+",          # "Parts: 50"
-    r"Method of Using",            # Instructions
-    r"How to\s+\w+",               # How-to guides
-    r"Step\s+\d+",                 # Step-by-step
-    r"wire.*address",              # Business instructions
-    r"orders?\s+should\s+be",      # Order instructions  
-    r"specifications?",            # Technical specs
-    r"(Front|Back)\s+Focus",       # Camera terms
-    r"Rack and Pinion",            # Mechanical terms
-]
-
-# Non-English indicators (expanded)
-NON_ENGLISH_PATTERNS = [
-    r"\b(le|la|les|un|une|des|du|de la|au|aux|et|est|sont|dans|pour|avec|sur|qui|que)\b",  # French
-    r"\b(der|die|das|ein|eine|und|ist|nicht|mit|von|zu|den|dem|auf|für|als|auch|oder|nach|bei|nur|noch|wie|mehr|aber|wenn|so|hat|kann|ich|sie|er|wir|ihr|es|sich|sein)\b",  # German (expanded)
-    r"\b(el|la|los|las|un|una|que|por|para|con|del|al|es|en|se|no|más|como|pero|su|sus)\b",  # Spanish
-    r"\b(il|lo|la|gli|le|un|una|che|per|con|del|della|di|da|non|sono|è|anche|più|ma|se)\b",  # Italian
-    r"[àâäéèêëïîôùûüÿœæäöüß]{2,}",  # Accented chars (German ß, umlauts)
-    r"\b[A-Z][a-z]+ü[a-z]+\b",  # German words with ü
-    r"\b[A-Z][a-z]+ö[a-z]+\b",  # German words with ö  
-    r"\b[A-Z][a-z]+ä[a-z]+\b",  # German words with ä
-]
-
-# Patterns that indicate index/glossary/list content (not narrative)
-INDEX_PATTERNS = [
-    r"^\s*\d+\s*$",           # Just numbers
-    r"^[A-Z][a-z]+,\s+\d+",   # "Word, 123" index entries
-    r"(\d+,\s*)+\d+",         # Lists of page numbers
-    r"^[A-Z]{2,}\s+",         # ALL CAPS words at start
-    r"^\s*[-•]\s+",           # Bullet points
-    r"p\.\s*\d+",             # Page references
-]
-
-
-def is_technical_manual(text: str) -> bool:
-    """Check if text appears to be a technical manual/instructions."""
-    for pattern in TECHNICAL_PATTERNS:
-        if re.search(pattern, text, re.IGNORECASE | re.MULTILINE):
-            return True
-    return False
-
-
-def is_english(text: str) -> bool:
-    """Check if text appears to be English."""
-    text_lower = text.lower()
-    
-    # Check for non-English patterns - stricter threshold
-    for pattern in NON_ENGLISH_PATTERNS:
-        matches = len(re.findall(pattern, text_lower, re.IGNORECASE))
-        if matches > 3:  # Stricter: was 5
-            return False
-    
-    # Check English word ratio
-    english_words = ["the", "and", "of", "to", "a", "in", "that", "is", "was", "he", "she", "it", "for", "with", "as", "his", "her", "they", "be", "at", "on", "have", "had", "this", "but", "not", "from", "by", "or", "an", "said", "were", "been", "would", "could", "which", "their", "there", "what", "when", "who", "will", "more", "if", "no", "out", "so", "up", "into", "than", "them", "can", "only", "other", "new", "some", "very", "just", "over", "such", "also", "its", "then", "two", "first", "any", "these", "may", "after", "most", "made", "before", "should", "now", "where", "those", "being", "has", "between", "own", "under"]
-    words = text_lower.split()
-    if len(words) < 30:  # Stricter: was 20
-        return False
-    
-    english_count = sum(1 for w in words if w in english_words)
-    ratio = english_count / len(words)
-    
-    return ratio > 0.08  # Stricter: was 0.05
-
-
-def is_narrative_text(text: str) -> bool:
-    """Check if text is actual narrative (not index/glossary/list)."""
-    lines = text.strip().split('\n')
-    
-    # Count lines that look like index entries
-    index_lines = 0
-    for line in lines:
-        for pattern in INDEX_PATTERNS:
-            if re.search(pattern, line):
-                index_lines += 1
-                break
-    
-    # If more than 30% are index-like, reject
-    if len(lines) > 0 and index_lines / len(lines) > 0.3:
-        return False
-    
-    # Must have actual sentences with verbs
-    # Check for common verbs
-    verb_patterns = r"\b(is|are|was|were|have|has|had|do|does|did|will|would|could|should|may|might|can|said|says|went|came|made|took|saw|knew|thought|found|gave|told|asked|seemed|felt|looked|heard|began|kept|left|called|turned|wanted|tried|needed|used|believe|think|know|see|want|need|find|give|tell|become|leave|put|mean|keep|let|begin|seem|help|show|hear|play|run|move|live|read|write|learn|speak|bring|hold|stand|set|pay|meet|lead|understand|watch|follow|stop|create|speak|allow|add|spend|grow|open|walk|offer|remember|consider|appear|buy|wait|serve|die|send|build|stay|fall|cut|reach|kill|remain|suggest|raise|pass|sell|require|report|decide|pull)\b"
-    verb_count = len(re.findall(verb_patterns, text.lower()))
-    
-    # Should have at least 1 verb per 50 words
-    words = len(text.split())
-    if words > 0 and verb_count / words < 0.02:
-        return False
-    
-    return True
-
-
-def is_quality_text(text: str) -> bool:
-    """Check if text is quality content (not metadata/garbage)."""
-    # Check for garbage patterns
-    for pattern in GARBAGE_PATTERNS:
-        if re.search(pattern, text, re.IGNORECASE | re.MULTILINE):
-            return False
-    
-    # Reject technical manuals/instructions
-    if is_technical_manual(text):
-        return False
-    
-    # Must have reasonable length
-    if len(text) < 300:  # Stricter: was 200
-        return False
-    
-    # Must have sentences (not just fragments)
-    sentences = re.split(r'[.!?]+', text)
-    if len(sentences) < 4:  # Stricter: was 3
-        return False
-    
-    # Check for too many special characters
-    special_ratio = len(re.findall(r'[^\w\s.,!?\'"()-]', text)) / len(text)
-    if special_ratio > 0.08:  # Stricter: was 0.1
-        return False
-    
-    # Must be narrative, not index/list
-    if not is_narrative_text(text):
-        return False
-    
-    return True
-
-
-def clean_text(text: str) -> str:
-    """Clean up text by removing artifacts."""
-    # Remove multiple newlines
-    text = re.sub(r'\n{3,}', '\n\n', text)
-    
-    # Remove carriage returns
-    text = text.replace('\r', '')
-    
-    # Normalize whitespace
-    text = re.sub(r'[ \t]+', ' ', text)
-    
-    # Remove page numbers in brackets
-    text = re.sub(r'\[p\.\s*\d+\]', '', text)
-    
-    # Remove asterisks used as separators
-    text = re.sub(r'\*{3,}', '', text)
-    
-    return text.strip()
-
 
 # --------------- Data Loading ---------------
 
-def load_books(data_dir: Path, max_per_book: int = 1) -> list[dict]:
-    """Load book excerpts with quality filtering."""
-    books_file = data_dir / "books" / "train.jsonl"
-    
-    if not books_file.exists():
-        print(f"  Warning: {books_file} not found")
-        return []
-    
-    # Group by title
-    by_title = defaultdict(list)
-    with open(books_file) as f:
-        for line in f:
-            item = json.loads(line)
-            text = clean_text(item["text"])
-            
-            # Quality filters
-            if not is_english(text):
-                continue
-            if not is_quality_text(text):
-                continue
-            
-            by_title[item["title"]].append({**item, "text": text})
-    
-    # Sample from each book - prefer longer, quality excerpts
-    samples = []
-    for title, excerpts in by_title.items():
-        excerpts.sort(key=lambda x: len(x["text"]), reverse=True)
-        for excerpt in excerpts[:max_per_book]:
-            # Use real title, clean up if it's just an ID
-            display_title = title
-            if title.startswith("Book_") or title.startswith("Unknown Book"):
-                display_title = f"Classic Literature #{title.split('_')[-1] if '_' in title else 'Unknown'}"
-            
-            author = excerpt.get("author", "")
-            if author:
-                display_title = f"{display_title} by {author}"
-            
-            samples.append({
-                "id": f"book_{hash(title) % 100000}",
-                "title": display_title,
-                "text": excerpt["text"][:2000],
-                "source_type": "literary",
-                "dataset": "gutenberg"
-            })
-    
-    print(f"  Loaded {len(samples)} quality book excerpts from {len(by_title)} books")
-    return samples
-
-
-def load_academic_papers(data_dir: Path, max_samples: int = 100) -> list[dict]:
-    """Load academic paper samples with quality filtering."""
+def load_academic_papers(data_dir: Path, max_samples: int = 300) -> list[dict]:
+    """Load academic paper samples from the training data."""
     summ_file = data_dir / "summarization" / "train.jsonl"
     
     if not summ_file.exists():
@@ -269,20 +46,12 @@ def load_academic_papers(data_dir: Path, max_samples: int = 100) -> list[dict]:
             if item.get("type") != "academic":
                 continue
             
-            text = clean_text(item["source"])
-            if not is_english(text):
-                continue
+            text = item.get("source", "")
             if len(text) < 500:
                 continue
             
-            # Use real title from data if available
-            title = item.get("title", "")
-            if not title:
-                # Generate title from first sentence of summary
-                summary = item.get("summary", "")
-                title = summary.split('.')[0][:80] if summary else f"Research Paper"
-                if len(title) > 60:
-                    title = title[:60].rsplit(' ', 1)[0] + "..."
+            # Use title from data
+            title = item.get("title", "Research Paper")
             
             academic.append({
                 "text": text[:2000],
@@ -308,16 +77,11 @@ def load_academic_papers(data_dir: Path, max_samples: int = 100) -> list[dict]:
     return results
 
 
-def load_literary(data_dir: Path, max_samples: int = 50) -> list[dict]:
-    """Load literary samples from BookSum with quality filtering.
+def load_literary(data_dir: Path, max_samples: int = 300) -> list[dict]:
+    """Load literary samples from the training data.
     
-    Filters out:
-    - Shakespeare and Early Modern English (model hallucinates on these)
-    - Plays (dramatic format doesn't summarize well)
-    - Very short excerpts
-    
-    Uses human-written reference summaries from BookSum since the model
-    performs poorly on literary text summarization.
+    Training data now contains Goodreads descriptions (back-cover style)
+    instead of plot summaries.
     """
     summ_file = data_dir / "summarization" / "train.jsonl"
     
@@ -325,57 +89,8 @@ def load_literary(data_dir: Path, max_samples: int = 50) -> list[dict]:
         print(f"  Warning: {summ_file} not found")
         return []
     
-    # Shakespeare and plays to exclude (model hallucinates on Early Modern English)
-    EXCLUDED_TITLES = {
-        # Shakespeare
-        "King Lear", "Hamlet", "Macbeth", "Othello", "Romeo and Juliet",
-        "A Midsummer Night's Dream", "The Tempest", "Julius Caesar",
-        "The Merchant of Venice", "Twelfth Night", "Much Ado About Nothing",
-        "As You Like It", "The Taming of the Shrew", "Antony and Cleopatra",
-        "Coriolanus", "Cymbeline", "Timon of Athens", "Troilus and Cressida",
-        "Measure for Measure", "All's Well That Ends Well", "Pericles",
-        "The Winter's Tale", "The Comedy of Errors", "Two Gentlemen of Verona",
-        "Love's Labour's Lost", "The Merry Wives of Windsor", "Henry IV",
-        "Henry V", "Henry VI", "Henry VIII", "Richard II", "Richard III",
-        "King John", "Titus Andronicus",
-        # French plays (dramatic format)
-        "Tartuffe", "Phaedra", "Cyrano de Bergerac", "Cyrano De Bergerac",
-        "Le Misanthrope", "The School for Wives", "The Miser", "The Imaginary Invalid",
-        "Andromaque", "Britannicus", "Bérénice", "Le Cid",
-        # Greek/Roman plays
-        "Oedipus Rex", "Oedipus the King", "Antigone", "Electra", "Medea",
-        "The Bacchae", "The Oresteia", "Agamemnon", "Prometheus Bound",
-        # Other classic plays
-        "The Importance of Being Earnest", "Pygmalion", "Doctor Faustus",
-        "Waiting for Godot", "Death of a Salesman", "A Streetcar Named Desire",
-        "The Glass Menagerie", "Our Town", "Long Day's Journey Into Night",
-        "Who's Afraid of Virginia Woolf", "The Crucible", "Cat on a Hot Tin Roof",
-        # Verse/poetic epics that don't summarize well
-        "Idylls of the King", "Paradise Lost", "Paradise Regained",
-        "The Divine Comedy", "Inferno", "Purgatorio", "Paradiso",
-        "The Faerie Queene", "Beowulf",
-    }
-    
-    # Patterns indicating play/dramatic text
-    PLAY_PATTERNS = [
-        r"^(SCENE|ACT|Enter|Exit|Exeunt)\s",
-        r"^\[.*\]$",  # Stage directions
-        r"^[A-Z]{2,}\.\s",  # Character names like "HAMLET."
-        r"Alarum|Flourish|Sennet",  # Stage directions
-    ]
-    
-    def is_play_text(text: str) -> bool:
-        """Check if text appears to be a play/dramatic format."""
-        lines = text.split('\n')[:10]
-        play_indicators = 0
-        for line in lines:
-            for pattern in PLAY_PATTERNS:
-                if re.search(pattern, line.strip()):
-                    play_indicators += 1
-        return play_indicators >= 2
-    
     literary = []
-    seen_books = set()  # Track unique books (not chapters)
+    seen_titles = set()
     
     with open(summ_file) as f:
         for line in f:
@@ -384,34 +99,20 @@ def load_literary(data_dir: Path, max_samples: int = 50) -> list[dict]:
                 continue
             
             title = item.get("title", "")
-            
-            # Skip excluded titles (Shakespeare, plays)
-            if any(excluded.lower() in title.lower() for excluded in EXCLUDED_TITLES):
+            if not title or title in seen_titles:
                 continue
             
-            # Skip if already have this book (want unique books, not chapters)
-            if title in seen_books:
-                continue
-            
-            text = clean_text(item["source"])
+            text = item.get("source", "")
             summary = item.get("summary", "")
             
-            # Quality filters
-            if not is_english(text):
-                continue
-            if len(text) < 500:
-                continue
-            if len(summary) < 100:
-                continue
-            if is_play_text(text):
+            if len(text) < 500 or len(summary) < 50:
                 continue
             
-            seen_books.add(title)
-            
+            seen_titles.add(title)
             literary.append({
                 "text": text[:2000],
-                "title": title,  # Just book title, not chapter
-                "reference_summary": summary[:800]  # Use human summary
+                "title": title,
+                "reference_summary": summary[:600]
             })
     
     random.seed(42)
@@ -424,149 +125,85 @@ def load_literary(data_dir: Path, max_samples: int = 50) -> list[dict]:
             "title": item["title"],
             "text": item["text"],
             "source_type": "literary",
-            "dataset": "booksum",
+            "dataset": "goodreads",
             "reference_summary": item["reference_summary"],
-            "use_reference_summary": True  # Flag to use human summary
         })
     
-    print(f"  Loaded {len(results)} BookSum literary works (unique books, no plays)")
+    print(f"  Loaded {len(results)} literary works (unique titles)")
     return results
 
 
 # --------------- Inference ---------------
 
-# Keywords for fallback emotion detection when model is undertrained
-EMOTION_KEYWORDS = {
-    "joy": ["happy", "delighted", "wonderful", "excellent", "fantastic", "amazing", "pleased"],
-    "sadness": ["sad", "sorrow", "grief", "mourn", "weep", "tears", "tragic", "loss", "died"],
-    "anger": ["angry", "furious", "rage", "outraged", "infuriated", "wrath"],
-    "fear": ["afraid", "terror", "frightened", "scared", "horror", "dread"],
-    "surprise": ["surprised", "astonished", "amazed", "shocked", "unexpected"],
-    "disgust": ["disgusted", "revolting", "vile", "repulsive", "sickening"],
-    "love": ["love", "adore", "beloved", "passion", "affection", "cherish"],
-    "excitement": ["excited", "thrilled", "eager", "enthusiastic", "exhilarating"],
-    "curiosity": ["curious", "wondered", "intrigued", "fascinated", "mysterious"],
-    "admiration": ["admire", "respect", "impressive", "remarkable", "brilliant"],
-    "gratitude": ["grateful", "thankful", "appreciate", "blessed"],
-    "optimism": ["hope", "hopeful", "optimistic", "promising", "bright future"],
-    "neutral": [],  # Default fallback
-}
-
-
-def detect_emotion_fallback(text: str) -> tuple[str, float]:
-    """Keyword-based emotion detection as fallback."""
-    text_lower = text.lower()
-    
-    scores = {}
-    for emotion, keywords in EMOTION_KEYWORDS.items():
-        if not keywords:
-            continue
-        count = sum(1 for kw in keywords if kw in text_lower)
-        if count > 0:
-            scores[emotion] = count
-    
-    if scores:
-        best = max(scores, key=scores.get)
-        return best, min(0.7, 0.4 + scores[best] * 0.1)
-    
-    return "neutral", 0.5
-
-
-def run_inference(pipeline, samples: list[dict], min_topic_conf: float = 0.3) -> list[dict]:
-    """Run inference with quality thresholds."""
+def run_inference(pipeline: Any, samples: list[dict]) -> list[dict]:
+    """Run model inference on all samples."""
     results = []
-    emotion_counts = defaultdict(int)
-    topic_counts = defaultdict(int)
     
     for sample in tqdm(samples, desc="Running inference"):
         text = sample["text"]
-        source_type = sample.get("source_type", "")
         
-        # For literary content, use reference summary (model hallucinates on novels)
-        # For academic content, use model-generated summary (works well)
-        if source_type == "literary" and sample.get("use_reference_summary"):
-            summary = sample.get("reference_summary", "")
-        else:
-            # Generate summary with model
-            summaries = pipeline.summarize([text], max_length=150)
-            summary = summaries[0] if summaries else ""
+        # Get model predictions using correct pipeline methods
+        summaries = pipeline.summarize([text])
+        topics = pipeline.predict_topics([text])
+        emotions = pipeline.predict_emotions([text])
         
-        # Get topic - require minimum confidence
-        topic_results = pipeline.predict_topics([text])
-        if topic_results:
-            topic = topic_results[0].label
-            topic_conf = topic_results[0].confidence
-        else:
-            topic, topic_conf = "General", 0.0
+        # Extract first result from each list
+        summary = summaries[0] if summaries else ""
+        topic = topics[0] if topics else None
+        emotion = emotions[0] if emotions else None
         
-        # Get emotions - check if model is outputting uniform probabilities
-        emotion_results = pipeline.predict_emotions([text], threshold=0.1)
-        use_fallback = False
+        # Get primary emotion (highest confidence if any detected)
+        primary_emotion = "neutral"
+        emotion_confidence = 0.0
+        if emotion and emotion.labels:
+            primary_emotion = emotion.labels[0]
+            emotion_confidence = emotion.scores[0]
         
-        if emotion_results and emotion_results[0].labels:
-            scores = emotion_results[0].scores
-            # Check if scores are too uniform (model undertrained)
-            score_range = max(scores) - min(scores)
-            if score_range < 0.15:  # All scores within 15% = undertrained
-                use_fallback = True
-            else:
-                # Use model prediction
-                emotions_with_scores = list(zip(
-                    emotion_results[0].labels, 
-                    emotion_results[0].scores
-                ))
-                emotions_with_scores.sort(key=lambda x: x[1], reverse=True)
-                emotion = emotions_with_scores[0][0]
-                emotion_conf = emotions_with_scores[0][1]
-                all_emotions = [e[0] for e in emotions_with_scores[:3]]
-        else:
-            use_fallback = True
-        
-        if use_fallback:
-            # Use keyword-based fallback
-            emotion, emotion_conf = detect_emotion_fallback(text)
-            all_emotions = [emotion]
-        
-        # Track distribution
-        emotion_counts[emotion] += 1
-        topic_counts[topic] += 1
-        
-        sample_with_predictions = {
-            **sample,
+        result = {
+            "id": sample["id"],
+            "title": sample["title"],
+            "text": text,
+            "source_type": sample["source_type"],
+            "dataset": sample["dataset"],
+            "topic": topic.label if topic else "Unknown",
+            "topic_confidence": topic.confidence if topic else 0.0,
+            "emotion": primary_emotion,
+            "emotion_confidence": emotion_confidence,
             "generated_summary": summary,
-            "topic": topic,
-            "topic_confidence": round(topic_conf, 3),
-            "emotion": emotion,
-            "emotion_confidence": round(emotion_conf, 3),
-            "all_emotions": all_emotions,
+            "reference_summary": sample.get("reference_summary", ""),
         }
-        results.append(sample_with_predictions)
+        
+        results.append(result)
     
-    print(f"\nTopic distribution: {dict(topic_counts)}")
-    print(f"Emotion distribution: {dict(emotion_counts)}")
+    # Print distribution stats
+    topic_dist = defaultdict(int)
+    emotion_dist = defaultdict(int)
+    for r in results:
+        topic_dist[r["topic"]] += 1
+        emotion_dist[r["emotion"]] += 1
+    
+    print(f"\nTopic distribution: {dict(topic_dist)}")
+    print(f"Emotion distribution: {dict(emotion_dist)}")
     
     return results
 
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Build discovery dataset for HuggingFace Space")
     parser.add_argument("--data-dir", type=Path, default=Path("data/processed"))
     parser.add_argument("--checkpoint", type=Path, default=Path("checkpoints/best.pt"))
     parser.add_argument("--num-papers", type=int, default=300, help="Number of academic papers")
-    parser.add_argument("--num-literary", type=int, default=300, help="Number of BookSum excerpts")
+    parser.add_argument("--num-literary", type=int, default=300, help="Number of literary works")
     parser.add_argument("--output", type=Path, default=Path("data/discovery_dataset.jsonl"))
     parser.add_argument("--push-to-hub", action="store_true", help="Push to HuggingFace Hub")
     parser.add_argument("--hub-repo", type=str, default="OliverPerrin/LexiMind-Discovery")
     args = parser.parse_args()
     
-    print("Loading data samples with quality filtering...")
+    print("Loading data samples from training data...")
+    print("(Data has already been filtered by download_data.py)")
     
-    # Load samples from each source
-    # NOTE: We only use BookSum literary content (trained for summarization)
-    # Gutenberg excerpts were only used for language modeling, NOT summarization
-    # The model hallucinates garbage when asked to summarize random Gutenberg paragraphs
-    
+    # Load samples from training data
     papers = load_academic_papers(args.data_dir, args.num_papers)
     literary = load_literary(args.data_dir, args.num_literary)
     
@@ -575,6 +212,7 @@ def main():
     
     if not all_samples:
         print("ERROR: No samples loaded! Check if data/processed exists and has data.")
+        print("Run: python scripts/download_data.py --task summarization")
         return
     
     # Load model and run inference
@@ -603,7 +241,7 @@ def main():
         dataset.push_to_hub(
             args.hub_repo,
             private=False,
-            commit_message="Rebuild with real titles and improved quality"
+            commit_message="Rebuild with Goodreads descriptions (back-cover style)"
         )
         print(f"Dataset available at: https://huggingface.co/datasets/{args.hub_repo}")
     
