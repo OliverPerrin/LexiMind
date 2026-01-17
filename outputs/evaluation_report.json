@@ -1,26 +1,23 @@
 {
   "summarization": {
-    "rouge_like": 0.21057591687577476,
-    "rouge1": 0.21057591687577476,
-    "rouge2": 0,
-    "rougeL": 0,
-    "bleu4": 0,
-    "bertscore_f1": 0,
-    "loss": 3.89890168094635
-  },
-  "topic": {
-    "accuracy": 0.883822222222223,
-    "f1": 0.883822222222223,
-    "precision": 0,
-    "recall": 0,
-    "loss": 0.39885642248392106
+    "rouge1": 0.30642430379446967,
+    "rouge2": 0.08959565281855562,
+    "rougeL": 0.18324654816276506,
+    "bleu4": 0.02372948091924369,
+    "num_samples": 2727,
+    "bertscore_precision": 0.8429681658744812,
+    "bertscore_recall": 0.817944347858429,
+    "bertscore_f1": 0.8300431966781616
   },
   "emotion": {
-    "f1": 0.2789894984960556,
-    "precision": 0,
-    "recall": 0,
-    "loss": 0.1520903602540493
+    "multilabel_f1": 0.19874678552150726,
+    "sample_avg_f1": 0.19874677478805736,
+    "num_samples": 5426,
+    "num_classes": 28
   },
-  "best_epoch": "val_epoch_5",
-  "total_loss": 4.3264654325693845
+  "topic": {
+    "accuracy": 0.8518518518518519,
+    "macro_f1": 0.8473591074094903,
+    "num_samples": 189
+  }
 }

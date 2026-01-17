@@ -66,8 +66,8 @@ def calculate_bleu(predictions: Sequence[str], references: Sequence[str]) -> flo
 def calculate_bertscore(
     predictions: Sequence[str],
     references: Sequence[str],
-    model_type: str = "microsoft/deberta-xlarge-mnli",
-    batch_size: int = 32,
+    model_type: str = "roberta-large",  # Uses ~1.4GB VRAM vs ~6GB for deberta-xlarge
+    batch_size: int = 16,
     device: str | None = None,
 ) -> Dict[str, float]:
     """

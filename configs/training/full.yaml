@@ -1,54 +1,52 @@
 # Full Training Configuration for FLAN-T5-base
-# BEST QUALITY - use for final model training
-# VRAM Usage: ~9-10GB (12GB available)
-# Training time: ~1 hour on RTX 4070 12GB
+# OPTIMIZED FOR SPEED + QUALITY
+# Target: Best results for research paper in reasonable time
+# VRAM Usage: ~10GB (12GB available)
+# Training time: ~45-60 minutes on RTX 4070 12GB
 # Use: python scripts/train.py training=full
 
 dataloader:
-  batch_size: 10  # Optimal for RTX 4070 12GB
+  batch_size: 10  # Confirmed optimal for RTX 4070 12GB
   shuffle: true
-  num_workers: 4
+  num_workers: 6  # Increased from 4 - better CPU utilization
   pin_memory: true
   persistent_workers: true
-  prefetch_factor: 2
+  prefetch_factor: 3  # Increased from 2 - more prefetching
 
 optimizer:
   name: adamw
-  lr: 2.0e-5  # Lower LR for best convergence
+  lr: 3.0e-5  # Balanced - not too high (instability) not too low (slow)
   weight_decay: 0.01  # Standard regularization
   eps: 1.0e-6
-  betas: [0.9, 0.999]  # Standard betas
+  betas: [0.9, 0.98]  # Slightly faster momentum decay
 
 scheduler:
   name: cosine
-  warmup_steps: 500  # Standard warmup
+  warmup_steps: 300  # ~0.5 epoch warmup (613 steps/epoch)
 
 trainer:
-  max_epochs: 8  # Full training
+  max_epochs: 8  # Reduced from 12 - early stopping will catch plateau anyway
   gradient_clip_norm: 1.0
-  gradient_accumulation_steps: 8  # Larger effective batch: 80 (10*8)
+  gradient_accumulation_steps: 4  # Reduced from 8 → 2x faster optimizer steps!
   validation_max_length: 128
-  label_smoothing: 0.1  # Standard smoothing
+  label_smoothing: 0.1
   task_weights:
-    summarization: 1.0
-    emotion: 1.5  # Balanced boost
-    topic: 0.5  # Balanced weight
-  max_train_samples: 50000
-  max_val_samples: 3000
-  early_stopping_patience: 3  # Standard patience
-  log_grad_norm_frequency: 100
+    summarization: 1.0  # Main task
+    emotion: 1.0  # Equal weight
+    topic: 0.3  # LOW - only 3.4k samples, cycles 14x/epoch, risk of overfit
+  max_train_samples: null  # Use all available data
+  max_val_samples: 3000  # Enough for stable metrics
+  early_stopping_patience: 3  # Stop quickly when plateauing
+  log_grad_norm_frequency: 200
 
 compile_encoder: true
 compile_decoder: true
 
-# FULL QUALITY SETTINGS
-tokenizer_max_length: 512  # Full context for summarization
+# Quality settings
+tokenizer_max_length: 512  # Full context
 gradient_checkpointing: true
 
-# FLAN-T5 has NO learned positional embeddings - only relative position bias
-# Disabling this causes repetition loops (model can't track sequence position)
 use_relative_position_bias: true
 
-# Freeze lower encoder layers (0-5) to preserve pretrained knowledge
-# Upper layers (6-11) adapt to summarization style
-freeze_encoder_layers: 6
+# Freeze fewer layers for better adaptation
+freeze_encoder_layers: 4

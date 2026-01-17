@@ -67,5 +67,4 @@ configs/local/*.png
 
 # Backup/private files
 scripts/demo_gradio_old.py
-docs/paper.tex
 mlruns.db

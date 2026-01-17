@@ -156,6 +156,10 @@ def main(cfg: DictConfig) -> None:
     batch_size = int(dl_cfg.get("batch_size", 8))
     num_workers = int(dl_cfg.get("num_workers", 4))
     
+    # Classification tasks don't need full 512 tokens - 256 is sufficient
+    # This speeds up emotion/topic forward passes significantly
+    classification_max_len = min(256, max_len)
+    
     train_loaders = {
         "summarization": build_summarization_dataloader(
             summ_train, tokenizer, shuffle=True,
@@ -163,11 +167,11 @@ def main(cfg: DictConfig) -> None:
             batch_size=batch_size, num_workers=num_workers, pin_memory=True,
         ),
         "emotion": build_emotion_dataloader(
-            emot_train, tokenizer, shuffle=True, max_length=max_len,
+            emot_train, tokenizer, shuffle=True, max_length=classification_max_len,
             batch_size=batch_size, num_workers=num_workers, pin_memory=True,
         ),
         "topic": build_topic_dataloader(
-            topic_train, tokenizer, shuffle=True, max_length=max_len,
+            topic_train, tokenizer, shuffle=True, max_length=classification_max_len,
             batch_size=batch_size, num_workers=num_workers, pin_memory=True,
         ),
     }
@@ -181,12 +185,12 @@ def main(cfg: DictConfig) -> None:
         )
     if emot_val:
         val_loaders["emotion"] = build_emotion_dataloader(
-            emot_val, tokenizer, shuffle=False, max_length=max_len,
+            emot_val, tokenizer, shuffle=False, max_length=classification_max_len,
             batch_size=batch_size, num_workers=num_workers, pin_memory=True,
         )
     if topic_val:
         val_loaders["topic"] = build_topic_dataloader(
-            topic_val, tokenizer, shuffle=False, max_length=max_len,
+            topic_val, tokenizer, shuffle=False, max_length=classification_max_len,
             batch_size=batch_size, num_workers=num_workers, pin_memory=True,
         )
     
