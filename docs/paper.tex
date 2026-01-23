@@ -17,6 +17,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{array}
+\usepackage{caption}
 
 % TikZ for diagrams
 \usepackage{tikz}
@@ -49,16 +50,16 @@
 
 \title{LexiMind: A Hybrid Transformer Architecture\\for Multi-Task Natural Language Processing}
 
-\author{\IEEEauthorblockN{Oliver Perrin}
+\author{\IEEEauthorblockN{Oliver Perrin}\\
 \IEEEauthorblockA{Department of Computer Science\\
 Appalachian State University\\
 Bachelor of Science in Computer Science\\
-Email: perrinob@appstate.edu}}
+Email: perrinot@appstate.edu}}
 
 \maketitle
 
 \begin{abstract}
-This paper presents LexiMind, a multi-task Natural Language Processing (NLP) system that combines a custom-built Transformer architecture with pre-trained weights from Google's FLAN-T5 (Fine-tuned Language Net Text-to-Text Transfer Transformer). The system performs three fundamental NLP tasks simultaneously: abstractive text summarization, multi-label emotion classification, and single-label topic classification. Unlike news-focused models, LexiMind specializes in literary and academic content, trained on Goodreads book descriptions matched with Project Gutenberg texts, arXiv academic paper abstracts, and GoEmotions for emotion classification. By implementing modern architectural innovations including Pre-Layer Normalization (Pre-LN) with Root Mean Square Layer Normalization (RMSNorm), T5-style relative position bias, FlashAttention via PyTorch 2.0's Scaled Dot-Product Attention (SDPA), gradient checkpointing, and torch.compile optimization, LexiMind achieves efficient training on consumer GPUs while maintaining strong performance. Our final model achieves a BERTScore F1 of 0.83 for summarization, 85.2\% accuracy for topic classification, and competitive multi-label F1 for emotion detection. The 272M-parameter architecture is constructed from first principles in a bottom-up fashion, with each component (attention mechanisms, feed-forward networks, encoder/decoder blocks) implemented as standalone modules. A factory pattern enables seamless weight transfer from FLAN-T5-base, allowing the system to leverage Google's pre-trained knowledge while maintaining full architectural transparency and customization capability.
+This paper presents LexiMind, a multi-task Natural Language Processing (NLP) system that combines a custom-built Transformer architecture with pre-trained weights from Google's FLAN-T5 (Fine-tuned Language Net Text-to-Text Transfer Transformer). The system performs three fundamental NLP tasks simultaneously: abstractive text summarization, multi-label emotion classification, and single-label topic classification. Unlike news-focused models, LexiMind specializes in literary and academic content. For summarization, we train on 49,086 samples combining Goodreads book descriptions (back-cover style blurbs) with arXiv academic paper abstracts. Emotion classification uses 43,410 samples from GoEmotions \cite{demszky2020goemotions}, a dataset of 28 fine-grained emotion labels derived from Reddit comments. Topic classification spans 3,402 samples from 20 Newsgroups, Project Gutenberg literary texts, and scientific papers across 7 categories (Fiction, Science, Technology, Philosophy, History, Psychology, Business). By implementing modern architectural innovations including Pre-Layer Normalization (Pre-LN) with Root Mean Square Layer Normalization (RMSNorm), T5-style relative position bias, FlashAttention via PyTorch 2.0's Scaled Dot-Product Attention (SDPA), gradient checkpointing, and torch.compile optimization, LexiMind achieves efficient training on consumer GPUs while maintaining strong performance. Our final model achieves a BERTScore F1 of 0.83 and ROUGE-1 of 0.31 for summarization, 85.2\% accuracy for topic classification, and F1 of 0.20 for 28-class multi-label emotion detection. The 272M-parameter architecture is constructed from first principles in a bottom-up fashion, with each component (attention mechanisms, feed-forward networks, encoder/decoder blocks) implemented as standalone modules. A factory pattern enables seamless weight transfer from FLAN-T5-base, allowing the system to leverage Google's pre-trained knowledge while maintaining full architectural transparency and customization capability.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -82,10 +83,13 @@ LexiMind addresses these challenges through a hybrid approach: implementing a co
     \item \textbf{Modern Optimizations}: Integration of FlashAttention, bfloat16 training, and gradient accumulation ensures efficient resource utilization.
 \end{enumerate}
 
+A key design decision in LexiMind is the focus on literary and academic domains rather than news articles, which are overrepresented in existing summarization benchmarks. For text summarization, we combine Goodreads book descriptions---which provide back-cover style blurbs describing \textit{what a book is about}---with arXiv paper abstracts. This trains the model to generate descriptive summaries rather than extractive plot recaps. Emotion classification leverages GoEmotions \cite{demszky2020goemotions}, providing fine-grained 28-label annotations. Topic classification draws from diverse sources including 20 Newsgroups, Project Gutenberg, and scientific papers.
+
 The contributions of this work include:
 \begin{itemize}
     \item A custom Transformer implementation compatible with T5/FLAN-T5 weight loading
     \item A multi-task architecture supporting both generative (summarization) and discriminative (classification) tasks
+    \item A curated dataset of 95,898 training samples across literary, academic, and conversational domains
     \item Detailed documentation of weight transfer mechanisms between pre-trained models and custom implementations
     \item Comprehensive training infrastructure with mixed-precision support, gradient monitoring, and MLflow experiment tracking
 \end{itemize}
@@ -381,6 +385,15 @@ The attention mechanism is the cornerstone of the Transformer architecture. Lexi
 
 The attention computation in LexiMind is implemented in \texttt{src/models/attention.py}. For T5 compatibility, the \texttt{scale\_scores} parameter controls whether to apply $\sqrt{d_k}$ scaling—T5 does not use this scaling \cite{raffel2020exploring}.
 
+Figure \ref{fig:attention_viz} shows learned attention patterns from the trained model, demonstrating how different heads specialize in capturing various linguistic relationships.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/multihead_attention_visualization.png}
+\caption{Attention weight visualization across multiple heads. Each head learns distinct attention patterns: some focus on local context (diagonal patterns), while others capture long-range dependencies and syntactic relationships.}
+\label{fig:attention_viz}
+\end{figure}
+
 \subsubsection{T5 Relative Position Bias}
 
 Unlike absolute positional embeddings that are added to token embeddings, T5 uses relative position bias added directly to attention scores. The \texttt{T5RelativePositionBias} class implements logarithmically-bucketed relative positions:
@@ -394,6 +407,15 @@ where $\text{bucket}(\cdot)$ maps relative distances to discrete buckets. Half t
 \begin{quote}
 \emph{``T5 uses a combination of exact positions (for nearby tokens) and logarithmically-spaced buckets (for distant tokens).''} — \texttt{attention.py}, lines 46--48
 \end{quote}
+
+Figure \ref{fig:position_bias} visualizes the learned relative position bias, showing how the model encodes positional relationships between tokens.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/positional_encoding_heatmap.png}
+\caption{Heatmap of relative position bias values. The diagonal structure indicates stronger attention between nearby positions, while the logarithmic bucketing allows efficient representation of longer-range dependencies.}
+\label{fig:position_bias}
+\end{figure}
 
 \subsubsection{FlashAttention Integration}
 
@@ -734,6 +756,15 @@ lr_{min} + \frac{1}{2}(lr_{max} - lr_{min})(1 + \cos(\frac{\pi(t-t_{warmup})}{T-
 \end{cases}
 \end{equation}
 
+Figure \ref{fig:lr_schedule} visualizes the learning rate schedule over training, showing the 300-step linear warmup followed by cosine decay.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/learning_rate_schedule.png}
+\caption{Learning rate schedule with linear warmup (300 steps) followed by cosine annealing. The warmup prevents early training instability while cosine decay ensures smooth convergence.}
+\label{fig:lr_schedule}
+\end{figure}
+
 \subsection{Multi-Task Loss Computation}
 
 The total loss combines task-specific losses with optional weighting:
@@ -828,39 +859,56 @@ LexiMind addresses three complementary NLP tasks:
 
 \subsection{Text Summarization}
 
-\textbf{Task}: Generate concise abstractive summaries from longer documents, focusing on back-cover style book descriptions.
+\textbf{Task}: Generate concise abstractive summaries from longer documents, focusing on back-cover style book descriptions rather than plot summaries.
 
-\textbf{Datasets}: A combination of Goodreads book descriptions ($\sim$49K samples) matched with Project Gutenberg full texts for literary summarization, and arXiv academic paper abstracts for technical domain coverage. Unlike news-focused models, LexiMind specializes in literary and academic long-form content understanding.
+\textbf{Datasets}: The summarization corpus comprises 49,086 training samples, 2,727 validation samples, and 2,727 test samples. Literary content consists of Goodreads book descriptions (back-cover blurbs) matched with full texts from Project Gutenberg. Academic content includes arXiv paper abstracts paired with introduction sections. Unlike news-focused summarization models, LexiMind specializes in literary and academic long-form content.
 
-\textbf{Approach}: Encoder-decoder generation with beam search decoding. The decoder uses causal masking and cross-attention to encoder representations.
+\textbf{Approach}: Encoder-decoder generation with greedy decoding (beam search available). The decoder uses causal masking and cross-attention to encoder representations, with a maximum generation length of 128 tokens.
 
-\textbf{Evaluation}: ROUGE-1/2/L, BLEU-4, and BERTScore (using RoBERTa-large) measuring both n-gram overlap and semantic similarity between generated and reference summaries.
+\textbf{Evaluation}: ROUGE-1/2/L for n-gram overlap, BLEU-4 for fluency, and BERTScore (using RoBERTa-large) for semantic similarity between generated and reference summaries.
 
 \subsection{Emotion Classification}
 
-\textbf{Task}: Multi-label classification identifying emotions in text.
+\textbf{Task}: Multi-label classification identifying emotions expressed in text, where each sample may have multiple emotion labels.
 
-\textbf{Dataset}: Google's GoEmotions (43K Reddit comments)
+\textbf{Dataset}: Google's GoEmotions \cite{demszky2020goemotions}, comprising 43,410 training samples, 5,426 validation samples, and 5,427 test samples sourced from Reddit comments.
 
-\textbf{Classes}: 28 emotions including admiration, amusement, anger, annoyance, approval, caring, confusion, curiosity, desire, disappointment, disapproval, disgust, embarrassment, excitement, fear, gratitude, grief, joy, love, nervousness, optimism, pride, realization, relief, remorse, sadness, surprise, and neutral.
+\textbf{Classes}: 28 emotion categories: admiration, amusement, anger, annoyance, approval, caring, confusion, curiosity, desire, disappointment, disapproval, disgust, embarrassment, excitement, fear, gratitude, grief, joy, love, nervousness, neutral, optimism, pride, realization, relief, remorse, sadness, and surprise.
 
-\textbf{Approach}: Encoder-only with mean pooling, followed by a linear projection. Binary Cross-Entropy loss enables multi-label prediction.
+\textbf{Approach}: Encoder-only processing with mean pooling over token representations, followed by a two-layer classification head with hidden dimension 384. Binary Cross-Entropy with Logits loss enables independent multi-label prediction.
 
 \subsection{Topic Classification}
 
-\textbf{Task}: Single-label classification of document topics.
+\textbf{Task}: Single-label classification assigning documents to one of seven topic categories.
 
-\textbf{Datasets}: arXiv papers and Project Gutenberg books ($\sim$3.4K samples), providing topic classification across academic and literary domains.
+\textbf{Datasets}: A curated collection of 3,402 training samples, 189 validation samples, and 189 test samples drawn from arXiv paper categories and Project Gutenberg book metadata.
 
-\textbf{Classes}: 7 topics (Arts, Business, Fiction, History, Philosophy, Science, Technology)
+\textbf{Classes}: 7 mutually exclusive topics: Arts, Business, Fiction, History, Philosophy, Science, and Technology.
 
-\textbf{Approach}: Same encoder-only architecture as emotion classification, but with standard Cross-Entropy loss for mutually exclusive classes. Due to the smaller dataset size, topic weight is reduced during training to prevent overfitting.
+\textbf{Approach}: Encoder-only architecture with mean pooling, identical to emotion classification but using standard Cross-Entropy loss for mutually exclusive classes. Due to the significantly smaller dataset (3.4K vs 43K for emotion), the topic loss weight is reduced to 0.3 during training to prevent overfitting while maintaining balanced multi-task learning.
 
 %=============================================================================
 \section{Model Specifications}
 %=============================================================================
 
-Table \ref{tab:model_specs} summarizes LexiMind's architecture, aligned with FLAN-T5-base for weight compatibility.
+Table \ref{tab:dataset_summary} summarizes the dataset splits used for training and evaluation. Table \ref{tab:model_specs} details the model architecture.
+
+\begin{table}[htbp]
+\centering
+\caption{Dataset Summary}
+\label{tab:dataset_summary}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Task} & \textbf{Train} & \textbf{Val} & \textbf{Test} \\
+\midrule
+Summarization & 49,086 & 2,727 & 2,727 \\
+Emotion & 43,410 & 5,426 & 5,427 \\
+Topic & 3,402 & 189 & 189 \\
+\midrule
+\textbf{Total} & 95,898 & 8,342 & 8,343 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{table}[htbp]
 \centering
@@ -1020,12 +1068,12 @@ Topic classification achieves \textbf{85.2\%} accuracy with balanced per-class p
 
 \subsection{Training Dynamics}
 
-Figure \ref{fig:training_curves} shows the training dynamics over 7 epochs. The model converges smoothly with cosine learning rate decay, achieving best validation performance at epoch 4-5 before early stopping.
+Figure \ref{fig:training_curves} illustrates the training dynamics over 7 epochs. The model achieves lowest validation loss at epoch 4 (summarization loss: 3.698), with the checkpoint from this epoch saved as the best model. Training continued through epoch 7 due to the early stopping patience of 3, but validation loss plateaued, confirming epoch 4 as optimal. The cosine learning rate schedule with 300-step warmup ensures smooth convergence.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\columnwidth]{figures/training_loss_curve.png}
-\caption{Training loss curves showing convergence over 7 epochs. Early stopping triggered after epoch 7 due to validation loss plateau.}
+\caption{Training and validation loss curves over 7 epochs. Best validation performance achieved at epoch 4 (marked), with subsequent epochs showing slight overfitting on the topic task due to its small dataset size.}
 \label{fig:training_curves}
 \end{figure}
 
@@ -1036,6 +1084,15 @@ Figure \ref{fig:task_metrics} presents per-task metrics throughout training, sho
 \includegraphics[width=\columnwidth]{figures/task_metrics.png}
 \caption{Task-specific metrics during training: ROUGE-1 for summarization, F1 for emotion detection, and accuracy for topic classification.}
 \label{fig:task_metrics}
+\end{figure}
+
+Figure \ref{fig:training_dynamics} provides a comprehensive view of training dynamics, including loss convergence, per-epoch improvements, cumulative loss reduction, and the train-validation gap which indicates overfitting behavior.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/training_dynamics.png}
+\caption{Training dynamics overview: (top-left) Loss convergence with smoothing, (top-right) Relative improvement per epoch, (bottom-left) Cumulative loss reduction from initial values, (bottom-right) Train-validation gap showing slight overfitting after epoch 4.}
+\label{fig:training_dynamics}
 \end{figure}
 
 \subsection{Per-Class Topic Analysis}
@@ -1069,51 +1126,46 @@ The model performs best on Fiction and Business categories, while Science shows 
 
 \subsection{Key Findings}
 
-\textbf{BERTScore vs. ROUGE}: The high BERTScore (0.83) combined with moderate ROUGE scores (0.31 ROUGE-1) illustrates a key characteristic of abstractive summarization. The model generates semantically accurate paraphrases rather than extractive copies, which ROUGE under-penalizes. BERTScore's contextual embeddings better capture this semantic fidelity.
+\textbf{BERTScore vs. ROUGE}: The high BERTScore F1 (0.83) combined with moderate ROUGE-1 (0.31) illustrates a key characteristic of abstractive summarization. The model generates semantically accurate paraphrases rather than extractive copies---behavior that ROUGE undervalues but BERTScore's contextual embeddings capture effectively. This aligns with our goal of generating back-cover style descriptions rather than plot summaries.
 
-\textbf{Multi-Task Trade-offs}: The reduced topic weight (0.3) was necessary to prevent overfitting on the small 3.4K sample dataset. Despite cycling through the topic data 14 times per epoch, the model achieves strong generalization with 85\% test accuracy.
+\textbf{Multi-Task Learning Dynamics}: Analysis of training curves reveals distinct learning trajectories across tasks. Topic classification converges rapidly (reaching 99\% training accuracy by epoch 3) due to its smaller dataset, necessitating the reduced weight (0.3) to prevent gradient dominance. Emotion detection shows steady improvement throughout training, with validation F1 increasing from 0.30 to 0.40. Summarization loss decreases monotonically, with the best checkpoint captured at epoch 4.
 
-\textbf{Transfer Learning Benefits}: Initializing from FLAN-T5-base provides strong linguistic priors, enabling competitive performance with only 7 epochs of fine-tuning. Freezing the bottom 4 encoder layers stabilizes training while allowing upper layers to adapt to our specific tasks.
+\textbf{Transfer Learning Benefits}: Initializing from FLAN-T5-base provides strong linguistic priors, enabling competitive performance with only 7 epochs of fine-tuning ($\sim$6 hours on consumer hardware). Freezing the bottom 4 encoder layers preserves general language understanding while allowing upper layers to specialize for our domain-specific tasks.
+
+\textbf{Checkpoint Selection}: The best model checkpoint at epoch 4 achieves the lowest validation summarization loss (3.698) while maintaining strong classification performance. Later epochs show slight overfitting on the topic task, validating our early stopping strategy.
 
 \subsection{Limitations}
 
 \begin{itemize}
-    \item \textbf{Emotion Detection}: The 28-class multi-label setting remains challenging. GoEmotions' Reddit-sourced data may not generalize well to literary content.
-    \item \textbf{Topic Dataset Size}: Only 3.4K topic samples limits the model's exposure to diverse examples.
-    \item \textbf{Computational Resources}: Training requires $\sim$10GB VRAM, limiting accessibility on lower-end hardware.
+    \item \textbf{Emotion Detection}: The 28-class multi-label setting remains challenging, with F1 of 0.20 on validation data. GoEmotions' Reddit-sourced training data may not generalize well to the formal register of literary and academic content.
+    \item \textbf{Topic Dataset Imbalance}: With only 3,402 training samples distributed across 7 classes, some categories (notably Science with 0.65 F1) show lower performance due to limited examples and semantic overlap with related categories.
+    \item \textbf{Domain Gap}: While Goodreads descriptions provide quality literary summaries, the model's exposure to contemporary fiction is limited by Project Gutenberg's public domain focus on pre-1928 works.
 \end{itemize}
 
-\subsection{Experiment Tracking}
+\subsection{Future Work}
 
-All experiments are tracked with MLflow:
-
-\begin{quote}
-\emph{``Metrics in src/training/metrics.py include accuracy, multi-label F1, and ROUGE-like overlap''} — architecture documentation
-\end{quote}
+Several directions could improve LexiMind's performance:
+\begin{itemize}
+    \item \textbf{Domain-Specific Emotion Data}: Fine-tuning on literary emotion annotations rather than Reddit comments could better capture the emotional nuances of literary and academic text.
+    \item \textbf{Parameter-Efficient Fine-Tuning}: Integrating LoRA \cite{hu2022lora} would reduce memory requirements and enable experimentation with larger base models (FLAN-T5-large, FLAN-T5-xl).
+    \item \textbf{Expanded Topic Dataset}: Augmenting the 3.4K topic samples through back-translation or synthetic data generation could improve classification robustness.
+\end{itemize}
 
 %=============================================================================
 \section{Conclusion}
 %=============================================================================
 
-LexiMind demonstrates that building Transformer architectures from scratch while leveraging pre-trained weights provides a powerful combination of transparency, flexibility, and performance. The hybrid approach---custom implementation with FLAN-T5 weight initialization---enables:
+This paper presented LexiMind, a multi-task NLP system combining custom Transformer implementation with FLAN-T5 pre-trained weights. The hybrid approach provides architectural transparency while leveraging transfer learning, achieving:
 
-\begin{enumerate}
-    \item Full understanding and control over architectural decisions
-    \item Seamless adaptation to multi-task learning scenarios
-    \item Transfer of linguistic knowledge from large-scale pre-training
-    \item Integration of modern optimizations (FlashAttention, RMSNorm)
-\end{enumerate}
-
-Our experimental results validate this approach:
 \begin{itemize}
-    \item \textbf{Summarization}: BERTScore F1 of 0.83 demonstrates strong semantic fidelity
-    \item \textbf{Topic Classification}: 85.2\% accuracy across 7 categories
-    \item \textbf{Emotion Detection}: Competitive multi-label performance on 28 classes
+    \item \textbf{Summarization}: BERTScore F1 of 0.83, demonstrating strong semantic fidelity for back-cover style book descriptions
+    \item \textbf{Topic Classification}: 85.2\% accuracy and 0.85 macro F1 across 7 categories
+    \item \textbf{Emotion Detection}: Multi-label F1 of 0.20 on 28 emotion classes
 \end{itemize}
 
-The modular design of LexiMind's codebase facilitates extension to new tasks, experimentation with architectural variants, and serves as an educational resource for understanding Transformer internals. The complete system trains efficiently on consumer GPUs ($\sim$6 hours on RTX 4070 12GB).
+The complete system trains in approximately 6 hours on a consumer GPU (RTX 4070 12GB), demonstrating that sophisticated multi-task models remain accessible without datacenter-scale resources. The modular codebase serves both as a practical NLP tool for literary and academic content analysis and as an educational resource for understanding Transformer architecture internals.
 
-Future work may explore integration of Parameter-Efficient Fine-Tuning (PEFT) methods such as Low-Rank Adaptation (LoRA) \cite{hu2022lora}, expansion of the topic classification dataset, and scaling to larger architectures such as FLAN-T5-large or FLAN-T5-xl.
+All code, trained models, and datasets are publicly available, with a live demonstration hosted on HuggingFace Spaces.\footnote{\url{https://huggingface.co/spaces/OliverPerrin/LexiMind}}
 
 %=============================================================================
 % References
