@@ -8,217 +8,204 @@ app_file: scripts/demo_gradio.py
 pinned: false
 ---
 
-## LexiMind: A Multi-Task NLP Model
+# LexiMind
 
-LexiMind is a state-of-the-art Natural Language Processing model designed for complex document understanding. It features a **custom-built Transformer architecture** initialized with weights from Google's **FLAN-T5**, combining the flexibility of from-scratch implementation with the power of modern pre-trained models.
+A multi-task NLP system for literary and academic text understanding. LexiMind performs **abstractive summarization**, **topic classification**, and **emotion detection** using a single encoder-decoder transformer initialized from [FLAN-T5-base](https://huggingface.co/google/flan-t5-base) (272M parameters).
 
-The model performs three sophisticated tasks simultaneously: **text summarization**, **emotion classification**, and **topic clustering**.
+**[Live Demo](https://huggingface.co/spaces/OliverPerrin/LexiMind)** · **[Model](https://huggingface.co/OliverPerrin/LexiMind-Model)** · **[Discovery Dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery)** · **[Research Paper](docs/research_paper.tex)**
 
-This project is built with industry-standard MLOps practices, including configuration management with Hydra, experiment tracking with MLflow, and containerization with Docker, making it a reproducible and scalable solution.
+## What It Does
 
-## Core Features
+| Task | Description | Metric |
+|------|-------------|--------|
+| **Summarization** | Generates back-cover style book descriptions and paper abstracts from source text | BERTScore F1: **0.830** |
+| **Topic Classification** | Classifies passages into 7 categories | Accuracy: **85.2%** |
+| **Emotion Detection** | Identifies emotions from 28 fine-grained labels (multi-label) | Sample-avg F1: **0.199** |
 
-* **Abstractive Summarization:** Generates concise, coherent summaries of long-form text using encoder-decoder attention. Trained on BookSum (literary) and arXiv (academic papers).
-* **Emotion Classification:** Identifies 28 emotions from Google's GoEmotions dataset (admiration, amusement, anger, joy, love, etc.).
-* **Topic Classification:** Classifies documents into 8 categories (Fiction, Science, Technology, Philosophy, History, Psychology, Business, Arts).
+**Topic labels:** Arts · Business · Fiction · History · Philosophy · Science · Technology
 
-## Model Architecture
+The model is trained on literary text (Project Gutenberg + Goodreads descriptions), academic papers (arXiv), and emotion-annotated Reddit comments (GoEmotions). For summarization, it learns to produce descriptive summaries—what a book *is about*—rather than plot recaps, by pairing Gutenberg full texts with Goodreads descriptions and arXiv bodies with their abstracts.
 
-LexiMind implements a **from-scratch Transformer** with modern architectural choices:
+## Architecture
 
-### Custom Transformer Features
+LexiMind is a **custom Transformer implementation** that loads pre-trained weights from FLAN-T5-base via a factory module. The architecture is reimplemented from scratch for transparency, not wrapped from HuggingFace.
 
-* **Pre-Layer Normalization (Pre-LN):** RMSNorm applied before each sublayer for stable training
-* **FlashAttention:** Via PyTorch 2.0's `scaled_dot_product_attention` for efficient computation
-* **Learned Positional Embeddings:** Trainable position representations
-* **Multi-Head Attention:** 12 heads with 768-dimensional representations
-* **RMSNorm:** Modern normalization without bias (more efficient than LayerNorm)
-
-### Pre-trained Weight Initialization
-
-The model loads weights from **Google's FLAN-T5-base**, which provides:
-
-* Strong language understanding from instruction-tuning
-* Excellent performance on summarization and classification tasks
-* Encoder-decoder architecture matching our custom implementation
-
-### Multi-Task Learning
-
-A shared encoder-decoder backbone with task-specific heads:
-
-* **Summarization Head:** Language modeling head with weight tying
-* **Emotion Head:** Mean-pooled classification with dropout
-* **Topic Head:** Mean-pooled classification with dropout
-
-## Technical Specifications
-
-| Component | Specification |
-| --------- | -------------- |
-| Architecture | Encoder-Decoder Transformer |
-| Pre-trained Base | google/flan-t5-base |
-| Hidden Dimension | 768 |
-| Encoder Layers | 12 |
-| Decoder Layers | 12 |
-| Attention Heads | 12 |
-| FFN Dimension | 2048 |
+| Component | Detail |
+|-----------|--------|
+| Backbone | Encoder-Decoder Transformer (272M params) |
+| Encoder / Decoder | 12 layers each |
+| Hidden Dim | 768, 12 attention heads |
+| Position Encoding | T5-style relative position bias |
 | Normalization | RMSNorm (Pre-LN) |
-| Position Encoding | Learned Embeddings |
-| Max Sequence Length | 512 tokens |
+| Attention | FlashAttention via PyTorch 2.0 SDPA |
+| Summarization Head | Full decoder with language modeling head |
+| Classification Heads | Linear layers on mean-pooled encoder states |
+
+### Multi-Task Training
+
+All three tasks share the encoder. Summarization uses the full encoder-decoder; topic and emotion classification branch off the encoder with lightweight linear heads. Training uses round-robin scheduling (one batch per task per step), fixed loss weights (summarization=1.0, emotion=1.0, topic=0.3), and early stopping.
+
+## Training Data
+
+| Task | Source | Train Samples |
+|------|--------|---------------|
+| Summarization | Gutenberg + Goodreads (literary) | ~4K |
+| Summarization | arXiv body → abstract (academic) | ~45K |
+| Topic | 20 Newsgroups + Gutenberg + arXiv metadata | 3,402 |
+| Emotion | GoEmotions (Reddit comments, 28 labels) | 43,410 |
 
 ## Getting Started
 
 ### Prerequisites
 
-* Python 3.10+
-* Poetry for dependency management
-* Docker (for containerized deployment)
-* An NVIDIA GPU with CUDA support (for training and accelerated inference)
+- Python 3.10+
+- [Poetry](https://python-poetry.org/) for dependency management
+- NVIDIA GPU with CUDA (for training; CPU works for inference)
 
 ### Installation
 
-1. **Clone the repository:**
+```bash
+git clone https://github.com/OliverPerrin/LexiMind.git
+cd LexiMind
+poetry install
+```
 
-   ```bash
-   git clone https://github.com/OliverPerrin/LexiMind.git
-   cd LexiMind
-   ```
+### Download Data
 
-2. **Install dependencies:**
+```bash
+poetry run python scripts/download_data.py
+```
 
-   ```bash
-   poetry install
-   ```
-
-3. **Download datasets:**
-
-   ```bash
-   poetry run python scripts/download_data.py
-   ```
-
-   This downloads CNN/DailyMail, BookSum, GoEmotions, AG News, and Gutenberg books.
-
-## Usage
-
-### Configuration
-
-All training and model parameters are managed via Hydra. Configurations are located in the `configs/` directory.
-
-Available configurations:
-
-* `model=base` - FLAN-T5-base (default, 12 layers)
-* `model=small` - Smaller model for testing (no pretrained weights)
-* `model=large` - FLAN-T5-large (24 layers, requires more VRAM)
-* `training=dev` - Quick development run (~10-15 min)
-* `training=medium` - Balanced training (~45-60 min on RTX 4070)
-* `training=full` - Full training run (~3-4 hours, or ~24h for max data)
+Downloads Goodreads descriptions, arXiv papers, GoEmotions, 20 Newsgroups, and Gutenberg texts.
 
 ### Training
 
 ```bash
-# Default training with FLAN-T5-base
-poetry run python scripts/train.py
+# Full training (~45-60 min on RTX 4070 12GB)
+poetry run python scripts/train.py training=full
 
-# Quick development run
+# Quick dev run (~10-15 min)
 poetry run python scripts/train.py training=dev
 
-# Medium training run (recommended for RTX 4070)
+# Medium run (~30-45 min)
 poetry run python scripts/train.py training=medium
 
 # Override parameters
 poetry run python scripts/train.py training.optimizer.lr=5e-5
 
-# Resume from a checkpoint
+# Resume from checkpoint
 poetry run python scripts/train.py training=full resume_from=checkpoints/epoch_5.pt
 ```
 
-Experiments are automatically tracked with MLflow. View results with `mlflow ui`.
+Training uses BFloat16 mixed precision, gradient checkpointing, `torch.compile`, and cosine LR decay with warmup. Experiments are tracked with MLflow (`mlflow ui` to browse).
 
 ### Evaluation
 
 ```bash
-# Run inference on test data
-poetry run python scripts/inference.py "Your text to analyze"
+# Full evaluation (ROUGE, BERTScore, topic accuracy, emotion F1)
+poetry run python scripts/evaluate.py
+
+# Skip BERTScore for faster runs
+poetry run python scripts/evaluate.py --skip-bertscore
+
+# Single task
+poetry run python scripts/evaluate.py --summarization-only
 ```
 
-### Inference & Demo
+### Inference
 
 ```bash
-# Command-line inference
+# Command-line
 poetry run python scripts/inference.py "Your text to analyze"
 
 # Gradio web demo
 poetry run python scripts/demo_gradio.py
 ```
 
-## Docker
+### Docker
 
 ```bash
-# Build
 docker build -t leximind .
-
-# Run demo
 docker run -p 7860:7860 leximind
 ```
 
 ## Project Structure
 
-```text
-├── configs/            # Hydra configuration files
-│   ├── model/          # Model architectures (base, small, large)
-│   ├── training/       # Training configs (dev, medium, full)
-│   └── data/           # Dataset paths
+```
+configs/
+├── config.yaml              # Main Hydra config
+├── data/datasets.yaml       # Dataset paths and tokenizer settings
+├── model/                   # Architecture configs (base, small, large)
+└── training/                # Training configs (dev, medium, full)
+
+src/
+├── models/
+│   ├── encoder.py           # Transformer Encoder with Pre-LN RMSNorm
+│   ├── decoder.py           # Transformer Decoder with KV-cache
+│   ├── attention.py         # Multi-Head Attention + T5 relative position bias
+│   ├── feedforward.py       # Gated feed-forward network
+│   ├── positional_encoding.py  # Sinusoidal & learned position encodings
+│   ├── t5_layer_norm.py     # T5-style RMSNorm
+│   ├── heads.py             # Task-specific classification heads
+│   ├── multitask.py         # Multi-task model combining all components
+│   └── factory.py           # Model builder with FLAN-T5 weight loading
 ├── data/
-│   └── processed/      # Training data (downloaded via scripts/download_data.py)
-│       ├── summarization/  # CNN/DailyMail + BookSum
-│       ├── emotion/        # GoEmotions (28 labels)
-│       ├── topic/          # AG News (4 categories)
-│       └── books/          # Gutenberg prose chunks
-├── src/
-│   ├── models/         # Custom Transformer implementation
-│   │   ├── encoder.py  # TransformerEncoder with Pre-LN RMSNorm
-│   │   ├── decoder.py  # TransformerDecoder with KV-cache
-│   │   ├── attention.py # Multi-Head Attention with FlashAttention
-│   │   └── factory.py  # Model building with FLAN-T5 weight loading
-│   ├── data/           # Dataset classes and dataloaders
-│   ├── training/       # Trainer with AMP and gradient accumulation
-│   └── inference/      # Inference pipeline
-├── scripts/
-│   ├── train.py        # Main training script
-│   ├── download_data.py # Dataset downloader
-│   ├── inference.py    # CLI inference
-│   └── demo_gradio.py  # Web demo
-└── tests/              # Unit tests
+│   ├── dataset.py           # Dataset classes for all tasks
+│   ├── dataloader.py        # Multi-task dataloader with round-robin sampling
+│   └── tokenization.py      # Tokenizer wrapper
+├── training/
+│   ├── trainer.py           # Training loop with AMP, grad accumulation, early stopping
+│   ├── metrics.py           # ROUGE, BERTScore, F1, accuracy computation
+│   └── utils.py             # Checkpointing, logging utilities
+├── inference/
+│   ├── pipeline.py          # End-to-end inference pipeline
+│   └── factory.py           # Model loading for inference
+├── api/                     # FastAPI REST endpoint
+└── utils/                   # Shared utilities
+
+scripts/
+├── train.py                 # Training entry point
+├── evaluate.py              # Evaluation with all metrics
+├── inference.py             # CLI inference
+├── demo_gradio.py           # Gradio web UI
+├── download_data.py         # Dataset downloader
+├── export_model.py          # Model export utilities
+├── export_tokenizer.py      # Tokenizer export
+├── preprocess_data.py       # Data preprocessing
+├── process_books.py         # Gutenberg text processing
+├── eval_rouge.py            # ROUGE-only evaluation
+└── visualize_training.py    # Training curve plotting
+
+tests/                       # Pytest suite (data, models, training, inference, utils)
+docs/                        # Research paper and architecture notes
+artifacts/                   # Tokenizer files and label definitions
+checkpoints/                 # Saved model checkpoints
 ```
 
 ## Code Quality
 
-* **Ruff:** Fast linting and formatting
-* **MyPy:** Static type checking
-* **Pytest:** Full test suite covering data, models, and training
-* **Pre-commit hooks:** Automated quality checks
-
 ```bash
-# Install hooks
-poetry run pre-commit install
-
-# Lint
-poetry run ruff check .
-
-# Type check
-poetry run mypy .
-
-# Tests
-poetry run pytest
+poetry run ruff check .     # Linting
+poetry run mypy .           # Type checking
+poetry run pytest           # Test suite
+poetry run pre-commit run --all-files  # All checks
 ```
 
-## Performance Optimizations
+## Key Results
 
-* **torch.compile:** JIT compilation with Inductor backend
-* **Mixed Precision:** bfloat16 training on Ampere/Ada GPUs
-* **TF32:** Enabled for RTX 30xx/40xx series
-* **KV-Cache:** Efficient autoregressive decoding
-* **FlashAttention:** Memory-efficient attention via SDPA
+From the research paper ([docs/research_paper.tex](docs/research_paper.tex)):
+
+- **Multi-task learning helps topic classification** (+3.2% accuracy over single-task) because the small topic dataset (3.4K) benefits from shared encoder representations trained on the larger summarization corpus (49K).
+- **Summarization is robust to MTL**—quality stays comparable whether trained alone or jointly.
+- **Emotion detection shows slight negative transfer** (−0.02 F1), likely due to domain mismatch between Reddit-sourced emotion labels and literary/academic text.
+- **FLAN-T5 pre-training is essential**—random initialization produces dramatically worse results on all tasks.
+
+See the paper for full ablations, per-class breakdowns, and discussion of limitations.
 
 ## License
 
-GNU License - see [LICENSE](LICENSE) for details.
+GPL-3.0 — see [LICENSE](LICENSE) for details.
+
+---
+
+*Built by Oliver Perrin · Appalachian State University · 2025–2026*

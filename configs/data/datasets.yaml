@@ -4,7 +4,7 @@
 processed:
   summarization: data/processed/summarization  # BookSum + arXiv
   emotion: data/processed/emotion              # GoEmotions (28 labels)
-  topic: data/processed/topic                  # Books + Papers (8 labels)
+  topic: data/processed/topic                  # Books + Papers (7 labels)
   books: data/processed/books                  # Gutenberg prose chunks
 
 tokenizer:

@@ -5,7 +5,7 @@ Training script for LexiMind.
 Simple, clean training with multi-task learning across:
 - Summarization (BookSum + arXiv papers)
 - Emotion classification (GoEmotions, 28 labels)
-- Topic classification (Books + Papers, 8 labels: Fiction, Science, Technology, etc.)
+- Topic classification (Books + Papers, 7 labels: Arts, Business, Fiction, History, Philosophy, Science, Technology)
 
 Usage:
     python scripts/train.py training=medium

@@ -468,12 +468,12 @@ since descriptions paraphrase rather than quote the source text.*
                 
                 ### Training Data
                 
-                | Dataset | Task | Description |
-                |---------|------|-------------|
-                | Goodreads (711k+ blurbs) | Book Descriptions | Back-cover style descriptions matched with Gutenberg texts |
-                | arXiv | Paper Abstracts | Scientific paper summarization |
-                | 20 Newsgroups + Gutenberg | Topic Classification | Multi-domain topic categorization |
-                | GoEmotions | Emotion Detection | 28-class multi-label emotion classification |
+                | Dataset | Task | Samples |
+                |---------|------|---------|
+                | Gutenberg + Goodreads | Book Descriptions | ~4K literary pairs |
+                | arXiv (body → abstract) | Paper Abstracts | ~45K academic pairs |
+                | 20 Newsgroups + Gutenberg + arXiv | Topic Classification | 3.4K (7 classes) |
+                | GoEmotions (Reddit) | Emotion Detection | 43K (28 labels) |
                 
                 ### Key Design Decision
                 
@@ -483,9 +483,9 @@ since descriptions paraphrase rather than quote the source text.*
                 
                 ### Evaluation Metrics
                 
-                - **ROUGE-1/2/L**: Lexical overlap (expected range: 0.15-0.25 for descriptions)
+                - **ROUGE-1/2/L**: Lexical overlap with reference summaries
                 - **BLEU-4**: N-gram precision
-                - **BERTScore**: Semantic similarity using contextual embeddings (key metric for paraphrasing)
+                - **BERTScore**: Semantic similarity using contextual embeddings (primary metric for abstractive summarization)
                 
                 ### Links
                 
