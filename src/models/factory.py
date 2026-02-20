@@ -548,13 +548,15 @@ def build_multitask_model(
         "summarization",
         LMHead(d_model=cfg.d_model, vocab_size=vocab_size, tie_embedding=decoder.embedding),
     )
-    # Emotion head with 2-layer MLP for better multi-label capacity (28 classes)
+    # Emotion head with attention pooling + 2-layer MLP for better multi-label capacity (28 classes)
+    # Attention pooling is superior to mean pooling for encoder-decoder models where
+    # hidden states are optimized for cross-attention rather than simple averaging.
     model.add_head(
         "emotion",
         ClassificationHead(
             d_model=cfg.d_model, 
             num_labels=num_emotions, 
-            pooler="mean", 
+            pooler="attention", 
             dropout=cfg.dropout,
             hidden_dim=cfg.d_model // 2,  # 384-dim hidden layer
         ),

@@ -110,9 +110,9 @@ def calculate_bertscore(
     )
     
     return {
-        "precision": float(P.mean().item()),
-        "recall": float(R.mean().item()),
-        "f1": float(F1.mean().item()),
+        "precision": float(P.mean().item()),  # type: ignore[union-attr]
+        "recall": float(R.mean().item()),  # type: ignore[union-attr]
+        "f1": float(F1.mean().item()),  # type: ignore[union-attr]
     }
 
 
@@ -239,3 +239,213 @@ def get_confusion_matrix(
 ) -> np.ndarray:
     """Compute confusion matrix."""
     return cast(np.ndarray, confusion_matrix(targets, predictions, labels=labels))
+
+
+# --------------- Multi-label Emotion Metrics ---------------
+
+
+def multilabel_macro_f1(predictions: torch.Tensor, targets: torch.Tensor) -> float:
+    """Compute macro F1: average F1 per class (as in GoEmotions paper).
+    
+    This averages F1 across labels, giving equal weight to each emotion class 
+    regardless of prevalence. Directly comparable to GoEmotions baselines.
+    """
+    preds = predictions.float()
+    gold = targets.float()
+    
+    # Per-class TP, FP, FN
+    tp = (preds * gold).sum(dim=0)
+    fp = (preds * (1 - gold)).sum(dim=0)
+    fn = ((1 - preds) * gold).sum(dim=0)
+    
+    precision = tp / (tp + fp).clamp(min=1e-8)
+    recall = tp / (tp + fn).clamp(min=1e-8)
+    f1 = (2 * precision * recall) / (precision + recall).clamp(min=1e-8)
+    
+    # Zero out F1 for classes with no support in either predictions or targets
+    mask = (tp + fp + fn) > 0
+    if mask.sum() == 0:
+        return 0.0
+    return float(f1[mask].mean().item())
+
+
+def multilabel_micro_f1(predictions: torch.Tensor, targets: torch.Tensor) -> float:
+    """Compute micro F1: aggregate TP/FP/FN across all classes.
+    
+    This gives more weight to frequent classes. Useful when class distribution matters.
+    """
+    preds = predictions.float()
+    gold = targets.float()
+    
+    tp = (preds * gold).sum()
+    fp = (preds * (1 - gold)).sum()
+    fn = ((1 - preds) * gold).sum()
+    
+    precision = tp / (tp + fp).clamp(min=1e-8)
+    recall = tp / (tp + fn).clamp(min=1e-8)
+    f1 = (2 * precision * recall) / (precision + recall).clamp(min=1e-8)
+    return float(f1.item())
+
+
+def multilabel_per_class_metrics(
+    predictions: torch.Tensor,
+    targets: torch.Tensor,
+    class_names: Sequence[str] | None = None,
+) -> Dict[str, Dict[str, float]]:
+    """Compute per-class precision, recall, F1 for multi-label classification.
+    
+    Returns a dict mapping class name/index to its metrics.
+    """
+    preds = predictions.float()
+    gold = targets.float()
+    num_classes = preds.shape[1]
+    
+    tp = (preds * gold).sum(dim=0)
+    fp = (preds * (1 - gold)).sum(dim=0)
+    fn = ((1 - preds) * gold).sum(dim=0)
+    
+    report: Dict[str, Dict[str, float]] = {}
+    for i in range(num_classes):
+        name = class_names[i] if class_names else str(i)
+        p = (tp[i] / (tp[i] + fp[i]).clamp(min=1e-8)).item()
+        r = (tp[i] / (tp[i] + fn[i]).clamp(min=1e-8)).item()
+        f = (2 * p * r) / max(p + r, 1e-8)
+        report[name] = {
+            "precision": p,
+            "recall": r,
+            "f1": f,
+            "support": int(gold[:, i].sum().item()),
+        }
+    return report
+
+
+def tune_per_class_thresholds(
+    logits: torch.Tensor,
+    targets: torch.Tensor,
+    thresholds: Sequence[float] | None = None,
+) -> tuple[List[float], float]:
+    """Tune per-class thresholds on validation set to maximize macro F1.
+    
+    For each class, tries multiple thresholds and selects the one that 
+    maximizes that class's F1 score. This is standard practice for multi-label 
+    classification (used in the original GoEmotions paper).
+    
+    Args:
+        logits: Raw model logits (batch, num_classes)
+        targets: Binary target labels (batch, num_classes)
+        thresholds: Candidate thresholds to try (default: 0.1 to 0.9 by 0.05)
+    
+    Returns:
+        Tuple of (best_thresholds_per_class, resulting_macro_f1)
+    """
+    if thresholds is None:
+        thresholds = [round(t, 2) for t in np.arange(0.1, 0.9, 0.05).tolist()]
+    
+    probs = torch.sigmoid(logits)
+    num_classes = probs.shape[1]
+    gold = targets.float()
+    
+    best_thresholds: List[float] = []
+    for c in range(num_classes):
+        best_f1 = -1.0
+        best_t = 0.5
+        for t in thresholds:
+            preds = (probs[:, c] >= t).float()
+            tp = (preds * gold[:, c]).sum()
+            fp = (preds * (1 - gold[:, c])).sum()
+            fn = ((1 - preds) * gold[:, c]).sum()
+            if tp + fp > 0 and tp + fn > 0:
+                p = tp / (tp + fp)
+                r = tp / (tp + fn)
+                f1 = (2 * p * r / (p + r)).item()
+            else:
+                f1 = 0.0
+            if f1 > best_f1:
+                best_f1 = f1
+                best_t = t
+        best_thresholds.append(best_t)
+    
+    # Compute resulting macro F1 with tuned thresholds
+    tuned_preds = torch.zeros_like(probs)
+    for c in range(num_classes):
+        tuned_preds[:, c] = (probs[:, c] >= best_thresholds[c]).float()
+    macro_f1 = multilabel_macro_f1(tuned_preds, targets)
+    
+    return best_thresholds, macro_f1
+
+
+# --------------- Statistical Tests ---------------
+
+
+def bootstrap_confidence_interval(
+    scores: Sequence[float],
+    n_bootstrap: int = 1000,
+    confidence: float = 0.95,
+    seed: int = 42,
+) -> tuple[float, float, float]:
+    """Compute bootstrap confidence interval for a metric.
+    
+    Args:
+        scores: Per-sample metric values
+        n_bootstrap: Number of bootstrap resamples
+        confidence: Confidence level (default 95%)
+        seed: Random seed for reproducibility
+    
+    Returns:
+        Tuple of (mean, lower_bound, upper_bound)
+    """
+    rng = np.random.default_rng(seed)
+    scores_arr = np.array(scores)
+    n = len(scores_arr)
+    
+    bootstrap_means = []
+    for _ in range(n_bootstrap):
+        sample = rng.choice(scores_arr, size=n, replace=True)
+        bootstrap_means.append(float(np.mean(sample)))
+    
+    bootstrap_means.sort()
+    alpha = 1 - confidence
+    lower_idx = int(alpha / 2 * n_bootstrap)
+    upper_idx = int((1 - alpha / 2) * n_bootstrap)
+    
+    return (
+        float(np.mean(scores_arr)),
+        bootstrap_means[lower_idx],
+        bootstrap_means[min(upper_idx, n_bootstrap - 1)],
+    )
+
+
+def paired_bootstrap_test(
+    scores_a: Sequence[float],
+    scores_b: Sequence[float],
+    n_bootstrap: int = 10000,
+    seed: int = 42,
+) -> float:
+    """Paired bootstrap significance test between two systems.
+    
+    Tests if system B is significantly better than system A.
+    
+    Args:
+        scores_a: Per-sample scores from system A
+        scores_b: Per-sample scores from system B
+        n_bootstrap: Number of bootstrap iterations
+        seed: Random seed
+    
+    Returns:
+        p-value (probability that B is not better than A)
+    """
+    rng = np.random.default_rng(seed)
+    a = np.array(scores_a)
+    b = np.array(scores_b)
+    assert len(a) == len(b), "Both score lists must have the same length"
+    
+    n = len(a)
+    
+    count = 0
+    for _ in range(n_bootstrap):
+        idx = rng.choice(n, size=n, replace=True)
+        diff = float(np.mean(b[idx]) - np.mean(a[idx]))
+        if diff <= 0:
+            count += 1
+    
+    return count / n_bootstrap

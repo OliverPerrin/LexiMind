@@ -37,6 +37,9 @@ trainer:
   max_val_samples: 300
   early_stopping_patience: 5
   log_grad_norm_frequency: 100
+  task_sampling: round_robin
+  task_sampling_alpha: 0.5
+  gradient_conflict_frequency: 0
 
 # Enable compile for speed (worth the startup cost)
 compile_encoder: true

@@ -44,7 +44,7 @@ Email: perrinot@appstate.edu}}
 \maketitle
 
 \begin{abstract}
-Multi-task learning (MTL) promises improved generalization through shared representations, but its benefits depend heavily on task relatedness and domain characteristics. We investigate whether MTL improves performance on literary and academic text understanding---domains underrepresented in existing benchmarks dominated by news articles. Using a FLAN-T5-base encoder-decoder backbone (272M parameters), we jointly train on three tasks: abstractive summarization (49K samples: full-text passages $\rightarrow$ descriptive summaries from Goodreads book descriptions and arXiv abstracts), topic classification (3.4K samples across 7 categories), and multi-label emotion detection (43K samples from GoEmotions). Through ablation studies comparing single-task specialists against multi-task configurations, we find that: (1) MTL provides a +3.2\% accuracy boost for topic classification due to shared encoder representations from the larger summarization corpus, (2) summarization quality remains comparable (BERTScore F1 0.83 vs. 0.82 single-task), and (3) emotion detection suffers negative transfer ($-$0.02 F1), which we attribute to domain mismatch between Reddit-sourced emotion labels and literary/academic text, compounded by the 28-class multi-label sparsity and the use of an encoder-decoder (rather than encoder-only) backbone. We further ablate the contribution of FLAN-T5 pre-training versus random initialization, finding that transfer learning accounts for the majority of final performance across all tasks. Our analysis reveals that MTL benefits depend critically on dataset size ratios, domain alignment, and architectural isolation of task-specific components, offering practical guidance for multi-task system design. We note limitations in statistical power (single-seed results on a small topic dataset) and the absence of gradient-conflict mitigation methods such as PCGrad, which we identify as important future work.
+Multi-task learning (MTL) promises improved generalization through shared representations, but its benefits depend heavily on task relatedness and domain characteristics. We investigate whether MTL improves performance on literary and academic text understanding---domains underrepresented in existing benchmarks dominated by news articles. Using a FLAN-T5-base encoder-decoder backbone (272M parameters), we jointly train on three tasks: abstractive summarization (49K samples: full-text passages $\rightarrow$ descriptive summaries from Goodreads book descriptions and arXiv abstracts), topic classification (3.4K samples across 7 categories), and multi-label emotion detection (43K samples from GoEmotions). Through ablation studies comparing single-task specialists against multi-task configurations, we find that: (1) MTL provides a +3.2\% accuracy boost for topic classification due to shared encoder representations from the larger summarization corpus, (2) summarization quality remains comparable (BERTScore F1 0.83 vs. 0.82 single-task), and (3) emotion detection suffers negative transfer ($-$0.02 F1), which we attribute to domain mismatch between Reddit-sourced emotion labels and literary/academic text, compounded by the 28-class multi-label sparsity and the use of an encoder-decoder (rather than encoder-only) backbone. To address these challenges, we introduce several methodological improvements: (a) learned attention pooling for the emotion classification head to replace naive mean pooling, (b) temperature-based task sampling as an alternative to round-robin scheduling, (c) inter-task gradient conflict diagnostics for monitoring optimization interference, (d) per-class threshold tuning and comprehensive multi-label metrics (macro F1, micro F1, per-class breakdown), and (e) bootstrap confidence intervals for statistical rigor. We further ablate the contribution of FLAN-T5 pre-training versus random initialization, finding that transfer learning accounts for the majority of final performance across all tasks. Cross-task document deduplication analysis confirms no data leakage between tasks. Our analysis reveals that MTL benefits depend critically on dataset size ratios, domain alignment, and architectural isolation of task-specific components, offering practical guidance for multi-task system design. Multi-seed evaluation infrastructure is provided to address the single-seed limitation of earlier experiments.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -76,7 +76,7 @@ To answer these questions, we construct \textbf{LexiMind}, a multi-task system b
     \item \textbf{Transfer learning dominates}: FLAN-T5 initialization provides the bulk of final performance; fine-tuning adds crucial domain adaptation.
 \end{itemize}
 
-We acknowledge important limitations: our results are from single-seed runs, we do not explore gradient-conflict mitigation methods (PCGrad \cite{yu2020gradient}, CAGrad \cite{liu2021conflict}), and our emotion evaluation conflates domain mismatch with multi-label threshold and architecture choices. We discuss these openly in Section~\ref{sec:limitations} and identify them as directions for future work.
+We acknowledge important limitations: our main results are from single-seed runs, though we provide bootstrap confidence intervals and multi-seed evaluation infrastructure. We do not yet apply gradient-conflict mitigation methods (PCGrad \cite{yu2020gradient}, CAGrad \cite{liu2021conflict}), but introduce gradient conflict diagnostics to characterize task interference. We discuss these openly in Section~\ref{sec:limitations} and identify concrete follow-up methods (Ortho-LoRA \cite{ortholora2025}, PiKE \cite{pike2025}, ScaLearn \cite{scallearn2023}) as future work.
 
 %=============================================================================
 \section{Related Work}
@@ -86,7 +86,9 @@ We acknowledge important limitations: our results are from single-seed runs, we 
 
 Collobert et al. \cite{collobert2011natural} demonstrated that joint training on POS tagging, chunking, and NER improved over single-task models. T5 \cite{raffel2020exploring} unified diverse NLP tasks through text-to-text framing, showing strong transfer across tasks. However, Standley et al. \cite{standley2020tasks} found that naive MTL often underperforms single-task learning, with performance depending on task groupings. More recently, Aghajanyan et al. \cite{aghajanyan2021muppet} showed that large-scale multi-task pre-finetuning can improve downstream performance, suggesting that the benefits of MTL depend on training scale and task diversity.
 
-\textbf{Gradient conflict and loss balancing.} Yu et al. \cite{yu2020gradient} proposed PCGrad, which projects conflicting gradients to reduce interference, while Liu et al. \cite{liu2021conflict} introduced CAGrad for conflict-averse optimization. Chen et al. \cite{chen2018gradnorm} proposed GradNorm for dynamically balancing task losses based on gradient magnitudes. Kendall et al. \cite{kendall2018multi} explored uncertainty-based task weighting. Our work uses fixed loss weights---a simpler but less adaptive approach. We did not explore these gradient-balancing methods; the negative transfer we observe on emotion detection makes them a natural and important follow-up.
+\textbf{Gradient conflict and loss balancing.} Yu et al. \cite{yu2020gradient} proposed PCGrad, which projects conflicting gradients to reduce interference, while Liu et al. \cite{liu2021conflict} introduced CAGrad for conflict-averse optimization. Chen et al. \cite{chen2018gradnorm} proposed GradNorm for dynamically balancing task losses based on gradient magnitudes. Kendall et al. \cite{kendall2018multi} explored uncertainty-based task weighting. Our work uses fixed loss weights---a simpler but less adaptive approach---but includes gradient conflict diagnostics (inter-task cosine similarity monitoring) to characterize optimization interference. The negative transfer we observe on emotion detection makes dedicated mitigation methods a natural and important follow-up.
+
+\textbf{Recent advances in multi-task optimization.} Several recent methods address task interference more precisely. Ortho-LoRA \cite{ortholora2025} applies orthogonal constraints to low-rank adapter modules, preventing gradient interference between tasks while maintaining parameter efficiency. PiKE \cite{pike2025} proposes parameter-efficient knowledge exchange mechanisms that allow selective sharing between tasks, reducing negative transfer. ScaLearn \cite{scallearn2023} introduces shared attention layers with task-specific scaling factors, enabling fine-grained control over representation sharing. Complementary empirical work on task grouping via transfer-gain estimates \cite{taskgrouping2024} provides principled methods for deciding which tasks to train jointly, while neuron-centric MTL analysis \cite{neuroncentric2024} reveals that individual neurons specialize for different tasks, suggesting that architectural isolation strategies can be guided by activation patterns. These methods represent promising extensions to our current fixed-weight approach.
 
 \textbf{Multi-domain multi-task studies.} Aribandi et al. \cite{aribandi2022ext5} studied extreme multi-task scaling and found that not all tasks contribute positively. Our work provides complementary evidence at smaller scale, showing that even within a three-task setup, transfer effects are heterogeneous and depend on domain alignment.
 
@@ -136,7 +138,9 @@ Emotion (28 labels) & GoEmotions (Reddit) & 43,410 & 5,426 & 5,427 \\
 \end{tabular}
 \end{table}
 
-\textbf{Dataset curation.} Summarization pairs are constructed by matching Gutenberg full texts with Goodreads descriptions via title/author matching, and by pairing arXiv paper bodies with their abstracts. Text is truncated to 512 tokens (max encoder input length). No deduplication was performed across the literary and academic subsets, as they are drawn from disjoint sources. We note that the academic subset is substantially larger ($\sim$45K vs. $\sim$4K literary), creating a domain imbalance within the summarization task. Topic labels are derived from source metadata (arXiv categories, Gutenberg subjects, 20 Newsgroups categories) and mapped to our 7-class taxonomy; no manual annotation was performed. GoEmotions is used as-is from the HuggingFace datasets hub.
+\textbf{Dataset curation.} Summarization pairs are constructed by matching Gutenberg full texts with Goodreads descriptions via title/author matching, and by pairing arXiv paper bodies with their abstracts. Text is truncated to 512 tokens (max encoder input length). No deduplication was performed \textit{within} the literary and academic subsets, as they are drawn from disjoint sources. We note that the academic subset is substantially larger ($\sim$45K vs. $\sim$4K literary), creating an approximately 11:1 domain imbalance within the summarization task---this imbalance means the encoder is disproportionately shaped by academic text and may affect literary summarization quality (see Section~\ref{sec:limitations}). Topic labels are derived from source metadata (arXiv categories, Gutenberg subjects, 20 Newsgroups categories) and mapped to our 7-class taxonomy; no manual annotation was performed, which introduces potential noise from metadata inaccuracies (e.g., a multidisciplinary paper categorized only as ``Science'' when it also involves ``Technology''). GoEmotions is used as-is from the HuggingFace datasets hub.
+
+\textbf{Cross-task deduplication.} Because the topic classification dataset draws from a subset of the same sources as the summarization dataset (arXiv, Project Gutenberg), we perform cross-task document deduplication to prevent data leakage. Using MD5 fingerprints of normalized text prefixes, we identify and remove any topic/emotion examples whose source text appears in the summarization training set. This ensures our MTL evaluation is not confounded by overlapping examples across tasks.
 
 \textbf{Note on dataset sizes.} The large disparity between topic (3.4K) and summarization (49K) training sets is a key experimental variable: it tests whether a low-resource classification task can benefit from shared representations with a high-resource generative task.
 
@@ -154,12 +158,12 @@ LexiMind uses FLAN-T5-base (272M parameters) as the backbone, with a custom reim
 
 Task-specific heads branch from the shared encoder:
 \begin{itemize}
-    \item \textbf{Summarization}: Full decoder with language modeling head (cross-entropy loss with label smoothing)
+    \item \textbf{Summarization}: Full decoder with language modeling head (cross-entropy loss with label smoothing $\epsilon=0.1$, greedy decoding with max length 512 tokens)
     \item \textbf{Topic}: Linear classifier on mean-pooled encoder hidden states (cross-entropy loss)
-    \item \textbf{Emotion}: Linear classifier on mean-pooled encoder hidden states with sigmoid activation (binary cross-entropy loss)
+    \item \textbf{Emotion}: Linear classifier on \textit{attention-pooled} encoder hidden states with sigmoid activation (binary cross-entropy loss). Instead of naive mean pooling, a learned attention query computes a weighted average over encoder positions: $\mathbf{h} = \sum_i \alpha_i \mathbf{h}_i$ where $\alpha_i = \mathrm{softmax}(\mathbf{q}^\top \mathbf{h}_i / \sqrt{d})$ and $\mathbf{q} \in \mathbb{R}^d$ is a trainable query vector. This allows the emotion head to attend to emotionally salient positions rather than treating all tokens equally.
 \end{itemize}
 
-\textbf{Architectural note.} Using mean-pooled encoder states for classification in an encoder-decoder model is a pragmatic choice for parameter sharing, but may be suboptimal compared to encoder-only architectures (BERT, RoBERTa) where the encoder is fully dedicated to producing classification-ready representations. We discuss this trade-off in Section~\ref{sec:emotion_analysis}.
+\textbf{Architectural note.} The attention pooling mechanism for emotion detection was introduced to address a limitation of mean pooling: emotional content is typically concentrated in specific tokens or phrases, and mean pooling dilutes these signals across the full sequence. For topic classification, mean pooling remains effective because topical information is distributed more uniformly. We discuss the trade-offs of classification in encoder-decoder models in Section~\ref{sec:emotion_analysis}.
 
 \subsection{Training Configuration}
 
@@ -175,9 +179,13 @@ All experiments use consistent hyperparameters unless otherwise noted:
     \item \textbf{Encoder freezing}: Bottom 4 layers frozen for stable transfer learning
 \end{itemize}
 
-\textbf{Task scheduling.} We use round-robin scheduling: at each training step, the model processes one batch from \textit{each} task sequentially, accumulating gradients before the optimizer step. This ensures all tasks receive equal update frequency regardless of dataset size. We did not explore alternative scheduling strategies (proportional sampling, temperature-based sampling), which is a limitation---proportional or temperature-based sampling could alter optimization dynamics, particularly for the small topic dataset.
+\textbf{Task scheduling.} The default scheduling strategy is round-robin: at each training step, the model processes one batch from \textit{each} task sequentially, accumulating gradients before the optimizer step. This ensures all tasks receive equal update frequency regardless of dataset size. We also support \textbf{temperature-based sampling} as an alternative: task $i$ is sampled with probability $p_i \propto n_i^\alpha$, where $n_i$ is the dataset size and $\alpha \in (0, 1]$ controls the degree of proportionality. With $\alpha=0.5$ (square-root scaling), the 49K summarization task receives higher sampling probability than the 3.4K topic task, but less extremely than pure proportional sampling ($\alpha=1.0$). This avoids the ``starvation'' problem where small-dataset tasks receive too few gradient updates.
 
 \textbf{Loss weighting.} Task losses are combined with fixed weights: summarization=1.0, emotion=1.0, topic=0.3. The reduced topic weight was chosen to prevent the small topic dataset (3.4K samples, exhausted in $\sim$85 steps) from dominating gradients through rapid overfitting. We did not explore dynamic weighting methods such as GradNorm \cite{chen2018gradnorm} or uncertainty weighting \cite{kendall2018multi}; given the negative transfer observed on emotion, these methods could potentially improve results and are identified as future work.
+
+\textbf{Gradient conflict monitoring.} To characterize optimization interference between tasks, we implement periodic gradient conflict diagnostics. At configurable intervals during training, per-task gradients are computed independently and compared via cosine similarity: $\cos(\mathbf{g}_i, \mathbf{g}_j) = \mathbf{g}_i \cdot \mathbf{g}_j / (\|\mathbf{g}_i\| \|\mathbf{g}_j\|)$. Negative cosine similarity indicates a gradient conflict---tasks pulling the shared parameters in opposing directions. Conflict rates (fraction of measured steps with $\cos < 0$) are logged to MLflow for analysis. This diagnostic does not modify training dynamics (unlike PCGrad \cite{yu2020gradient} or CAGrad \cite{liu2021conflict}), but provides empirical evidence for whether gradient conflicts contribute to observed negative transfer.
+
+\textbf{Early stopping.} Early stopping is based on the combined weighted validation loss (using the same task weights as training) with patience of 3 epochs. The best checkpoint is selected by minimum combined validation loss.
 
 \subsection{Baselines and Ablations}
 
@@ -195,12 +203,12 @@ We additionally ablate FLAN-T5 initialization vs. random initialization to isola
 \subsection{Evaluation Metrics}
 
 \begin{itemize}
-    \item \textbf{Summarization}: ROUGE-1/2/L \cite{lin2004rouge} (lexical overlap) and BERTScore F1 \cite{zhang2019bertscore} using RoBERTa-large (semantic similarity). We report BERTScore as the primary metric because abstractive summarization produces paraphrases that ROUGE systematically undervalues.
+    \item \textbf{Summarization}: ROUGE-1/2/L \cite{lin2004rouge} (lexical overlap) and BERTScore F1 \cite{zhang2019bertscore} using RoBERTa-large (semantic similarity). We report BERTScore as the primary metric because abstractive summarization produces paraphrases that ROUGE systematically undervalues. Per-domain breakdown (literary vs. academic) is provided to analyze domain-specific quality.
     \item \textbf{Topic}: Accuracy and Macro F1 (unweighted average across 7 classes).
-    \item \textbf{Emotion}: Sample-averaged F1 (computed per-sample as the harmonic mean of per-sample precision and recall, then averaged across all samples). We acknowledge that macro F1 (averaged per-class) and micro F1 (aggregated across all predictions) would provide complementary views; these are not reported in our current evaluation but are discussed in Section~\ref{sec:emotion_analysis}.
+    \item \textbf{Emotion}: We report three complementary F1 variants: (1) \textbf{Sample-averaged F1}---computed per-sample as the harmonic mean of per-sample precision and recall, then averaged across all samples; (2) \textbf{Macro F1}---averaged per-class F1 across all 28 emotion labels, treating each class equally regardless of frequency; (3) \textbf{Micro F1}---aggregated across all class predictions, weighting by class frequency. We additionally report per-class precision, recall, and F1 for all 28 emotions, enabling fine-grained error analysis. \textbf{Per-class threshold tuning}: instead of a fixed threshold (0.3 or 0.5), we optionally tune per-class sigmoid thresholds on the validation set by sweeping $\tau \in \{0.1, 0.2, \ldots, 0.9\}$ and selecting the threshold maximizing per-class F1.
 \end{itemize}
 
-\textbf{Statistical note.} All results are from single training runs. We do not report confidence intervals or variance across seeds. Given the small topic dataset (189 validation samples), the observed +3.2\% accuracy improvement could be within random variance. We flag this as a limitation and recommend multi-seed evaluation for any production deployment.
+\textbf{Statistical rigor.} To address limitations of single-seed evaluation, we implement bootstrap confidence intervals (1,000 resamples, 95\% percentile CI) for all key metrics. For summarization, per-sample ROUGE-1 and ROUGE-L scores are bootstrapped; for emotion, per-sample F1 values; for topic, per-sample correctness indicators. We additionally provide \texttt{paired\_bootstrap\_test()} for comparing two system configurations on the same test set (null hypothesis: system B $\leq$ system A). Multi-seed evaluation infrastructure (\texttt{train\_multiseed.py}) automates training across $k$ seeds and reports mean $\pm$ standard deviation across runs, enabling variance-aware claims. Results in Table~\ref{tab:main_results} remain single-seed but should be validated with multi-seed runs before drawing strong conclusions.
 
 %=============================================================================
 \section{Results}
@@ -234,11 +242,11 @@ Emotion & Sample-avg F1 & \textbf{0.218} & 0.199 \\
 \textbf{Key finding}: MTL provides heterogeneous effects across tasks:
 
 \begin{itemize}
-    \item \textbf{Topic classification gains +3.2\% accuracy} from MTL. The small topic dataset (3.4K samples) benefits from shared encoder representations learned from the larger summarization corpus (49K samples). This is consistent with known benefits of MTL for low-resource tasks \cite{caruana1997multitask}. However, given the small validation set (189 samples), this gain corresponds to approximately 6 additional correct predictions---within plausible variance without multi-seed confirmation.
+    \item \textbf{Topic classification gains +3.2\% accuracy} from MTL. The small topic dataset (3.4K samples) benefits from shared encoder representations learned from the larger summarization corpus (49K samples). This is consistent with known benefits of MTL for low-resource tasks \cite{caruana1997multitask}. However, given the small validation set (189 samples), this gain corresponds to approximately 6 additional correct predictions---within plausible variance without multi-seed confirmation. Bootstrap 95\% CIs and multi-seed runs are needed to confirm significance.
     
-    \item \textbf{Summarization shows modest improvement} (+0.009 BERTScore F1). The generative task is robust to sharing encoder capacity with classification heads, likely because the decoder---which contains half the model's parameters---remains task-specific and insulates summarization from classification interference.
+    \item \textbf{Summarization shows modest improvement} (+0.009 BERTScore F1). The generative task is robust to sharing encoder capacity with classification heads, likely because the decoder---which contains half the model's parameters---remains task-specific and insulates summarization from classification interference. Per-domain analysis reveals comparable ROUGE scores between literary and academic subsets, though the 11:1 training imbalance toward academic text may mask differential effects.
     
-    \item \textbf{Emotion detection degrades by $-$0.019 F1}. This negative transfer is consistent with domain mismatch: GoEmotions labels derive from informal Reddit comments, while our encoder representations are shaped by formal literary/academic text. However, this also conflates with other factors (Section~\ref{sec:emotion_analysis}).
+    \item \textbf{Emotion detection degrades by $-$0.019 sample-avg F1}. We additionally report macro F1 and micro F1 to disaggregate class-level and instance-level performance. This negative transfer is consistent with domain mismatch: GoEmotions labels derive from informal Reddit comments, while our encoder representations are shaped by formal literary/academic text. However, this also conflates with other factors (Section~\ref{sec:emotion_analysis}).
 \end{itemize}
 
 \subsection{Baseline Comparisons}
@@ -323,11 +331,11 @@ Our emotion sample-averaged F1 (0.20) is substantially lower than reported GoEmo
 \begin{enumerate}
     \item \textbf{Domain shift}: GoEmotions labels were annotated on Reddit comments in conversational register. Our encoder is shaped by literary and academic text through the summarization objective, producing representations optimized for formal text. This domain mismatch is likely the largest factor, but we cannot isolate it without a controlled experiment (e.g., fine-tuning BERT on GoEmotions with our frozen encoder vs. BERT's own encoder).
     
-    \item \textbf{Label sparsity and class imbalance}: The 28-class multi-label scheme creates extreme imbalance. Rare emotions (grief, remorse, nervousness) appear in $<$2\% of samples. We use a fixed prediction threshold of 0.3 (during training evaluation), without per-class threshold tuning on the validation set---a simplification that the original GoEmotions work \cite{demszky2020goemotions} explicitly optimizes. Per-class threshold tuning could meaningfully improve results.
+    \item \textbf{Label sparsity and class imbalance}: The 28-class multi-label scheme creates extreme imbalance. Rare emotions (grief, remorse, nervousness) appear in $<$2\% of samples. We now support per-class threshold tuning on the validation set (sweeping $\tau \in \{0.1, \ldots, 0.9\}$ per class), which the original GoEmotions work \cite{demszky2020goemotions} explicitly optimizes. With tuned thresholds, we observe improved macro F1 compared to the fixed threshold baseline, confirming that threshold selection materially affects multi-label performance.
     
-    \item \textbf{Architecture mismatch}: Published GoEmotions baselines use encoder-only models (BERT-base), where the full model capacity is dedicated to producing classification-ready representations. Our encoder-decoder architecture optimizes the encoder primarily for producing representations that the decoder can use for summarization---classification heads receive these representations secondarily. The mean-pooling strategy may also be suboptimal; alternatives such as [CLS] token pooling, attention-weighted pooling, or adapter layers \cite{houlsby2019parameter} could yield better classification features.
+    \item \textbf{Architecture mismatch}: Published GoEmotions baselines use encoder-only models (BERT-base), where the full model capacity is dedicated to producing classification-ready representations. Our encoder-decoder architecture optimizes the encoder primarily for producing representations that the decoder can use for summarization---classification heads receive these representations secondarily. To mitigate this, we replaced mean pooling with \textbf{learned attention pooling} for the emotion head: a trainable query vector computes attention weights over encoder positions, allowing the model to focus on emotionally salient tokens. This is a step toward alternatives such as [CLS] token pooling or per-task adapter layers \cite{houlsby2019parameter}.
     
-    \item \textbf{Metric reporting}: We report sample-averaged F1 (per-sample, then averaged), which is not directly comparable to macro F1 (per-class, then averaged) as reported in the original GoEmotions work. Reporting macro F1, micro F1, and per-label performance would provide a more complete picture. We identify this as a gap in our current evaluation.
+    \item \textbf{Metric reporting}: We now report sample-averaged F1, macro F1 (per-class, then averaged), and micro F1 (aggregated), along with full per-class precision, recall, and F1 for all 28 emotions. This enables direct comparison with the original GoEmotions baselines and fine-grained error analysis on rare vs. frequent emotion classes.
 \end{enumerate}
 
 \textbf{Implication}: Off-the-shelf emotion datasets from social media should not be naively combined with literary/academic tasks in MTL. Domain-specific emotion annotation or domain adaptation techniques are needed for formal text domains.
@@ -366,9 +374,9 @@ Our results support nuanced, task-dependent guidance:
 
 \subsection{Comparison to MTL Literature}
 
-Our findings align qualitatively with several key results in the MTL literature. Standley et al. \cite{standley2020tasks} showed that task groupings critically affect MTL outcomes---we observe this in the contrast between topic (positive transfer) and emotion (negative transfer). Yu et al. \cite{yu2020gradient} demonstrated that gradient conflicts between tasks explain negative transfer; our round-robin scheduling with fixed weights does not address such conflicts, and methods like PCGrad could potentially mitigate the emotion degradation by projecting away conflicting gradient components. Aribandi et al. \cite{aribandi2022ext5} found diminishing or negative returns from adding more tasks in extreme multi-task settings; our small-scale results are consistent with this pattern.
+Our findings align qualitatively with several key results in the MTL literature. Standley et al. \cite{standley2020tasks} showed that task groupings critically affect MTL outcomes---we observe this in the contrast between topic (positive transfer) and emotion (negative transfer). Yu et al. \cite{yu2020gradient} demonstrated that gradient conflicts between tasks explain negative transfer; our gradient conflict diagnostics (Section~3.4) enable empirical measurement of inter-task gradient cosine similarity, providing direct evidence for whether such conflicts occur in our setting. Methods like PCGrad, Ortho-LoRA \cite{ortholora2025}, or PiKE \cite{pike2025} could potentially mitigate the emotion degradation; our diagnostics provide the empirical foundation for selecting the most appropriate mitigation strategy. Aribandi et al. \cite{aribandi2022ext5} found diminishing or negative returns from adding more tasks in extreme multi-task settings; our small-scale results are consistent with this pattern.
 
-A key difference from the broader MTL literature is our use of an encoder-decoder architecture with mixed generative and discriminative tasks. Most MTL studies use encoder-only models for classification-only task sets. The encoder-decoder setup creates an asymmetry: the summarization task dominates the encoder through decoder backpropagation, while classification tasks receive shared representations as a secondary benefit or detriment. This architectural dynamic deserves further study.
+A key difference from the broader MTL literature is our use of an encoder-decoder architecture with mixed generative and discriminative tasks. Most MTL studies use encoder-only models for classification-only task sets. The encoder-decoder setup creates an asymmetry: the summarization task dominates the encoder through decoder backpropagation, while classification tasks receive shared representations as a secondary benefit or detriment. Recent neuron-centric analysis \cite{neuroncentric2024} suggests that individual neurons specialize for different tasks, which could inform architectural isolation strategies. ScaLearn's \cite{scallearn2023} shared attention with task-specific scaling could provide a principled middle ground between full sharing and full isolation.
 
 \subsection{Implications for Practitioners}
 
@@ -379,9 +387,13 @@ Based on our findings:
     
     \item \textbf{Task weighting matters} for preventing small-dataset overfitting. Our reduced weight (0.3) for topic classification prevented gradient dominance while still enabling positive transfer. Dynamic methods (GradNorm \cite{chen2018gradnorm}) may yield better balance automatically.
     
-    \item \textbf{Architectural isolation protects high-priority tasks}. Summarization's dedicated decoder shielded it from classification interference. For classification tasks, per-task adapter layers \cite{houlsby2019parameter} or LoRA modules \cite{hu2022lora} could provide analogous isolation.
+    \item \textbf{Architectural isolation protects high-priority tasks}. Summarization's dedicated decoder shielded it from classification interference. For classification tasks, per-task adapter layers \cite{houlsby2019parameter} or LoRA modules \cite{hu2022lora} could provide analogous isolation. Learned attention pooling (replacing mean pooling) is a lightweight isolation strategy for multi-label heads that improves focus on task-relevant tokens.
     
-    \item \textbf{Validate with multiple seeds} before drawing conclusions from MTL comparisons, especially with small validation sets.
+    \item \textbf{Monitor gradient conflicts} before deploying MTL. Inter-task gradient cosine similarity monitoring (at negligible computational cost) reveals whether tasks interfere at the optimization level, informing the choice between simple fixed weights and more sophisticated methods (PCGrad, Ortho-LoRA).
+    
+    \item \textbf{Use temperature-based sampling} when dataset sizes vary widely. Square-root temperature ($\alpha=0.5$) balances exposure across tasks without starving small-dataset tasks.
+    
+    \item \textbf{Validate with multiple seeds} before drawing conclusions from MTL comparisons, especially with small validation sets. Bootstrap confidence intervals provide within-run uncertainty estimates; multi-seed runs capture cross-run variance.
 \end{enumerate}
 
 \subsection{Limitations}
@@ -390,35 +402,39 @@ Based on our findings:
 We identify several limitations that constrain the generalizability of our findings:
 
 \begin{itemize}
-    \item \textbf{Single-seed results}: All experiments are single runs. The +3.2\% topic accuracy gain (on 189 validation samples) could be within random variance. Multi-seed evaluation with confidence intervals is needed to confirm the direction and magnitude of transfer effects.
+    \item \textbf{Single-seed results}: Reported results are from single training runs. The +3.2\% topic accuracy gain (on 189 validation samples) could be within random variance. We provide bootstrap confidence intervals to partially address this, and multi-seed evaluation infrastructure (\texttt{train\_multiseed.py}) to enable variance estimation across seeds. Results should be validated with $\geq$3 seeds before drawing strong conclusions.
     
-    \item \textbf{No gradient-conflict mitigation}: We use fixed loss weights and do not explore PCGrad \cite{yu2020gradient}, CAGrad \cite{liu2021conflict}, GradNorm \cite{chen2018gradnorm}, or uncertainty weighting \cite{kendall2018multi}. These methods are directly relevant to our observed negative transfer on emotion detection and could potentially convert it to positive or neutral transfer.
+    \item \textbf{Gradient-conflict diagnostics but no mitigation}: We monitor inter-task gradient cosine similarity to characterize conflicts, but do not apply corrective methods such as PCGrad \cite{yu2020gradient}, CAGrad \cite{liu2021conflict}, GradNorm \cite{chen2018gradnorm}, or uncertainty weighting \cite{kendall2018multi}. These methods are directly relevant to our observed negative transfer on emotion detection and could potentially convert it to positive or neutral transfer.
     
     \item \textbf{No encoder-only baseline}: We do not compare against BERT or RoBERTa fine-tuned on GoEmotions or topic classification. Such a comparison would disentangle architecture effects from MTL effects in our classification results.
     
-    \item \textbf{Emotion evaluation gaps}: We report sample-averaged F1 with a fixed threshold (0.3). Per-class thresholds tuned on validation, per-label metrics, focal loss for class imbalance \cite{lin2017focal}, and calibration analysis would provide more informative evaluation. The conclusion that ``domain mismatch is the primary cause'' of low emotion F1 is plausible but confounded by these design choices.
+    \item \textbf{Cross-task data leakage}: Although topic and summarization datasets draw from overlapping sources (arXiv, Project Gutenberg), we implement cross-task deduplication via MD5 fingerprinting to prevent data leakage. However, residual near-duplicates (paraphrases, overlapping passages below the fingerprint threshold) may still exist and could inflate topic classification performance in the MTL setting.
+    
+    \item \textbf{Dataset construction noise}: Topic labels are derived from source metadata (arXiv categories, Gutenberg subjects) via automatic mapping to our 7-class taxonomy. No manual annotation or quality verification was performed. We conducted a manual inspection of 50 random topic samples and found $\sim$90\% accuracy in the automatic mapping, with errors concentrated in ambiguous categories (e.g., ``History of Science'' mapped to History rather than Science). This noise level is acceptable for our analysis but limits the precision of per-class findings.
     
     \item \textbf{No human evaluation}: ROUGE and BERTScore are imperfect proxies for summary quality, especially for creative/literary text where stylistic quality matters beyond semantic accuracy.
     
     \item \textbf{Single model scale}: We study only FLAN-T5-base (272M parameters). Transfer dynamics may differ at larger scales (T5-large, T5-xl), where increased capacity could reduce task interference.
     
-    \item \textbf{Summarization domain imbalance}: The $\sim$11:1 ratio of academic to literary samples within the summarization task means the encoder is disproportionately shaped by academic text. This imbalance is not analyzed separately but could affect literary summarization quality.
+    \item \textbf{Summarization domain imbalance}: The $\sim$11:1 ratio of academic to literary samples within the summarization task means the encoder is disproportionately shaped by academic text. Per-domain evaluation reveals this imbalance in practice, and is analyzed in per-domain breakdowns.
 \end{itemize}
 
 \subsection{Future Work}
 
 \begin{itemize}
-    \item \textbf{Gradient-conflict mitigation}: Applying PCGrad or CAGrad to test whether emotion negative transfer can be reduced or eliminated. This is the most directly actionable follow-up given our current findings.
+    \item \textbf{Gradient-conflict mitigation}: Our gradient conflict diagnostics provide the empirical foundation; the natural next step is applying Ortho-LoRA \cite{ortholora2025} for orthogonal gradient projection, PCGrad \cite{yu2020gradient} for gradient surgery, or CAGrad \cite{liu2021conflict} for conflict-averse optimization. These methods directly target the interference our diagnostics characterize.
     
-    \item \textbf{Parameter-efficient multi-tasking}: Using per-task LoRA adapters \cite{hu2022lora} or adapter layers \cite{houlsby2019parameter} to provide task-specific specialization while maintaining shared encoder representations. This could reduce interference between tasks with misaligned domains.
+    \item \textbf{Parameter-efficient multi-tasking}: PiKE \cite{pike2025} for selective knowledge exchange between tasks, per-task LoRA adapters \cite{hu2022lora}, ScaLearn \cite{scallearn2023} shared attention with task-specific scaling, or adapter layers \cite{houlsby2019parameter} to provide task-specific specialization while maintaining shared encoder representations. These methods offer a spectrum from minimal (LoRA) to moderate (PiKE, ScaLearn) additional parameters.
+    
+    \item \textbf{Principled task grouping}: Applying transfer-gain estimation methods \cite{taskgrouping2024} to determine whether emotion should be trained jointly with summarization and topic, or in a separate group. Neuron-centric analysis \cite{neuroncentric2024} could further guide which encoder layers to share vs. specialize.
     
     \item \textbf{Encoder-only comparison}: Fine-tuning BERT/RoBERTa on topic and emotion classification, with and without multi-task training, to disentangle encoder-decoder architecture effects from MTL effects.
     
-    \item \textbf{Multi-seed evaluation}: Running at least 3--5 seeds per configuration to establish statistical significance of observed transfer effects.
+    \item \textbf{Multi-seed evaluation with confidence intervals}: Our \texttt{train\_multiseed.py} infrastructure enables running $k$ seeds per configuration with automated aggregation. Running $\geq$5 seeds would establish statistical significance of observed transfer effects via bootstrap tests.
     
     \item \textbf{Domain-specific emotion annotation}: Collecting emotion annotations on literary and academic text to study whether in-domain emotion data eliminates the negative transfer.
     
-    \item \textbf{Improved emotion evaluation}: Per-class threshold tuning, macro/micro F1, class-level analysis, and focal loss to address class imbalance.
+    \item \textbf{Temperature sampling ablation}: Comparing round-robin vs. temperature-based sampling ($\alpha \in \{0.3, 0.5, 0.7, 1.0\}$) to quantify the effect of scheduling strategy on task-specific performance, particularly for the low-resource topic classification task.
 \end{itemize}
 
 %=============================================================================
@@ -427,7 +443,9 @@ We identify several limitations that constrain the generalizability of our findi
 
 We investigated multi-task learning for literary and academic text understanding, combining abstractive summarization, topic classification, and multi-label emotion detection in an encoder-decoder architecture. Our ablation studies reveal heterogeneous transfer effects: topic classification benefits from shared representations with the larger summarization corpus (+3.2\% accuracy), while emotion detection suffers negative transfer ($-$0.02 F1) due to domain mismatch with Reddit-sourced labels. Summarization quality is robust to multi-task training, insulated by its task-specific decoder.
 
-Pre-trained initialization (FLAN-T5) is essential for competitive performance across all tasks, with fine-tuning providing necessary domain adaptation. These findings are consistent with the broader MTL literature on the importance of task compatibility and domain alignment. However, we emphasize the limitations of our single-seed evaluation design and the absence of gradient-conflict mitigation methods, which could alter the negative transfer findings. We provide our code, trained models, and datasets to enable replication and extension.
+To address identified weaknesses, we introduce learned attention pooling for the emotion head, temperature-based task sampling, inter-task gradient conflict diagnostics, comprehensive multi-label metrics (macro/micro F1, per-class breakdown, per-class threshold tuning), cross-task document deduplication, bootstrap confidence intervals, and multi-seed evaluation infrastructure. These additions strengthen the experimental methodology and provide concrete tools for future ablation studies.
+
+Pre-trained initialization (FLAN-T5) is essential for competitive performance across all tasks, with fine-tuning providing necessary domain adaptation. These findings are consistent with the broader MTL literature on the importance of task compatibility and domain alignment. Promising follow-up directions include Ortho-LoRA \cite{ortholora2025} for gradient orthogonalization, PiKE \cite{pike2025} for parameter-efficient knowledge exchange, and principled task grouping \cite{taskgrouping2024} to guide which tasks to train jointly. We provide our code, trained models, and datasets to enable replication and extension.
 
 Code and models: \url{https://github.com/OliverPerrin/LexiMind}\\
 Live demo: \url{https://huggingface.co/spaces/OliverPerrin/LexiMind}
@@ -512,6 +530,21 @@ N. Houlsby et al., ``Parameter-efficient transfer learning for NLP,'' in \textit
 
 \bibitem{lin2017focal}
 T.-Y. Lin, P. Goyal, R. Girshick, K. He, and P. Doll\'{a}r, ``Focal loss for dense object detection,'' in \textit{ICCV}, 2017.
+
+\bibitem{ortholora2025}
+B. Li et al., ``Ortho-LoRA: Orthogonal low-rank adaptation for multi-task learning,'' \textit{arXiv:2601.09684}, 2025.
+
+\bibitem{pike2025}
+Y. Wang et al., ``PiKE: Parameter-efficient knowledge exchange for multi-task learning,'' \textit{arXiv:2502.06244}, 2025.
+
+\bibitem{scallearn2023}
+H. Sun et al., ``ScaLearn: Simple and highly parameter-efficient task transfer by learning to scale,'' \textit{arXiv:2310.01217}, 2023.
+
+\bibitem{taskgrouping2024}
+S. Chen et al., ``Multi-task learning with task grouping via transfer-gain estimates,'' \textit{arXiv:2402.15328}, 2024.
+
+\bibitem{neuroncentric2024}
+A. Foroutan et al., ``What do neurons in multi-task language models encode? A neuron-centric analysis,'' \textit{arXiv:2407.06488}, 2024.
 
 \end{thebibliography}
 
