@@ -28,7 +28,7 @@ def save_checkpoint(model: torch.nn.Module, path: str | Path) -> None:
     """Save model state dict, handling torch.compile artifacts."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     # Strip '_orig_mod.' prefix from compiled models
     state_dict = {k.replace("_orig_mod.", ""): v for k, v in model.state_dict().items()}
     torch.save(state_dict, path)
@@ -47,7 +47,7 @@ def load_checkpoint(model: torch.nn.Module, path: str | Path) -> None:
 @dataclass
 class LabelMetadata:
     """Container for emotion and topic label vocabularies."""
-    
+
     emotion: List[str]
     topic: List[str]
 
@@ -65,16 +65,16 @@ def load_labels(path: str | Path) -> LabelMetadata:
     path = Path(path)
     if not path.exists():
         raise FileNotFoundError(f"Labels not found: {path}")
-    
+
     with path.open("r", encoding="utf-8") as f:
         data = json.load(f)
-    
+
     emotion = data.get("emotion") or data.get("emotions", [])
     topic = data.get("topic") or data.get("topics", [])
-    
+
     if not emotion or not topic:
         raise ValueError("Labels file must contain 'emotion' and 'topic' lists")
-    
+
     return LabelMetadata(emotion=emotion, topic=topic)
 
 
@@ -82,7 +82,7 @@ def save_labels(labels: LabelMetadata, path: str | Path) -> None:
     """Save label metadata to JSON file."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     with path.open("w", encoding="utf-8") as f:
         json.dump({"emotion": labels.emotion, "topic": labels.topic}, f, indent=2)
 
@@ -105,12 +105,14 @@ def set_seed(seed: int) -> None:
 @dataclass
 class Config:
     """Simple config wrapper."""
+
     data: dict
 
 
 def load_yaml(path: str | Path) -> Config:
     """Load YAML configuration file."""
     import yaml
+
     with Path(path).open("r", encoding="utf-8") as f:
         content = yaml.safe_load(f)
     if not isinstance(content, dict):

@@ -48,24 +48,24 @@ class TrainerConfig:
     validation_max_length: int = 128
     label_smoothing: float = 0.1
     gradient_accumulation_steps: int = 1
-    
+
     # LR scheduler
     scheduler_type: str = "cosine"
     warmup_steps: int = 500
-    
+
     # Early stopping
     early_stopping_patience: int | None = 5
-    
+
     # Task sampling strategy: "round_robin" or "temperature"
     # Temperature sampling: p_i ∝ n_i^alpha where n_i = dataset size
     # alpha < 1 reduces dominance of large tasks (recommended: 0.5-0.7)
     task_sampling: str = "temperature"
     task_sampling_alpha: float = 0.5
-    
+
     # Gradient conflict diagnostics
     # Compute inter-task gradient cosine similarity every N steps (0 = disabled)
     gradient_conflict_frequency: int = 0
-    
+
     # MLflow
     experiment_name: str = "LexiMind"
     run_name: str | None = None
@@ -76,13 +76,13 @@ class TrainerConfig:
 
 class EarlyStopping:
     """Stop training when validation loss stops improving."""
-    
+
     def __init__(self, patience: int = 5, min_delta: float = 0.001):
         self.patience = patience
         self.min_delta = min_delta
         self.counter = 0
-        self.best_value = float('inf')
-        
+        self.best_value = float("inf")
+
     def __call__(self, val_loss: float) -> bool:
         """Returns True if training should stop."""
         if val_loss < self.best_value - self.min_delta:
@@ -155,7 +155,9 @@ class Trainer:
 
             pbar = tqdm(
                 range(start_epoch, self.config.max_epochs + 1),
-                desc="Training", unit="epoch", file=sys.stderr
+                desc="Training",
+                unit="epoch",
+                file=sys.stderr,
             )
 
             for epoch in pbar:
@@ -178,10 +180,12 @@ class Trainer:
 
                     # Early stopping
                     if self.early_stopping:
-                        val_loss = val_metrics.get("total_loss", float('inf'))
+                        val_loss = val_metrics.get("total_loss", float("inf"))
                         if self.early_stopping(val_loss):
-                            tqdm.write(f"\nEarly stopping at epoch {epoch} (best loss: {self.early_stopping.best_value:.4f})")
-                            
+                            tqdm.write(
+                                f"\nEarly stopping at epoch {epoch} (best loss: {self.early_stopping.best_value:.4f})"
+                            )
+
                             break
 
                 # Checkpoint
@@ -190,11 +194,11 @@ class Trainer:
 
                 # Update progress
                 epoch_time = time.perf_counter() - epoch_start
-                loss = train_metrics.get('total_loss', 0)
+                loss = train_metrics.get("total_loss", 0)
                 pbar.set_postfix({"loss": f"{loss:.3f}", "time": f"{epoch_time:.0f}s"})
 
         total_time = time.perf_counter() - total_start
-        print(f"\nTraining complete in {total_time/60:.1f} minutes")
+        print(f"\nTraining complete in {total_time / 60:.1f} minutes")
         return history
 
     def _setup_scheduler(self, loaders: Dict[str, DataLoader], start_epoch: int) -> None:
@@ -203,7 +207,9 @@ class Trainer:
             self.scheduler = None
             return
 
-        steps_per_epoch = max(len(loader) for loader in loaders.values()) // max(1, self.config.gradient_accumulation_steps)
+        steps_per_epoch = max(len(loader) for loader in loaders.values()) // max(
+            1, self.config.gradient_accumulation_steps
+        )
         total_steps = steps_per_epoch * (self.config.max_epochs - start_epoch + 1)
         warmup = self.config.warmup_steps
 
@@ -238,10 +244,12 @@ class Trainer:
         if self.config.task_sampling == "temperature" and len(task_names) > 1:
             sizes = np.array([len(loaders[t].dataset) for t in task_names], dtype=np.float64)  # type: ignore[arg-type]
             alpha = self.config.task_sampling_alpha
-            probs = sizes ** alpha
+            probs = sizes**alpha
             probs = probs / probs.sum()
-            tqdm.write(f"  Temperature sampling (α={alpha}): " +
-                       ", ".join(f"{t}={p:.2%}" for t, p in zip(task_names, probs, strict=True)))
+            tqdm.write(
+                f"  Temperature sampling (α={alpha}): "
+                + ", ".join(f"{t}={p:.2%}" for t, p in zip(task_names, probs, strict=True))
+            )
         else:
             probs = None
 
@@ -253,7 +261,9 @@ class Trainer:
                 # Select tasks for this step
                 if probs is not None and train:
                     # Temperature sampling: sample tasks based on dataset size
-                    selected_tasks = list(np.random.choice(task_names, size=len(task_names), replace=True, p=probs))
+                    selected_tasks = list(
+                        np.random.choice(task_names, size=len(task_names), replace=True, p=probs)
+                    )
                 else:
                     # Round-robin: all tasks every step
                     selected_tasks = task_names
@@ -288,8 +298,11 @@ class Trainer:
                         scaled.backward()
 
                 # Gradient conflict diagnostics
-                if (train and self.config.gradient_conflict_frequency > 0
-                        and (step + 1) % self.config.gradient_conflict_frequency == 0):
+                if (
+                    train
+                    and self.config.gradient_conflict_frequency > 0
+                    and (step + 1) % self.config.gradient_conflict_frequency == 0
+                ):
                     conflict_stats = self._compute_gradient_conflicts(loaders, iterators)
                     for k, v in conflict_stats.items():
                         metrics[f"grad_{k}"].append(v)
@@ -316,8 +329,10 @@ class Trainer:
 
         # Average metrics
         averaged = {k: sum(v) / len(v) for k, v in metrics.items() if v}
-        tqdm.write(f"[{phase.lower()}] epoch {epoch}: " + 
-                   ", ".join(f"{k}={v:.4f}" for k, v in averaged.items() if k != "epoch"))
+        tqdm.write(
+            f"[{phase.lower()}] epoch {epoch}: "
+            + ", ".join(f"{k}={v:.4f}" for k, v in averaged.items() if k != "epoch")
+        )
         return averaged
 
     def _get_batch(self, iterators: Dict, loader: DataLoader, task: str) -> Dict | None:
@@ -330,8 +345,10 @@ class Trainer:
                 batch = next(iterators[task])
             except StopIteration:
                 return None
-        return {k: v.to(self.device, non_blocking=True) if isinstance(v, torch.Tensor) else v
-                for k, v in batch.items()}
+        return {
+            k: v.to(self.device, non_blocking=True) if isinstance(v, torch.Tensor) else v
+            for k, v in batch.items()
+        }
 
     def _forward_task(self, task: str, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
         """Route to task-specific forward pass."""
@@ -360,10 +377,10 @@ class Trainer:
         # Decode predictions and references
         preds = self.tokenizer.decode_batch(logits.argmax(dim=-1).tolist())
         refs = self._decode_labels(batch["labels"])
-        
+
         # Calculate comprehensive metrics
         metrics = {"rouge_like": rouge_like(preds, refs)}
-        
+
         # Proper ROUGE scores (ROUGE-1, ROUGE-2, ROUGE-L)
         try:
             rouge_scores = calculate_rouge(preds, refs)
@@ -372,13 +389,13 @@ class Trainer:
             metrics["rougeL"] = rouge_scores["rougeL"]
         except Exception:
             pass  # Fall back to rouge_like only if rouge-score not installed
-        
+
         # BLEU-4 score
         try:
             metrics["bleu4"] = calculate_bleu(preds, refs)
         except Exception:
             pass
-        
+
         return loss, metrics
 
     def _forward_emotion(self, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
@@ -423,8 +440,10 @@ class Trainer:
                 if i >= n:
                     break
 
-                batch = {k: v.to(self.device) if isinstance(v, torch.Tensor) else v
-                         for k, v in batch.items()}
+                batch = {
+                    k: v.to(self.device) if isinstance(v, torch.Tensor) else v
+                    for k, v in batch.items()
+                }
                 src_ids = batch["src_ids"][:1]
                 src_mask = batch.get("src_mask", None)
                 if src_mask is not None:
@@ -432,7 +451,9 @@ class Trainer:
 
                 # Generate with anti-repetition
                 model: Any = self.model
-                enc_mask = src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
+                enc_mask = (
+                    src_mask.unsqueeze(1) & src_mask.unsqueeze(2) if src_mask is not None else None
+                )
                 memory = model.encoder(src_ids, mask=enc_mask)
                 generated = model.decoder.greedy_decode(
                     memory=memory,
@@ -463,27 +484,27 @@ class Trainer:
         iterators: Dict,
     ) -> Dict[str, float]:
         """Compute inter-task gradient cosine similarity to diagnose conflicts.
-        
+
         Returns cosine similarity between gradient vectors for each task pair.
         Negative values indicate conflicting gradients (negative transfer risk).
         """
         task_grads: Dict[str, torch.Tensor] = {}
-        
+
         for task, loader in loaders.items():
             self.optimizer.zero_grad()
             batch = self._get_batch(iterators, loader, task)
             if batch is None:
                 continue
-            
+
             dtype = torch.bfloat16 if self.use_bfloat16 else torch.float16
             with torch.autocast("cuda", dtype=dtype, enabled=self.use_amp):
                 loss, _ = self._forward_task(task, batch)
-            
+
             if torch.isnan(loss):
                 continue
-            
+
             loss.backward()
-            
+
             # Flatten all gradients into a single vector
             grad_vec = []
             for p in self.model.parameters():
@@ -491,9 +512,9 @@ class Trainer:
                     grad_vec.append(p.grad.detach().clone().flatten())
             if grad_vec:
                 task_grads[task] = torch.cat(grad_vec)
-        
+
         self.optimizer.zero_grad()
-        
+
         # Compute pairwise cosine similarity
         stats: Dict[str, float] = {}
         tasks = list(task_grads.keys())
@@ -504,20 +525,22 @@ class Trainer:
                 cos_sim = F.cosine_similarity(g1.unsqueeze(0), g2.unsqueeze(0)).item()
                 stats[f"cos_sim_{t1}_{t2}"] = cos_sim
                 stats[f"conflict_{t1}_{t2}"] = 1.0 if cos_sim < 0 else 0.0
-        
+
         return stats
 
     def _log_config(self) -> None:
         """Log config to MLflow."""
-        mlflow.log_params({
-            "max_epochs": self.config.max_epochs,
-            "gradient_clip_norm": self.config.gradient_clip_norm,
-            "label_smoothing": self.config.label_smoothing,
-            "task_weights": str(self.config.task_weights),
-            "warmup_steps": self.config.warmup_steps,
-            "scheduler_type": self.config.scheduler_type,
-            "learning_rate": self.optimizer.param_groups[0]["lr"],
-        })
+        mlflow.log_params(
+            {
+                "max_epochs": self.config.max_epochs,
+                "gradient_clip_norm": self.config.gradient_clip_norm,
+                "label_smoothing": self.config.label_smoothing,
+                "task_weights": str(self.config.task_weights),
+                "warmup_steps": self.config.warmup_steps,
+                "scheduler_type": self.config.scheduler_type,
+                "learning_rate": self.optimizer.param_groups[0]["lr"],
+            }
+        )
 
     def _log_metrics(self, metrics: Dict[str, float], prefix: str, epoch: int) -> None:
         """Log metrics to MLflow."""

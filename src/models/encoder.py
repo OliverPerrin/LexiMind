@@ -291,7 +291,13 @@ class TransformerEncoder(nn.Module):
                 # We use a lambda to pass keyword arguments
                 def create_custom_forward(module):
                     def custom_forward(*inputs):
-                        return module(*inputs, mask=mask, collect_attn=collect_attn, position_bias=position_bias)
+                        return module(
+                            *inputs,
+                            mask=mask,
+                            collect_attn=collect_attn,
+                            position_bias=position_bias,
+                        )
+
                     return custom_forward
 
                 x, attn = cast(
@@ -303,8 +309,10 @@ class TransformerEncoder(nn.Module):
                     ),
                 )
             else:
-                x, attn = layer(x, mask=mask, collect_attn=collect_attn, position_bias=position_bias)
-            
+                x, attn = layer(
+                    x, mask=mask, collect_attn=collect_attn, position_bias=position_bias
+                )
+
             if collect_attn:
                 attn_weights_per_layer.append(attn)
 

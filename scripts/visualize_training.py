@@ -81,31 +81,33 @@ ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
 
 # Professional color palette (accessible + publication-ready)
 COLORS = {
-    "primary": "#2E86AB",     # Deep blue - training
-    "secondary": "#E94F37",   # Coral red - validation
-    "accent": "#28A745",      # Green - best points
-    "highlight": "#F7B801",   # Gold - highlights
-    "dark": "#1E3A5F",        # Navy - text
-    "light": "#F5F5F5",       # Light gray - background
-    "topic": "#8338EC",       # Purple
-    "emotion": "#FF6B6B",     # Salmon
-    "summary": "#06D6A0",     # Teal
+    "primary": "#2E86AB",  # Deep blue - training
+    "secondary": "#E94F37",  # Coral red - validation
+    "accent": "#28A745",  # Green - best points
+    "highlight": "#F7B801",  # Gold - highlights
+    "dark": "#1E3A5F",  # Navy - text
+    "light": "#F5F5F5",  # Light gray - background
+    "topic": "#8338EC",  # Purple
+    "emotion": "#FF6B6B",  # Salmon
+    "summary": "#06D6A0",  # Teal
 }
 
 # Style configuration
 plt.style.use("seaborn-v0_8-whitegrid")
-plt.rcParams.update({
-    "font.family": "sans-serif",
-    "font.size": 11,
-    "axes.titlesize": 14,
-    "axes.titleweight": "bold",
-    "axes.labelsize": 12,
-    "legend.fontsize": 10,
-    "figure.titlesize": 16,
-    "figure.titleweight": "bold",
-    "savefig.dpi": 150,
-    "savefig.bbox": "tight",
-})
+plt.rcParams.update(
+    {
+        "font.family": "sans-serif",
+        "font.size": 11,
+        "axes.titlesize": 14,
+        "axes.titleweight": "bold",
+        "axes.labelsize": 12,
+        "legend.fontsize": 10,
+        "figure.titlesize": 16,
+        "figure.titleweight": "bold",
+        "savefig.dpi": 150,
+        "savefig.bbox": "tight",
+    }
+)
 
 # Custom colormap for heatmaps
 HEATMAP_CMAP = LinearSegmentedColormap.from_list(
@@ -115,12 +117,14 @@ HEATMAP_CMAP = LinearSegmentedColormap.from_list(
 
 # MLflow Utilities
 
+
 def get_mlflow_client():
     """Get MLflow client with correct tracking URI."""
     if not HAS_MLFLOW:
         raise ImportError("MLflow not installed. Install with: pip install mlflow")
     import mlflow
     import mlflow.tracking
+
     # Use SQLite database (same as trainer.py)
     mlflow.set_tracking_uri("sqlite:///mlruns.db")
     return mlflow.tracking.MlflowClient()
@@ -153,6 +157,7 @@ def get_metric_history(run, metric_name: str) -> tuple[list, list]:
 
 # Core Training Visualizations
 
+
 def plot_loss_curves(run, interactive: bool = False) -> None:
     """
     Plot training and validation loss over time.
@@ -164,37 +169,49 @@ def plot_loss_curves(run, interactive: bool = False) -> None:
 
     if interactive and HAS_PLOTLY:
         import plotly.graph_objects as go
+
         fig = go.Figure()
 
         if train_values:
-            fig.add_trace(go.Scatter(
-                x=train_steps, y=train_values,
-                name="Training Loss", mode="lines",
-                line=dict(color=COLORS["primary"], width=3)
-            ))
+            fig.add_trace(
+                go.Scatter(
+                    x=train_steps,
+                    y=train_values,
+                    name="Training Loss",
+                    mode="lines",
+                    line=dict(color=COLORS["primary"], width=3),
+                )
+            )
 
         if val_values:
-            fig.add_trace(go.Scatter(
-                x=val_steps, y=val_values,
-                name="Validation Loss", mode="lines",
-                line=dict(color=COLORS["secondary"], width=3)
-            ))
+            fig.add_trace(
+                go.Scatter(
+                    x=val_steps,
+                    y=val_values,
+                    name="Validation Loss",
+                    mode="lines",
+                    line=dict(color=COLORS["secondary"], width=3),
+                )
+            )
 
             # Best point
             best_idx = int(np.argmin(val_values))
-            fig.add_trace(go.Scatter(
-                x=[val_steps[best_idx]], y=[val_values[best_idx]],
-                name=f"Best: {val_values[best_idx]:.3f}",
-                mode="markers",
-                marker=dict(color=COLORS["accent"], size=15, symbol="star")
-            ))
+            fig.add_trace(
+                go.Scatter(
+                    x=[val_steps[best_idx]],
+                    y=[val_values[best_idx]],
+                    name=f"Best: {val_values[best_idx]:.3f}",
+                    mode="markers",
+                    marker=dict(color=COLORS["accent"], size=15, symbol="star"),
+                )
+            )
 
         fig.update_layout(
             title="Training Progress: Multi-Task Loss",
             xaxis_title="Epoch",
             yaxis_title="Loss",
             template="plotly_white",
-            hovermode="x unified"
+            hovermode="x unified",
         )
 
         output_path = OUTPUTS_DIR / "training_loss_curve.html"
@@ -206,32 +223,62 @@ def plot_loss_curves(run, interactive: bool = False) -> None:
     fig, ax = plt.subplots(figsize=(12, 6))
 
     if not train_values:
-        ax.text(0.5, 0.5, "No training data yet\n\nWaiting for first epoch...",
-                ha="center", va="center", fontsize=14, color="gray")
+        ax.text(
+            0.5,
+            0.5,
+            "No training data yet\n\nWaiting for first epoch...",
+            ha="center",
+            va="center",
+            fontsize=14,
+            color="gray",
+        )
         ax.set_xlim(0, 1)
         ax.set_ylim(0, 1)
     else:
         # Training curve
-        ax.plot(train_steps, train_values, label="Training Loss", linewidth=2.5,
-                color=COLORS["primary"], alpha=0.9)
+        ax.plot(
+            train_steps,
+            train_values,
+            label="Training Loss",
+            linewidth=2.5,
+            color=COLORS["primary"],
+            alpha=0.9,
+        )
 
         # Validation curve with best point
         if val_values:
-            ax.plot(val_steps, val_values, label="Validation Loss", linewidth=2.5,
-                    color=COLORS["secondary"], alpha=0.9)
+            ax.plot(
+                val_steps,
+                val_values,
+                label="Validation Loss",
+                linewidth=2.5,
+                color=COLORS["secondary"],
+                alpha=0.9,
+            )
 
             best_idx = int(np.argmin(val_values))
-            ax.scatter([val_steps[best_idx]], [val_values[best_idx]],
-                       s=200, c=COLORS["accent"], zorder=5, marker="*",
-                       edgecolors="white", linewidth=2,
-                       label=f"Best: {val_values[best_idx]:.3f}")
+            ax.scatter(
+                [val_steps[best_idx]],
+                [val_values[best_idx]],
+                s=200,
+                c=COLORS["accent"],
+                zorder=5,
+                marker="*",
+                edgecolors="white",
+                linewidth=2,
+                label=f"Best: {val_values[best_idx]:.3f}",
+            )
 
             # Annotate best point
-            ax.annotate(f"Epoch {val_steps[best_idx]}",
-                        xy=(val_steps[best_idx], val_values[best_idx]),
-                        xytext=(10, 20), textcoords="offset points",
-                        fontsize=10, color=COLORS["accent"],
-                        arrowprops=dict(arrowstyle="->", color=COLORS["accent"]))
+            ax.annotate(
+                f"Epoch {val_steps[best_idx]}",
+                xy=(val_steps[best_idx], val_values[best_idx]),
+                xytext=(10, 20),
+                textcoords="offset points",
+                fontsize=10,
+                color=COLORS["accent"],
+                arrowprops=dict(arrowstyle="->", color=COLORS["accent"]),
+            )
 
         ax.legend(fontsize=11, loc="upper right", framealpha=0.9)
         ax.set_ylim(bottom=0)
@@ -265,11 +312,22 @@ def plot_task_metrics(run, interactive: bool = False) -> None:
     val_sum = client.get_metric_history(run.info.run_id, "val_summarization_loss")
 
     if train_sum:
-        ax.plot([m.step for m in train_sum], [m.value for m in train_sum],
-                label="Train", linewidth=2.5, color=COLORS["summary"])
+        ax.plot(
+            [m.step for m in train_sum],
+            [m.value for m in train_sum],
+            label="Train",
+            linewidth=2.5,
+            color=COLORS["summary"],
+        )
     if val_sum:
-        ax.plot([m.step for m in val_sum], [m.value for m in val_sum],
-                label="Validation", linewidth=2.5, color=COLORS["secondary"], linestyle="--")
+        ax.plot(
+            [m.step for m in val_sum],
+            [m.value for m in val_sum],
+            label="Validation",
+            linewidth=2.5,
+            color=COLORS["secondary"],
+            linestyle="--",
+        )
 
     ax.set_title("Summarization Loss")
     ax.set_xlabel("Epoch")
@@ -286,20 +344,43 @@ def plot_task_metrics(run, interactive: bool = False) -> None:
     val_f1 = client.get_metric_history(run.info.run_id, "val_emotion_f1")
 
     if train_emo:
-        ax.plot([m.step for m in train_emo], [m.value for m in train_emo],
-                label="Train Loss", linewidth=2.5, color=COLORS["emotion"])
+        ax.plot(
+            [m.step for m in train_emo],
+            [m.value for m in train_emo],
+            label="Train Loss",
+            linewidth=2.5,
+            color=COLORS["emotion"],
+        )
     if val_emo:
-        ax.plot([m.step for m in val_emo], [m.value for m in val_emo],
-                label="Val Loss", linewidth=2.5, color=COLORS["secondary"], linestyle="--")
+        ax.plot(
+            [m.step for m in val_emo],
+            [m.value for m in val_emo],
+            label="Val Loss",
+            linewidth=2.5,
+            color=COLORS["secondary"],
+            linestyle="--",
+        )
 
     # Secondary axis for F1
     ax2 = ax.twinx()
     if train_f1:
-        ax2.plot([m.step for m in train_f1], [m.value for m in train_f1],
-                 label="Train F1", linewidth=2, color=COLORS["accent"], alpha=0.7)
+        ax2.plot(
+            [m.step for m in train_f1],
+            [m.value for m in train_f1],
+            label="Train F1",
+            linewidth=2,
+            color=COLORS["accent"],
+            alpha=0.7,
+        )
     if val_f1:
-        ax2.plot([m.step for m in val_f1], [m.value for m in val_f1],
-                 label="Val F1", linewidth=2, color=COLORS["highlight"], alpha=0.7)
+        ax2.plot(
+            [m.step for m in val_f1],
+            [m.value for m in val_f1],
+            label="Val F1",
+            linewidth=2,
+            color=COLORS["highlight"],
+            alpha=0.7,
+        )
         ax2.set_ylim(0, 1)
 
     ax.set_title("Emotion Detection (28 classes)")
@@ -320,19 +401,42 @@ def plot_task_metrics(run, interactive: bool = False) -> None:
     val_acc = client.get_metric_history(run.info.run_id, "val_topic_accuracy")
 
     if train_topic:
-        ax.plot([m.step for m in train_topic], [m.value for m in train_topic],
-                label="Train Loss", linewidth=2.5, color=COLORS["topic"])
+        ax.plot(
+            [m.step for m in train_topic],
+            [m.value for m in train_topic],
+            label="Train Loss",
+            linewidth=2.5,
+            color=COLORS["topic"],
+        )
     if val_topic:
-        ax.plot([m.step for m in val_topic], [m.value for m in val_topic],
-                label="Val Loss", linewidth=2.5, color=COLORS["secondary"], linestyle="--")
+        ax.plot(
+            [m.step for m in val_topic],
+            [m.value for m in val_topic],
+            label="Val Loss",
+            linewidth=2.5,
+            color=COLORS["secondary"],
+            linestyle="--",
+        )
 
     ax2 = ax.twinx()
     if train_acc:
-        ax2.plot([m.step for m in train_acc], [m.value for m in train_acc],
-                 label="Train Acc", linewidth=2, color=COLORS["accent"], alpha=0.7)
+        ax2.plot(
+            [m.step for m in train_acc],
+            [m.value for m in train_acc],
+            label="Train Acc",
+            linewidth=2,
+            color=COLORS["accent"],
+            alpha=0.7,
+        )
     if val_acc:
-        ax2.plot([m.step for m in val_acc], [m.value for m in val_acc],
-                 label="Val Acc", linewidth=2, color=COLORS["highlight"], alpha=0.7)
+        ax2.plot(
+            [m.step for m in val_acc],
+            [m.value for m in val_acc],
+            label="Val Acc",
+            linewidth=2,
+            color=COLORS["highlight"],
+            alpha=0.7,
+        )
         ax2.set_ylim(0, 1)
 
     ax.set_title("Topic Classification (4 classes)")
@@ -350,9 +454,11 @@ def plot_task_metrics(run, interactive: bool = False) -> None:
     ax.axis("off")
 
     # Get final metrics
-    summary_lines = ["+--------------------------------------+",
-                     "|     FINAL METRICS (Last Epoch)       |",
-                     "+--------------------------------------+"]
+    summary_lines = [
+        "+--------------------------------------+",
+        "|     FINAL METRICS (Last Epoch)       |",
+        "+--------------------------------------+",
+    ]
 
     if val_topic and val_acc:
         summary_lines.append(f"|  Topic Accuracy:    {val_acc[-1].value:>6.1%}         |")
@@ -363,8 +469,15 @@ def plot_task_metrics(run, interactive: bool = False) -> None:
 
     summary_lines.append("+--------------------------------------+")
 
-    ax.text(0.1, 0.6, "\n".join(summary_lines), fontsize=11, family="monospace",
-            verticalalignment="center", bbox=dict(boxstyle="round", facecolor=COLORS["light"]))
+    ax.text(
+        0.1,
+        0.6,
+        "\n".join(summary_lines),
+        fontsize=11,
+        family="monospace",
+        verticalalignment="center",
+        bbox=dict(boxstyle="round", facecolor=COLORS["light"]),
+    )
 
     # Add model info
     run_params = run.data.params
@@ -372,8 +485,7 @@ def plot_task_metrics(run, interactive: bool = False) -> None:
     model_info += f"Batch Size: {run_params.get('batch_size', 'N/A')}\n"
     model_info += f"Learning Rate: {run_params.get('learning_rate', 'N/A')}"
 
-    ax.text(0.1, 0.15, model_info, fontsize=10, color="gray",
-            verticalalignment="center")
+    ax.text(0.1, 0.15, model_info, fontsize=10, color="gray", verticalalignment="center")
 
     plt.tight_layout()
     output_path = OUTPUTS_DIR / "task_metrics.png"
@@ -392,13 +504,13 @@ def plot_learning_rate(run) -> None:
     if not lr_metrics or len(lr_metrics) < 2:
         # No LR data logged - generate theoretical schedule from config
         logger.info("  No LR metrics found - generating theoretical schedule...")
-        
+
         # Get config from run params
         params = run.data.params
         lr_max = float(params.get("learning_rate", params.get("lr", 5e-5)))
         warmup_steps = int(params.get("warmup_steps", 500))
         max_epochs = int(params.get("max_epochs", 5))
-        
+
         # Estimate total steps from training loss history
         train_loss = client.get_metric_history(run.info.run_id, "train_total_loss")
         if train_loss:
@@ -407,7 +519,7 @@ def plot_learning_rate(run) -> None:
             total_steps = max_epochs * estimated_steps_per_epoch
         else:
             total_steps = 4000  # Default fallback
-        
+
         # Generate cosine schedule with warmup
         steps = np.arange(0, total_steps)
         values = []
@@ -418,25 +530,43 @@ def plot_learning_rate(run) -> None:
                 progress = (step - warmup_steps) / max(1, total_steps - warmup_steps)
                 lr = lr_max * max(0.1, 0.5 * (1 + np.cos(np.pi * progress)))
             values.append(lr)
-        
+
         ax.fill_between(steps, values, alpha=0.3, color=COLORS["primary"])
         ax.plot(steps, values, linewidth=2.5, color=COLORS["primary"], label="Cosine + Warmup")
-        
+
         # Mark warmup region
-        ax.axvline(warmup_steps, color=COLORS["secondary"], linestyle="--",
-                   alpha=0.7, linewidth=2, label=f"Warmup End ({warmup_steps})")
+        ax.axvline(
+            warmup_steps,
+            color=COLORS["secondary"],
+            linestyle="--",
+            alpha=0.7,
+            linewidth=2,
+            label=f"Warmup End ({warmup_steps})",
+        )
         ax.axvspan(0, warmup_steps, alpha=0.1, color=COLORS["highlight"])
-        
+
         # Add annotation
-        ax.annotate(f"Peak LR: {lr_max:.1e}", xy=(warmup_steps, lr_max),
-                    xytext=(warmup_steps + 200, lr_max * 0.9),
-                    fontsize=10, color=COLORS["dark"],
-                    arrowprops=dict(arrowstyle="->", color=COLORS["dark"], alpha=0.5))
-        
+        ax.annotate(
+            f"Peak LR: {lr_max:.1e}",
+            xy=(warmup_steps, lr_max),
+            xytext=(warmup_steps + 200, lr_max * 0.9),
+            fontsize=10,
+            color=COLORS["dark"],
+            arrowprops=dict(arrowstyle="->", color=COLORS["dark"], alpha=0.5),
+        )
+
         ax.legend(loc="upper right")
-        ax.text(0.98, 0.02, "(Theoretical - actual LR not logged)",
-                transform=ax.transAxes, ha="right", va="bottom",
-                fontsize=9, color="gray", style="italic")
+        ax.text(
+            0.98,
+            0.02,
+            "(Theoretical - actual LR not logged)",
+            transform=ax.transAxes,
+            ha="right",
+            va="bottom",
+            fontsize=9,
+            color="gray",
+            style="italic",
+        )
     else:
         steps = np.array([m.step for m in lr_metrics])
         values = [m.value for m in lr_metrics]
@@ -449,10 +579,15 @@ def plot_learning_rate(run) -> None:
         params = run.data.params
         warmup_steps = int(params.get("warmup_steps", 500))
         if warmup_steps < max(steps):
-            ax.axvline(warmup_steps, color=COLORS["secondary"], linestyle="--",
-                       alpha=0.7, linewidth=2, label="Warmup End")
-            ax.axvspan(0, warmup_steps, alpha=0.1, color=COLORS["highlight"],
-                       label="Warmup Phase")
+            ax.axvline(
+                warmup_steps,
+                color=COLORS["secondary"],
+                linestyle="--",
+                alpha=0.7,
+                linewidth=2,
+                label="Warmup End",
+            )
+            ax.axvspan(0, warmup_steps, alpha=0.1, color=COLORS["highlight"], label="Warmup Phase")
             ax.legend(loc="upper right")
 
     # Scientific notation for y-axis if needed
@@ -471,6 +606,7 @@ def plot_learning_rate(run) -> None:
 
 # Advanced Visualizations
 
+
 def plot_confusion_matrix(run, task: str = "topic") -> None:
     """
     Plot confusion matrix for classification tasks.
@@ -482,8 +618,16 @@ def plot_confusion_matrix(run, task: str = "topic") -> None:
     if task == "topic":
         default_labels = ["World", "Sports", "Business", "Sci/Tech"]
     else:  # emotion - top 8 for visibility
-        default_labels = ["admiration", "amusement", "anger", "annoyance",
-                          "approval", "caring", "curiosity", "desire"]
+        default_labels = [
+            "admiration",
+            "amusement",
+            "anger",
+            "annoyance",
+            "approval",
+            "caring",
+            "curiosity",
+            "desire",
+        ]
 
     if labels_path.exists():
         with open(labels_path) as f:
@@ -516,9 +660,16 @@ def plot_confusion_matrix(run, task: str = "topic") -> None:
     # Plot
     fig, ax = plt.subplots(figsize=(10, 8))
 
-    sns.heatmap(cm_normalized, annot=True, fmt=".2f", cmap=HEATMAP_CMAP,
-                xticklabels=labels[:n_classes], yticklabels=labels[:n_classes],
-                ax=ax, cbar_kws={"label": "Proportion"})
+    sns.heatmap(
+        cm_normalized,
+        annot=True,
+        fmt=".2f",
+        cmap=HEATMAP_CMAP,
+        xticklabels=labels[:n_classes],
+        yticklabels=labels[:n_classes],
+        ax=ax,
+        cbar_kws={"label": "Proportion"},
+    )
 
     ax.set_title(f"Confusion Matrix: {task.title()} Classification")
     ax.set_xlabel("Predicted Label")
@@ -570,7 +721,7 @@ def plot_3d_loss_landscape(run) -> None:
 
     # Synthetic loss surface (bowl shape with some local minima)
     min_loss = min(val_loss) if val_loss else min(train_loss)
-    Z = min_loss + 0.3 * (X**2 + Y**2) + 0.1 * np.sin(3*X) * np.cos(3*Y)
+    Z = min_loss + 0.3 * (X**2 + Y**2) + 0.1 * np.sin(3 * X) * np.cos(3 * Y)
 
     # Add noise for realism
     Z += np.random.normal(0, 0.02, Z.shape)
@@ -584,41 +735,57 @@ def plot_3d_loss_landscape(run) -> None:
     fig = go.Figure()
 
     # Loss surface
-    fig.add_trace(go.Surface(
-        x=X, y=Y, z=Z,
-        colorscale=[[0, COLORS["accent"]], [0.5, COLORS["primary"]], [1, COLORS["secondary"]]],
-        opacity=0.8,
-        showscale=True,
-        colorbar=dict(title="Loss", x=1.02)
-    ))
+    fig.add_trace(
+        go.Surface(
+            x=X,
+            y=Y,
+            z=Z,
+            colorscale=[[0, COLORS["accent"]], [0.5, COLORS["primary"]], [1, COLORS["secondary"]]],
+            opacity=0.8,
+            showscale=True,
+            colorbar=dict(title="Loss", x=1.02),
+        )
+    )
 
     # Training trajectory
-    fig.add_trace(go.Scatter3d(
-        x=trajectory_x, y=trajectory_y, z=trajectory_z,
-        mode="lines+markers",
-        line=dict(color=COLORS["highlight"], width=5),
-        marker=dict(size=4, color=COLORS["highlight"]),
-        name="Training Path"
-    ))
+    fig.add_trace(
+        go.Scatter3d(
+            x=trajectory_x,
+            y=trajectory_y,
+            z=trajectory_z,
+            mode="lines+markers",
+            line=dict(color=COLORS["highlight"], width=5),
+            marker=dict(size=4, color=COLORS["highlight"]),
+            name="Training Path",
+        )
+    )
 
     # Mark start and end
-    fig.add_trace(go.Scatter3d(
-        x=[trajectory_x[0]], y=[trajectory_y[0]], z=[trajectory_z[0]],
-        mode="markers+text",
-        marker=dict(size=10, color="red", symbol="circle"),
-        text=["Start"],
-        textposition="top center",
-        name="Start"
-    ))
+    fig.add_trace(
+        go.Scatter3d(
+            x=[trajectory_x[0]],
+            y=[trajectory_y[0]],
+            z=[trajectory_z[0]],
+            mode="markers+text",
+            marker=dict(size=10, color="red", symbol="circle"),
+            text=["Start"],
+            textposition="top center",
+            name="Start",
+        )
+    )
 
-    fig.add_trace(go.Scatter3d(
-        x=[trajectory_x[-1]], y=[trajectory_y[-1]], z=[trajectory_z[-1]],
-        mode="markers+text",
-        marker=dict(size=10, color="green", symbol="diamond"),
-        text=["Converged"],
-        textposition="top center",
-        name="Converged"
-    ))
+    fig.add_trace(
+        go.Scatter3d(
+            x=[trajectory_x[-1]],
+            y=[trajectory_y[-1]],
+            z=[trajectory_z[-1]],
+            mode="markers+text",
+            marker=dict(size=10, color="green", symbol="diamond"),
+            text=["Converged"],
+            textposition="top center",
+            name="Converged",
+        )
+    )
 
     fig.update_layout(
         title="Loss Landscape & Optimization Trajectory",
@@ -626,7 +793,7 @@ def plot_3d_loss_landscape(run) -> None:
             xaxis_title="Parameter Direction 1",
             yaxis_title="Parameter Direction 2",
             zaxis_title="Loss",
-            camera=dict(eye=dict(x=1.5, y=1.5, z=0.8))
+            camera=dict(eye=dict(x=1.5, y=1.5, z=0.8)),
         ),
         width=900,
         height=700,
@@ -658,26 +825,46 @@ def plot_3d_loss_landscape_static(run) -> None:
     X, Y = np.meshgrid(x, y)
 
     min_loss = min(train_loss)
-    Z = min_loss + 0.3 * (X**2 + Y**2) + 0.08 * np.sin(3*X) * np.cos(3*Y)
+    Z = min_loss + 0.3 * (X**2 + Y**2) + 0.08 * np.sin(3 * X) * np.cos(3 * Y)
 
     fig = plt.figure(figsize=(12, 8))
     ax = fig.add_subplot(111, projection="3d")
 
     # Surface
-    surf = ax.plot_surface(X, Y, Z, cmap="viridis", alpha=0.7,
-                           linewidth=0, antialiased=True)
+    surf = ax.plot_surface(X, Y, Z, cmap="viridis", alpha=0.7, linewidth=0, antialiased=True)
 
     # Training path
     path_x = np.linspace(-1.5, 0, len(train_loss))
     path_y = np.linspace(1.2, 0, len(train_loss))
-    ax.plot(path_x, path_y, train_loss, color=COLORS["secondary"],
-            linewidth=3, label="Training Path", zorder=10)
+    ax.plot(
+        path_x,
+        path_y,
+        train_loss,
+        color=COLORS["secondary"],
+        linewidth=3,
+        label="Training Path",
+        zorder=10,
+    )
 
     # Start/end markers
-    ax.scatter([path_x[0]], [path_y[0]], train_loss[0],  # type: ignore[arg-type]
-               c="red", s=100, marker="o", label="Start")
-    ax.scatter([path_x[-1]], [path_y[-1]], train_loss[-1],  # type: ignore[arg-type]
-               c="green", s=100, marker="*", label="Converged")
+    ax.scatter(
+        [path_x[0]],
+        [path_y[0]],
+        train_loss[0],  # type: ignore[arg-type]
+        c="red",
+        s=100,
+        marker="o",
+        label="Start",
+    )
+    ax.scatter(
+        [path_x[-1]],
+        [path_y[-1]],
+        train_loss[-1],  # type: ignore[arg-type]
+        c="green",
+        s=100,
+        marker="*",
+        label="Converged",
+    )
 
     ax.set_xlabel("θ₁ Direction")
     ax.set_ylabel("θ₂ Direction")
@@ -722,7 +909,7 @@ def plot_embedding_space(run) -> None:
     for i in range(n_clusters):
         # Create cluster center
         center = np.random.randn(64) * 0.5
-        center[i*16:(i+1)*16] += 3  # Make clusters separable
+        center[i * 16 : (i + 1) * 16] += 3  # Make clusters separable
 
         # Add samples around center
         samples = center + np.random.randn(n_samples // n_clusters, 64) * 0.5
@@ -742,8 +929,14 @@ def plot_embedding_space(run) -> None:
 
     for i in range(n_clusters):
         mask = cluster_labels == i
-        ax.scatter(embeddings_2d[mask, 0], embeddings_2d[mask, 1],
-                   c=colors[i], label=labels[i], alpha=0.6, s=30)
+        ax.scatter(
+            embeddings_2d[mask, 0],
+            embeddings_2d[mask, 1],
+            c=colors[i],
+            label=labels[i],
+            alpha=0.6,
+            s=30,
+        )
 
     ax.set_xlabel("t-SNE Dimension 1")
     ax.set_ylabel("t-SNE Dimension 2")
@@ -787,14 +980,18 @@ def plot_training_dynamics(run) -> None:
     # Smoothed loss (exponential moving average)
     if len(train_loss) > 5:
         window = min(5, len(train_loss) // 2)
-        smoothed = np.convolve(train_loss, np.ones(window)/window, mode="valid")
-        smoothed_steps = train_steps[window-1:]
-        ax.plot(smoothed_steps, smoothed, color=COLORS["primary"],
-                linewidth=2.5, label="Training (smoothed)")
+        smoothed = np.convolve(train_loss, np.ones(window) / window, mode="valid")
+        smoothed_steps = train_steps[window - 1 :]
+        ax.plot(
+            smoothed_steps,
+            smoothed,
+            color=COLORS["primary"],
+            linewidth=2.5,
+            label="Training (smoothed)",
+        )
 
     if val_loss:
-        ax.plot(val_steps, val_loss, color=COLORS["secondary"],
-                linewidth=2.5, label="Validation")
+        ax.plot(val_steps, val_loss, color=COLORS["secondary"], linewidth=2.5, label="Validation")
 
     ax.set_title("Loss Convergence")
     ax.set_xlabel("Epoch")
@@ -806,8 +1003,10 @@ def plot_training_dynamics(run) -> None:
     ax = axes[0, 1]
 
     if len(train_loss) > 1:
-        improvements = [-(train_loss[i] - train_loss[i-1])/train_loss[i-1] * 100
-                        for i in range(1, len(train_loss))]
+        improvements = [
+            -(train_loss[i] - train_loss[i - 1]) / train_loss[i - 1] * 100
+            for i in range(1, len(train_loss))
+        ]
         colors_bar = [COLORS["accent"] if imp > 0 else COLORS["secondary"] for imp in improvements]
         ax.bar(train_steps[1:], improvements, color=colors_bar, alpha=0.7)
         ax.axhline(y=0, color="gray", linestyle="--", alpha=0.5)
@@ -862,6 +1061,7 @@ def plot_training_dynamics(run) -> None:
 
 # Dashboard Generator
 
+
 def generate_dashboard(run) -> None:
     """
     Generate an interactive HTML dashboard with all visualizations.
@@ -883,63 +1083,73 @@ def generate_dashboard(run) -> None:
 
     # Create subplots
     fig = make_subplots(
-        rows=2, cols=2,
+        rows=2,
+        cols=2,
         subplot_titles=("Total Loss", "Task Losses", "Learning Rate", "Metrics"),
-        specs=[[{}, {}], [{}, {}]]
+        specs=[[{}, {}], [{}, {}]],
     )
 
     # Total loss
     if train_loss:
         fig.add_trace(
-            go.Scatter(x=train_steps, y=train_loss, name="Train Loss",
-                       line=dict(color=COLORS["primary"])),
-            row=1, col=1
+            go.Scatter(
+                x=train_steps, y=train_loss, name="Train Loss", line=dict(color=COLORS["primary"])
+            ),
+            row=1,
+            col=1,
         )
     if val_loss:
         fig.add_trace(
-            go.Scatter(x=val_steps, y=val_loss, name="Val Loss",
-                       line=dict(color=COLORS["secondary"])),
-            row=1, col=1
+            go.Scatter(
+                x=val_steps, y=val_loss, name="Val Loss", line=dict(color=COLORS["secondary"])
+            ),
+            row=1,
+            col=1,
         )
 
     # Per-task losses
-    for task, color in [("summarization", COLORS["summary"]),
-                        ("emotion", COLORS["emotion"]),
-                        ("topic", COLORS["topic"])]:
+    for task, color in [
+        ("summarization", COLORS["summary"]),
+        ("emotion", COLORS["emotion"]),
+        ("topic", COLORS["topic"]),
+    ]:
         steps, values = get_metric_history(run, f"val_{task}_loss")
         if values:
             fig.add_trace(
-                go.Scatter(x=steps, y=values, name=f"{task.title()} Loss",
-                           line=dict(color=color)),
-                row=1, col=2
+                go.Scatter(x=steps, y=values, name=f"{task.title()} Loss", line=dict(color=color)),
+                row=1,
+                col=2,
             )
 
     # Learning rate
     lr_metrics = client.get_metric_history(run.info.run_id, "learning_rate")
     if lr_metrics:
         fig.add_trace(
-            go.Scatter(x=[m.step for m in lr_metrics], y=[m.value for m in lr_metrics],
-                       name="Learning Rate", fill="tozeroy",
-                       line=dict(color=COLORS["primary"])),
-            row=2, col=1
+            go.Scatter(
+                x=[m.step for m in lr_metrics],
+                y=[m.value for m in lr_metrics],
+                name="Learning Rate",
+                fill="tozeroy",
+                line=dict(color=COLORS["primary"]),
+            ),
+            row=2,
+            col=1,
         )
 
     # Accuracy metrics
-    for metric, color in [("topic_accuracy", COLORS["topic"]),
-                          ("emotion_f1", COLORS["emotion"])]:
+    for metric, color in [("topic_accuracy", COLORS["topic"]), ("emotion_f1", COLORS["emotion"])]:
         steps, values = get_metric_history(run, f"val_{metric}")
         if values:
             fig.add_trace(
-                go.Scatter(x=steps, y=values, name=metric.replace("_", " ").title(),
-                           line=dict(color=color)),
-                row=2, col=2
+                go.Scatter(
+                    x=steps, y=values, name=metric.replace("_", " ").title(), line=dict(color=color)
+                ),
+                row=2,
+                col=2,
             )
 
     fig.update_layout(
-        title="LexiMind Training Dashboard",
-        height=800,
-        template="plotly_white",
-        showlegend=True
+        title="LexiMind Training Dashboard", height=800, template="plotly_white", showlegend=True
     )
 
     output_path = OUTPUTS_DIR / "training_dashboard.html"
@@ -949,17 +1159,20 @@ def generate_dashboard(run) -> None:
 
 # Main Entry Point
 
+
 def main():
     """Generate all training visualizations."""
     parser = argparse.ArgumentParser(description="LexiMind Visualization Suite")
-    parser.add_argument("--interactive", action="store_true",
-                        help="Generate interactive HTML plots (requires plotly)")
-    parser.add_argument("--landscape", action="store_true",
-                        help="Include 3D loss landscape visualization")
-    parser.add_argument("--dashboard", action="store_true",
-                        help="Generate interactive dashboard")
-    parser.add_argument("--all", action="store_true",
-                        help="Generate all visualizations")
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        help="Generate interactive HTML plots (requires plotly)",
+    )
+    parser.add_argument(
+        "--landscape", action="store_true", help="Include 3D loss landscape visualization"
+    )
+    parser.add_argument("--dashboard", action="store_true", help="Generate interactive dashboard")
+    parser.add_argument("--all", action="store_true", help="Generate all visualizations")
     args = parser.parse_args()
 
     logger.info("=" * 60)

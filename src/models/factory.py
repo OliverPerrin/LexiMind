@@ -208,7 +208,9 @@ def _load_pretrained_weights(
     if hasattr(encoder, "relative_position_bias") and encoder.relative_position_bias is not None:
         print("Transferring encoder relative position bias...")
         t5_enc_rel_bias = (
-            cast(Any, t5_encoder.block[0]).layer[0].SelfAttention.relative_attention_bias.weight.data
+            cast(Any, t5_encoder.block[0])
+            .layer[0]
+            .SelfAttention.relative_attention_bias.weight.data
         )
         encoder.relative_position_bias.relative_attention_bias.weight.data.copy_(t5_enc_rel_bias)
 
@@ -285,7 +287,9 @@ def _load_pretrained_weights(
     ):
         print("Transferring decoder self-attention relative position bias...")
         t5_dec_self_rel_bias = (
-            cast(Any, t5_decoder.block[0]).layer[0].SelfAttention.relative_attention_bias.weight.data
+            cast(Any, t5_decoder.block[0])
+            .layer[0]
+            .SelfAttention.relative_attention_bias.weight.data
         )
         decoder.self_relative_position_bias.relative_attention_bias.weight.data.copy_(
             t5_dec_self_rel_bias
@@ -298,7 +302,9 @@ def _load_pretrained_weights(
         print("Transferring decoder cross-attention relative position bias...")
         # Cross-attention relative position bias is in EncDecAttention of first block
         t5_dec_cross_rel_bias = (
-            cast(Any, t5_decoder.block[0]).layer[1].EncDecAttention.relative_attention_bias.weight.data
+            cast(Any, t5_decoder.block[0])
+            .layer[1]
+            .EncDecAttention.relative_attention_bias.weight.data
         )
         decoder.cross_relative_position_bias.relative_attention_bias.weight.data.copy_(
             t5_dec_cross_rel_bias
@@ -554,9 +560,9 @@ def build_multitask_model(
     model.add_head(
         "emotion",
         ClassificationHead(
-            d_model=cfg.d_model, 
-            num_labels=num_emotions, 
-            pooler="attention", 
+            d_model=cfg.d_model,
+            num_labels=num_emotions,
+            pooler="attention",
             dropout=cfg.dropout,
             hidden_dim=cfg.d_model // 2,  # 384-dim hidden layer
         ),

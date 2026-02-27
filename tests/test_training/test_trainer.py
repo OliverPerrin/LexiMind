@@ -111,8 +111,9 @@ class TestGradientFlow(unittest.TestCase):
         loss = nn.CrossEntropyLoss()(logits, batch["labels"])
         loss.backward()
 
-        has_grads = any(p.grad is not None and p.grad.abs().sum() > 0 
-                        for p in self.model.parameters())
+        has_grads = any(
+            p.grad is not None and p.grad.abs().sum() > 0 for p in self.model.parameters()
+        )
         self.assertTrue(has_grads, "No gradients found")
 
     def test_emotion_gradients(self):
@@ -130,8 +131,9 @@ class TestGradientFlow(unittest.TestCase):
         loss = nn.BCEWithLogitsLoss()(logits, batch["labels"])
         loss.backward()
 
-        has_grads = any(p.grad is not None and p.grad.abs().sum() > 0 
-                        for p in self.model.parameters())
+        has_grads = any(
+            p.grad is not None and p.grad.abs().sum() > 0 for p in self.model.parameters()
+        )
         self.assertTrue(has_grads, "No gradients found")
 
     def test_summarization_gradients(self):
@@ -145,14 +147,12 @@ class TestGradientFlow(unittest.TestCase):
         self.model.zero_grad()
         logits = self.model.forward("summarization", batch)
         # Flatten for cross entropy: (B*T, vocab) vs (B*T,)
-        loss = nn.CrossEntropyLoss()(
-            logits.view(-1, 100), 
-            batch["labels"].view(-1)
-        )
+        loss = nn.CrossEntropyLoss()(logits.view(-1, 100), batch["labels"].view(-1))
         loss.backward()
 
-        has_grads = any(p.grad is not None and p.grad.abs().sum() > 0 
-                        for p in self.model.parameters())
+        has_grads = any(
+            p.grad is not None and p.grad.abs().sum() > 0 for p in self.model.parameters()
+        )
         self.assertTrue(has_grads, "No gradients found")
 
 

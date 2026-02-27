@@ -27,8 +27,12 @@ print(f"Loaded {len(_dataset)} items")
 ALL_ITEMS: list[dict[str, Any]] = [dict(row) for row in _dataset]
 
 # Extract unique topics and emotions FROM THE DATASET (what model predicted)
-DATASET_TOPICS: list[str] = sorted(set(str(item["topic"]) for item in ALL_ITEMS if item.get("topic")))
-DATASET_EMOTIONS: list[str] = sorted(set(str(item["emotion"]) for item in ALL_ITEMS if item.get("emotion")))
+DATASET_TOPICS: list[str] = sorted(
+    set(str(item["topic"]) for item in ALL_ITEMS if item.get("topic"))
+)
+DATASET_EMOTIONS: list[str] = sorted(
+    set(str(item["emotion"]) for item in ALL_ITEMS if item.get("emotion"))
+)
 
 # Load ALL possible labels from labels.json (what the model CAN predict)
 _labels_path = Path(__file__).parent.parent / "artifacts" / "labels.json"
@@ -90,19 +94,19 @@ def format_item_card(item: dict) -> str:
     title = item.get("title", "Unknown")
     source_type = item.get("source_type", "unknown")
     dataset_name = item.get("dataset", "").title()
-    
+
     # Icon based on type
     if source_type == "academic":
         type_label = "Research Paper"
     else:
         type_label = "Literature"
-    
+
     # Topic and emotion with confidence
     topic = item.get("topic", "Unknown")
     topic_conf = item.get("topic_confidence", 0)
     emotion = item.get("emotion", "Unknown")
     emotion_conf = item.get("emotion_confidence", 0)
-    
+
     # Summary - check if using reference or generated
     use_reference = item.get("use_reference_summary", False)
     if use_reference or source_type == "literary":
@@ -111,17 +115,21 @@ def format_item_card(item: dict) -> str:
     else:
         summary = item.get("generated_summary", "")
         summary_label = "**AI-Generated Description:**"
-    
+
     if not summary:
         summary = "No summary available."
-    
+
     # Truncate summary if too long
     if len(summary) > 400:
-        summary = summary[:400].rsplit(' ', 1)[0] + "..."
-    
+        summary = summary[:400].rsplit(" ", 1)[0] + "..."
+
     # Preview of original text
-    text_preview = item.get("text", "")[:400] + "..." if len(item.get("text", "")) > 400 else item.get("text", "")
-    
+    text_preview = (
+        item.get("text", "")[:400] + "..."
+        if len(item.get("text", "")) > 400
+        else item.get("text", "")
+    )
+
     return f"""### **{title}**
 
 <small>*{type_label}* from {dataset_name}</small>
@@ -147,24 +155,24 @@ def browse_by_topic(topic: str) -> str:
     items = get_items_by_topic(topic)
     if not items:
         return "No items found for this topic."
-    
+
     # Group by type
     literary = [i for i in items if i.get("source_type") == "literary"]
     academic = [i for i in items if i.get("source_type") == "academic"]
-    
+
     result = f"## {topic if topic != 'All' else 'All Topics'}\n\n"
     result += f"*Found {len(items)} items ({len(literary)} literary, {len(academic)} academic)*\n\n"
-    
+
     if literary:
         result += "### Literary Works\n\n"
         for item in literary[:25]:  # Limit to avoid huge pages
             result += format_item_card(item)
-    
+
     if academic:
         result += "### Academic Papers\n\n"
         for item in academic[:25]:
             result += format_item_card(item)
-    
+
     return result
 
 
@@ -173,23 +181,23 @@ def browse_by_emotion(emotion: str) -> str:
     items = get_items_by_emotion(emotion)
     if not items:
         return "No items found for this emotion."
-    
+
     literary = [i for i in items if i.get("source_type") == "literary"]
     academic = [i for i in items if i.get("source_type") == "academic"]
-    
+
     result = f"## Feeling {emotion.title() if emotion != 'All' else 'All Emotions'}?\n\n"
     result += f"*Found {len(items)} items ({len(literary)} literary, {len(academic)} academic)*\n\n"
-    
+
     if literary:
         result += "### Literary Works\n\n"
         for item in literary[:25]:
             result += format_item_card(item)
-    
+
     if academic:
         result += "### Academic Papers\n\n"
         for item in academic[:25]:
             result += format_item_card(item)
-    
+
     return result
 
 
@@ -197,24 +205,25 @@ def search_items(query: str) -> str:
     """Search items by text content."""
     if not query or len(query) < 3:
         return "Enter at least 3 characters to search."
-    
+
     query_lower = query.lower()
     matches = [
-        item for item in ALL_ITEMS
+        item
+        for item in ALL_ITEMS
         if query_lower in item.get("text", "").lower()
         or query_lower in item.get("generated_summary", "").lower()
         or query_lower in item.get("title", "").lower()
     ]
-    
+
     if not matches:
         return f"No results found for '{query}'."
-    
+
     result = f"## Search Results for '{query}'\n\n"
     result += f"*Found {len(matches)} matching items*\n\n"
-    
+
     for item in matches[:30]:
         result += format_item_card(item)
-    
+
     return result
 
 
@@ -226,9 +235,8 @@ with gr.Blocks(
     css="""
     .result-box { max-height: 700px; overflow-y: auto; }
     h3 { margin-top: 0.5em !important; }
-    """
+    """,
 ) as demo:
-    
     gr.Markdown(
         """
         # LexiMind
@@ -237,79 +245,75 @@ with gr.Blocks(
         Browse **{total_count}** texts — {lit_count} classic books and {paper_count} research papers — analyzed by a multi-task transformer.
         
         ---
-        """.format(
-            total_count=len(ALL_ITEMS),
-            lit_count=len(BOOKS),
-            paper_count=len(PAPERS)
-        )
+        """.format(total_count=len(ALL_ITEMS), lit_count=len(BOOKS), paper_count=len(PAPERS))
     )
-    
+
     with gr.Tabs():
         # ===================== TAB 1: BROWSE BY TOPIC =====================
         with gr.Tab("By Topic"):
             gr.Markdown("*Select a topic to explore related books and papers*")
-            
+
             topic_dropdown = gr.Dropdown(
                 choices=["All"] + TOPICS,
                 value="All",
                 label="Select Topic",
                 interactive=True,
             )
-            
+
             topic_results = gr.Markdown(
                 value=browse_by_topic("All"),
                 elem_classes=["result-box"],
             )
-            
+
             topic_dropdown.change(
                 fn=browse_by_topic,
                 inputs=[topic_dropdown],
                 outputs=[topic_results],
             )
-        
+
         # ===================== TAB 2: BROWSE BY EMOTION =====================
         with gr.Tab("By Emotion"):
             gr.Markdown("*Find books and papers that evoke specific emotions*")
-            
+
             emotion_dropdown = gr.Dropdown(
                 choices=["All"] + [e.title() for e in EMOTIONS],
                 value="All",
                 label="Select Emotion",
                 interactive=True,
             )
-            
+
             emotion_results = gr.Markdown(
                 value=browse_by_emotion("All"),
                 elem_classes=["result-box"],
             )
-            
+
             emotion_dropdown.change(
                 fn=lambda e: browse_by_emotion(e.lower() if e != "All" else "All"),
                 inputs=[emotion_dropdown],
                 outputs=[emotion_results],
             )
-        
+
         # ===================== TAB 3: SEARCH =====================
         with gr.Tab("Search"):
             gr.Markdown("*Search through all books and papers by keyword*")
-            
+
             search_input = gr.Textbox(
                 placeholder="Enter keywords to search...",
                 label="Search",
                 interactive=True,
             )
-            
+
             search_results = gr.Markdown(
                 value="Enter at least 3 characters to search.",
                 elem_classes=["result-box"],
             )
-            
+
             search_input.change(
                 fn=search_items,
                 inputs=[search_input],
                 outputs=[search_results],
             )
-        
+
         # ===================== TAB 4: METRICS =====================
         with gr.Tab("Metrics"):
             gr.Markdown(
@@ -319,10 +323,10 @@ with gr.Blocks(
                 Computed on held-out validation data.
                 """
             )
-            
+
             # Summarization Metrics
             gr.Markdown("#### Summarization")
-            
+
             if METRICS.get("summarization"):
                 summ = METRICS["summarization"]
                 summ_md = """
@@ -341,10 +345,10 @@ with gr.Blocks(
                 gr.Markdown(summ_md)
             else:
                 gr.Markdown("*Summarization metrics not available. Run evaluation script.*")
-            
+
             # Topic Classification Metrics
             gr.Markdown("#### Topic Classification")
-            
+
             if METRICS.get("topic"):
                 topic = METRICS["topic"]
                 topic_md = """
@@ -359,10 +363,10 @@ with gr.Blocks(
                 gr.Markdown(topic_md)
             else:
                 gr.Markdown("*Topic classification metrics not available.*")
-            
+
             # Emotion Detection Metrics
             gr.Markdown("#### Emotion Detection")
-            
+
             if METRICS.get("emotion"):
                 emotion = METRICS["emotion"]
                 emotion_md = """
@@ -374,17 +378,19 @@ with gr.Blocks(
 
 *28-label multi-label classification from GoEmotions.*
 """.format(
-                    sample_f1=emotion.get("sample_avg_f1", emotion.get("f1", emotion.get("multilabel_f1", 0))),
+                    sample_f1=emotion.get(
+                        "sample_avg_f1", emotion.get("f1", emotion.get("multilabel_f1", 0))
+                    ),
                     macro_f1=emotion.get("macro_f1", 0),
                     micro_f1=emotion.get("micro_f1", 0),
                 )
                 gr.Markdown(emotion_md)
             else:
                 gr.Markdown("*Emotion detection metrics not available.*")
-            
+
             # Dataset Statistics
             gr.Markdown("#### Dataset Statistics")
-            
+
             gr.Markdown(f"""
 | Statistic | Value |
 |-----------|-------|
@@ -394,7 +400,7 @@ with gr.Blocks(
 | Topics | {len(TOPICS)} |
 | Emotions | {len(EMOTIONS)} |
 """)
-        
+
         # ===================== TAB 5: ABOUT =====================
         with gr.Tab("About"):
             gr.Markdown(
@@ -420,4 +426,3 @@ with gr.Blocks(
 
 if __name__ == "__main__":
     demo.launch(server_name="0.0.0.0", server_port=7860)
-

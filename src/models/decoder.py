@@ -327,7 +327,6 @@ class TransformerDecoder(nn.Module):
             elif tgt_mask.dim() == 3:
                 tgt_mask = tgt_mask.unsqueeze(1)
 
-
         # Normalize memory_mask dtype/device and expand simple shapes
         if memory_mask is not None:
             memory_mask = memory_mask.to(dtype=torch.bool, device=x.device)
@@ -355,7 +354,15 @@ class TransformerDecoder(nn.Module):
                 # Gradient checkpointing requires the inputs to require grad
                 def create_custom_forward(module):
                     def custom_forward(*inputs):
-                        return module(*inputs, tgt_mask=tgt_mask, memory_mask=memory_mask, collect_attn=collect_attn, self_attn_position_bias=self_position_bias, cross_attn_position_bias=cross_position_bias)
+                        return module(
+                            *inputs,
+                            tgt_mask=tgt_mask,
+                            memory_mask=memory_mask,
+                            collect_attn=collect_attn,
+                            self_attn_position_bias=self_position_bias,
+                            cross_attn_position_bias=cross_position_bias,
+                        )
+
                     return custom_forward
 
                 x, attn = cast(
@@ -450,7 +457,7 @@ class TransformerDecoder(nn.Module):
     ) -> torch.Tensor:
         """
         Greedy decoding with KV caching for O(N) complexity.
-        
+
         Args:
             length_penalty: Values > 1.0 encourage shorter sequences by boosting EOS probability
                            as sequence length increases. Default 1.0 (no penalty).

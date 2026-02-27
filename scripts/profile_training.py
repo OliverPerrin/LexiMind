@@ -96,10 +96,12 @@ def main(cfg: DictConfig) -> None:
 
     tok_cfg = data_cfg.get("tokenizer", {})
     max_len = int(cfg.training.get("tokenizer_max_length") or tok_cfg.get("max_length", 512))
-    tokenizer = Tokenizer(TokenizerConfig(
-        pretrained_model_name=tok_cfg.get("pretrained_model_name", "google/flan-t5-base"),
-        max_length=max_len,
-    ))
+    tokenizer = Tokenizer(
+        TokenizerConfig(
+            pretrained_model_name=tok_cfg.get("pretrained_model_name", "google/flan-t5-base"),
+            max_length=max_len,
+        )
+    )
 
     summ_train = SummarizationDataset(summ_splits["train"])
     emot_train = EmotionDataset(emot_splits["train"])
@@ -112,23 +114,42 @@ def main(cfg: DictConfig) -> None:
 
     train_loaders = {
         "summarization": build_summarization_dataloader(
-            summ_train, tokenizer, shuffle=True,
-            max_source_length=max_len, max_target_length=max_len,
-            batch_size=batch_size, num_workers=num_workers, pin_memory=True,
+            summ_train,
+            tokenizer,
+            shuffle=True,
+            max_source_length=max_len,
+            max_target_length=max_len,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            pin_memory=True,
         ),
         "emotion": build_emotion_dataloader(
-            emot_train, tokenizer, shuffle=True, max_length=classification_max_len,
-            batch_size=batch_size, num_workers=num_workers, pin_memory=True,
+            emot_train,
+            tokenizer,
+            shuffle=True,
+            max_length=classification_max_len,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            pin_memory=True,
         ),
         "topic": build_topic_dataloader(
-            topic_train, tokenizer, shuffle=True, max_length=classification_max_len,
-            batch_size=batch_size, num_workers=num_workers, pin_memory=True,
+            topic_train,
+            tokenizer,
+            shuffle=True,
+            max_length=classification_max_len,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            pin_memory=True,
         ),
     }
 
     # Build model
-    grad_ckpt = cfg.training.get("gradient_checkpointing", cfg.model.get("gradient_checkpointing", False))
-    use_rel_pos = cfg.training.get("use_relative_position_bias", cfg.model.get("use_relative_position_bias", False))
+    grad_ckpt = cfg.training.get(
+        "gradient_checkpointing", cfg.model.get("gradient_checkpointing", False)
+    )
+    use_rel_pos = cfg.training.get(
+        "use_relative_position_bias", cfg.model.get("use_relative_position_bias", False)
+    )
 
     model_cfg = ModelConfig(
         d_model=cfg.model.d_model,
@@ -202,8 +223,10 @@ def main(cfg: DictConfig) -> None:
         except StopIteration:
             iterators[task] = iter(train_loaders[task])
             batch = next(iterators[task])
-        return {k: v.to(device, non_blocking=True) if isinstance(v, torch.Tensor) else v
-                for k, v in batch.items()}
+        return {
+            k: v.to(device, non_blocking=True) if isinstance(v, torch.Tensor) else v
+            for k, v in batch.items()
+        }
 
     def training_step(step):
         """One training step across all tasks."""
@@ -219,7 +242,8 @@ def main(cfg: DictConfig) -> None:
                     loss = torch.nn.functional.cross_entropy(
                         logits.view(-1, logits.size(-1)),
                         batch["labels"].view(-1),
-                        ignore_index=-100, label_smoothing=0.1,
+                        ignore_index=-100,
+                        label_smoothing=0.1,
                     )
                 elif task == "emotion":
                     inputs = {"input_ids": batch["input_ids"]}
@@ -262,7 +286,10 @@ def main(cfg: DictConfig) -> None:
             torch.profiler.ProfilerActivity.CUDA,
         ],
         schedule=torch.profiler.schedule(
-            wait=1, warmup=2, active=active_steps - 3, repeat=1,
+            wait=1,
+            warmup=2,
+            active=active_steps - 3,
+            repeat=1,
         ),
         on_trace_ready=torch.profiler.tensorboard_trace_handler(trace_path),
         record_shapes=True,

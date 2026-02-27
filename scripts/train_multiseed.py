@@ -30,7 +30,8 @@ def run_single_seed(seed: int, config_overrides: str, base_dir: Path) -> Dict:
     seed_dir.mkdir(parents=True, exist_ok=True)
 
     cmd = [
-        sys.executable, "scripts/train.py",
+        sys.executable,
+        "scripts/train.py",
         f"seed={seed}",
         f"checkpoint_out={seed_dir}/checkpoints/best.pt",
         f"history_out={seed_dir}/training_history.json",
@@ -39,9 +40,9 @@ def run_single_seed(seed: int, config_overrides: str, base_dir: Path) -> Dict:
     if config_overrides:
         cmd.extend(config_overrides.split())
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Training seed {seed}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"  Command: {' '.join(cmd)}")
 
     result = subprocess.run(cmd, capture_output=False)
@@ -69,7 +70,8 @@ def run_evaluation(seed: int, base_dir: Path, extra_args: List[str] | None = Non
         return {}
 
     cmd = [
-        sys.executable, "scripts/evaluate.py",
+        sys.executable,
+        "scripts/evaluate.py",
         f"--checkpoint={checkpoint}",
         f"--labels={labels}",
         f"--output={output}",
@@ -105,7 +107,11 @@ def aggregate_results(all_results: Dict[int, Dict]) -> Dict:
             if not isinstance(task_metrics, dict):
                 continue
             for metric_name, value in task_metrics.items():
-                if isinstance(value, (int, float)) and metric_name != "num_samples" and metric_name != "num_classes":
+                if (
+                    isinstance(value, (int, float))
+                    and metric_name != "num_samples"
+                    and metric_name != "num_classes"
+                ):
                     key = f"{task}/{metric_name}"
                     metric_values.setdefault(key, []).append(float(value))
 
@@ -125,9 +131,9 @@ def aggregate_results(all_results: Dict[int, Dict]) -> Dict:
 
 def print_summary(aggregated: Dict, seeds: List[int]) -> None:
     """Print human-readable summary of multi-seed results."""
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"MULTI-SEED RESULTS SUMMARY ({len(seeds)} seeds: {seeds})")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     # Group by task
     tasks: Dict[str, Dict[str, Dict]] = {}
@@ -142,23 +148,32 @@ def print_summary(aggregated: Dict, seeds: List[int]) -> None:
             std = stats["std"]
             # Format based on metric type
             if "accuracy" in metric:
-                print(f"    {metric:25s}: {mean*100:.1f}% ± {std*100:.1f}%")
+                print(f"    {metric:25s}: {mean * 100:.1f}% ± {std * 100:.1f}%")
             else:
                 print(f"    {metric:25s}: {mean:.4f} ± {std:.4f}")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Multi-seed training for LexiMind")
-    parser.add_argument("--seeds", nargs="+", type=int, default=[17, 42, 123],
-                        help="Random seeds to train with")
-    parser.add_argument("--config", type=str, default="",
-                        help="Hydra config overrides (e.g., 'training=full')")
-    parser.add_argument("--output-dir", type=Path, default=Path("outputs/multiseed"),
-                        help="Base output directory")
-    parser.add_argument("--skip-training", action="store_true",
-                        help="Skip training, only aggregate existing results")
-    parser.add_argument("--skip-eval", action="store_true",
-                        help="Skip evaluation, only aggregate training histories")
+    parser.add_argument(
+        "--seeds", nargs="+", type=int, default=[17, 42, 123], help="Random seeds to train with"
+    )
+    parser.add_argument(
+        "--config", type=str, default="", help="Hydra config overrides (e.g., 'training=full')"
+    )
+    parser.add_argument(
+        "--output-dir", type=Path, default=Path("outputs/multiseed"), help="Base output directory"
+    )
+    parser.add_argument(
+        "--skip-training",
+        action="store_true",
+        help="Skip training, only aggregate existing results",
+    )
+    parser.add_argument(
+        "--skip-eval",
+        action="store_true",
+        help="Skip evaluation, only aggregate training histories",
+    )
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -184,11 +199,15 @@ def main():
         # Save aggregated results
         output_path = args.output_dir / "aggregated_results.json"
         with open(output_path, "w") as f:
-            json.dump({
-                "seeds": args.seeds,
-                "per_seed": {str(k): v for k, v in all_eval_results.items()},
-                "aggregated": aggregated,
-            }, f, indent=2)
+            json.dump(
+                {
+                    "seeds": args.seeds,
+                    "per_seed": {str(k): v for k, v in all_eval_results.items()},
+                    "aggregated": aggregated,
+                },
+                f,
+                indent=2,
+            )
         print(f"\n  Saved to: {output_path}")
     else:
         print("\nNo evaluation results to aggregate.")

@@ -66,13 +66,15 @@ class ClassificationHead(nn.Module):
         hidden_dim: Optional[int] = None,
     ):
         super().__init__()
-        assert pooler in ("mean", "cls", "max", "attention"), "pooler must be 'mean'|'cls'|'max'|'attention'"
+        assert pooler in ("mean", "cls", "max", "attention"), (
+            "pooler must be 'mean'|'cls'|'max'|'attention'"
+        )
         self.pooler = pooler
         self.dropout = nn.Dropout(dropout)
 
         if pooler == "attention":
             self.attn_pool = AttentionPooling(d_model)
-        
+
         # Optional 2-layer MLP for more capacity (useful for multi-label)
         if hidden_dim is not None:
             self.out_proj = nn.Sequential(
