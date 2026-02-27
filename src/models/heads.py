@@ -1,7 +1,7 @@
 """Prediction heads for Transformer models.
 
 This module provides task-specific output heads:
-- ClassificationHead: Sequence-level classification with pooling (mean/cls/max)
+- ClassificationHead: Sequence-level classification with pooling (mean/cls/max/attention)
 - TokenClassificationHead: Per-token classification (NER, POS tagging)
 - LMHead: Language modeling logits with optional weight tying
 - ProjectionHead: MLP for representation learning / contrastive tasks
@@ -14,6 +14,35 @@ from typing import Literal, Optional
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+
+
+class AttentionPooling(nn.Module):
+    """Learned attention pooling over sequence positions.
+
+    Computes a weighted sum of hidden states using a learned query vector,
+    producing a single fixed-size representation. This is generally superior
+    to mean pooling for classification tasks on encoder-decoder models where
+    hidden states are optimized for cross-attention rather than pooling.
+    """
+
+    def __init__(self, d_model: int):
+        super().__init__()
+        self.query = nn.Linear(d_model, 1, bias=False)
+
+    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
+        """
+        x: (batch, seq_len, d_model)
+        mask: (batch, seq_len) - True for valid tokens, False for padding
+        returns: (batch, d_model)
+        """
+        # Compute attention scores: (batch, seq_len, 1)
+        scores = self.query(x)
+        if mask is not None:
+            scores = scores.masked_fill(~mask.unsqueeze(-1), float("-inf"))
+        weights = F.softmax(scores, dim=1)  # (batch, seq_len, 1)
+        # Weighted sum: (batch, d_model)
+        return (weights * x).sum(dim=1)
 
 
 class ClassificationHead(nn.Module):
@@ -23,7 +52,7 @@ class ClassificationHead(nn.Module):
     Args:
         d_model: hidden size from encoder/decoder
         num_labels: number of output classes
-        pooler: one of 'mean', 'cls', 'max' - how to pool the sequence
+        pooler: one of 'mean', 'cls', 'max', 'attention' - how to pool the sequence
         dropout: dropout probability before final linear layer
         hidden_dim: optional intermediate dimension for 2-layer MLP (improves capacity)
     """
@@ -32,14 +61,17 @@ class ClassificationHead(nn.Module):
         self,
         d_model: int,
         num_labels: int,
-        pooler: Literal["mean", "cls", "max"] = "mean",
+        pooler: Literal["mean", "cls", "max", "attention"] = "mean",
         dropout: float = 0.1,
         hidden_dim: Optional[int] = None,
     ):
         super().__init__()
-        assert pooler in ("mean", "cls", "max"), "pooler must be 'mean'|'cls'|'max'"
+        assert pooler in ("mean", "cls", "max", "attention"), "pooler must be 'mean'|'cls'|'max'|'attention'"
         self.pooler = pooler
         self.dropout = nn.Dropout(dropout)
+
+        if pooler == "attention":
+            self.attn_pool = AttentionPooling(d_model)
         
         # Optional 2-layer MLP for more capacity (useful for multi-label)
         if hidden_dim is not None:
@@ -58,19 +90,14 @@ class ClassificationHead(nn.Module):
         mask: (batch, seq_len) - True for valid tokens, False for padding
         returns: (batch, num_labels)
         """
-        if self.pooler == "mean":
+        if self.pooler == "attention":
+            pooled = self.attn_pool(x, mask)
+        elif self.pooler == "mean":
             if mask is not None:
-                # mask is (B, S)
-                # x is (B, S, D)
-                # Expand mask to (B, S, 1)
                 mask_expanded = mask.unsqueeze(-1).float()
-                # Zero out padding
                 x = x * mask_expanded
-                # Sum over sequence
                 sum_embeddings = x.sum(dim=1)
-                # Count valid tokens
                 sum_mask = mask_expanded.sum(dim=1)
-                # Avoid division by zero
                 sum_mask = torch.clamp(sum_mask, min=1e-9)
                 pooled = sum_embeddings / sum_mask
             else:
@@ -79,7 +106,6 @@ class ClassificationHead(nn.Module):
             pooled = x[:, 0, :]
         else:  # max
             if mask is not None:
-                # Mask padding with -inf
                 mask_expanded = mask.unsqueeze(-1)
                 x = x.masked_fill(~mask_expanded, float("-inf"))
             pooled, _ = x.max(dim=1)

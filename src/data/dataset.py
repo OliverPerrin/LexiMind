@@ -11,10 +11,11 @@ Date: December 2025
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Iterable, List, Sequence, TypeVar
+from typing import Callable, Dict, Iterable, List, Sequence, Set, TypeVar
 
 from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
 from torch.utils.data import Dataset
@@ -23,7 +24,6 @@ from torch.utils.data import Dataset
 @dataclass
 class SummarizationExample:
     """Container for abstractive summarization samples."""
-
     source: str
     summary: str
 
@@ -31,7 +31,6 @@ class SummarizationExample:
 @dataclass
 class EmotionExample:
     """Container for multi-label emotion classification samples."""
-
     text: str
     emotions: Sequence[str]
 
@@ -39,14 +38,12 @@ class EmotionExample:
 @dataclass
 class TopicExample:
     """Container for topic clustering / classification samples."""
-
     text: str
     topic: str
 
 
 class SummarizationDataset(Dataset[SummarizationExample]):
     """Dataset yielding encoder-decoder training pairs."""
-
     def __init__(self, examples: Iterable[SummarizationExample]) -> None:
         self._examples = list(examples)
 
@@ -59,7 +56,6 @@ class SummarizationDataset(Dataset[SummarizationExample]):
 
 class EmotionDataset(Dataset[EmotionExample]):
     """Dataset that owns a scikit-learn MultiLabelBinarizer for emissions."""
-
     def __init__(
         self,
         examples: Iterable[EmotionExample],
@@ -95,7 +91,6 @@ class EmotionDataset(Dataset[EmotionExample]):
 
 class TopicDataset(Dataset[TopicExample]):
     """Dataset that owns a LabelEncoder for topic ids."""
-
     def __init__(
         self,
         examples: Iterable[TopicExample],
@@ -239,3 +234,82 @@ def load_topic_jsonl(path: str) -> List[TopicExample]:
         lambda payload: TopicExample(text=payload["text"], topic=payload["topic"]),
         required_keys=("text", "topic"),
     )
+
+
+# --------------- Cross-Task Deduplication ---------------
+
+
+def _text_fingerprint(text: str, n_chars: int = 200) -> str:
+    """Create a stable fingerprint from the first N characters of text.
+    
+    Uses a hash of the normalized (lowered, whitespace-collapsed) prefix
+    to detect document-level overlap across tasks.
+    """
+    normalized = " ".join(text.lower().split())[:n_chars]
+    return hashlib.md5(normalized.encode("utf-8")).hexdigest()
+
+
+def deduplicate_across_tasks(
+    summ_examples: List[SummarizationExample],
+    topic_examples: List[TopicExample],
+    emotion_examples: List[EmotionExample] | None = None,
+) -> Dict[str, int]:
+    """Detect and report cross-task document overlap.
+    
+    Checks whether texts appearing in the summarization dataset also appear
+    in the topic or emotion datasets, which could create data leakage in MTL.
+    
+    Returns:
+        Dict with overlap counts between task pairs.
+    """
+    summ_fps: Set[str] = {_text_fingerprint(ex.source) for ex in summ_examples}
+    topic_fps: Set[str] = {_text_fingerprint(ex.text) for ex in topic_examples}
+    
+    overlap: Dict[str, int] = {
+        "summ_topic_overlap": len(summ_fps & topic_fps),
+        "summ_total": len(summ_fps),
+        "topic_total": len(topic_fps),
+    }
+    
+    if emotion_examples:
+        emot_fps: Set[str] = {_text_fingerprint(ex.text) for ex in emotion_examples}
+        overlap["summ_emotion_overlap"] = len(summ_fps & emot_fps)
+        overlap["topic_emotion_overlap"] = len(topic_fps & emot_fps)
+        overlap["emotion_total"] = len(emot_fps)
+    
+    return overlap
+
+
+def remove_overlapping_examples(
+    primary_examples: List[TopicExample],
+    reference_examples: List[SummarizationExample],
+    split: str = "val",
+) -> tuple[List[TopicExample], int]:
+    """Remove topic examples whose texts overlap with summarization data.
+    
+    This prevents cross-task data leakage where a document seen during 
+    summarization training could boost topic classification on validation/test.
+    
+    Args:
+        primary_examples: Topic examples to filter
+        reference_examples: Summarization examples to check against
+        split: Name of split being processed (for logging)
+    
+    Returns:
+        Tuple of (filtered_examples, num_removed)
+    """
+    ref_fps = {_text_fingerprint(ex.source) for ex in reference_examples}
+    
+    filtered = []
+    removed = 0
+    for ex in primary_examples:
+        fp = _text_fingerprint(ex.text)
+        if fp in ref_fps:
+            removed += 1
+        else:
+            filtered.append(ex)
+    
+    if removed > 0:
+        print(f"  Dedup: removed {removed} overlapping examples from topic {split}")
+    
+    return filtered, removed

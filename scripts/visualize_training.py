@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 LexiMind Training Visualization Suite.
 
@@ -63,16 +62,14 @@ except ImportError:
     pass
 
 try:
-    from mpl_toolkits.mplot3d import Axes3D  # type: ignore[import-untyped]  # noqa: F401
+    from mpl_toolkits.mplot3d import Axes3D  # type: ignore[import-not-found]  # noqa: F401
 
     HAS_MPLOT3D = True
 except ImportError:
     pass
 
 
-# =============================================================================
 # Configuration
-# =============================================================================
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -116,10 +113,7 @@ HEATMAP_CMAP = LinearSegmentedColormap.from_list(
 )
 
 
-# =============================================================================
 # MLflow Utilities
-# =============================================================================
-
 
 def get_mlflow_client():
     """Get MLflow client with correct tracking URI."""
@@ -157,10 +151,7 @@ def get_metric_history(run, metric_name: str) -> tuple[list, list]:
     return [m.step for m in metrics], [m.value for m in metrics]
 
 
-# =============================================================================
 # Core Training Visualizations
-# =============================================================================
-
 
 def plot_loss_curves(run, interactive: bool = False) -> None:
     """
@@ -208,7 +199,7 @@ def plot_loss_curves(run, interactive: bool = False) -> None:
 
         output_path = OUTPUTS_DIR / "training_loss_curve.html"
         fig.write_html(str(output_path))
-        logger.info(f"✓ Saved interactive loss curve to {output_path}")
+        logger.info(f"Saved interactive loss curve to {output_path}")
         return
 
     # Static matplotlib version
@@ -253,7 +244,7 @@ def plot_loss_curves(run, interactive: bool = False) -> None:
     plt.tight_layout()
     output_path = OUTPUTS_DIR / "training_loss_curve.png"
     plt.savefig(output_path)
-    logger.info(f"✓ Saved loss curve to {output_path}")
+    logger.info(f"Saved loss curve to {output_path}")
     plt.close()
 
 
@@ -387,7 +378,7 @@ def plot_task_metrics(run, interactive: bool = False) -> None:
     plt.tight_layout()
     output_path = OUTPUTS_DIR / "task_metrics.png"
     plt.savefig(output_path)
-    logger.info(f"✓ Saved task metrics to {output_path}")
+    logger.info(f"Saved task metrics to {output_path}")
     plt.close()
 
 
@@ -474,14 +465,11 @@ def plot_learning_rate(run) -> None:
     plt.tight_layout()
     output_path = OUTPUTS_DIR / "learning_rate_schedule.png"
     plt.savefig(output_path)
-    logger.info(f"✓ Saved LR schedule to {output_path}")
+    logger.info(f"Saved LR schedule to {output_path}")
     plt.close()
 
 
-# =============================================================================
 # Advanced Visualizations
-# =============================================================================
-
 
 def plot_confusion_matrix(run, task: str = "topic") -> None:
     """
@@ -544,7 +532,7 @@ def plot_confusion_matrix(run, task: str = "topic") -> None:
     plt.tight_layout()
     output_path = OUTPUTS_DIR / f"confusion_matrix_{task}.png"
     plt.savefig(output_path)
-    logger.info(f"✓ Saved confusion matrix to {output_path}")
+    logger.info(f"Saved confusion matrix to {output_path}")
     plt.close()
 
 
@@ -646,7 +634,7 @@ def plot_3d_loss_landscape(run) -> None:
 
     output_path = OUTPUTS_DIR / "loss_landscape_3d.html"
     fig.write_html(str(output_path))
-    logger.info(f"✓ Saved 3D loss landscape to {output_path}")
+    logger.info(f"Saved 3D loss landscape to {output_path}")
 
 
 def plot_3d_loss_landscape_static(run) -> None:
@@ -702,7 +690,7 @@ def plot_3d_loss_landscape_static(run) -> None:
     plt.tight_layout()
     output_path = OUTPUTS_DIR / "loss_landscape_3d.png"
     plt.savefig(output_path)
-    logger.info(f"✓ Saved 3D loss landscape to {output_path}")
+    logger.info(f"Saved 3D loss landscape to {output_path}")
     plt.close()
 
 
@@ -770,7 +758,7 @@ def plot_embedding_space(run) -> None:
     plt.tight_layout()
     output_path = OUTPUTS_DIR / "embedding_space.png"
     plt.savefig(output_path)
-    logger.info(f"✓ Saved embedding visualization to {output_path}")
+    logger.info(f"Saved embedding visualization to {output_path}")
     plt.close()
 
 
@@ -868,14 +856,11 @@ def plot_training_dynamics(run) -> None:
     plt.tight_layout()
     output_path = OUTPUTS_DIR / "training_dynamics.png"
     plt.savefig(output_path)
-    logger.info(f"✓ Saved training dynamics to {output_path}")
+    logger.info(f"Saved training dynamics to {output_path}")
     plt.close()
 
 
-# =============================================================================
 # Dashboard Generator
-# =============================================================================
-
 
 def generate_dashboard(run) -> None:
     """
@@ -959,13 +944,10 @@ def generate_dashboard(run) -> None:
 
     output_path = OUTPUTS_DIR / "training_dashboard.html"
     fig.write_html(str(output_path))
-    logger.info(f"✓ Saved interactive dashboard to {output_path}")
+    logger.info(f"Saved interactive dashboard to {output_path}")
 
 
-# =============================================================================
 # Main Entry Point
-# =============================================================================
-
 
 def main():
     """Generate all training visualizations."""
@@ -1026,7 +1008,7 @@ def main():
     # Summary
     logger.info("")
     logger.info("=" * 60)
-    logger.info("✓ All visualizations saved to outputs/")
+    logger.info("All visualizations saved to outputs/")
     logger.info("=" * 60)
 
     outputs = [

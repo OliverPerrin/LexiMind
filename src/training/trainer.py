@@ -7,6 +7,8 @@ Handles training across summarization, emotion, and topic heads with:
 - Cosine LR schedule with warmup
 - Early stopping
 - MLflow logging
+- Temperature-based task sampling (configurable alpha)
+- Gradient conflict diagnostics
 
 Author: Oliver Perrin
 Date: December 2025
@@ -22,6 +24,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Dict, List
 
 import mlflow
+import numpy as np
 import torch
 import torch.nn.functional as F
 from torch.optim.lr_scheduler import LambdaLR
@@ -52,6 +55,16 @@ class TrainerConfig:
     
     # Early stopping
     early_stopping_patience: int | None = 5
+    
+    # Task sampling strategy: "round_robin" or "temperature"
+    # Temperature sampling: p_i ∝ n_i^alpha where n_i = dataset size
+    # alpha < 1 reduces dominance of large tasks (recommended: 0.5-0.7)
+    task_sampling: str = "temperature"
+    task_sampling_alpha: float = 0.5
+    
+    # Gradient conflict diagnostics
+    # Compute inter-task gradient cosine similarity every N steps (0 = disabled)
+    gradient_conflict_frequency: int = 0
     
     # MLflow
     experiment_name: str = "LexiMind"
@@ -167,8 +180,8 @@ class Trainer:
                     if self.early_stopping:
                         val_loss = val_metrics.get("total_loss", float('inf'))
                         if self.early_stopping(val_loss):
-                            tqdm.write(f"\n⚠ Early stopping at epoch {epoch}")
-                            tqdm.write(f"  Best loss: {self.early_stopping.best_value:.4f}")
+                            tqdm.write(f"\nEarly stopping at epoch {epoch} (best loss: {self.early_stopping.best_value:.4f})")
+                            
                             break
 
                 # Checkpoint
@@ -181,7 +194,7 @@ class Trainer:
                 pbar.set_postfix({"loss": f"{loss:.3f}", "time": f"{epoch_time:.0f}s"})
 
         total_time = time.perf_counter() - total_start
-        print(f"\n✓ Training complete in {total_time/60:.1f} minutes")
+        print(f"\nTraining complete in {total_time/60:.1f} minutes")
         return history
 
     def _setup_scheduler(self, loaders: Dict[str, DataLoader], start_epoch: int) -> None:
@@ -201,7 +214,7 @@ class Trainer:
             return max(0.1, 0.5 * (1 + math.cos(math.pi * progress)))
 
         self.scheduler = LambdaLR(self.optimizer, lr_lambda)
-        print(f"✓ LR Scheduler: cosine, {warmup} warmup, {total_steps} total steps")
+        print(f"  LR schedule: cosine, {warmup} warmup, {total_steps} total steps")
 
     def _run_epoch(
         self,
@@ -210,7 +223,7 @@ class Trainer:
         train: bool,
         epoch: int,
     ) -> Dict[str, float]:
-        """Run one epoch."""
+        """Run one epoch with configurable task sampling strategy."""
         self.model.train(train)
         metrics: Dict[str, List[float]] = defaultdict(list)
         iterators = {task: iter(loader) for task, loader in loaders.items()}
@@ -220,12 +233,33 @@ class Trainer:
         phase = "Train" if train else "Val"
         pbar = tqdm(range(max_batches), desc=f"  {phase}", leave=False, file=sys.stderr)
 
+        # Temperature-based task sampling: p_i ∝ n_i^alpha
+        task_names = list(loaders.keys())
+        if self.config.task_sampling == "temperature" and len(task_names) > 1:
+            sizes = np.array([len(loaders[t].dataset) for t in task_names], dtype=np.float64)  # type: ignore[arg-type]
+            alpha = self.config.task_sampling_alpha
+            probs = sizes ** alpha
+            probs = probs / probs.sum()
+            tqdm.write(f"  Temperature sampling (α={alpha}): " +
+                       ", ".join(f"{t}={p:.2%}" for t, p in zip(task_names, probs, strict=True)))
+        else:
+            probs = None
+
         ctx = torch.enable_grad() if train else torch.no_grad()
         with ctx:
             for step in pbar:
                 step_loss = 0.0
 
-                for task, loader in loaders.items():
+                # Select tasks for this step
+                if probs is not None and train:
+                    # Temperature sampling: sample tasks based on dataset size
+                    selected_tasks = list(np.random.choice(task_names, size=len(task_names), replace=True, p=probs))
+                else:
+                    # Round-robin: all tasks every step
+                    selected_tasks = task_names
+
+                for task in selected_tasks:
+                    loader = loaders[task]
                     batch = self._get_batch(iterators, loader, task)
                     if batch is None:
                         continue
@@ -252,6 +286,14 @@ class Trainer:
                     if train:
                         scaled = (loss * weight) / accum
                         scaled.backward()
+
+                # Gradient conflict diagnostics
+                if (train and self.config.gradient_conflict_frequency > 0
+                        and (step + 1) % self.config.gradient_conflict_frequency == 0):
+                    conflict_stats = self._compute_gradient_conflicts(loaders, iterators)
+                    for k, v in conflict_stats.items():
+                        metrics[f"grad_{k}"].append(v)
+                        mlflow.log_metric(f"grad_{k}", v, step=self.global_step)
 
                 # Optimizer step
                 if train and (step + 1) % accum == 0:
@@ -414,6 +456,56 @@ class Trainer:
 
         tqdm.write(f"{'=' * 50}\n")
         self.model.train()
+
+    def _compute_gradient_conflicts(
+        self,
+        loaders: Dict[str, DataLoader],
+        iterators: Dict,
+    ) -> Dict[str, float]:
+        """Compute inter-task gradient cosine similarity to diagnose conflicts.
+        
+        Returns cosine similarity between gradient vectors for each task pair.
+        Negative values indicate conflicting gradients (negative transfer risk).
+        """
+        task_grads: Dict[str, torch.Tensor] = {}
+        
+        for task, loader in loaders.items():
+            self.optimizer.zero_grad()
+            batch = self._get_batch(iterators, loader, task)
+            if batch is None:
+                continue
+            
+            dtype = torch.bfloat16 if self.use_bfloat16 else torch.float16
+            with torch.autocast("cuda", dtype=dtype, enabled=self.use_amp):
+                loss, _ = self._forward_task(task, batch)
+            
+            if torch.isnan(loss):
+                continue
+            
+            loss.backward()
+            
+            # Flatten all gradients into a single vector
+            grad_vec = []
+            for p in self.model.parameters():
+                if p.grad is not None:
+                    grad_vec.append(p.grad.detach().clone().flatten())
+            if grad_vec:
+                task_grads[task] = torch.cat(grad_vec)
+        
+        self.optimizer.zero_grad()
+        
+        # Compute pairwise cosine similarity
+        stats: Dict[str, float] = {}
+        tasks = list(task_grads.keys())
+        for i in range(len(tasks)):
+            for j in range(i + 1, len(tasks)):
+                t1, t2 = tasks[i], tasks[j]
+                g1, g2 = task_grads[t1], task_grads[t2]
+                cos_sim = F.cosine_similarity(g1.unsqueeze(0), g2.unsqueeze(0)).item()
+                stats[f"cos_sim_{t1}_{t2}"] = cos_sim
+                stats[f"conflict_{t1}_{t2}"] = 1.0 if cos_sim < 0 else 0.0
+        
+        return stats
 
     def _log_config(self) -> None:
         """Log config to MLflow."""

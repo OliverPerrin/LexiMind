@@ -22,12 +22,12 @@ optimizer:
 
 scheduler:
   name: cosine
-  warmup_steps: 300  # ~0.5 epoch warmup (613 steps/epoch)
+  warmup_steps: 300  # ~0.24 epoch warmup (1227 optimizer steps/epoch)
 
 trainer:
   max_epochs: 8  # Reduced from 12 - early stopping will catch plateau anyway
   gradient_clip_norm: 1.0
-  gradient_accumulation_steps: 4  # Reduced from 8 → 2x faster optimizer steps!
+  gradient_accumulation_steps: 4  # Reduced from 8, 2x faster optimizer steps
   validation_max_length: 128
   label_smoothing: 0.1
   task_weights:
@@ -38,6 +38,13 @@ trainer:
   max_val_samples: 3000  # Enough for stable metrics
   early_stopping_patience: 3  # Stop quickly when plateauing
   log_grad_norm_frequency: 200
+  # Task sampling: "round_robin" or "temperature"
+  # Temperature sampling: p_i proportional to n_i^alpha, reduces dominance of large tasks
+  task_sampling: temperature
+  task_sampling_alpha: 0.5
+  # Gradient conflict diagnostics: compute inter-task gradient cosine similarity
+  # every N steps (0 = disabled). Helps diagnose negative transfer.
+  gradient_conflict_frequency: 0
 
 compile_encoder: true
 compile_decoder: true

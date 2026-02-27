@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-# pyright: reportAttributeAccessIssue=false
-# pyright: reportArgumentType=false
-# pyright: reportCallIssue=false
 """
 Dataset download script for LexiMind.
 
@@ -45,7 +41,7 @@ from tqdm import tqdm
 # Output directory
 OUTPUT_DIR = Path(__file__).parent.parent / "data" / "processed"
 
-# ============== LABEL DEFINITIONS ==============
+# ------------ LABEL DEFINITIONS ------------
 
 # 28 emotions from GoEmotions - works for all text types
 EMOTION_LABELS = [
@@ -115,10 +111,10 @@ def write_jsonl(records: list[dict[str, Any]], path: Path, desc: str = "Writing"
     with path.open("w", encoding="utf-8") as f:
         for record in tqdm(records, desc=desc, leave=False):
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
-    print(f"  ✓ {len(records):,} samples → {path}")
+    print(f"  {len(records):,} samples -> {path}")
 
 
-# ============== ENGLISH LANGUAGE FILTER ==============
+# ------------ ENGLISH LANGUAGE FILTER ------------
 
 # Common English words for detection
 ENGLISH_WORDS = {
@@ -144,7 +140,7 @@ NON_ENGLISH_PATTERNS = [
     r"\b(et|in|ad|cum|de|ex|per|pro|sub|ab|ante|post|inter|contra|super|trans|apud)\b",
 ]
 
-# ============== TEXT QUALITY FILTERS ==============
+# ------------ TEXT QUALITY FILTERS ------------
 
 # Patterns that indicate garbage/metadata text
 GARBAGE_PATTERNS = [
@@ -320,7 +316,7 @@ def normalize_title(title: str) -> str:
     return title.lower().strip()
 
 
-# ============== SUMMARIZATION: BOOKS + ARXIV ==============
+# -------- SUMMARIZATION: BOOKS + ARXIV ----------
 
 def download_goodreads_descriptions() -> dict[str, dict]:
     """
@@ -329,7 +325,7 @@ def download_goodreads_descriptions() -> dict[str, dict]:
     These are "what the book is about" descriptions, not plot summaries.
     Returns dict mapping normalized title -> {title, description}
     """
-    print("\n📚 Loading Goodreads book descriptions...")
+    print("\nLoading Goodreads book descriptions...")
     
     descriptions = {}
     
@@ -392,7 +388,7 @@ def download_book_descriptions(
     This gives us (book_excerpt, book_description) training pairs where descriptions
     are back-cover style "what is this book about" blurbs, not plot summaries.
     """
-    print("\n📖 Matching Gutenberg books with Goodreads descriptions...")
+    print("\nMatching Gutenberg books with Goodreads descriptions...")
     
     try:
         gutenberg = load_dataset("sedthh/gutenberg_english", split="train")
@@ -497,7 +493,7 @@ def download_booksum(max_samples: int = 20000) -> list[dict[str, Any]]:
     Note: These are chapter-level plot summaries, useful as supplementary training data.
     The primary book training comes from Goodreads descriptions (back-cover style).
     """
-    print("\n📖 Loading BookSum (supplementary literary data)...")
+    print("\nLoading BookSum (supplementary literary data)...")
     
     all_records: list[dict[str, Any]] = []
     booksum = load_dataset("kmfoda/booksum")
@@ -600,7 +596,7 @@ def download_arxiv_summarization(max_samples: int = 50000) -> list[dict[str, Any
     
     Returns: summarization_records
     """
-    print("\n🎓 Loading arXiv (academic papers for summarization)...")
+    print("\nLoading arXiv (academic papers for summarization)...")
     
     print("  Loading dataset (this may take a minute)...")
     arxiv = load_dataset("ccdv/arxiv-summarization", split="train")
@@ -663,7 +659,7 @@ def download_topics_from_datasets(max_samples: int = 50000) -> list[dict[str, An
     - 20 Newsgroups (classic topic classification)
     - Wikipedia (article categories)
     """
-    print("\n📂 Loading topic classification datasets...")
+    print("\nLoading topic classification datasets...")
     
     records: list[dict[str, Any]] = []
     
@@ -747,7 +743,7 @@ def download_summarization(max_books: int = 20000, max_arxiv: int = 50000) -> No
     plot summaries. This trains the model to describe "what the book is about"
     rather than summarizing the plot.
     """
-    print("\n📝 Downloading Summarization Data...")
+    print("\nDownloading Summarization Data...")
     out_dir = OUTPUT_DIR / "summarization"
     
     all_records: list[dict[str, Any]] = []
@@ -793,12 +789,12 @@ def download_summarization(max_books: int = 20000, max_arxiv: int = 50000) -> No
     # Print breakdown
     literary_count = sum(1 for r in train_records + val_records + test_records if r.get("type") == "literary")
     academic_count = sum(1 for r in train_records + val_records + test_records if r.get("type") == "academic")
-    print(f"\n  ✓ Total summarization: {len(train_records) + len(val_records) + len(test_records):,}")
+    print(f"\n  Total summarization: {len(train_records) + len(val_records) + len(test_records):,}")
     print(f"    Literary (book descriptions): {literary_count:,}")
     print(f"    Academic (paper abstracts): {academic_count:,}")
 
 
-# ============== TOPIC CLASSIFICATION ==============
+# ------------ TOPIC CLASSIFICATION ------------
 
 def download_topics(max_samples: int = 50000) -> None:
     """
@@ -809,7 +805,7 @@ def download_topics(max_samples: int = 50000) -> None:
     - Gutenberg books (Fiction)
     - Scientific papers (Science, Technology)
     """
-    print("\n📂 Downloading Topic Classification...")
+    print("\nDownloading Topic Classification...")
     out_dir = OUTPUT_DIR / "topic"
     
     # Get topic records from various sources
@@ -830,14 +826,14 @@ def download_topics(max_samples: int = 50000) -> None:
     # Balance to min count (with some tolerance) - only from topics that have data
     counts_with_data = [len(v) for v in topic_counts.values() if v]
     if not counts_with_data:
-        print("  ⚠️ No topic data found!")
+        print("  Warning: No topic data found!")
         return
     
     min_count = min(counts_with_data)
     target_count = min(min_count, max_samples // len(TOPIC_LABELS))
     
     balanced: list[dict[str, Any]] = []
-    for topic, records in topic_counts.items():
+    for _topic, records in topic_counts.items():
         if records:
             random.shuffle(records)
             balanced.extend(records[:target_count])
@@ -857,12 +853,12 @@ def download_topics(max_samples: int = 50000) -> None:
     # Save labels - only labels that have data
     used_labels = [t for t in TOPIC_LABELS if topic_counts.get(t)]
     (out_dir / "labels.json").write_text(json.dumps(used_labels, indent=2))
-    print(f"\n  ✓ {len(used_labels)} topic labels with data: {used_labels}")
+    print(f"\n  {len(used_labels)} topic labels with data: {used_labels}")
 
 
 def download_gutenberg_topics(max_samples: int = 30000) -> list[dict[str, Any]]:
     """Extract topic-labeled samples from Gutenberg books (English only)."""
-    print("\n📚 Loading Gutenberg for topic classification...")
+    print("\nLoading Gutenberg for topic classification...")
     
     try:
         gutenberg = load_dataset("sedthh/gutenberg_english", split="train")
@@ -926,11 +922,11 @@ def download_gutenberg_topics(max_samples: int = 30000) -> list[dict[str, Any]]:
     return records
 
 
-# ============== EMOTIONS (unchanged) ==============
+# ------------ EMOTIONS (unchanged) -------------
 
 def download_emotions() -> None:
     """Download GoEmotions for emotion classification."""
-    print("\n😊 Downloading Emotions (GoEmotions)...")
+    print("\nDownloading Emotions (GoEmotions)...")
     out_dir = OUTPUT_DIR / "emotion"
     
     ds = load_dataset("google-research-datasets/go_emotions", "simplified")
@@ -950,10 +946,10 @@ def download_emotions() -> None:
         write_jsonl(records, out_dir / f"{split}.jsonl", split)
     
     (out_dir / "labels.json").write_text(json.dumps(EMOTION_LABELS, indent=2))
-    print(f"  ✓ {len(EMOTION_LABELS)} emotion labels saved")
+    print(f"  {len(EMOTION_LABELS)} emotion labels saved")
 
 
-# ============== GUTENBERG BOOKS (for language modeling) ==============
+# --------------- GUTENBERG BOOKS (for language modeling) ---------------
 
 GUTENBERG_JUNK_PATTERNS = [
     r"Project Gutenberg", r"www\.gutenberg\.org", r"This ebook is for",
@@ -988,7 +984,7 @@ def is_clean_prose(text: str) -> bool:
 
 def download_gutenberg(max_samples: int = 30000) -> None:
     """Download Gutenberg books for language modeling (English only)."""
-    print("\n📚 Downloading Gutenberg Books (English only)...")
+    print("\nDownloading Gutenberg Books (English only)...")
     out_dir = OUTPUT_DIR / "books"
     out_dir.mkdir(parents=True, exist_ok=True)
     
@@ -1044,7 +1040,7 @@ def download_gutenberg(max_samples: int = 30000) -> None:
     write_jsonl(records[int(n*0.95):], out_dir / "test.jsonl", "test")
 
 
-# ============== MAIN ==============
+# ------------ MAIN ------------
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Download LexiMind datasets")
@@ -1078,7 +1074,7 @@ def main() -> None:
         download_gutenberg(args.max_gutenberg)
     
     print("\n" + "=" * 60)
-    print("✅ Download complete!")
+    print("Download complete!")
     print("=" * 60)
 
 

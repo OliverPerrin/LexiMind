@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Build a discovery dataset for the HuggingFace Space demo.
 
 This script samples from the already-filtered training data (processed by
@@ -22,12 +21,11 @@ from typing import Any
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import torch
-from datasets import Dataset
-from tqdm import tqdm
+import torch  # noqa: E402
+from datasets import Dataset  # noqa: E402
+from tqdm import tqdm  # noqa: E402
 
-from src.inference.factory import create_inference_pipeline
-
+from src.inference.factory import create_inference_pipeline  # noqa: E402
 
 # --------------- Data Loading ---------------
 
@@ -176,8 +174,8 @@ def run_inference(pipeline: Any, samples: list[dict]) -> list[dict]:
         results.append(result)
     
     # Print distribution stats
-    topic_dist = defaultdict(int)
-    emotion_dist = defaultdict(int)
+    topic_dist: dict[str, int] = defaultdict(int)
+    emotion_dist: dict[str, int] = defaultdict(int)
     for r in results:
         topic_dist[r["topic"]] += 1
         emotion_dist[r["emotion"]] += 1

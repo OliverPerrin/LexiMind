@@ -93,10 +93,8 @@ def format_item_card(item: dict) -> str:
     
     # Icon based on type
     if source_type == "academic":
-        icon = "📄"
         type_label = "Research Paper"
     else:
-        icon = "📖"
         type_label = "Literature"
     
     # Topic and emotion with confidence
@@ -109,10 +107,10 @@ def format_item_card(item: dict) -> str:
     use_reference = item.get("use_reference_summary", False)
     if use_reference or source_type == "literary":
         summary = item.get("reference_summary", "")
-        summary_label = "📚 **Book Description** (Goodreads-style):"
+        summary_label = "**Book Description:**"
     else:
         summary = item.get("generated_summary", "")
-        summary_label = "🤖 **AI-Generated Description:**"
+        summary_label = "**AI-Generated Description:**"
     
     if not summary:
         summary = "No summary available."
@@ -124,23 +122,17 @@ def format_item_card(item: dict) -> str:
     # Preview of original text
     text_preview = item.get("text", "")[:400] + "..." if len(item.get("text", "")) > 400 else item.get("text", "")
     
-    # Confidence badges
-    topic_badge = "🟢" if topic_conf > 0.6 else "🟡" if topic_conf > 0.3 else "🔴"
-    emotion_badge = "🟢" if emotion_conf > 0.6 else "🟡" if emotion_conf > 0.3 else "🔴"
-    
-    return f"""### {icon} **{title}**
+    return f"""### **{title}**
 
 <small>*{type_label}* from {dataset_name}</small>
 
-| Topic | Emotion |
-|-------|---------|
-| {topic_badge} {topic} ({topic_conf:.0%}) | {emotion_badge} {emotion.title()} ({emotion_conf:.0%}) |
+**Topic:** {topic} ({topic_conf:.0%}) | **Emotion:** {emotion.title()} ({emotion_conf:.0%})
 
 {summary_label}
 > {summary}
 
 <details>
-<summary>📜 View Original Text</summary>
+<summary>View Original Text</summary>
 
 {text_preview}
 
@@ -164,12 +156,12 @@ def browse_by_topic(topic: str) -> str:
     result += f"*Found {len(items)} items ({len(literary)} literary, {len(academic)} academic)*\n\n"
     
     if literary:
-        result += "### 📖 Literary Works\n\n"
+        result += "### Literary Works\n\n"
         for item in literary[:25]:  # Limit to avoid huge pages
             result += format_item_card(item)
     
     if academic:
-        result += "### 📄 Academic Papers\n\n"
+        result += "### Academic Papers\n\n"
         for item in academic[:25]:
             result += format_item_card(item)
     
@@ -189,12 +181,12 @@ def browse_by_emotion(emotion: str) -> str:
     result += f"*Found {len(items)} items ({len(literary)} literary, {len(academic)} academic)*\n\n"
     
     if literary:
-        result += "### 📖 Literary Works\n\n"
+        result += "### Literary Works\n\n"
         for item in literary[:25]:
             result += format_item_card(item)
     
     if academic:
-        result += "### 📄 Academic Papers\n\n"
+        result += "### Academic Papers\n\n"
         for item in academic[:25]:
             result += format_item_card(item)
     
@@ -239,20 +231,10 @@ with gr.Blocks(
     
     gr.Markdown(
         """
-        # 📚 LexiMind - Literary Discovery
-        ### Find Books & Research Papers by Topic or Emotional Tone
+        # LexiMind
+        ### Discover Books & Papers by Topic, Emotion, or Keyword
         
-        Explore **{total_count}** items analyzed by the LexiMind multi-task transformer:
-        
-        | Source | Count | Description |
-        |--------|-------|-------------|
-        | 📖 Literature | {lit_count} | Classic books with Goodreads-style descriptions |
-        | 📄 Research | {paper_count} | Scientific papers from arXiv |
-        
-        **Model Capabilities:**
-        - 🏷️ **Topic Classification**: Fiction, Science, History, Philosophy, Arts, Business, Technology
-        - 💭 **Emotion Detection**: 28 emotions (joy, sadness, anger, fear, surprise, love, etc.)
-        - 📝 **Book Descriptions**: Back-cover style summaries of what texts are about
+        Browse **{total_count}** texts — {lit_count} classic books and {paper_count} research papers — analyzed by a multi-task transformer.
         
         ---
         """.format(
@@ -264,7 +246,7 @@ with gr.Blocks(
     
     with gr.Tabs():
         # ===================== TAB 1: BROWSE BY TOPIC =====================
-        with gr.Tab("🏷️ Browse by Topic"):
+        with gr.Tab("By Topic"):
             gr.Markdown("*Select a topic to explore related books and papers*")
             
             topic_dropdown = gr.Dropdown(
@@ -286,7 +268,7 @@ with gr.Blocks(
             )
         
         # ===================== TAB 2: BROWSE BY EMOTION =====================
-        with gr.Tab("💭 Browse by Emotion"):
+        with gr.Tab("By Emotion"):
             gr.Markdown("*Find books and papers that evoke specific emotions*")
             
             emotion_dropdown = gr.Dropdown(
@@ -308,7 +290,7 @@ with gr.Blocks(
             )
         
         # ===================== TAB 3: SEARCH =====================
-        with gr.Tab("🔍 Search"):
+        with gr.Tab("Search"):
             gr.Markdown("*Search through all books and papers by keyword*")
             
             search_input = gr.Textbox(
@@ -329,45 +311,39 @@ with gr.Blocks(
             )
         
         # ===================== TAB 4: METRICS =====================
-        with gr.Tab("📊 Model Metrics"):
+        with gr.Tab("Metrics"):
             gr.Markdown(
                 """
                 ### Evaluation Metrics
                 
-                LexiMind is evaluated using comprehensive metrics across all three tasks.
-                Metrics are computed on held-out validation data.
+                Computed on held-out validation data.
                 """
             )
             
             # Summarization Metrics
-            gr.Markdown("#### 📝 Summarization Metrics")
+            gr.Markdown("#### Summarization")
             
             if METRICS.get("summarization"):
                 summ = METRICS["summarization"]
                 summ_md = """
-| Metric | Score | Description |
-|--------|-------|-------------|
-| **ROUGE-1** | {rouge1:.4f} | Unigram overlap with reference |
-| **ROUGE-2** | {rouge2:.4f} | Bigram overlap with reference |
-| **ROUGE-L** | {rougeL:.4f} | Longest common subsequence |
-| **BLEU-4** | {bleu4:.4f} | 4-gram precision score |
-| **BERTScore F1** | {bertscore:.4f} | Semantic similarity (contextual) |
-
-*Note: For back-cover style descriptions, BERTScore is more meaningful than ROUGE 
-since descriptions paraphrase rather than quote the source text.*
+| Metric | Score |
+|--------|-------|
+| **ROUGE-1** | {rouge1:.4f} |
+| **ROUGE-2** | {rouge2:.4f} |
+| **ROUGE-L** | {rougeL:.4f} |
+| **BLEU-4** | {bleu4:.4f} |
 """.format(
                     rouge1=summ.get("rouge_rouge1", summ.get("rouge1", 0)),
                     rouge2=summ.get("rouge_rouge2", summ.get("rouge2", 0)),
                     rougeL=summ.get("rouge_rougeL", summ.get("rougeL", 0)),
                     bleu4=summ.get("bleu4", 0),
-                    bertscore=summ.get("bertscore_f1", 0),
                 )
                 gr.Markdown(summ_md)
             else:
                 gr.Markdown("*Summarization metrics not available. Run evaluation script.*")
             
             # Topic Classification Metrics
-            gr.Markdown("#### 🏷️ Topic Classification Metrics")
+            gr.Markdown("#### Topic Classification")
             
             if METRICS.get("topic"):
                 topic = METRICS["topic"]
@@ -376,125 +352,66 @@ since descriptions paraphrase rather than quote the source text.*
 |--------|-------|
 | **Accuracy** | {accuracy:.2%} |
 | **Macro F1** | {f1:.4f} |
-| **Precision** | {precision:.4f} |
-| **Recall** | {recall:.4f} |
 """.format(
                     accuracy=topic.get("accuracy", 0),
                     f1=topic.get("f1", topic.get("macro_f1", 0)),
-                    precision=topic.get("precision", 0),
-                    recall=topic.get("recall", 0),
                 )
                 gr.Markdown(topic_md)
             else:
                 gr.Markdown("*Topic classification metrics not available.*")
             
             # Emotion Detection Metrics
-            gr.Markdown("#### 💭 Emotion Detection Metrics")
+            gr.Markdown("#### Emotion Detection")
             
             if METRICS.get("emotion"):
                 emotion = METRICS["emotion"]
                 emotion_md = """
 | Metric | Score |
 |--------|-------|
-| **Multi-label F1** | {f1:.4f} |
-| **Precision** | {precision:.4f} |
-| **Recall** | {recall:.4f} |
+| **Sample-avg F1** | {sample_f1:.4f} |
+| **Macro F1** | {macro_f1:.4f} |
+| **Micro F1** | {micro_f1:.4f} |
 
-*Emotion detection uses 28 labels from GoEmotions. Multiple emotions can be assigned to each text.*
+*28-label multi-label classification from GoEmotions.*
 """.format(
-                    f1=emotion.get("f1", emotion.get("multilabel_f1", 0)),
-                    precision=emotion.get("precision", 0),
-                    recall=emotion.get("recall", 0),
+                    sample_f1=emotion.get("sample_avg_f1", emotion.get("f1", emotion.get("multilabel_f1", 0))),
+                    macro_f1=emotion.get("macro_f1", 0),
+                    micro_f1=emotion.get("micro_f1", 0),
                 )
                 gr.Markdown(emotion_md)
             else:
                 gr.Markdown("*Emotion detection metrics not available.*")
             
             # Dataset Statistics
-            gr.Markdown("#### 📈 Dataset & Model Statistics")
-            
-            # Build topic list with indicators for observed vs possible
-            topic_list = ", ".join([
-                f"**{t}**" if t in TOPICS else t for t in ALL_TOPICS
-            ])
-            emotion_list = ", ".join([
-                f"**{e}**" if e in EMOTIONS else e for e in ALL_EMOTIONS
-            ])
+            gr.Markdown("#### Dataset Statistics")
             
             gr.Markdown(f"""
 | Statistic | Value |
 |-----------|-------|
-| Total Discovery Items | {len(ALL_ITEMS)} |
+| Total Items | {len(ALL_ITEMS)} |
 | Literary Works | {len(BOOKS)} |
-| Academic Papers (arXiv) | {len(PAPERS)} |
-| Topics in Dataset | {len(TOPICS)} of {len(ALL_TOPICS)} possible |
-| Emotions in Dataset | {len(EMOTIONS)} of {len(ALL_EMOTIONS)} possible |
-
-**All Model Topics ({len(ALL_TOPICS)}):** {topic_list}
-
-**All Model Emotions ({len(ALL_EMOTIONS)}):** {emotion_list}
-
-*Bold items appear in the discovery dataset. The model can predict all listed labels.*
-
----
-
-**Note on Content Types:**
-- 📄 **Academic Papers** include CS/AI papers (Technology), Physics/Math (Science), Economics (Business)
-- 📖 **Literary Works** include novels (Fiction), biographies (History), philosophical texts (Philosophy)
-- Technical blogs and tutorials would be classified under **Technology**
+| Academic Papers | {len(PAPERS)} |
+| Topics | {len(TOPICS)} |
+| Emotions | {len(EMOTIONS)} |
 """)
         
         # ===================== TAB 5: ABOUT =====================
-        with gr.Tab("ℹ️ About"):
+        with gr.Tab("About"):
             gr.Markdown(
                 """
                 ### About LexiMind
                 
-                LexiMind is a **272M parameter encoder-decoder transformer** trained on three tasks:
+                A **272M parameter encoder-decoder transformer** (FLAN-T5-base) trained on three tasks:
                 
-                | Task | Description |
-                |------|-------------|
-                | **Book Descriptions** | Generate back-cover style descriptions of what books are about |
-                | **Topic Classification** | Categorize into Fiction, Science, Technology, Philosophy, History, Business, Arts |
-                | **Emotion Detection** | Identify emotional tones (28 emotions from GoEmotions) |
+                - **Summarization**: Generate back-cover style descriptions from full text
+                - **Topic Classification**: 7 categories (Fiction, Science, History, Philosophy, Arts, Business, Technology)
+                - **Emotion Detection**: 28 emotions via GoEmotions
                 
-                ### Architecture
+                Training data: ~49K summarization pairs (arXiv + Goodreads), 43K emotion samples, 3.4K topic samples.
                 
-                - **Base:** FLAN-T5-base (Google)
-                - **Encoder:** 12 layers, 768 dim, 12 attention heads
-                - **Decoder:** 12 layers with causal attention
-                - **Position:** T5 relative position bias
-                - **Training:** Multi-task learning with task-specific heads
+                [GitHub](https://github.com/OliverPerrin/LexiMind) | [Model](https://huggingface.co/OliverPerrin/LexiMind-Model) | [Dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery)
                 
-                ### Training Data
-                
-                | Dataset | Task | Samples |
-                |---------|------|---------|
-                | Gutenberg + Goodreads | Book Descriptions | ~4K literary pairs |
-                | arXiv (body → abstract) | Paper Abstracts | ~45K academic pairs |
-                | 20 Newsgroups + Gutenberg + arXiv | Topic Classification | 3.4K (7 classes) |
-                | GoEmotions (Reddit) | Emotion Detection | 43K (28 labels) |
-                
-                ### Key Design Decision
-                
-                LexiMind generates **back-cover style descriptions** (what a book is about) rather than 
-                plot summaries (what happens in the book). This is achieved by training on Goodreads 
-                descriptions paired with Project Gutenberg book texts.
-                
-                ### Evaluation Metrics
-                
-                - **ROUGE-1/2/L**: Lexical overlap with reference summaries
-                - **BLEU-4**: N-gram precision
-                - **BERTScore**: Semantic similarity using contextual embeddings (primary metric for abstractive summarization)
-                
-                ### Links
-                
-                - 🔗 [GitHub](https://github.com/OliverPerrin/LexiMind)
-                - 🤗 [Model](https://huggingface.co/OliverPerrin/LexiMind-Model)
-                - 📊 [Discovery Dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery)
-                
-                ---
-                *Built by Oliver Perrin • Appalachian State University • 2025-2026*
+                *Oliver Perrin — Appalachian State University — 2025-2026*
                 """
             )
 

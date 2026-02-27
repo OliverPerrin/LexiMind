@@ -8,6 +8,7 @@ app_file: scripts/demo_gradio.py
 pinned: false
 ---
 
+<!-- markdownlint-disable MD025 -->
 # LexiMind
 
 A multi-task NLP system for literary and academic text understanding. LexiMind performs **abstractive summarization**, **topic classification**, and **emotion detection** using a single encoder-decoder transformer initialized from [FLAN-T5-base](https://huggingface.co/google/flan-t5-base) (272M parameters).
@@ -17,7 +18,7 @@ A multi-task NLP system for literary and academic text understanding. LexiMind p
 ## What It Does
 
 | Task | Description | Metric |
-|------|-------------|--------|
+| ------ | ------------- | -------- |
 | **Summarization** | Generates back-cover style book descriptions and paper abstracts from source text | BERTScore F1: **0.830** |
 | **Topic Classification** | Classifies passages into 7 categories | Accuracy: **85.2%** |
 | **Emotion Detection** | Identifies emotions from 28 fine-grained labels (multi-label) | Sample-avg F1: **0.199** |
@@ -31,7 +32,7 @@ The model is trained on literary text (Project Gutenberg + Goodreads description
 LexiMind is a **custom Transformer implementation** that loads pre-trained weights from FLAN-T5-base via a factory module. The architecture is reimplemented from scratch for transparency, not wrapped from HuggingFace.
 
 | Component | Detail |
-|-----------|--------|
+| ----------- | -------- |
 | Backbone | Encoder-Decoder Transformer (272M params) |
 | Encoder / Decoder | 12 layers each |
 | Hidden Dim | 768, 12 attention heads |
@@ -48,7 +49,7 @@ All three tasks share the encoder. Summarization uses the full encoder-decoder; 
 ## Training Data
 
 | Task | Source | Train Samples |
-|------|--------|---------------|
+| ------ | -------- | --------------- |
 | Summarization | Gutenberg + Goodreads (literary) | ~4K |
 | Summarization | arXiv body → abstract (academic) | ~45K |
 | Topic | 20 Newsgroups + Gutenberg + arXiv metadata | 3,402 |
@@ -131,7 +132,7 @@ docker run -p 7860:7860 leximind
 
 ## Project Structure
 
-```
+```text
 configs/
 ├── config.yaml              # Main Hydra config
 ├── data/datasets.yaml       # Dataset paths and tokenizer settings
@@ -208,4 +209,4 @@ GPL-3.0 — see [LICENSE](LICENSE) for details.
 
 ---
 
-*Built by Oliver Perrin · Appalachian State University · 2025–2026*
+Built by Oliver Perrin · Appalachian State University · 2025–2026
