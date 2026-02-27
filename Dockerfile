@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.12-slim
 
 # Force rebuild: 2026-02-20-v1
 WORKDIR /app
