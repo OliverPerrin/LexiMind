@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Multi-seed training wrapper for LexiMind.
 
@@ -53,7 +52,8 @@ def run_single_seed(seed: int, config_overrides: str, base_dir: Path) -> Dict:
     history_path = seed_dir / "training_history.json"
     if history_path.exists():
         with open(history_path) as f:
-            return json.load(f)
+            data: Dict = json.load(f)  # type: ignore[no-any-return]
+            return data
     return {}
 
 
@@ -88,7 +88,8 @@ def run_evaluation(seed: int, base_dir: Path, extra_args: List[str] | None = Non
 
     if output.exists():
         with open(output) as f:
-            return json.load(f)
+            data: Dict = json.load(f)  # type: ignore[no-any-return]
+            return data
     return {}
 
 
@@ -99,7 +100,7 @@ def aggregate_results(all_results: Dict[int, Dict]) -> Dict:
 
     # Collect all metric paths
     metric_values: Dict[str, List[float]] = {}
-    for seed, results in all_results.items():
+    for _seed, results in all_results.items():
         for task, task_metrics in results.items():
             if not isinstance(task_metrics, dict):
                 continue

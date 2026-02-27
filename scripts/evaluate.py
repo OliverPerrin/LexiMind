@@ -1,18 +1,17 @@
-#!/usr/bin/env python3
 """
 Comprehensive evaluation script for LexiMind.
 
 Evaluates all three tasks with full metrics:
-- Summarization: ROUGE-1/2/L, BLEU-4, BERTScore, per-domain breakdown
+- Summarization: ROUGE-1/2/L, BLEU-4, per-domain breakdown (BERTScore optional)
 - Emotion: Sample-avg F1, Macro F1, Micro F1, per-class metrics, threshold tuning
 - Topic: Accuracy, Macro F1, Per-class metrics, bootstrap confidence intervals
 
 Usage:
     python scripts/evaluate.py
     python scripts/evaluate.py --checkpoint checkpoints/best.pt
-    python scripts/evaluate.py --skip-bertscore  # Faster, skip BERTScore
-    python scripts/evaluate.py --tune-thresholds  # Tune per-class emotion thresholds
-    python scripts/evaluate.py --bootstrap        # Compute confidence intervals
+    python scripts/evaluate.py --include-bertscore  # Include BERTScore (slow)
+    python scripts/evaluate.py --tune-thresholds    # Tune per-class emotion thresholds
+    python scripts/evaluate.py --bootstrap           # Compute confidence intervals
 
 Author: Oliver Perrin
 Date: January 2026
@@ -419,7 +418,7 @@ def main():
     parser.add_argument("--data-dir", type=Path, default=Path("data/processed"))
     parser.add_argument("--output", type=Path, default=Path("outputs/evaluation_report.json"))
     parser.add_argument("--max-samples", type=int, default=None, help="Limit samples per task")
-    parser.add_argument("--skip-bertscore", action="store_true", help="Skip BERTScore (faster)")
+    parser.add_argument("--include-bertscore", action="store_true", help="Include BERTScore (slow, optional)")
     parser.add_argument("--tune-thresholds", action="store_true", help="Tune per-class emotion thresholds on val set")
     parser.add_argument("--bootstrap", action="store_true", help="Compute bootstrap confidence intervals")
     parser.add_argument("--summarization-only", action="store_true")
@@ -459,7 +458,7 @@ def main():
             results["summarization"] = evaluate_summarization(
                 pipeline, val_path,
                 max_samples=args.max_samples,
-                include_bertscore=not args.skip_bertscore,
+                include_bertscore=args.include_bertscore,
                 compute_bootstrap=args.bootstrap,
             )
         else:
@@ -515,13 +514,18 @@ def main():
         s = results["summarization"]
         print("\n  Summarization:")
         print(f"    ROUGE-1: {s['rouge1']:.4f}")
+        print(f"    ROUGE-2: {s['rouge2']:.4f}")
         print(f"    ROUGE-L: {s['rougeL']:.4f}")
+        print(f"    BLEU-4:  {s['bleu4']:.4f}")
         if "bertscore_f1" in s:
             print(f"    BERTScore F1: {s['bertscore_f1']:.4f}")
     
     if "emotion" in results:
+        e = results["emotion"]
         print("\n  Emotion:")
-        print(f"    Multi-label F1: {results['emotion']['multilabel_f1']:.4f}")
+        print(f"    Sample-avg F1: {e['sample_avg_f1']:.4f}")
+        print(f"    Macro F1:      {e['macro_f1']:.4f}")
+        print(f"    Micro F1:      {e['micro_f1']:.4f}")
     
     if "topic" in results:
         print("\n  Topic:")

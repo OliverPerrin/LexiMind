@@ -102,7 +102,7 @@ def _load_pretrained_weights(
     Load pretrained T5/FLAN-T5 weights into custom encoder/decoder.
 
     T5 architecture compatibility with our custom Transformer:
-    - T5 uses Pre-LN (RMSNorm before sublayers) ✓ matches our design
+    - T5 uses Pre-LN (RMSNorm before sublayers) - matches our design
     - T5 uses relative position bias instead of absolute embeddings
       -> We now load T5's relative position bias weights into our T5RelativePositionBias modules
       -> This allows exact weight transfer without requiring fine-tuning

@@ -59,7 +59,7 @@ class TrainerConfig:
     # Task sampling strategy: "round_robin" or "temperature"
     # Temperature sampling: p_i ∝ n_i^alpha where n_i = dataset size
     # alpha < 1 reduces dominance of large tasks (recommended: 0.5-0.7)
-    task_sampling: str = "round_robin"
+    task_sampling: str = "temperature"
     task_sampling_alpha: float = 0.5
     
     # Gradient conflict diagnostics
@@ -180,8 +180,8 @@ class Trainer:
                     if self.early_stopping:
                         val_loss = val_metrics.get("total_loss", float('inf'))
                         if self.early_stopping(val_loss):
-                            tqdm.write(f"\n⚠ Early stopping at epoch {epoch}")
-                            tqdm.write(f"  Best loss: {self.early_stopping.best_value:.4f}")
+                            tqdm.write(f"\nEarly stopping at epoch {epoch} (best loss: {self.early_stopping.best_value:.4f})")
+                            
                             break
 
                 # Checkpoint
@@ -194,7 +194,7 @@ class Trainer:
                 pbar.set_postfix({"loss": f"{loss:.3f}", "time": f"{epoch_time:.0f}s"})
 
         total_time = time.perf_counter() - total_start
-        print(f"\n✓ Training complete in {total_time/60:.1f} minutes")
+        print(f"\nTraining complete in {total_time/60:.1f} minutes")
         return history
 
     def _setup_scheduler(self, loaders: Dict[str, DataLoader], start_epoch: int) -> None:
@@ -214,7 +214,7 @@ class Trainer:
             return max(0.1, 0.5 * (1 + math.cos(math.pi * progress)))
 
         self.scheduler = LambdaLR(self.optimizer, lr_lambda)
-        print(f"✓ LR Scheduler: cosine, {warmup} warmup, {total_steps} total steps")
+        print(f"  LR schedule: cosine, {warmup} warmup, {total_steps} total steps")
 
     def _run_epoch(
         self,

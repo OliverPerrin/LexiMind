@@ -24,7 +24,6 @@ from torch.utils.data import Dataset
 @dataclass
 class SummarizationExample:
     """Container for abstractive summarization samples."""
-
     source: str
     summary: str
 
@@ -32,7 +31,6 @@ class SummarizationExample:
 @dataclass
 class EmotionExample:
     """Container for multi-label emotion classification samples."""
-
     text: str
     emotions: Sequence[str]
 
@@ -40,14 +38,12 @@ class EmotionExample:
 @dataclass
 class TopicExample:
     """Container for topic clustering / classification samples."""
-
     text: str
     topic: str
 
 
 class SummarizationDataset(Dataset[SummarizationExample]):
     """Dataset yielding encoder-decoder training pairs."""
-
     def __init__(self, examples: Iterable[SummarizationExample]) -> None:
         self._examples = list(examples)
 
@@ -60,7 +56,6 @@ class SummarizationDataset(Dataset[SummarizationExample]):
 
 class EmotionDataset(Dataset[EmotionExample]):
     """Dataset that owns a scikit-learn MultiLabelBinarizer for emissions."""
-
     def __init__(
         self,
         examples: Iterable[EmotionExample],
@@ -96,7 +91,6 @@ class EmotionDataset(Dataset[EmotionExample]):
 
 class TopicDataset(Dataset[TopicExample]):
     """Dataset that owns a LabelEncoder for topic ids."""
-
     def __init__(
         self,
         examples: Iterable[TopicExample],

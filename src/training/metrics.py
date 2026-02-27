@@ -90,7 +90,7 @@ def calculate_bertscore(
         return {"precision": 0.0, "recall": 0.0, "f1": 0.0}
     
     try:
-        from bert_score import score as bert_score
+        from bert_score import score as bert_score  # type: ignore[import-not-found]
     except ImportError:
         print("Warning: bert-score not installed. Run: pip install bert-score")
         return {"precision": 0.0, "recall": 0.0, "f1": 0.0}

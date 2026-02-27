@@ -37,7 +37,7 @@ trainer:
   max_val_samples: 2500
   early_stopping_patience: 3  # More patience
   log_grad_norm_frequency: 100
-  task_sampling: round_robin
+  task_sampling: temperature
   task_sampling_alpha: 0.5
   gradient_conflict_frequency: 0
 

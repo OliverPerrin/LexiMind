@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Training script for LexiMind.
 
@@ -97,9 +96,9 @@ def main(cfg: DictConfig) -> None:
             torch.set_float32_matmul_precision("high")
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
-            print("✓ TF32 + cudnn.benchmark enabled for Ampere GPU")
+            print("  TF32 + cudnn.benchmark enabled (Ampere GPU)")
         else:
-            print("✓ cudnn.benchmark enabled")
+            print("  cudnn.benchmark enabled")
     
     # --------------- Load Data ---------------
     
@@ -218,9 +217,9 @@ def main(cfg: DictConfig) -> None:
     )
     
     if grad_ckpt:
-        print("  ✓ Gradient checkpointing enabled")
+        print("  Gradient checkpointing: on")
     if not use_rel_pos:
-        print("  ✓ FlashAttention enabled (no relative position bias)")
+        print("  FlashAttention: on (no relative position bias)")
     
     model = build_multitask_model(
         tokenizer,
@@ -249,7 +248,7 @@ def main(cfg: DictConfig) -> None:
                         p.requires_grad = False
                         frozen_params += p.numel()
         trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
-        print(f"  ✓ Frozen encoder layers 0-{freeze_layers-1} ({frozen_params/1e6:.1f}M params)")
+        print(f"  Frozen layers: 0-{freeze_layers-1} ({frozen_params/1e6:.1f}M params)")
         print(f"  Trainable: {trainable:,} ({trainable/1e6:.1f}M)")
     
     # Resume from checkpoint?
@@ -269,10 +268,10 @@ def main(cfg: DictConfig) -> None:
     compile_mode = "default" if grad_ckpt else "reduce-overhead"
     if cfg.training.get("compile_encoder", True):
         model.encoder = torch.compile(model.encoder, mode=compile_mode)  # type: ignore[assignment]
-        print(f"  ✓ Encoder compiled ({compile_mode})")
+        print(f"  Encoder compiled ({compile_mode})")
     if cfg.training.get("compile_decoder", True):
         model.decoder = torch.compile(model.decoder, mode=compile_mode)  # type: ignore[assignment]
-        print(f"  ✓ Decoder compiled ({compile_mode})")
+        print(f"  Decoder compiled ({compile_mode})")
     
     # --------------- Train ---------------
     
@@ -289,7 +288,7 @@ def main(cfg: DictConfig) -> None:
         fused=use_fused,
     )
     if use_fused:
-        print("  ✓ Fused AdamW optimizer")
+        print("  Fused AdamW: on")
     
     trainer = Trainer(
         model=model,
@@ -303,7 +302,7 @@ def main(cfg: DictConfig) -> None:
             scheduler_type=str(sched_cfg.get("name", "cosine")),
             warmup_steps=int(sched_cfg.get("warmup_steps", 500)),
             early_stopping_patience=trainer_cfg.get("early_stopping_patience"),
-            task_sampling=str(trainer_cfg.get("task_sampling", "round_robin")),
+            task_sampling=str(trainer_cfg.get("task_sampling", "temperature")),
             task_sampling_alpha=float(trainer_cfg.get("task_sampling_alpha", 0.5)),
             gradient_conflict_frequency=int(trainer_cfg.get("gradient_conflict_frequency", 0)),
         ),
@@ -329,7 +328,7 @@ def main(cfg: DictConfig) -> None:
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
                 save_state(model, str(ckpt_dir / "best.pt"))
-                print(f"  💾 New best model (val_loss={val_loss:.4f})")
+                print(f"  New best model saved (val_loss={val_loss:.4f})")
     
     history = trainer.fit(
         train_loaders,
