@@ -30,7 +30,7 @@ Trained for 8 epochs on an RTX 4070 12GB (~9 hours) with BFloat16 mixed precisio
 
 ## Key Findings
 
-From the [research paper](docs/research_paper.tex):
+From my research paper:
 
 - **Naive MTL produces mixed results**: topic classification benefits (+3.7% accuracy), but emotion detection suffers negative transfer (−0.02 F1) under mean pooling with round-robin scheduling.
 - **Learned attention pooling + temperature sampling eliminates negative transfer entirely**: emotion F1 improves from 0.199 → 0.352 (+77%), surpassing the single-task baseline (0.218).

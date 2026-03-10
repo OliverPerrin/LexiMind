@@ -57,7 +57,6 @@ from src.data.dataset import (
     load_emotion_jsonl,
     load_topic_jsonl,
 )
-
 from src.training.metrics import (
     bootstrap_confidence_interval,
     multilabel_f1,
@@ -66,7 +65,6 @@ from src.training.metrics import (
     multilabel_per_class_metrics,
     tune_per_class_thresholds,
 )
-
 
 # Configuration
 
@@ -439,7 +437,6 @@ class BertTrainer:
         self.optimizer.zero_grad()
 
         epoch_losses: Dict[str, List[float]] = {t: [] for t in self.train_loaders}
-        epoch_metrics: Dict[str, List[float]] = {}
 
         if len(self.train_loaders) > 1:
             # Multi-task: temperature sampling
@@ -951,12 +948,12 @@ def run_experiment(mode: str, config: BertBaselineConfig) -> Dict[str, Any]:
     # Load best checkpoint for final evaluation
     best_path = config.checkpoint_dir / mode / "best.pt"
     if best_path.exists():
-        print(f"\n  Loading best checkpoint for final evaluation...")
+        print("\n  Loading best checkpoint for final evaluation...")
         checkpoint = torch.load(best_path, map_location=device, weights_only=False)
         model.load_state_dict(checkpoint["model_state_dict"])
 
     # Full evaluation
-    print(f"\n  Running final evaluation...")
+    print("\n  Running final evaluation...")
     eval_results = evaluate_bert_model(
         model,
         val_loaders,
