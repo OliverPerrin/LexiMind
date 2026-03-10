@@ -7,7 +7,6 @@ and uploads the result to HuggingFace Datasets.
 Data sources (only domains the model was trained on):
   - ArXiv academic papers (summarization training data)
   - Project Gutenberg / Goodreads literary works (summarization training data)
-  - GoEmotions social media text (emotion training data, for emotion diversity)
 
 The training data has already been filtered by download_data.py for:
   - English content only
@@ -133,63 +132,6 @@ def load_literary(data_dir: Path, max_samples: int = 500) -> list[dict[str, Any]
     return samples
 
 
-def load_emotion_texts(data_dir: Path, max_samples: int = 200) -> list[dict[str, Any]]:
-    """Load emotion-labeled social media texts for emotion diversity.
-
-    These are short GoEmotions texts.  They are NOT news — they come from
-    Reddit comments labeled with one or more of 28 emotions.
-    """
-    emotion_items: list[dict[str, Any]] = []
-
-    for split in ["test", "validation", "train"]:
-        path = data_dir / "emotion" / f"{split}.jsonl"
-        if not path.exists():
-            continue
-        with open(path) as f:
-            for line in f:
-                item = json.loads(line)
-                text = item["text"].strip()
-                emotions = item.get("emotions", [])
-                if len(text) < 30 or not emotions:
-                    continue
-                emotion_items.append({"text": text, "emotions": emotions})
-
-    # Sample for diversity: pick from across emotion categories
-    by_emotion: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for item in emotion_items:
-        for e in item["emotions"]:
-            by_emotion[e].append(item)
-
-    seen_texts: set[str] = set()
-    sampled: list[dict[str, Any]] = []
-    for cat in sorted(by_emotion):
-        candidates = by_emotion[cat]
-        random.shuffle(candidates)
-        for item in candidates:
-            if item["text"] in seen_texts:
-                continue
-            seen_texts.add(item["text"])
-            sampled.append(
-                {
-                    "id": f"emotion_{len(sampled)}",
-                    "title": f"[{cat}] {item['text'][:60]}...",
-                    "text": item["text"],
-                    "source_type": "social",
-                    "dataset": "goemotions",
-                    "reference_summary": "",
-                    "_ground_truth_emotion": cat,
-                }
-            )
-            if len(sampled) >= max_samples:
-                break
-        if len(sampled) >= max_samples:
-            break
-
-    random.shuffle(sampled)
-    print(f"  Loaded {len(sampled)} emotion-labeled social texts")
-    return sampled
-
-
 # --------------- Inference ---------------
 
 
@@ -257,9 +199,6 @@ def main() -> None:
     parser.add_argument("--checkpoint", type=Path, default=Path("checkpoints/best.pt"))
     parser.add_argument("--num-papers", type=int, default=500, help="Academic papers to sample")
     parser.add_argument("--num-literary", type=int, default=500, help="Literary works to sample")
-    parser.add_argument(
-        "--num-emotion", type=int, default=200, help="Emotion texts to sample (GoEmotions)"
-    )
     parser.add_argument("--output", type=Path, default=Path("data/discovery_dataset.jsonl"))
     parser.add_argument("--push-to-hub", action="store_true", help="Push to HuggingFace Hub")
     parser.add_argument("--hub-repo", type=str, default="OliverPerrin/LexiMind-Discovery")
@@ -269,21 +208,16 @@ def main() -> None:
 
     # ── Load data ──
     print("Loading data samples...")
-    print("  Sources: ArXiv papers, Gutenberg/Goodreads books, GoEmotions")
-    print("  (No news articles — model is trained on papers & books)\n")
+    print("  Sources: ArXiv papers, Gutenberg/Goodreads books")
+    print("  (No news articles or social posts — model is trained on papers & books)\n")
 
     papers = load_academic_papers(args.data_dir, args.num_papers)
     literary = load_literary(args.data_dir, args.num_literary)
-    emotion_texts = load_emotion_texts(args.data_dir, args.num_emotion)
 
-    all_samples = papers + literary + emotion_texts
+    all_samples = papers + literary
     random.shuffle(all_samples)
 
-    print(
-        f"\nTotal samples: {len(all_samples)}"
-        f" ({len(papers)} papers, {len(literary)} literary,"
-        f" {len(emotion_texts)} emotion)"
-    )
+    print(f"\nTotal samples: {len(all_samples)} ({len(papers)} papers, {len(literary)} literary)")
 
     if not all_samples:
         print("ERROR: No samples loaded! Check if data/processed exists and has data.")
@@ -323,9 +257,7 @@ def main() -> None:
         dataset.push_to_hub(
             args.hub_repo,
             private=False,
-            commit_message=(
-                f"Rebuild discovery dataset: {len(clean)} items (papers, books, emotion texts)"
-            ),
+            commit_message=(f"Rebuild discovery dataset: {len(clean)} items (papers, books)"),
         )
         print(f"Dataset available at: https://huggingface.co/datasets/{args.hub_repo}")
 
