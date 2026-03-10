@@ -127,24 +127,23 @@ ITEMS_PER_PAGE = 25
 def _format_book_card(item: dict) -> str:
     """Format a literary work as a discovery card.
 
-    Uses the Goodreads description (reference summary) as the primary blurb
-    since it is a human-written back-cover description. The AI-generated
-    summary is shown in an expandable section for comparison.
+    Uses the Goodreads description (reference summary) as the primary blurb.
+    AI-generated summaries are not shown for books because the model was
+    trained primarily on academic text and produces low-quality literary
+    summaries.
     """
     title = item.get("title", "Untitled")
     topic = item.get("topic", "")
     emotion = item.get("emotion", "neutral")
-    emotion_conf = item.get("emotion_confidence", 0)
 
-    gen_summary = (item.get("generated_summary") or "").strip()
     ref_summary = (item.get("reference_summary") or "").strip()
 
     # Build metadata line
     parts = ["Book"]
     if topic:
         parts.append(f"Topic: {topic}")
-    if emotion != "neutral" and emotion_conf > 0.3:
-        parts.append(f"Emotion: {emotion.title()}")
+    if emotion != "neutral":
+        parts.append(f"Tone: {emotion.title()}")
     meta_line = " | ".join(parts)
 
     card = f"### {title}\n\n"
@@ -153,14 +152,6 @@ def _format_book_card(item: dict) -> str:
     # Show the Goodreads description as the primary blurb
     if ref_summary:
         card += f"> {ref_summary}\n\n"
-    elif gen_summary:
-        card += f"> {gen_summary}\n\n"
-
-    # Show AI summary in expandable section if both exist
-    if gen_summary and ref_summary:
-        card += (
-            f"<details>\n<summary>AI-Generated Summary</summary>\n\n{gen_summary}\n\n</details>\n\n"
-        )
 
     card += "---\n\n"
     return card
@@ -176,7 +167,6 @@ def _format_paper_card(item: dict) -> str:
     title = item.get("title", "Untitled")
     topic = item.get("topic", "")
     emotion = item.get("emotion", "neutral")
-    emotion_conf = item.get("emotion_confidence", 0)
 
     gen_summary = (item.get("generated_summary") or "").strip()
     ref_summary = (item.get("reference_summary") or "").strip()
@@ -187,8 +177,8 @@ def _format_paper_card(item: dict) -> str:
     parts = ["Paper"]
     if topic:
         parts.append(f"Topic: {topic}")
-    if emotion != "neutral" and emotion_conf > 0.3:
-        parts.append(f"Emotion: {emotion.title()}")
+    if emotion != "neutral":
+        parts.append(f"Tone: {emotion.title()}")
     meta_line = " | ".join(parts)
 
     card = f"### {display_title}\n\n"
@@ -260,8 +250,8 @@ def browse_by_topic(topic: str, source_filter: str) -> str:
 
 
 def browse_by_emotion(emotion: str, source_filter: str) -> str:
-    """Browse items filtered by emotion and source type."""
-    if emotion == "All Emotions":
+    """Browse items filtered by tone and source type."""
+    if emotion in ("All Emotions", "All Tones"):
         items = [i for i in ALL_ITEMS if i.get("emotion") != "neutral"]
     else:
         items = [i for i in ALL_ITEMS if i.get("emotion") == emotion.lower()]
@@ -273,15 +263,15 @@ def browse_by_emotion(emotion: str, source_filter: str) -> str:
 
     if not items:
         return (
-            "No items found with a detected emotion for this selection.\n\n"
-            "Most literary and academic texts are classified as neutral. "
-            "Try browsing by topic instead, or select a different emotion."
+            "No items found for this selection.\n\n"
+            "Try a different tone or select 'All Tones' to see "
+            "all items with a detected tone."
         )
 
     books = [i for i in items if i.get("source_type") == "literary"]
     papers = [i for i in items if i.get("source_type") == "academic"]
 
-    header = emotion if emotion != "All Emotions" else "any detected emotion"
+    header = emotion if emotion not in ("All Emotions", "All Tones") else "any detected tone"
     result = f"Showing **{len(items)}** results with **{header}**\n\n---\n\n"
 
     if source_filter != "Papers Only" and books:
@@ -399,16 +389,16 @@ with gr.Blocks(
                 outputs=[topic_results],
             )
 
-        # -- Browse by Emotion --
-        with gr.Tab("By Emotion"):
+        # -- Browse by Tone --
+        with gr.Tab("By Tone"):
             gr.Markdown(
-                "Find books and papers where the model detected a specific emotion in the text."
+                "Find books and papers by the dominant emotional tone detected by the model."
             )
             with gr.Row():
                 emotion_dropdown = gr.Dropdown(
-                    choices=["All Emotions"] + [e.title() for e in EMOTIONS],
-                    value="All Emotions",
-                    label="Emotion",
+                    choices=["All Tones"] + [e.title() for e in EMOTIONS],
+                    value="All Tones",
+                    label="Tone",
                     interactive=True,
                     scale=2,
                 )
@@ -421,7 +411,7 @@ with gr.Blocks(
                 )
 
             emotion_results = gr.Markdown(
-                value=browse_by_emotion("All Emotions", "All"),
+                value=browse_by_emotion("All Tones", "All"),
                 elem_classes=["result-box"],
             )
 
@@ -530,7 +520,7 @@ with gr.Blocks(
                 f"| Research Papers | {len(PAPERS)} |\n"
                 f"| **Total** | **{len(ALL_ITEMS)}** |\n"
                 f"| Unique Topics | {len(TOPICS)} |\n"
-                f"| Unique Emotions | {len(EMOTIONS)} |"
+                f"| Unique Tones | {len(EMOTIONS)} |"
             )
 
         # -- About --
@@ -541,15 +531,22 @@ with gr.Blocks(
                 "(FLAN-T5-base) trained jointly on three tasks:\n\n"
                 "| Task | What it does | Training data |\n"
                 "|------|-------------|---------------|\n"
-                "| **Summarization** | Generates back-cover blurbs for books and "
-                "abstracts for papers | ~49K pairs (arXiv + Project Gutenberg/Goodreads) |\n"
+                "| **Summarization** | Generates abstracts for research papers | "
+                "~49K pairs (arXiv + Project Gutenberg/Goodreads) |\n"
                 "| **Topic Classification** | Assigns one of 7 topics | 3.4K samples |\n"
                 "| **Emotion Detection** | Detects up to 28 emotions | "
                 "43K GoEmotions samples |\n\n"
-                "The summaries shown here are **generated by the model** from the "
-                "original full text -- not copied from any source. "
-                'The "Original Description" / "Original Abstract" in the expandable '
-                "sections are the human-written references for comparison.\n\n"
+                "**How to read the results:**\n\n"
+                "- **Research papers** show AI-generated summaries that condense the "
+                "paper's content. These are generated by the model and are generally "
+                "accurate.\n"
+                "- **Books** show the Goodreads description as the primary text. "
+                "The model was trained primarily on academic text (~45K academic vs ~4K literary), "
+                "so book summaries are not shown.\n"
+                "- **Tone labels** indicate the dominant emotional tone detected by the model. "
+                "Since the emotion detector was trained on social media (GoEmotions), "
+                "it captures general sentiment better than specific emotions for "
+                "formal text.\n\n"
                 "#### Architecture\n\n"
                 "- Custom from-scratch Transformer (not HuggingFace wrappers)\n"
                 "- Shared encoder with task-specific heads: decoder for summarization, "

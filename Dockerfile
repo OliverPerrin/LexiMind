@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-# Force rebuild: 2026-03-10-v2
+# Force rebuild: 2026-03-10-v3
 WORKDIR /app
 
 # Copy only requirements first (for better caching)
