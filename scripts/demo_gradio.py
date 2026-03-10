@@ -122,29 +122,18 @@ def format_item_card(item: dict) -> str:
     if emotion != "neutral" or emotion_conf > 0.1:
         meta += f" | **Emotion:** {emotion.title()} ({emotion_conf:.0%})"
 
-    # Summary: prefer reference_summary if available, then generated_summary
-    ref_summary = (item.get("reference_summary") or "").strip()
+    # Always show generated summary — the demo showcases model output
     gen_summary = (item.get("generated_summary") or "").strip()
+    ref_summary = (item.get("reference_summary") or "").strip()
 
-    if ref_summary and gen_summary:
-        # Both available — show generated with reference as comparison
+    if gen_summary:
         summary = gen_summary
-        summary_label = "**AI Summary:**"
-    elif ref_summary:
-        summary = ref_summary
-        summary_label = (
-            "**Description:**" if source_type == "literary" else "**Reference Summary:**"
-        )
-    elif gen_summary:
-        summary = gen_summary
-        summary_label = "**AI Summary:**"
+        summary_label = "**Summary:**"
     else:
         summary = ""
         summary_label = ""
 
-    # Truncate summary if too long
-    if len(summary) > 400:
-        summary = summary[:400].rsplit(" ", 1)[0] + "..."
+    # No truncation on generated summary — show full model output
 
     # Preview of original text
     text_preview = (
@@ -153,6 +142,15 @@ def format_item_card(item: dict) -> str:
         else item.get("text", "")
     )
 
+    # Reference summary label depends on source type
+    if ref_summary:
+        if source_type == "academic":
+            ref_label = "Original Abstract"
+        elif source_type == "literary":
+            ref_label = "Original Description"
+        else:
+            ref_label = "Original Summary"
+
     # Build card — omit summary block if empty
     card = f"### {title}\n\n"
     card += f"*{type_label}* from {dataset_name}\n\n"
@@ -160,6 +158,9 @@ def format_item_card(item: dict) -> str:
 
     if summary:
         card += f"{summary_label}\n> {summary}\n\n"
+
+    if ref_summary:
+        card += f"<details>\n<summary>{ref_label}</summary>\n\n{ref_summary}\n\n</details>\n\n"
 
     card += (
         f"<details>\n<summary>View Original Text</summary>\n\n{text_preview}\n\n</details>\n\n---\n"
