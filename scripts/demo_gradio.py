@@ -11,6 +11,7 @@ Date: 2026-01-14
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any
@@ -21,7 +22,8 @@ from datasets import Dataset, load_dataset
 # --------------- Load Dataset from HuggingFace Hub ---------------
 
 print("Loading discovery dataset from HuggingFace Hub...")
-_dataset: Dataset = load_dataset("OliverPerrin/LexiMind-Discovery", split="train")  # type: ignore[assignment]
+_hf_token = os.environ.get("HF_TOKEN")
+_dataset: Dataset = load_dataset("OliverPerrin/LexiMind-Discovery", split="train", token=_hf_token)  # type: ignore[assignment]
 print(f"Loaded {len(_dataset)} items")
 
 # Convert to list of dicts for easier filtering
@@ -255,15 +257,13 @@ def search_items(query: str) -> str:
 
 # --------------- Gradio Interface ---------------
 
-with gr.Blocks(
-    title="LexiMind",
-    theme=gr.themes.Soft(),
-    css="""
-    * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important; }
-    .result-box { max-height: 700px; overflow-y: auto; }
-    h3 { margin-top: 0.5em !important; }
-    """,
-) as demo:
+_css = """
+* { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important; }
+.result-box { max-height: 700px; overflow-y: auto; }
+h3 { margin-top: 0.5em !important; }
+"""
+
+with gr.Blocks(title="LexiMind") as demo:
     gr.Markdown(
         """
         # LexiMind
@@ -453,4 +453,4 @@ with gr.Blocks(
 
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+    demo.launch(server_name="0.0.0.0", server_port=7860, theme=gr.themes.Soft(), css=_css)
