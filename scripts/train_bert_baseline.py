@@ -46,7 +46,7 @@ from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
 
-# Project imports 
+# Project imports
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -67,6 +67,7 @@ from src.training.metrics import (
 )
 
 # Configuration
+
 
 @dataclass
 class BertBaselineConfig:
@@ -117,8 +118,10 @@ class BertBaselineConfig:
 
 # Datasets
 
+
 class BertEmotionDataset(Dataset):
     """Tokenized emotion dataset for BERT."""
+
     def __init__(
         self,
         examples: List[EmotionExample],
@@ -153,6 +156,7 @@ class BertEmotionDataset(Dataset):
 
 class BertTopicDataset(Dataset):
     """Tokenized topic dataset for BERT."""
+
     def __init__(
         self,
         examples: List[TopicExample],
@@ -187,12 +191,14 @@ class BertTopicDataset(Dataset):
 
 # Model
 
+
 class BertClassificationHead(nn.Module):
     """Classification head on top of BERT [CLS] token.
 
     For emotion: uses attention pooling + 2-layer MLP (matching LexiMind's emotion head)
     For topic: uses [CLS] + single linear (matching LexiMind's mean pool + linear)
     """
+
     def __init__(
         self,
         hidden_size: int,
@@ -218,9 +224,7 @@ class BertClassificationHead(nn.Module):
         else:
             self.classifier = nn.Linear(hidden_size, num_labels)
 
-    def forward(
-        self, hidden_states: torch.Tensor, attention_mask: torch.Tensor
-    ) -> torch.Tensor:
+    def forward(self, hidden_states: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         if self.pooling == "attention":
             # Learned attention pooling (same mechanism as LexiMind)
             scores = self.attn_query(hidden_states)  # (B, L, 1)
@@ -247,6 +251,7 @@ class BertBaseline(nn.Module):
 
     Supports single-task and multi-task configurations.
     """
+
     def __init__(
         self,
         model_name: str = "bert-base-uncased",
@@ -314,9 +319,7 @@ class BertBaseline(nn.Module):
         """Count parameters by component."""
         counts = {}
         counts["bert_encoder"] = sum(p.numel() for p in self.bert.parameters())
-        counts["bert_trainable"] = sum(
-            p.numel() for p in self.bert.parameters() if p.requires_grad
-        )
+        counts["bert_trainable"] = sum(p.numel() for p in self.bert.parameters() if p.requires_grad)
         for name, head in self.heads.items():
             counts[f"head_{name}"] = sum(p.numel() for p in head.parameters())
         counts["total"] = sum(p.numel() for p in self.parameters())
@@ -326,8 +329,10 @@ class BertBaseline(nn.Module):
 
 # Training
 
+
 class BertTrainer:
     """Trainer supporting single-task and multi-task BERT training."""
+
     def __init__(
         self,
         model: BertBaseline,
@@ -481,7 +486,10 @@ class BertTrainer:
                 self.global_step += 1
 
             pbar.set_postfix(
-                {f"{task}_loss": f"{epoch_losses[task][-1]:.4f}", "lr": f"{self.scheduler.get_last_lr()[0]:.2e}"}
+                {
+                    f"{task}_loss": f"{epoch_losses[task][-1]:.4f}",
+                    "lr": f"{self.scheduler.get_last_lr()[0]:.2e}",
+                }
             )
             pbar.update(1)
 
@@ -656,9 +664,7 @@ class BertTrainer:
         if "early_stopped" not in all_results:
             all_results["early_stopped"] = False
             all_results["best_epoch"] = (
-                epoch + 1 - self.patience_counter
-                if self.patience_counter > 0
-                else epoch + 1
+                epoch + 1 - self.patience_counter if self.patience_counter > 0 else epoch + 1
             )
         all_results["param_counts"] = param_counts
 
@@ -704,9 +710,7 @@ def evaluate_bert_model(
 
             if task == "emotion":
                 # Default threshold
-                preds_default = (
-                    (torch.sigmoid(all_logits_t) > config.emotion_threshold).int()
-                )
+                preds_default = (torch.sigmoid(all_logits_t) > config.emotion_threshold).int()
                 targets = all_labels_t.int()
 
                 results["emotion"] = {
@@ -724,9 +728,7 @@ def evaluate_bert_model(
                     results["emotion"]["per_class"] = per_class
 
                 # Threshold tuning
-                best_thresholds, tuned_macro = tune_per_class_thresholds(
-                    all_logits_t, all_labels_t
-                )
+                best_thresholds, tuned_macro = tune_per_class_thresholds(all_logits_t, all_labels_t)
                 tuned_preds = torch.zeros_like(all_logits_t)
                 probs = torch.sigmoid(all_logits_t)
                 for c in range(all_logits_t.shape[1]):
@@ -734,12 +736,8 @@ def evaluate_bert_model(
                 tuned_preds = tuned_preds.int()
 
                 results["emotion"]["tuned_macro_f1"] = tuned_macro
-                results["emotion"]["tuned_sample_avg_f1"] = multilabel_f1(
-                    tuned_preds, targets
-                )
-                results["emotion"]["tuned_micro_f1"] = multilabel_micro_f1(
-                    tuned_preds, targets
-                )
+                results["emotion"]["tuned_sample_avg_f1"] = multilabel_f1(tuned_preds, targets)
+                results["emotion"]["tuned_micro_f1"] = multilabel_micro_f1(tuned_preds, targets)
 
                 # Bootstrap CI on sample-avg F1
                 per_sample_f1 = []
@@ -759,9 +757,7 @@ def evaluate_bert_model(
                 targets = all_labels_t.long().numpy()
 
                 acc = float(accuracy_score(targets, preds))
-                macro_f1 = float(
-                    f1_score(targets, preds, average="macro", zero_division=0)
-                )
+                macro_f1 = float(f1_score(targets, preds, average="macro", zero_division=0))
 
                 results["topic"] = {
                     "accuracy": acc,
@@ -798,6 +794,7 @@ def evaluate_bert_model(
 
 # Main Pipeline
 
+
 def set_seed(seed: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
@@ -831,8 +828,12 @@ def load_data(config: BertBaselineConfig):
     label_encoder = LabelEncoder()
     label_encoder.fit([ex.topic for ex in top_train])
 
-    print(f"  Emotion: {len(emo_train)} train, {len(emo_val)} val, {len(binarizer.classes_)} classes")
-    print(f"  Topic:   {len(top_train)} train, {len(top_val)} val, {len(label_encoder.classes_)} classes")
+    print(
+        f"  Emotion: {len(emo_train)} train, {len(emo_val)} val, {len(binarizer.classes_)} classes"
+    )
+    print(
+        f"  Topic:   {len(top_train)} train, {len(top_val)} val, {len(label_encoder.classes_)} classes"
+    )
     print(f"  Emotion classes: {list(binarizer.classes_)[:5]}...")
     print(f"  Topic classes:   {list(label_encoder.classes_)}")
 
