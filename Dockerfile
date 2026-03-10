@@ -19,7 +19,10 @@ COPY scripts/demo_gradio.py scripts/
 COPY configs/ configs/
 COPY artifacts/ artifacts/
 COPY checkpoints/ checkpoints/
-COPY outputs/evaluation_report.json outputs/
+
+# Copy evaluation metrics if available (demo handles absence gracefully)
+RUN mkdir -p outputs
+COPY outputs/evaluation_report.jso[n] outputs/
 
 # Set environment variables for Gradio
 ENV GRADIO_SERVER_NAME="0.0.0.0"

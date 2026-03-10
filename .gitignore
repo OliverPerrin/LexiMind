@@ -43,6 +43,7 @@ logs/
 runs/
 mlruns/
 outputs/
+!outputs/evaluation_report.json
 
 # Outputs
 results/
