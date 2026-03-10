@@ -1,8 +1,8 @@
 """
-LexiMind - Book & Paper Discovery
+LexiMind — Discover Books & Papers
 
-Browse books, research papers, and blog posts by topic, emotion, or keyword.
-Pre-analyzed summaries help you find what to read next.
+Browse literary works and research papers analyzed by a multi-task transformer.
+Find your next read by topic, emotion, or keyword — with AI-generated summaries.
 
 Author: Oliver Perrin
 Date: 2026-01-14
@@ -59,17 +59,17 @@ else:
 TOPICS = DATASET_TOPICS
 EMOTIONS = DATASET_EMOTIONS
 
-# Group by source type
+# Group by source type — only books, papers, social (no blog posts)
 BOOKS: list[dict[str, Any]] = [item for item in ALL_ITEMS if item.get("source_type") == "literary"]
 PAPERS: list[dict[str, Any]] = [item for item in ALL_ITEMS if item.get("source_type") == "academic"]
-BLOGS: list[dict[str, Any]] = [item for item in ALL_ITEMS if item.get("source_type") == "blog"]
 SOCIAL: list[dict[str, Any]] = [item for item in ALL_ITEMS if item.get("source_type") == "social"]
+
+# Discoverable items = books + papers (what users want to browse)
+DISCOVERABLE: list[dict[str, Any]] = BOOKS + PAPERS
 
 print(f"Dataset Topics ({len(TOPICS)}): {TOPICS}")
 print(f"Dataset Emotions ({len(EMOTIONS)}): {EMOTIONS}")
-print(f"All Model Topics ({len(ALL_TOPICS)}): {ALL_TOPICS}")
-print(f"All Model Emotions ({len(ALL_EMOTIONS)}): {ALL_EMOTIONS}")
-print(f"Books: {len(BOOKS)}, Papers: {len(PAPERS)}, Blogs: {len(BLOGS)}, Social: {len(SOCIAL)}")
+print(f"Books: {len(BOOKS)}, Papers: {len(PAPERS)}, Social: {len(SOCIAL)}")
 
 # --------------- Load Evaluation Metrics ---------------
 
@@ -84,149 +84,248 @@ if _metrics_path.exists():
         print(f"Warning: Could not load metrics: {e}")
 
 
-# --------------- Filter Functions ---------------
+# --------------- Helpers ---------------
+
+# Friendly source labels
+_SOURCE_LABELS = {
+    "academic": "Research Paper",
+    "literary": "Book",
+    "social": "Social Post",
+}
+
+# Friendly dataset labels
+_DATASET_LABELS = {
+    "arxiv": "arXiv",
+    "gutenberg": "Project Gutenberg",
+    "goemotions": "GoEmotions (Reddit)",
+}
 
 
-def get_items_by_topic(topic: str) -> list[dict]:
-    """Get all items matching a topic."""
-    if topic == "All":
-        return ALL_ITEMS
-    return [item for item in ALL_ITEMS if item.get("topic") == topic]
+def _get_best_summary(item: dict) -> str:
+    """Return the best available summary for display.
+
+    Prefers the AI-generated summary; falls back to the reference summary.
+    For social posts (short Reddit comments), return empty since the text IS
+    the content.
+    """
+    if item.get("source_type") == "social":
+        return ""
+    gen = (item.get("generated_summary") or "").strip()
+    if gen:
+        return gen
+    return (item.get("reference_summary") or "").strip()
 
 
-def get_items_by_emotion(emotion: str) -> list[dict]:
-    """Get all items matching an emotion."""
-    if emotion == "All":
-        return ALL_ITEMS
-    return [item for item in ALL_ITEMS if item.get("emotion") == emotion]
-
-
-def format_item_card(item: dict) -> str:
-    """Format an item as a markdown card."""
-    title = item.get("title", "Unknown")
-    source_type = item.get("source_type", "unknown")
-    dataset_name = item.get("dataset", "").title()
-
-    # Label based on source type
-    type_labels = {
-        "academic": "Research Paper",
-        "literary": "Literature",
-        "blog": "Blog Post",
-        "social": "Social",
-    }
-    type_label = type_labels.get(source_type, source_type.title())
-
-    # Topic and emotion with confidence
-    topic = item.get("topic", "Unknown")
-    topic_conf = item.get("topic_confidence", 0)
+def _format_book_card(item: dict) -> str:
+    """Format a literary work as a discovery card."""
+    title = item.get("title", "Untitled")
+    topic = item.get("topic", "")
+    topic_conf = item.get("topic_confidence", 0)  # noqa: F841
     emotion = item.get("emotion", "neutral")
     emotion_conf = item.get("emotion_confidence", 0)
 
-    # Build metadata line — only show emotion if it's not a placeholder neutral
-    meta = f"**Topic:** {topic} ({topic_conf:.0%})"
-    if emotion != "neutral" or emotion_conf > 0.1:
-        meta += f" | **Emotion:** {emotion.title()} ({emotion_conf:.0%})"
-
-    # Always show generated summary — the demo showcases model output
     gen_summary = (item.get("generated_summary") or "").strip()
     ref_summary = (item.get("reference_summary") or "").strip()
 
+    # Build tags line
+    tags = []
+    if topic:
+        tags.append(f"📂 {topic}")
+    if emotion != "neutral" and emotion_conf > 0.3:
+        tags.append(f"💭 {emotion.title()}")
+    tags_line = " · ".join(tags)
+
+    card = f"### 📖 {title}\n\n"
+    if tags_line:
+        card += f"{tags_line}\n\n"
+
+    # Show the AI-generated summary prominently as a blurb
     if gen_summary:
-        summary = gen_summary
-        summary_label = "**Summary:**"
-    else:
-        summary = ""
-        summary_label = ""
+        card += f"> {gen_summary}\n\n"
+    elif ref_summary:
+        card += f"> {ref_summary}\n\n"
 
-    # No truncation on generated summary — show full model output
+    # Show reference (original Goodreads description) as comparison
+    if gen_summary and ref_summary:
+        card += f"<details>\n<summary>Original Goodreads Description</summary>\n\n{ref_summary}\n\n</details>\n\n"
 
-    # Preview of original text
-    text_preview = (
-        item.get("text", "")[:400] + "..."
-        if len(item.get("text", "")) > 400
-        else item.get("text", "")
-    )
-
-    # Reference summary label depends on source type
-    if ref_summary:
-        if source_type == "academic":
-            ref_label = "Original Abstract"
-        elif source_type == "literary":
-            ref_label = "Original Description"
-        else:
-            ref_label = "Original Summary"
-
-    # Build card — omit summary block if empty
-    card = f"### {title}\n\n"
-    card += f"*{type_label}* from {dataset_name}\n\n"
-    card += f"{meta}\n\n"
-
-    if summary:
-        card += f"{summary_label}\n> {summary}\n\n"
-
-    if ref_summary:
-        card += f"<details>\n<summary>{ref_label}</summary>\n\n{ref_summary}\n\n</details>\n\n"
-
-    card += (
-        f"<details>\n<summary>View Original Text</summary>\n\n{text_preview}\n\n</details>\n\n---\n"
-    )
-
+    card += "---\n\n"
     return card
 
 
-def browse_by_topic(topic: str) -> str:
-    """Browse items filtered by topic."""
-    items = get_items_by_topic(topic)
+def _format_paper_card(item: dict) -> str:
+    """Format a research paper as a discovery card."""
+    title = item.get("title", "Untitled")
+    topic = item.get("topic", "")
+    emotion = item.get("emotion", "neutral")
+    emotion_conf = item.get("emotion_confidence", 0)
+
+    gen_summary = (item.get("generated_summary") or "").strip()
+    ref_summary = (item.get("reference_summary") or "").strip()
+
+    # Clean up arXiv titles (often start lowercase or have trailing ...)
+    display_title = title.strip().rstrip(".")
+    if display_title and display_title[0].islower():
+        display_title = display_title[0].upper() + display_title[1:]
+
+    tags = []
+    if topic:
+        tags.append(f"📂 {topic}")
+    if emotion != "neutral" and emotion_conf > 0.3:
+        tags.append(f"💭 {emotion.title()}")
+    tags_line = " · ".join(tags)
+
+    card = f"### 📄 {display_title}\n\n"
+    if tags_line:
+        card += f"{tags_line}\n\n"
+
+    # Show AI-generated abstract prominently
+    if gen_summary:
+        card += f"> {gen_summary}\n\n"
+    elif ref_summary:
+        card += f"> {ref_summary}\n\n"
+
+    # Show original abstract as comparison
+    if gen_summary and ref_summary:
+        card += (
+            f"<details>\n<summary>Original Abstract</summary>\n\n{ref_summary}\n\n</details>\n\n"
+        )
+
+    card += "---\n\n"
+    return card
+
+
+def _format_social_card(item: dict) -> str:
+    """Format a social media post as a compact card."""
+    text = (item.get("text") or "").strip()
+    emotion = item.get("emotion", "neutral")
+    emotion_conf = item.get("emotion_confidence", 0)
+    topic = item.get("topic", "")
+
+    # Display emotion as the primary feature for social posts
+    emotion_display = emotion.title() if emotion != "neutral" else ""
+    tags = []
+    if emotion_display:
+        tags.append(f"💭 {emotion_display} ({emotion_conf:.0%})")
+    if topic:
+        tags.append(f"📂 {topic}")
+    tags_line = " · ".join(tags)
+
+    card = f"> {text}\n\n"
+    if tags_line:
+        card += f"*{tags_line}*\n\n"
+    card += "---\n\n"
+    return card
+
+
+def _format_card(item: dict) -> str:
+    """Route to the appropriate card formatter."""
+    source_type = item.get("source_type", "")
+    if source_type == "literary":
+        return _format_book_card(item)
+    elif source_type == "academic":
+        return _format_paper_card(item)
+    elif source_type == "social":
+        return _format_social_card(item)
+    return ""
+
+
+# --------------- Browse Functions ---------------
+
+ITEMS_PER_PAGE = 25
+
+
+def browse_by_topic(topic: str, source_filter: str) -> str:
+    """Browse items filtered by topic and source type."""
+    if topic == "All Topics":
+        items = DISCOVERABLE
+    else:
+        items = [i for i in DISCOVERABLE if i.get("topic") == topic]
+
+    if source_filter == "Books Only":
+        items = [i for i in items if i.get("source_type") == "literary"]
+    elif source_filter == "Papers Only":
+        items = [i for i in items if i.get("source_type") == "academic"]
+
     if not items:
-        return "No items found for this topic."
+        return "No items found for this selection."
 
-    # Group by type
-    literary = [i for i in items if i.get("source_type") == "literary"]
-    academic = [i for i in items if i.get("source_type") == "academic"]
-    blogs = [i for i in items if i.get("source_type") == "blog"]
-    social = [i for i in items if i.get("source_type") == "social"]
+    books = [i for i in items if i.get("source_type") == "literary"]
+    papers = [i for i in items if i.get("source_type") == "academic"]
 
-    result = f"## {topic if topic != 'All' else 'All Topics'}\n\n"
-    result += f"*Found {len(items)} items*\n\n"
+    result = f"Found **{len(items)}** items"
+    if topic != "All Topics":
+        result += f" in **{topic}**"
+    result += f" — {len(books)} books, {len(papers)} papers\n\n---\n\n"
 
-    for label, group, limit in [
-        ("Blog Posts", blogs, 10),
-        ("Literary Works", literary, 25),
-        ("Research Papers", academic, 25),
-        ("Social", social, 10),
-    ]:
-        if group:
-            result += f"### {label}\n\n"
-            for item in group[:limit]:
-                result += format_item_card(item)
+    if source_filter != "Papers Only" and books:
+        if source_filter == "All":
+            result += f"## 📚 Books ({len(books)})\n\n"
+        for item in books[:ITEMS_PER_PAGE]:
+            result += _format_book_card(item)
+
+    if source_filter != "Books Only" and papers:
+        if source_filter == "All":
+            result += f"## 📄 Research Papers ({len(papers)})\n\n"
+        for item in papers[:ITEMS_PER_PAGE]:
+            result += _format_paper_card(item)
 
     return result
 
 
-def browse_by_emotion(emotion: str) -> str:
-    """Browse items filtered by emotion."""
-    items = get_items_by_emotion(emotion)
+def browse_by_emotion(emotion: str, source_filter: str) -> str:
+    """Browse items filtered by emotion and source type."""
+    if emotion == "All Emotions":
+        items = [i for i in DISCOVERABLE if i.get("emotion") != "neutral"]
+    else:
+        items = [i for i in DISCOVERABLE if i.get("emotion") == emotion.lower()]
+
+    if source_filter == "Books Only":
+        items = [i for i in items if i.get("source_type") == "literary"]
+    elif source_filter == "Papers Only":
+        items = [i for i in items if i.get("source_type") == "academic"]
+
     if not items:
-        return "No items found for this emotion."
+        return "No items found with a detected emotion for this selection.\n\nMost literary and academic texts are classified as **Neutral** — try the Social tab to browse emotion-rich content."
 
-    literary = [i for i in items if i.get("source_type") == "literary"]
-    academic = [i for i in items if i.get("source_type") == "academic"]
-    blogs = [i for i in items if i.get("source_type") == "blog"]
-    social = [i for i in items if i.get("source_type") == "social"]
+    books = [i for i in items if i.get("source_type") == "literary"]
+    papers = [i for i in items if i.get("source_type") == "academic"]
 
-    result = f"## Feeling {emotion.title() if emotion != 'All' else 'All Emotions'}?\n\n"
-    result += f"*Found {len(items)} items*\n\n"
+    header = emotion if emotion != "All Emotions" else "any detected emotion"
+    result = f"Found **{len(items)}** items with **{header}**\n\n---\n\n"
 
-    for label, group, limit in [
-        ("Blog Posts", blogs, 10),
-        ("Social", social, 25),
-        ("Literary Works", literary, 25),
-        ("Research Papers", academic, 25),
-    ]:
-        if group:
-            result += f"### {label}\n\n"
-            for item in group[:limit]:
-                result += format_item_card(item)
+    if source_filter != "Papers Only" and books:
+        if source_filter == "All":
+            result += f"## 📚 Books ({len(books)})\n\n"
+        for item in books[:ITEMS_PER_PAGE]:
+            result += _format_book_card(item)
+
+    if source_filter != "Books Only" and papers:
+        if source_filter == "All":
+            result += f"## 📄 Research Papers ({len(papers)})\n\n"
+        for item in papers[:ITEMS_PER_PAGE]:
+            result += _format_paper_card(item)
+
+    return result
+
+
+def browse_social(emotion: str) -> str:
+    """Browse social media posts by emotion — these showcase emotion detection."""
+    if emotion == "All Emotions":
+        items = SOCIAL
+    else:
+        items = [i for i in SOCIAL if i.get("emotion") == emotion.lower()]
+
+    if not items:
+        return "No social posts found for this emotion."
+
+    result = f"**{len(items)}** social media posts"
+    if emotion != "All Emotions":
+        result += f" expressing **{emotion}**"
+    result += "\n\n*Short Reddit comments analyzed for emotion — these demonstrate the model's 28-label emotion detection.*\n\n---\n\n"
+
+    for item in items[:50]:
+        result += _format_social_card(item)
 
     return result
 
@@ -247,13 +346,28 @@ def search_items(query: str) -> str:
     ]
 
     if not matches:
-        return f"No results found for '{query}'."
+        return f'No results found for "{query}".'
 
-    result = f"## Search Results for '{query}'\n\n"
-    result += f"*Found {len(matches)} matching items*\n\n"
+    books = [i for i in matches if i.get("source_type") == "literary"]
+    papers = [i for i in matches if i.get("source_type") == "academic"]
+    social = [i for i in matches if i.get("source_type") == "social"]
 
-    for item in matches[:30]:
-        result += format_item_card(item)
+    result = f'Found **{len(matches)}** results for **"{query}"**\n\n---\n\n'
+
+    if books:
+        result += f"## 📚 Books ({len(books)})\n\n"
+        for item in books[:ITEMS_PER_PAGE]:
+            result += _format_book_card(item)
+
+    if papers:
+        result += f"## 📄 Research Papers ({len(papers)})\n\n"
+        for item in papers[:ITEMS_PER_PAGE]:
+            result += _format_paper_card(item)
+
+    if social:
+        result += f"## 💬 Social Posts ({len(social)})\n\n"
+        for item in social[:10]:
+            result += _format_social_card(item)
 
     return result
 
@@ -261,79 +375,130 @@ def search_items(query: str) -> str:
 # --------------- Gradio Interface ---------------
 
 with gr.Blocks(
-    title="LexiMind",
+    title="LexiMind — Discover Books & Papers",
     theme=gr.themes.Soft(),
     css="""
     * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important; }
-    .result-box { max-height: 700px; overflow-y: auto; }
-    h3 { margin-top: 0.5em !important; }
+    .result-box { max-height: 800px; overflow-y: auto; }
+    h3 { margin-top: 0.5em !important; margin-bottom: 0.2em !important; }
+    blockquote { border-left: 3px solid #6366f1 !important; padding-left: 1em !important; color: #374151 !important; }
     """,
 ) as demo:
     gr.Markdown(
         """
-        # LexiMind
-        ### Discover Texts by Topic, Emotion, or Keyword
+        # 🧠 LexiMind
+        ### Discover Your Next Read
         
-        Browse **{total_count}** items — {lit_count} literary works, {paper_count} research papers, {blog_count} blog posts, and {social_count} social texts — analyzed by a multi-task transformer.
+        Browse **{book_count} books** and **{paper_count} research papers** — each analyzed by a multi-task transformer that generates summaries, classifies topics, and detects emotions.
         
-        ---
+        *Summaries are AI-generated: back-cover blurbs for books, abstracts for papers.*
         """.format(
-            total_count=len(ALL_ITEMS),
-            lit_count=len(BOOKS),
+            book_count=len(BOOKS),
             paper_count=len(PAPERS),
-            blog_count=len(BLOGS),
-            social_count=len(SOCIAL),
         )
     )
 
     with gr.Tabs():
-        with gr.Tab("By Topic"):
-            gr.Markdown("*Select a topic to explore related texts*")
-
-            topic_dropdown = gr.Dropdown(
-                choices=["All"] + TOPICS,
-                value="All",
-                label="Select Topic",
-                interactive=True,
-            )
+        # ── Browse by Topic ──
+        with gr.Tab("📂 By Topic"):
+            gr.Markdown("*Select a topic to explore related books and papers*")
+            with gr.Row():
+                topic_dropdown = gr.Dropdown(
+                    choices=["All Topics"] + TOPICS,
+                    value="All Topics",
+                    label="Topic",
+                    interactive=True,
+                    scale=2,
+                )
+                source_filter_topic = gr.Radio(
+                    choices=["All", "Books Only", "Papers Only"],
+                    value="All",
+                    label="Show",
+                    interactive=True,
+                    scale=1,
+                )
 
             topic_results = gr.Markdown(
-                value=browse_by_topic("All"),
+                value=browse_by_topic("All Topics", "All"),
                 elem_classes=["result-box"],
             )
 
             topic_dropdown.change(
                 fn=browse_by_topic,
-                inputs=[topic_dropdown],
+                inputs=[topic_dropdown, source_filter_topic],
+                outputs=[topic_results],
+            )
+            source_filter_topic.change(
+                fn=browse_by_topic,
+                inputs=[topic_dropdown, source_filter_topic],
                 outputs=[topic_results],
             )
 
-        with gr.Tab("By Emotion"):
-            gr.Markdown("*Find texts that evoke specific emotions*")
-
-            emotion_dropdown = gr.Dropdown(
-                choices=["All"] + [e.title() for e in EMOTIONS],
-                value="All",
-                label="Select Emotion",
-                interactive=True,
-            )
+        # ── Browse by Emotion ──
+        with gr.Tab("💭 By Emotion"):
+            gr.Markdown("*Find books and papers that evoke specific emotions*")
+            with gr.Row():
+                emotion_dropdown = gr.Dropdown(
+                    choices=["All Emotions"] + [e.title() for e in EMOTIONS],
+                    value="All Emotions",
+                    label="Emotion",
+                    interactive=True,
+                    scale=2,
+                )
+                source_filter_emotion = gr.Radio(
+                    choices=["All", "Books Only", "Papers Only"],
+                    value="All",
+                    label="Show",
+                    interactive=True,
+                    scale=1,
+                )
 
             emotion_results = gr.Markdown(
-                value=browse_by_emotion("All"),
+                value=browse_by_emotion("All Emotions", "All"),
                 elem_classes=["result-box"],
             )
 
             emotion_dropdown.change(
-                fn=lambda e: browse_by_emotion(e.lower() if e != "All" else "All"),
-                inputs=[emotion_dropdown],
+                fn=lambda e, f: browse_by_emotion(e, f),
+                inputs=[emotion_dropdown, source_filter_emotion],
+                outputs=[emotion_results],
+            )
+            source_filter_emotion.change(
+                fn=lambda e, f: browse_by_emotion(e, f),
+                inputs=[emotion_dropdown, source_filter_emotion],
                 outputs=[emotion_results],
             )
 
-        with gr.Tab("Search"):
-            gr.Markdown("*Search through all items by keyword*")
+        # ── Social Posts (emotion showcase) ──
+        with gr.Tab("💬 Social"):
+            gr.Markdown(
+                "*Short Reddit comments analyzed for emotion — showcasing the model's 28-label emotion detection.*"
+            )
+
+            social_emotion_dropdown = gr.Dropdown(
+                choices=["All Emotions"] + [e.title() for e in EMOTIONS],
+                value="All Emotions",
+                label="Filter by Emotion",
+                interactive=True,
+            )
+
+            social_results = gr.Markdown(
+                value=browse_social("All Emotions"),
+                elem_classes=["result-box"],
+            )
+
+            social_emotion_dropdown.change(
+                fn=browse_social,
+                inputs=[social_emotion_dropdown],
+                outputs=[social_results],
+            )
+
+        # ── Search ──
+        with gr.Tab("🔍 Search"):
+            gr.Markdown("*Search through all books, papers, and posts by keyword*")
 
             search_input = gr.Textbox(
-                placeholder="Enter keywords to search...",
+                placeholder="e.g. quantum, Shakespeare, neural network, gravity...",
                 label="Search",
                 interactive=True,
             )
@@ -349,14 +514,9 @@ with gr.Blocks(
                 outputs=[search_results],
             )
 
-        with gr.Tab("Metrics"):
-            gr.Markdown(
-                """
-                ### Evaluation Metrics
-                
-                Computed on held-out validation data.
-                """
-            )
+        # ── Metrics ──
+        with gr.Tab("📊 Metrics"):
+            gr.Markdown("### Model Evaluation\n\n*Computed on held-out validation data.*")
 
             # Summarization Metrics
             gr.Markdown("#### Summarization")
@@ -384,15 +544,15 @@ with gr.Blocks(
             gr.Markdown("#### Topic Classification")
 
             if METRICS.get("topic"):
-                topic = METRICS["topic"]
+                topic_m = METRICS["topic"]
                 topic_md = """
 | Metric | Score |
 |--------|-------|
 | **Accuracy** | {accuracy:.2%} |
 | **Macro F1** | {f1:.4f} |
 """.format(
-                    accuracy=topic.get("accuracy", 0),
-                    f1=topic.get("f1", topic.get("macro_f1", 0)),
+                    accuracy=topic_m.get("accuracy", 0),
+                    f1=topic_m.get("f1", topic_m.get("macro_f1", 0)),
                 )
                 gr.Markdown(topic_md)
             else:
@@ -402,7 +562,7 @@ with gr.Blocks(
             gr.Markdown("#### Emotion Detection")
 
             if METRICS.get("emotion"):
-                emotion = METRICS["emotion"]
+                emotion_m = METRICS["emotion"]
                 emotion_md = """
 | Metric | Score |
 |--------|-------|
@@ -412,47 +572,55 @@ with gr.Blocks(
 
 *28-label multi-label classification from GoEmotions.*
 """.format(
-                    sample_f1=emotion.get(
-                        "sample_avg_f1", emotion.get("f1", emotion.get("multilabel_f1", 0))
+                    sample_f1=emotion_m.get(
+                        "sample_avg_f1", emotion_m.get("f1", emotion_m.get("multilabel_f1", 0))
                     ),
-                    macro_f1=emotion.get("macro_f1", 0),
-                    micro_f1=emotion.get("micro_f1", 0),
+                    macro_f1=emotion_m.get("macro_f1", 0),
+                    micro_f1=emotion_m.get("micro_f1", 0),
                 )
                 gr.Markdown(emotion_md)
             else:
                 gr.Markdown("*Emotion detection metrics not available.*")
 
             # Dataset Statistics
-            gr.Markdown("#### Dataset Statistics")
+            gr.Markdown("#### Discovery Dataset")
 
             gr.Markdown(f"""
-| Statistic | Value |
-|-----------|-------|
-| Total Items | {len(ALL_ITEMS)} |
+| Content | Count |
+|---------|-------|
 | Literary Works | {len(BOOKS)} |
-| Academic Papers | {len(PAPERS)} |
-| Blog Posts | {len(BLOGS)} |
-| Social Texts | {len(SOCIAL)} |
-| Topics | {len(TOPICS)} |
-| Emotions | {len(EMOTIONS)} |
+| Research Papers | {len(PAPERS)} |
+| Social Posts | {len(SOCIAL)} |
+| **Total** | **{len(ALL_ITEMS)}** |
+| Unique Topics | {len(TOPICS)} |
+| Unique Emotions | {len(EMOTIONS)} |
 """)
 
-        with gr.Tab("About"):
+        # ── About ──
+        with gr.Tab("ℹ️ About"):
             gr.Markdown(
                 """
                 ### About LexiMind
                 
-                A **272M parameter encoder-decoder transformer** (FLAN-T5-base) trained on three tasks:
+                LexiMind is a **272M parameter encoder-decoder transformer** (FLAN-T5-base) trained jointly on three tasks:
                 
-                - **Summarization**: Generate back-cover style descriptions from full text
-                - **Topic Classification**: 7 categories (Fiction, Science, History, Philosophy, Arts, Business, Technology)
-                - **Emotion Detection**: 28 emotions via GoEmotions
+                | Task | What it does | Training data |
+                |------|-------------|---------------|
+                | **Summarization** | Generates back-cover blurbs for books and abstracts for papers | ~49K pairs (arXiv + Project Gutenberg/Goodreads) |
+                | **Topic Classification** | Assigns one of 7 topics | 3.4K samples |
+                | **Emotion Detection** | Detects up to 28 emotions | 43K GoEmotions samples |
                 
-                Training data: ~49K summarization pairs (arXiv + Project Gutenberg), 43K emotion samples, 3.4K topic samples.
+                The summaries you see here are **generated by the model** from the original full text — not copied from any source. The "Original Description" / "Original Abstract" shown in the expandable sections are the human-written references for comparison.
                 
-                [GitHub](https://github.com/OliverPerrin/LexiMind) | [Model](https://huggingface.co/OliverPerrin/LexiMind-Model) | [Dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery)
+                #### Key Architecture Details
                 
-                *Oliver Perrin — Appalachian State University — 2025-2026*
+                - Custom from-scratch Transformer implementation (not HuggingFace wrappers)
+                - Shared encoder with task-specific heads: decoder for summarization, attention pooling for emotion, mean pooling for topic
+                - Trained in ~9 hours on a single RTX 4070 12GB
+                
+                [GitHub](https://github.com/OliverPerrin/LexiMind) · [Model](https://huggingface.co/OliverPerrin/LexiMind-Model) · [Dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery) · [Paper](https://github.com/OliverPerrin/LexiMind/blob/main/docs/research_paper.tex)
+                
+                *Oliver Perrin · Appalachian State University · 2025–2026*
                 """
             )
 
