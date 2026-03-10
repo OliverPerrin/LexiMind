@@ -51,6 +51,11 @@ results/
 .ipynb_checkpoints/
 *.ipynb
 
+# Docs/Paper
+docs/paper.*
+docs/paper_old.*
+docs/research_paper.*
+
 # OS - Windows specific
 .DS_Store
 Thumbs.db
@@ -65,6 +70,10 @@ ehthumbs_vista.db
 configs/local/*.png
 *.pt
 
+# Environment variables
+.env
+.env.*
+
 # Backup/private files
-scripts/demo_gradio_old.py
 mlruns.db
+kaggle.json
