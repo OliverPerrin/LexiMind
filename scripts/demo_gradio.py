@@ -65,13 +65,59 @@ if _metrics_path.exists():
         print(f"Warning: Could not load metrics: {e}")
 
 
+# --------------- Helpers ---------------
+
+
+def _clean_paper_title(raw_title: str) -> str:
+    """Clean up arXiv paper titles.
+
+    Paper 'titles' in this dataset are the first ~150 chars of the abstract,
+    not real titles. Clean them into a short, readable heading.
+    """
+    t = raw_title.strip()
+    # Remove bracket markers like [ [ background ] ]
+    t = re.sub(r"\[[\s\[]*[^\]]*[\]\s]*\]", "", t)
+    # Remove runs of + symbols (with or without spaces between them)
+    t = re.sub(r"(\+\s*){2,}", "", t)
+    # Remove other LaTeX artifacts like ^s$ ]
+    t = re.sub(r"\^[a-z0-9]*\$\s*\]?", "", t)
+    # Collapse whitespace and strip leading/trailing punctuation
+    t = re.sub(r"\s+", " ", t).strip()
+    t = t.strip(":").strip()
+    # Remove leading section headers (e.g. "background :", "introduction :")
+    t = re.sub(
+        r"^(background|introduction|abstract|motivation|overview)\s*:\s*",
+        "",
+        t,
+        flags=re.IGNORECASE,
+    )
+    # Remove trailing ellipsis or period
+    t = t.rstrip(".").rstrip()
+    if t.endswith("..."):
+        t = t[:-3].rstrip()
+    # Capitalize first letter
+    if t and t[0].islower():
+        t = t[0].upper() + t[1:]
+    # Truncate to a reasonable length at a word boundary
+    if len(t) > 90:
+        cut = t[:90].rfind(" ")
+        if cut > 40:
+            t = t[:cut] + "..."
+    return t or "Research Paper"
+
+
 # --------------- Card Formatting ---------------
 
 ITEMS_PER_PAGE = 25
 
 
 def _format_book_card(item: dict) -> str:
-    """Format a literary work as a discovery card."""
+    """Format a literary work as a discovery card.
+
+    Uses the Goodreads description (reference summary) as the primary blurb
+    since it is a human-written back-cover description. The AI-generated
+    summary is shown in an expandable section for comparison.
+    """
     title = item.get("title", "Untitled")
     topic = item.get("topic", "")
     emotion = item.get("emotion", "neutral")
@@ -91,15 +137,17 @@ def _format_book_card(item: dict) -> str:
     card = f"### {title}\n\n"
     card += f"*{meta_line}*\n\n"
 
-    if gen_summary:
-        card += f"> {gen_summary}\n\n"
-    elif ref_summary:
+    # Show the Goodreads description as the primary blurb
+    if ref_summary:
         card += f"> {ref_summary}\n\n"
+    elif gen_summary:
+        card += f"> {gen_summary}\n\n"
 
+    # Show AI summary in expandable section if both exist
     if gen_summary and ref_summary:
         card += (
-            f"<details>\n<summary>Original Goodreads Description</summary>"
-            f"\n\n{ref_summary}\n\n</details>\n\n"
+            f"<details>\n<summary>AI-Generated Summary</summary>"
+            f"\n\n{gen_summary}\n\n</details>\n\n"
         )
 
     card += "---\n\n"
@@ -107,7 +155,12 @@ def _format_book_card(item: dict) -> str:
 
 
 def _format_paper_card(item: dict) -> str:
-    """Format a research paper as a discovery card."""
+    """Format a research paper as a discovery card.
+
+    Uses the AI-generated summary as the primary blurb since it is usually
+    a good condensation of the paper. The original abstract is shown in an
+    expandable section.
+    """
     title = item.get("title", "Untitled")
     topic = item.get("topic", "")
     emotion = item.get("emotion", "neutral")
@@ -116,10 +169,7 @@ def _format_paper_card(item: dict) -> str:
     gen_summary = (item.get("generated_summary") or "").strip()
     ref_summary = (item.get("reference_summary") or "").strip()
 
-    # Clean up arXiv titles (often start lowercase or have trailing ...)
-    display_title = title.strip().rstrip(".")
-    if display_title and display_title[0].islower():
-        display_title = display_title[0].upper() + display_title[1:]
+    display_title = _clean_paper_title(title)
 
     # Build metadata line
     parts = ["Paper"]
