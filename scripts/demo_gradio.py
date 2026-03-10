@@ -13,8 +13,11 @@ from __future__ import annotations
 import json
 import os
 import re
+import warnings
 from pathlib import Path
 from typing import Any
+
+warnings.filterwarnings("ignore", message=".*parameter in the Blocks constructor will be removed.*")
 
 import gradio as gr
 from datasets import Dataset, load_dataset
@@ -257,13 +260,15 @@ def search_items(query: str) -> str:
 
 # --------------- Gradio Interface ---------------
 
-_css = """
-* { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important; }
-.result-box { max-height: 700px; overflow-y: auto; }
-h3 { margin-top: 0.5em !important; }
-"""
-
-with gr.Blocks(title="LexiMind") as demo:
+with gr.Blocks(
+    title="LexiMind",
+    theme=gr.themes.Soft(),
+    css="""
+    * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important; }
+    .result-box { max-height: 700px; overflow-y: auto; }
+    h3 { margin-top: 0.5em !important; }
+    """,
+) as demo:
     gr.Markdown(
         """
         # LexiMind
@@ -453,4 +458,4 @@ with gr.Blocks(title="LexiMind") as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860, theme=gr.themes.Soft(), css=_css)
+    demo.launch(server_name="0.0.0.0", server_port=7860)
