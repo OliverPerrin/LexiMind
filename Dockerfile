@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-# Force rebuild: 2026-02-20-v1
+# Force rebuild: 2026-03-10-v1
 WORKDIR /app
 
 # Install system dependencies
@@ -9,16 +9,13 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 # Copy only requirements first (for better caching)
 COPY requirements-demo.txt .
 
-# Install CPU-only dependencies (fast, ~30s instead of ~3min)
+# Install dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements-demo.txt
 
-# Copy source code
-COPY src/ src/
+# Copy source code (demo only needs the gradio script and artifacts)
 COPY scripts/demo_gradio.py scripts/
-COPY configs/ configs/
 COPY artifacts/ artifacts/
-COPY checkpoints/ checkpoints/
 
 # Copy evaluation metrics if available (demo handles absence gracefully)
 RUN mkdir -p outputs
