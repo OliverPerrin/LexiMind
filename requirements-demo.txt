@@ -1,12 +1,6 @@
 # Minimal requirements for HuggingFace Spaces demo
-# The demo only loads a pre-computed dataset from HF Hub and renders it with Gradio.
-# No model inference, no torch, no transformers needed.
+# The demo loads a pre-computed JSONL dataset and renders it with Gradio.
+# No model inference, no torch, no heavy data libraries needed.
 
 # Web interface
 gradio>=4.44.0,<6.0
-
-# Data loading from HuggingFace Hub
-datasets>=2.14.0
-
-# HuggingFace Hub (for downloading dataset)
-huggingface-hub>=0.25.0

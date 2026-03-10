@@ -13,8 +13,9 @@ COPY requirements-demo.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements-demo.txt
 
-# Copy source code (demo only needs the gradio script and artifacts)
+# Copy source code (demo only needs the gradio script, data, and artifacts)
 COPY scripts/demo_gradio.py scripts/
+COPY data/discovery_dataset.jsonl data/
 COPY artifacts/ artifacts/
 
 # Copy evaluation metrics if available (demo handles absence gracefully)

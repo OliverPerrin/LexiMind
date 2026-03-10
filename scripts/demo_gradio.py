@@ -20,18 +20,32 @@ from typing import Any
 warnings.filterwarnings("ignore", message=".*parameter in the Blocks constructor will be removed.*")
 
 import gradio as gr
-from datasets import Dataset, load_dataset
 
-# --------------- Load Dataset from HuggingFace Hub ---------------
+# --------------- Load Dataset ---------------
 
-print("Loading discovery dataset from HuggingFace Hub...")
-_hf_token = os.environ.get("HF_TOKEN")
-_dataset: Dataset = load_dataset("OliverPerrin/LexiMind-Discovery", split="train", token=_hf_token)  # type: ignore[assignment]
-print(f"Loaded {len(_dataset)} items")
+_DATA_PATHS = [
+    Path(__file__).parent.parent / "data" / "discovery_dataset.jsonl",
+    Path("data") / "discovery_dataset.jsonl",
+]
 
-# Convert to list of dicts, excluding social media posts
+
+def _load_jsonl() -> list[dict[str, Any]]:
+    for p in _DATA_PATHS:
+        if p.exists():
+            print(f"Loading discovery dataset from {p}...")
+            with open(p) as f:
+                return [json.loads(line) for line in f if line.strip()]
+    raise FileNotFoundError(
+        f"Discovery dataset not found. Looked in: {[str(p) for p in _DATA_PATHS]}"
+    )
+
+
+_raw_items = _load_jsonl()
+print(f"Loaded {len(_raw_items)} items")
+
+# Exclude social media posts
 ALL_ITEMS: list[dict[str, Any]] = [
-    dict(row) for row in _dataset if row.get("source_type") != "social"
+    item for item in _raw_items if item.get("source_type") != "social"
 ]
 
 # Extract unique topics and emotions from the dataset (what model predicted)
