@@ -11,7 +11,6 @@ Date: 2026-01-14
 from __future__ import annotations
 
 import json
-import os
 import re
 import warnings
 from pathlib import Path
@@ -160,8 +159,7 @@ def _format_book_card(item: dict) -> str:
     # Show AI summary in expandable section if both exist
     if gen_summary and ref_summary:
         card += (
-            f"<details>\n<summary>AI-Generated Summary</summary>"
-            f"\n\n{gen_summary}\n\n</details>\n\n"
+            f"<details>\n<summary>AI-Generated Summary</summary>\n\n{gen_summary}\n\n</details>\n\n"
         )
 
     card += "---\n\n"
