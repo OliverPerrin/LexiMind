@@ -24,6 +24,7 @@ from typing import Dict
 
 import hydra
 import torch
+import torch._functorch.config
 from omegaconf import DictConfig, OmegaConf
 
 # Setup path
@@ -43,6 +44,7 @@ from src.data.dataset import (
     load_emotion_jsonl,
     load_summarization_jsonl,
     load_topic_jsonl,
+    split_emotion_val,
 )
 from src.data.tokenization import Tokenizer, TokenizerConfig
 from src.models.factory import ModelConfig, build_multitask_model
@@ -112,6 +114,19 @@ def main(cfg: DictConfig) -> None:
     emot_splits = load_splits(Path(data_cfg.processed.emotion), load_emotion_jsonl)
     topic_splits = load_splits(Path(data_cfg.processed.topic), load_topic_jsonl)
 
+    # Reserve half of the emotion val split for per-class threshold calibration at
+    # evaluation time. Early stopping only sees the model-selection half, so the
+    # threshold sweep in scripts/evaluate.py operates on samples that never drove
+    # checkpoint selection. The split is seeded and matches the one applied in
+    # evaluate.py so the two sides agree on which samples are which.
+    if "val" in emot_splits and emot_splits["val"]:
+        emot_model_sel, emot_calib = split_emotion_val(emot_splits["val"])
+        emot_splits["val"] = emot_model_sel
+        print(
+            f"  Emotion val split: {len(emot_model_sel)} model-selection / "
+            f"{len(emot_calib)} held out for threshold calibration"
+        )
+
     # Apply sample limits for dev runs
     max_train = trainer_cfg.get("max_train_samples")
     max_val = trainer_cfg.get("max_val_samples")
@@ -170,6 +185,10 @@ def main(cfg: DictConfig) -> None:
     # This speeds up emotion/topic forward passes significantly
     classification_max_len = min(256, max_len)
 
+    # Tasks to train (filter for single-task baselines).
+    enabled_tasks = list(trainer_cfg.get("tasks", ["summarization", "emotion", "topic"]))
+    print(f"  Enabled tasks: {enabled_tasks}")
+
     train_loaders = {
         "summarization": build_summarization_dataloader(
             summ_train,
@@ -200,9 +219,10 @@ def main(cfg: DictConfig) -> None:
             pin_memory=True,
         ),
     }
+    train_loaders = {k: v for k, v in train_loaders.items() if k in enabled_tasks}
 
     val_loaders = {}
-    if summ_val:
+    if summ_val and "summarization" in enabled_tasks:
         val_loaders["summarization"] = build_summarization_dataloader(
             summ_val,
             tokenizer,
@@ -213,7 +233,7 @@ def main(cfg: DictConfig) -> None:
             num_workers=num_workers,
             pin_memory=True,
         )
-    if emot_val:
+    if emot_val and "emotion" in enabled_tasks:
         val_loaders["emotion"] = build_emotion_dataloader(
             emot_val,
             tokenizer,
@@ -223,7 +243,7 @@ def main(cfg: DictConfig) -> None:
             num_workers=num_workers,
             pin_memory=True,
         )
-    if topic_val:
+    if topic_val and "topic" in enabled_tasks:
         val_loaders["topic"] = build_topic_dataloader(
             topic_val,
             tokenizer,
@@ -304,20 +324,46 @@ def main(cfg: DictConfig) -> None:
         load_state(model, str(resume_path))
         import re
 
-        digits = re.findall(r"\d+", Path(resume_path).stem)
-        if digits:
-            start_epoch = int(digits[-1]) + 1
+        # Prefer explicit epoch metadata (written alongside last.pt); fall back
+        # to parsing digits from legacy epoch_N.pt filenames.
+        epoch_meta = Path(resume_path).parent / "last_epoch.json"
+        if epoch_meta.exists():
+            try:
+                with epoch_meta.open() as f:
+                    start_epoch = int(json.load(f)["epoch"]) + 1
+            except Exception:
+                pass
+        else:
+            digits = re.findall(r"\d+", Path(resume_path).stem)
+            if digits:
+                start_epoch = int(digits[-1]) + 1
 
     # Compile model for speed
     # Note: "reduce-overhead" mode uses CUDA graphs which conflicts with gradient checkpointing
     # Use "default" mode when checkpointing is enabled
+    use_pcgrad = bool(trainer_cfg.get("use_pcgrad", False))
+    if use_pcgrad:
+        # PCGrad needs retain_graph=True for multiple backward passes, which is
+        # incompatible with torch.compile's donated buffer optimization
+        torch._functorch.config.donated_buffer = False
+        print("  Donated buffer disabled (required for PCGrad + torch.compile)")
+
+    # dynamic=True produces a single symbolic-shape graph so dynamic padding
+    # ("longest" + pad_to_multiple_of=8 in the collators) doesn't trigger
+    # recompilation on every new batch length. "reduce-overhead" with
+    # dynamic shapes is not supported, so we only use dynamic under "default".
     compile_mode = "default" if grad_ckpt else "reduce-overhead"
+    compile_dynamic = compile_mode == "default"
     if cfg.training.get("compile_encoder", True):
-        model.encoder = torch.compile(model.encoder, mode=compile_mode)  # type: ignore[assignment]
-        print(f"  Encoder compiled ({compile_mode})")
+        model.encoder = torch.compile(  # type: ignore[assignment]
+            model.encoder, mode=compile_mode, dynamic=compile_dynamic
+        )
+        print(f"  Encoder compiled ({compile_mode}, dynamic={compile_dynamic})")
     if cfg.training.get("compile_decoder", True):
-        model.decoder = torch.compile(model.decoder, mode=compile_mode)  # type: ignore[assignment]
-        print(f"  Decoder compiled ({compile_mode})")
+        model.decoder = torch.compile(  # type: ignore[assignment]
+            model.decoder, mode=compile_mode, dynamic=compile_dynamic
+        )
+        print(f"  Decoder compiled ({compile_mode}, dynamic={compile_dynamic})")
 
     # --------------- Train ---------------
 
@@ -351,6 +397,7 @@ def main(cfg: DictConfig) -> None:
             task_sampling=str(trainer_cfg.get("task_sampling", "temperature")),
             task_sampling_alpha=float(trainer_cfg.get("task_sampling_alpha", 0.5)),
             gradient_conflict_frequency=int(trainer_cfg.get("gradient_conflict_frequency", 0)),
+            use_pcgrad=bool(trainer_cfg.get("use_pcgrad", False)),
         ),
         device=device,
         tokenizer=tokenizer,
@@ -364,10 +411,10 @@ def main(cfg: DictConfig) -> None:
         nonlocal best_val_loss
         ckpt_dir.mkdir(parents=True, exist_ok=True)
 
-        # Save epoch checkpoint
-        save_state(model, str(ckpt_dir / f"epoch_{epoch}.pt"))
+        save_state(model, str(ckpt_dir / "last.pt"))
+        with (ckpt_dir / "last_epoch.json").open("w") as f:
+            json.dump({"epoch": epoch}, f)
 
-        # Track best
         val_key = f"val_epoch_{epoch}"
         if val_key in history:
             val_loss = history[val_key].get("total_loss", float("inf"))

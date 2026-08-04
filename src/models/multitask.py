@@ -168,11 +168,6 @@ class MultiTaskModel(nn.Module):
                     "inputs must contain 'src_ids' or 'src_embeddings' for seq2seq tasks"
                 )
 
-            # Clone memory to prevent CUDA Graph buffer overwrites when passing between compiled graphs
-            # This fixes "accessing tensor output of CUDAGraphs that has been overwritten" error
-            if isinstance(memory, torch.Tensor):
-                memory = memory.clone()
-
             # If training / teacher forcing: expect tgt_ids (shifted by caller) or embeddings
             if "tgt_ids" in inputs:
                 decoder_inputs = inputs["tgt_ids"]
@@ -187,14 +182,7 @@ class MultiTaskModel(nn.Module):
 
             decoder_out = self.decoder(decoder_inputs, memory, memory_mask=src_mask)
 
-            if self.decoder_outputs_logits:
-                if not isinstance(decoder_out, torch.Tensor):
-                    raise TypeError(
-                        "Decoder is configured to return logits, but forward returned a non-tensor value."
-                    )
-                logits = decoder_out
-            else:
-                logits = head(decoder_out)
+            logits = decoder_out if self.decoder_outputs_logits else head(decoder_out)
 
             if return_loss:
                 labels = inputs.get("labels", None)
@@ -214,41 +202,15 @@ class MultiTaskModel(nn.Module):
         labels: torch.Tensor,
         ignore_index: int = -100,
     ) -> torch.Tensor:
-        """
-        Default loss dispatch:
-         - ClassificationHead: CrossEntropy on (B, num_labels)
-         - TokenClassificationHead: CrossEntropy per token (flattened)
-         - LMHead: CrossEntropy per token (flattened), ignore_index supported
-
-        Returns scalar loss.
-        """
+        """CrossEntropy dispatch. Token/LM heads flatten (B,T,*) -> (B*T,*) and honour ignore_index."""
         if isinstance(head, ClassificationHead):
-            # logits: (B, num_labels) or (B, num_labels) direct
-            loss = F.cross_entropy(logits, labels.long())
-            return loss
-
-        if isinstance(head, TokenClassificationHead):
-            # logits: (B, T, C), labels: (B, T)
-            B, T, C = logits.shape
-            loss = F.cross_entropy(
-                logits.view(B * T, C), labels.view(B * T).long(), ignore_index=ignore_index
-            )
-            return loss
-
-        if isinstance(head, LMHead):
-            # logits: (B, T, V), labels: (B, T)
-            B, T, V = logits.shape
-            loss = F.cross_entropy(
-                logits.view(B * T, V), labels.view(B * T).long(), ignore_index=ignore_index
-            )
-            return loss
-
-        # Generic fall-back: try CrossEntropy on final dim
-        if logits.dim() == 2:
             return F.cross_entropy(logits, labels.long())
-
-        # If we can't determine, raise
-        raise RuntimeError("Cannot compute loss for unknown head type")
+        # TokenClassificationHead and LMHead: per-token CE with ignore_index.
+        return F.cross_entropy(
+            logits.view(-1, logits.size(-1)),
+            labels.view(-1).long(),
+            ignore_index=ignore_index,
+        )
 
     @staticmethod
     def _expand_attention_mask(mask: torch.Tensor, device: torch.device) -> torch.Tensor:

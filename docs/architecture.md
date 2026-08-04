@@ -79,7 +79,7 @@ The decoder is exclusive to summarization. Classification tasks only use the enc
 - **AttentionPooling**: A single linear layer (`nn.Linear(768, 1, bias=False)`) serves as a learned query. It computes softmax attention weights over all encoder positions, producing a weighted sum. This allows the model to focus on emotionally salient tokens (e.g., "grateful", "hilarious") rather than averaging the entire 512-token sequence. Padding is masked before softmax.
 - **2-layer MLP**: 768 → 384 (GELU) → 28. The hidden layer provides nonlinear feature transformation before the 28-way multi-label output.
 - **Loss**: BCEWithLogitsLoss (binary cross-entropy per class)
-- **Inference threshold**: 0.3 (lowered from default 0.5 because 28-class multi-label predictions have lower per-class confidence)
+- **Inference threshold**: 0.5 (default in `InferenceConfig`). Training validation uses 0.3 via the trainer's built-in evaluation loop; the final evaluation results in this document were produced at threshold 0.3 unless otherwise noted (see "Per-Class Threshold Tuning" below for tuned thresholds).
 
 #### Topic Head (Mean Pooling + Linear)
 
@@ -242,11 +242,13 @@ Training metrics (losses, accuracy, F1, ROUGE, learning rate) are logged to MLfl
 For multi-label classification, different emotion classes have very different base rates and prediction confidence. The tuning procedure:
 
 1. For each of the 28 emotion classes independently
-2. Sweep threshold tau in {0.1, 0.2, ..., 0.9}
+2. Sweep threshold tau in {0.10, 0.15, 0.20, ..., 0.85} (16 candidates, step 0.05)
 3. Select the threshold that maximizes per-class F1 on the validation set
 4. Re-compute all metrics with the tuned thresholds
 
-This improved macro F1 from 0.143 (default 0.5 threshold) to 0.294.
+**Caveat**: Thresholds are tuned on the same validation set used for early stopping and model selection, which means the tuned F1 numbers are optimistically biased. The degree of bias depends on the number of threshold candidates (16 per class in our case) and per-class sample sizes. For rigorous evaluation, thresholds should be tuned on a held-out calibration set separate from both the validation set (used for model selection) and the test set (used for final reporting). Our reported tuned metrics should be treated as upper bounds; true generalization performance with these thresholds is likely 2-5% lower.
+
+This improved macro F1 from 0.143 (default 0.5 threshold) to 0.294 on the validation set (optimistic estimate; see caveat above).
 
 ### BERTScore
 

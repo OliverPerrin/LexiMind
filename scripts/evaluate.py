@@ -38,6 +38,7 @@ from src.data.dataset import (
     load_emotion_jsonl,
     load_summarization_jsonl,
     load_topic_jsonl,
+    split_emotion_val,
 )
 from src.inference.factory import create_inference_pipeline
 from src.training.metrics import (
@@ -51,6 +52,61 @@ from src.training.metrics import (
     multilabel_per_class_metrics,
     tune_per_class_thresholds,
 )
+
+
+def _tune_thresholds_on_val(
+    pipeline,
+    val_path: Path,
+    max_samples: int | None = None,
+    batch_size: int = 32,
+) -> list[float]:
+    """Tune per-class emotion thresholds on the calibration half of the
+    validation split and return them.
+
+    ``split_emotion_val`` partitions the emotion val set into a
+    model-selection half (used for early stopping during training) and a
+    calibration half (used here). The thresholds are then applied frozen
+    to the held-out test set for unbiased evaluation, so no samples that
+    drove checkpoint selection are reused for threshold tuning.
+    """
+    full = load_emotion_jsonl(str(val_path))
+    _, data = split_emotion_val(full)
+    if max_samples:
+        data = data[:max_samples]
+    print(
+        f"  Tuning on {len(data)} calibration samples "
+        f"({len(full) - len(data)} held back for model selection)..."
+    )
+
+    all_emotions = sorted(pipeline.emotion_labels)
+    all_logits_list = []
+    all_refs = []
+
+    for i in tqdm(range(0, len(data), batch_size), desc="  Getting val logits"):
+        batch = data[i : i + batch_size]
+        texts = [ex.text for ex in batch]
+        refs = [set(ex.emotions) for ex in batch]
+        all_refs.extend(refs)
+
+        encoded = pipeline.tokenizer.batch_encode(texts)
+        input_ids = encoded["input_ids"].to(pipeline.device)
+        attention_mask = encoded["attention_mask"].to(pipeline.device)
+        with torch.inference_mode():
+            logits = pipeline.model.forward(
+                "emotion", {"input_ids": input_ids, "attention_mask": attention_mask}
+            )
+            all_logits_list.append(logits.cpu())
+
+    all_logits = torch.cat(all_logits_list, dim=0)
+    ref_binary = torch.tensor(
+        [[1 if e in es else 0 for e in all_emotions] for es in all_refs]
+    )
+
+    best_thresholds, val_macro_f1 = tune_per_class_thresholds(all_logits, ref_binary)
+    print(f"  Val-tuned macro F1 (on val): {val_macro_f1:.4f}")
+    print(f"  Thresholds: min={min(best_thresholds):.2f}, max={max(best_thresholds):.2f}, "
+          f"mean={sum(best_thresholds)/len(best_thresholds):.2f}")
+    return best_thresholds
 
 
 def evaluate_summarization(
@@ -215,11 +271,15 @@ def evaluate_emotion(
     batch_size: int = 32,
     tune_thresholds: bool = False,
     compute_bootstrap: bool = False,
+    frozen_thresholds: list[float] | None = None,
 ) -> dict:
     """Evaluate emotion detection with comprehensive multi-label metrics.
 
     Reports sample-averaged F1, macro F1, micro F1, and per-class breakdown.
     Optionally tunes per-class thresholds on the evaluation set.
+
+    If frozen_thresholds is provided, applies them without further tuning
+    (used for test-set evaluation with val-tuned thresholds).
     """
     print("\n" + "=" * 60)
     print("EMOTION DETECTION EVALUATION")
@@ -231,10 +291,11 @@ def evaluate_emotion(
         data = data[:max_samples]
     print(f"Evaluating on {len(data)} samples...")
 
-    # Get predictions - collect raw logits for threshold tuning
+    # Get predictions - collect raw logits for threshold tuning or frozen threshold application
     all_preds = []
     all_refs = []
     all_logits_list = []
+    need_logits = tune_thresholds or frozen_thresholds is not None
 
     for i in tqdm(range(0, len(data), batch_size), desc="Predicting emotions"):
         batch = data[i : i + batch_size]
@@ -247,8 +308,8 @@ def evaluate_emotion(
         all_preds.extend(pred_sets)
         all_refs.extend(refs)
 
-        # Also get raw logits for threshold tuning
-        if tune_thresholds:
+        # Collect raw logits for threshold tuning or frozen threshold application
+        if need_logits:
             encoded = pipeline.tokenizer.batch_encode(texts)
             input_ids = encoded["input_ids"].to(pipeline.device)
             attention_mask = encoded["attention_mask"].to(pipeline.device)
@@ -284,9 +345,9 @@ def evaluate_emotion(
         "per_class": per_class,
     }
 
-    # Per-class threshold tuning
+    # Per-class threshold tuning (on this split — only used for val evaluation)
     if tune_thresholds and all_logits_list:
-        print("\nTuning per-class thresholds...")
+        print("\nTuning per-class thresholds (on this split)...")
         all_logits = torch.cat(all_logits_list, dim=0)
         best_thresholds, tuned_macro_f1 = tune_per_class_thresholds(all_logits, ref_binary)
         metrics["tuned_thresholds"] = {
@@ -301,6 +362,32 @@ def evaluate_emotion(
             tuned_preds[:, c] = (probs[:, c] >= t).float()
         metrics["tuned_sample_avg_f1"] = multilabel_f1(tuned_preds, ref_binary)
         metrics["tuned_micro_f1"] = multilabel_micro_f1(tuned_preds, ref_binary)
+
+    # Apply frozen thresholds from val set (for unbiased test-set evaluation)
+    if frozen_thresholds is not None and all_logits_list:
+        print("\nApplying frozen val-tuned thresholds to this split...")
+        all_logits = torch.cat(all_logits_list, dim=0)
+        probs = torch.sigmoid(all_logits)
+        frozen_preds = torch.zeros_like(probs)
+        for c, t in enumerate(frozen_thresholds):
+            frozen_preds[:, c] = (probs[:, c] >= t).float()
+
+        frozen_macro_f1 = multilabel_macro_f1(frozen_preds, ref_binary)
+        frozen_sample_f1 = multilabel_f1(frozen_preds, ref_binary)
+        frozen_micro_f1 = multilabel_micro_f1(frozen_preds, ref_binary)
+
+        metrics["frozen_tuned_thresholds"] = {
+            name: thresh for name, thresh in zip(all_emotions, frozen_thresholds, strict=True)
+        }
+        metrics["frozen_tuned_macro_f1"] = frozen_macro_f1
+        metrics["frozen_tuned_sample_avg_f1"] = frozen_sample_f1
+        metrics["frozen_tuned_micro_f1"] = frozen_micro_f1
+
+        # Per-class metrics with frozen thresholds
+        frozen_per_class = multilabel_per_class_metrics(
+            frozen_preds, ref_binary, class_names=all_emotions
+        )
+        metrics["frozen_tuned_per_class"] = frozen_per_class
 
     # Bootstrap confidence intervals
     if compute_bootstrap:
@@ -329,10 +416,16 @@ def evaluate_emotion(
     print(f"  Num Classes:   {metrics['num_classes']}")
 
     if "tuned_macro_f1" in metrics:
-        print("\n  After per-class threshold tuning:")
+        print("\n  After per-class threshold tuning (same split — optimistic):")
         print(f"    Tuned Macro F1:      {metrics['tuned_macro_f1']:.4f}")
         print(f"    Tuned Sample-avg F1: {metrics['tuned_sample_avg_f1']:.4f}")
         print(f"    Tuned Micro F1:      {metrics['tuned_micro_f1']:.4f}")
+
+    if "frozen_tuned_macro_f1" in metrics:
+        print("\n  With frozen val-tuned thresholds (unbiased):")
+        print(f"    Macro F1:      {metrics['frozen_tuned_macro_f1']:.4f}")
+        print(f"    Sample-avg F1: {metrics['frozen_tuned_sample_avg_f1']:.4f}")
+        print(f"    Micro F1:      {metrics['frozen_tuned_micro_f1']:.4f}")
 
     if "sample_f1_ci" in metrics:
         ci = metrics["sample_f1_ci"]
@@ -438,6 +531,12 @@ def main():
     parser.add_argument(
         "--bootstrap", action="store_true", help="Compute bootstrap confidence intervals"
     )
+    parser.add_argument(
+        "--split",
+        choices=["val", "test"],
+        default="val",
+        help="Which data split to evaluate on (default: val)",
+    )
     parser.add_argument("--summarization-only", action="store_true")
     parser.add_argument("--emotion-only", action="store_true")
     parser.add_argument("--topic-only", action="store_true")
@@ -463,65 +562,91 @@ def main():
 
     results = {}
 
+    # Determine split file names
+    split_name = "test" if args.split == "test" else "validation"
+
+    def resolve_path(task: str, split: str) -> Path | None:
+        p = args.data_dir / task / f"{split}.jsonl"
+        if p.exists():
+            return p
+        if split == "validation":
+            p2 = args.data_dir / task / "val.jsonl"
+            if p2.exists():
+                return p2
+        return None
+
     # Determine which tasks to evaluate
     eval_all = not (args.summarization_only or args.emotion_only or args.topic_only)
 
     # Evaluate summarization
     if eval_all or args.summarization_only:
-        val_path = args.data_dir / "summarization" / "validation.jsonl"
-        if not val_path.exists():
-            val_path = args.data_dir / "summarization" / "val.jsonl"
-        if val_path.exists():
+        data_path = resolve_path("summarization", split_name)
+        if data_path:
             results["summarization"] = evaluate_summarization(
                 pipeline,
-                val_path,
+                data_path,
                 max_samples=args.max_samples,
                 include_bertscore=args.include_bertscore,
                 compute_bootstrap=args.bootstrap,
             )
         else:
-            print("Warning: summarization validation data not found, skipping")
+            print(f"Warning: summarization {split_name} data not found, skipping")
 
     # Evaluate emotion
     if eval_all or args.emotion_only:
-        val_path = args.data_dir / "emotion" / "validation.jsonl"
-        if not val_path.exists():
-            val_path = args.data_dir / "emotion" / "val.jsonl"
-        if val_path.exists():
+        data_path = resolve_path("emotion", split_name)
+        if data_path:
+            # When evaluating on test split with threshold tuning, tune on val
+            # and apply frozen thresholds to test (proper three-way split)
+            val_tuned_thresholds = None
+            if args.tune_thresholds and args.split == "test":
+                val_path = resolve_path("emotion", "validation")
+                if val_path:
+                    print("\n>>> Tuning per-class thresholds on VALIDATION set...")
+                    val_tuned_thresholds = _tune_thresholds_on_val(
+                        pipeline, val_path, args.max_samples
+                    )
+                    print(">>> Will apply frozen val-tuned thresholds to TEST set.\n")
+
             results["emotion"] = evaluate_emotion(
                 pipeline,
-                val_path,
+                data_path,
                 max_samples=args.max_samples,
-                tune_thresholds=args.tune_thresholds,
+                tune_thresholds=args.tune_thresholds if args.split == "val" else False,
                 compute_bootstrap=args.bootstrap,
+                frozen_thresholds=val_tuned_thresholds,
             )
         else:
-            print("Warning: emotion validation data not found, skipping")
+            print(f"Warning: emotion {split_name} data not found, skipping")
 
     # Evaluate topic
     if eval_all or args.topic_only:
-        val_path = args.data_dir / "topic" / "validation.jsonl"
-        if not val_path.exists():
-            val_path = args.data_dir / "topic" / "val.jsonl"
-        if val_path.exists():
+        data_path = resolve_path("topic", split_name)
+        if data_path:
             results["topic"] = evaluate_topic(
                 pipeline,
-                val_path,
+                data_path,
                 max_samples=args.max_samples,
                 compute_bootstrap=args.bootstrap,
             )
         else:
-            print("Warning: topic validation data not found, skipping")
+            print(f"Warning: topic {split_name} data not found, skipping")
 
     # Save results
     print("\n" + "=" * 60)
     print("SAVING RESULTS")
     print("=" * 60)
 
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    with open(args.output, "w") as f:
+    # Append split name to output path for clarity
+    output_path = args.output
+    if args.split == "test" and str(output_path).endswith("evaluation_report.json"):
+        output_path = output_path.parent / "evaluation_report_test.json"
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    results["_meta"] = {"split": args.split, "checkpoint": str(args.checkpoint)}
+    with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
-    print(f"  Saved to: {args.output}")
+    print(f"  Saved to: {output_path}")
 
     # Final summary
     elapsed = time.perf_counter() - start_time

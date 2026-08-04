@@ -2,10 +2,9 @@
 # Data is downloaded via: python scripts/download_data.py
 
 processed:
-  summarization: data/processed/summarization  # BookSum + arXiv
+  summarization: data/processed/summarization  # Goodreads descriptions (literary) + arXiv abstracts (academic)
   emotion: data/processed/emotion              # GoEmotions (28 labels)
-  topic: data/processed/topic                  # Books + Papers (7 labels)
-  books: data/processed/books                  # Gutenberg prose chunks
+  topic: data/processed/topic                  # Hand-curated Gutenberg + arXiv (7 labels)
 
 tokenizer:
   pretrained_model_name: google/flan-t5-base

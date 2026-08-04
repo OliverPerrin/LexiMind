@@ -684,8 +684,15 @@ def evaluate_bert_model(
     config: BertBaselineConfig,
     emotion_classes: Optional[List[str]] = None,
     topic_classes: Optional[List[str]] = None,
+    frozen_thresholds: Optional[List[float]] = None,
 ) -> Dict[str, Any]:
-    """Full evaluation with the same metrics as LexiMind's evaluate.py."""
+    """Full evaluation with the same metrics as LexiMind's evaluate.py.
+
+    Args:
+        frozen_thresholds: If provided, apply these val-tuned thresholds to
+            emotion predictions instead of tuning on this split. This enables
+            proper three-way evaluation (train/val-for-tuning/test-for-reporting).
+    """
     model.eval()
     results: Dict[str, Any] = {}
 
@@ -709,7 +716,7 @@ def evaluate_bert_model(
             all_labels_t = torch.cat(all_labels, dim=0)
 
             if task == "emotion":
-                # Default threshold
+                # Default fixed threshold (τ=0.3)
                 preds_default = (torch.sigmoid(all_logits_t) > config.emotion_threshold).int()
                 targets = all_labels_t.int()
 
@@ -720,26 +727,52 @@ def evaluate_bert_model(
                     "micro_f1": multilabel_micro_f1(preds_default, targets),
                 }
 
-                # Per-class metrics
+                # Per-class metrics at default threshold
                 if emotion_classes:
                     per_class = multilabel_per_class_metrics(
                         preds_default, targets, emotion_classes
                     )
                     results["emotion"]["per_class"] = per_class
 
-                # Threshold tuning
-                best_thresholds, tuned_macro = tune_per_class_thresholds(all_logits_t, all_labels_t)
-                tuned_preds = torch.zeros_like(all_logits_t)
                 probs = torch.sigmoid(all_logits_t)
-                for c in range(all_logits_t.shape[1]):
-                    tuned_preds[:, c] = (probs[:, c] >= best_thresholds[c]).float()
-                tuned_preds = tuned_preds.int()
 
-                results["emotion"]["tuned_macro_f1"] = tuned_macro
-                results["emotion"]["tuned_sample_avg_f1"] = multilabel_f1(tuned_preds, targets)
-                results["emotion"]["tuned_micro_f1"] = multilabel_micro_f1(tuned_preds, targets)
+                if frozen_thresholds is not None:
+                    # Apply frozen val-tuned thresholds (unbiased test evaluation)
+                    frozen_preds = torch.zeros_like(all_logits_t)
+                    for c, t in enumerate(frozen_thresholds):
+                        frozen_preds[:, c] = (probs[:, c] >= t).float()
+                    frozen_preds = frozen_preds.int()
 
-                # Bootstrap CI on sample-avg F1
+                    results["emotion"]["frozen_tuned_macro_f1"] = multilabel_macro_f1(
+                        frozen_preds, targets
+                    )
+                    results["emotion"]["frozen_tuned_sample_avg_f1"] = multilabel_f1(
+                        frozen_preds, targets
+                    )
+                    results["emotion"]["frozen_tuned_micro_f1"] = multilabel_micro_f1(
+                        frozen_preds, targets
+                    )
+                else:
+                    # Tune thresholds on this split (only appropriate for val evaluation)
+                    best_thresholds, tuned_macro = tune_per_class_thresholds(
+                        all_logits_t, all_labels_t
+                    )
+                    tuned_preds = torch.zeros_like(all_logits_t)
+                    for c in range(all_logits_t.shape[1]):
+                        tuned_preds[:, c] = (probs[:, c] >= best_thresholds[c]).float()
+                    tuned_preds = tuned_preds.int()
+
+                    results["emotion"]["tuned_macro_f1"] = tuned_macro
+                    results["emotion"]["tuned_sample_avg_f1"] = multilabel_f1(
+                        tuned_preds, targets
+                    )
+                    results["emotion"]["tuned_micro_f1"] = multilabel_micro_f1(
+                        tuned_preds, targets
+                    )
+                    # Store thresholds so they can be frozen for test evaluation
+                    results["emotion"]["_tuned_thresholds"] = best_thresholds
+
+                # Bootstrap CI on sample-avg F1 (at default threshold)
                 per_sample_f1 = []
                 for i in range(preds_default.shape[0]):
                     p = preds_default[i].float()
@@ -803,23 +836,36 @@ def set_seed(seed: int) -> None:
         torch.cuda.manual_seed_all(seed)
 
 
-def load_data(config: BertBaselineConfig):
-    """Load all datasets and create label encoders."""
+def _resolve_split_path(data_dir: Path, task: str, split: str) -> Path:
+    """Resolve the file path for a given data split, handling naming variants."""
+    p = data_dir / task / f"{split}.jsonl"
+    if p.exists():
+        return p
+    if split == "validation":
+        p2 = data_dir / task / "val.jsonl"
+        if p2.exists():
+            return p2
+    raise FileNotFoundError(f"No {split} data found for {task} in {data_dir / task}")
+
+
+def load_data(config: BertBaselineConfig, eval_split: str = "validation"):
+    """Load all datasets and create label encoders.
+
+    Args:
+        config: Baseline configuration.
+        eval_split: Which split to use for evaluation ("validation" or "test").
+    """
     data_dir = config.data_dir
 
     # Load emotion data
     emo_train = load_emotion_jsonl(str(data_dir / "emotion" / "train.jsonl"))
-    emo_val_path = data_dir / "emotion" / "validation.jsonl"
-    if not emo_val_path.exists():
-        emo_val_path = data_dir / "emotion" / "val.jsonl"
-    emo_val = load_emotion_jsonl(str(emo_val_path))
+    emo_eval_path = _resolve_split_path(data_dir, "emotion", eval_split)
+    emo_eval = load_emotion_jsonl(str(emo_eval_path))
 
     # Load topic data
     top_train = load_topic_jsonl(str(data_dir / "topic" / "train.jsonl"))
-    top_val_path = data_dir / "topic" / "validation.jsonl"
-    if not top_val_path.exists():
-        top_val_path = data_dir / "topic" / "val.jsonl"
-    top_val = load_topic_jsonl(str(top_val_path))
+    top_eval_path = _resolve_split_path(data_dir, "topic", eval_split)
+    top_eval = load_topic_jsonl(str(top_eval_path))
 
     # Fit label encoders on training data (same as LexiMind)
     binarizer = MultiLabelBinarizer()
@@ -828,20 +874,21 @@ def load_data(config: BertBaselineConfig):
     label_encoder = LabelEncoder()
     label_encoder.fit([ex.topic for ex in top_train])
 
+    split_label = eval_split if eval_split != "validation" else "val"
     print(
-        f"  Emotion: {len(emo_train)} train, {len(emo_val)} val, {len(binarizer.classes_)} classes"
+        f"  Emotion: {len(emo_train)} train, {len(emo_eval)} {split_label}, {len(binarizer.classes_)} classes"
     )
     print(
-        f"  Topic:   {len(top_train)} train, {len(top_val)} val, {len(label_encoder.classes_)} classes"
+        f"  Topic:   {len(top_train)} train, {len(top_eval)} {split_label}, {len(label_encoder.classes_)} classes"
     )
     print(f"  Emotion classes: {list(binarizer.classes_)[:5]}...")
     print(f"  Topic classes:   {list(label_encoder.classes_)}")
 
     return {
         "emotion_train": emo_train,
-        "emotion_val": emo_val,
+        "emotion_val": emo_eval,
         "topic_train": top_train,
-        "topic_val": top_val,
+        "topic_val": top_eval,
         "binarizer": binarizer,
         "label_encoder": label_encoder,
     }
@@ -1082,6 +1129,18 @@ def main():
     parser.add_argument(
         "--model", type=str, default="bert-base-uncased", help="HuggingFace model name"
     )
+    parser.add_argument(
+        "--eval-split",
+        type=str,
+        choices=["val", "test"],
+        default="val",
+        help="Which split to evaluate on (default: val)",
+    )
+    parser.add_argument(
+        "--eval-only",
+        action="store_true",
+        help="Skip training, only evaluate existing checkpoints on the specified split",
+    )
     args = parser.parse_args()
 
     config = BertBaselineConfig()
@@ -1093,19 +1152,149 @@ def main():
     if args.batch_size is not None:
         config.batch_size = args.batch_size
 
+    eval_split = "validation" if args.eval_split == "val" else "test"
+
     if args.mode == "all":
         modes = ["single-topic", "single-emotion", "multitask"]
     else:
         modes = [args.mode]
 
     all_results: Dict[str, Dict[str, Any]] = {}
-    for mode in modes:
-        results = run_experiment(mode, config)
-        all_results[mode] = results
 
-        # Clear GPU memory between experiments
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+    if args.eval_only:
+        # Evaluate existing checkpoints on the specified split
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        set_seed(config.seed)
+        tokenizer = AutoTokenizer.from_pretrained(config.model_name)
+
+        # Load eval split data
+        data = load_data(config, eval_split=eval_split)
+
+        # For test-set evaluation with emotion, also load val data for threshold tuning
+        # (proper three-way split: train/val-for-tuning/test-for-reporting)
+        val_data = None
+        if eval_split == "test":
+            print("\n  Loading validation data for threshold tuning (three-way split)...")
+            val_data = load_data(config, eval_split="validation")
+
+        for mode in modes:
+            print(f"\n{'═' * 60}")
+            print(f"  BERT EVAL-ONLY: {mode.upper()} on {args.eval_split} set")
+            print(f"{'═' * 60}")
+
+            best_path = config.checkpoint_dir / mode / "best.pt"
+            if not best_path.exists():
+                print(f"  Skipping {mode}: no checkpoint at {best_path}")
+                continue
+
+            if mode == "single-topic":
+                tasks = ["topic"]
+            elif mode == "single-emotion":
+                tasks = ["emotion"]
+            else:
+                tasks = ["emotion", "topic"]
+
+            model = BertBaseline(
+                model_name=config.model_name,
+                num_emotions=len(data["binarizer"].classes_),
+                num_topics=len(data["label_encoder"].classes_),
+                tasks=tasks,
+                freeze_layers=config.freeze_layers,
+            ).to(device)
+
+            checkpoint = torch.load(best_path, map_location=device, weights_only=False)
+            model.load_state_dict(checkpoint["model_state_dict"])
+            print(f"  Loaded checkpoint: {best_path}")
+
+            # Tune thresholds on val set if evaluating on test (three-way split)
+            frozen_thresholds = None
+            if eval_split == "test" and "emotion" in tasks and val_data is not None:
+                print("\n  >>> Tuning per-class thresholds on VALIDATION set...")
+                val_emo_ds = BertEmotionDataset(
+                    val_data["emotion_val"], tokenizer, val_data["binarizer"], config.max_length
+                )
+                val_emo_loader = DataLoader(
+                    val_emo_ds, batch_size=config.batch_size * 2, shuffle=False, num_workers=4,
+                    pin_memory=True,
+                )
+                val_eval = evaluate_bert_model(
+                    model, {"emotion": val_emo_loader}, device, config,
+                    emotion_classes=list(val_data["binarizer"].classes_),
+                )
+                frozen_thresholds = val_eval.get("emotion", {}).get("_tuned_thresholds")
+                if frozen_thresholds:
+                    print(f"  >>> Val-tuned thresholds: min={min(frozen_thresholds):.2f}, "
+                          f"max={max(frozen_thresholds):.2f}, "
+                          f"mean={sum(frozen_thresholds)/len(frozen_thresholds):.2f}")
+                    print(f"  >>> Val tuned macro F1 (on val): "
+                          f"{val_eval['emotion'].get('tuned_macro_f1', 0):.4f}")
+                    print("  >>> Will apply frozen thresholds to TEST set.\n")
+
+            # Build eval dataloaders for the target split
+            eval_loaders: Dict[str, DataLoader] = {}
+            if "emotion" in tasks:
+                emo_ds = BertEmotionDataset(
+                    data["emotion_val"], tokenizer, data["binarizer"], config.max_length
+                )
+                eval_loaders["emotion"] = DataLoader(
+                    emo_ds, batch_size=config.batch_size * 2, shuffle=False, num_workers=4,
+                    pin_memory=True,
+                )
+            if "topic" in tasks:
+                top_ds = BertTopicDataset(
+                    data["topic_val"], tokenizer, data["label_encoder"], config.max_length
+                )
+                eval_loaders["topic"] = DataLoader(
+                    top_ds, batch_size=config.batch_size * 2, shuffle=False, num_workers=4,
+                    pin_memory=True,
+                )
+
+            eval_results = evaluate_bert_model(
+                model, eval_loaders, device, config,
+                emotion_classes=list(data["binarizer"].classes_) if "emotion" in tasks else None,
+                topic_classes=list(data["label_encoder"].classes_) if "topic" in tasks else None,
+                frozen_thresholds=frozen_thresholds,
+            )
+            all_results[mode] = {"evaluation": eval_results, "split": args.eval_split}
+
+            # Save per-mode results
+            output_path = config.output_dir / f"{mode}_results_{args.eval_split}.json"
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+
+            def make_serializable(obj):
+                if isinstance(obj, dict):
+                    return {k: make_serializable(v) for k, v in obj.items() if not k.startswith("_")}
+                if isinstance(obj, list):
+                    return [make_serializable(item) for item in obj]
+                if isinstance(obj, (np.integer, np.int64)):
+                    return int(obj)
+                if isinstance(obj, (np.floating, np.float64)):
+                    return float(obj)
+                if isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                return obj
+
+            with open(output_path, "w") as f:
+                json.dump(make_serializable(all_results[mode]), f, indent=2)
+            print(f"  Results saved to {output_path}")
+
+            # Print key metrics
+            for task, metrics in eval_results.items():
+                print(f"\n  {task.upper()} ({args.eval_split} set):")
+                for k, v in metrics.items():
+                    if isinstance(v, float):
+                        print(f"    {k}: {v:.4f}")
+
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+    else:
+        for mode in modes:
+            results = run_experiment(mode, config)
+            all_results[mode] = results
+
+            # Clear GPU memory between experiments
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
     # Save combined results
     if len(all_results) > 1:

@@ -53,9 +53,9 @@ results/
 *.ipynb
 
 # Docs/Paper
-docs/paper.*
+# docs/paper.*
 docs/paper_old.*
-docs/research_paper.*
+# docs/research_paper.*
 
 # OS - Windows specific
 .DS_Store

@@ -281,7 +281,12 @@ def plot_loss_curves(run, interactive: bool = False) -> None:
             )
 
         ax.legend(fontsize=11, loc="upper right", framealpha=0.9)
-        ax.set_ylim(bottom=0)
+
+        # Data-adaptive y-axis: tight around actual range so changes are visible
+        all_vals = list(train_values) + list(val_values or [])
+        y_min, y_max = min(all_vals), max(all_vals)
+        y_pad = (y_max - y_min) * 0.15 or 0.1
+        ax.set_ylim(y_min - y_pad, y_max + y_pad)
 
     ax.set_xlabel("Epoch")
     ax.set_ylabel("Loss")
@@ -1059,6 +1064,374 @@ def plot_training_dynamics(run) -> None:
     plt.close()
 
 
+# JSON-Based Data Loading (alternative to MLflow)
+
+
+def load_history_from_json(history_path: Path) -> dict:
+    """Load training history from a JSON file (as saved by train.py).
+
+    Returns a dict with keys like:
+        train_total_loss: [val_epoch1, val_epoch2, ...],
+        val_total_loss: [...],
+        val_topic_accuracy: [...],
+        etc.
+    """
+    with open(history_path) as f:
+        raw = json.load(f)
+
+    series: dict[str, list[float]] = {}
+    epochs: list[int] = []
+
+    for key in sorted(raw.keys()):
+        # Keys are like "train_epoch_1", "val_epoch_3"
+        parts = key.split("_epoch_")
+        if len(parts) != 2:
+            continue
+        split = parts[0]  # "train" or "val"
+        epoch = int(parts[1])
+        if split == "train" and epoch not in epochs:
+            epochs.append(epoch)
+
+        metrics = raw[key]
+        for metric_name, value in metrics.items():
+            if not isinstance(value, (int, float)):
+                continue
+            series_key = f"{split}_{metric_name}"
+            series.setdefault(series_key, []).append(float(value))
+
+    series["_epochs"] = [float(e) for e in epochs]
+    return series
+
+
+def plot_loss_curves_from_json(history_path: Path) -> None:
+    """Plot training/validation loss curves from a training_history.json file.
+
+    Uses data-adaptive y-axis and per-task breakdown for legibility.
+    """
+    data = load_history_from_json(history_path)
+    epochs = data.get("_epochs", [])
+    if not epochs:
+        logger.warning(f"No epoch data in {history_path}")
+        return
+
+    train_total = data.get("train_total_loss", [])
+    val_total = data.get("val_total_loss", [])
+
+    # --- Main figure: 2-row layout ---
+    # Top: total loss (large). Bottom: per-task breakdown (3 panels).
+    fig = plt.figure(figsize=(14, 10))
+    gs = fig.add_gridspec(2, 3, height_ratios=[1.2, 1], hspace=0.35, wspace=0.35)
+
+    # === Top panel: Total loss ===
+    ax_top = fig.add_subplot(gs[0, :])
+
+    if train_total:
+        ax_top.plot(
+            epochs[: len(train_total)],
+            train_total,
+            label="Training",
+            linewidth=2.5,
+            color=COLORS["primary"],
+            marker="o",
+            markersize=5,
+        )
+    if val_total:
+        val_epochs = epochs[: len(val_total)]
+        ax_top.plot(
+            val_epochs,
+            val_total,
+            label="Validation",
+            linewidth=2.5,
+            color=COLORS["secondary"],
+            marker="s",
+            markersize=5,
+        )
+        best_idx = int(np.argmin(val_total))
+        ax_top.scatter(
+            [val_epochs[best_idx]],
+            [val_total[best_idx]],
+            s=200,
+            c=COLORS["accent"],
+            zorder=5,
+            marker="*",
+            edgecolors="white",
+            linewidth=2,
+            label=f"Best: {val_total[best_idx]:.3f} (epoch {val_epochs[best_idx]})",
+        )
+
+    # Data-adaptive y-axis
+    all_vals = list(train_total) + list(val_total)
+    if all_vals:
+        y_min, y_max = min(all_vals), max(all_vals)
+        y_pad = (y_max - y_min) * 0.15 or 0.1
+        ax_top.set_ylim(y_min - y_pad, y_max + y_pad)
+
+    ax_top.set_xlabel("Epoch")
+    ax_top.set_ylabel("Total Loss")
+    ax_top.set_title("Multi-Task Training Progress")
+    ax_top.legend(fontsize=11, loc="upper right", framealpha=0.9)
+    ax_top.grid(True, alpha=0.3)
+    ax_top.set_xticks(epochs)
+
+    # === Bottom panels: per-task breakdown ===
+    task_configs = [
+        ("summarization", "Summarization Loss", COLORS["summary"], "loss"),
+        ("topic", "Topic Classification", COLORS["topic"], "accuracy"),
+        ("emotion", "Emotion Detection", COLORS["emotion"], "f1"),
+    ]
+
+    for col, (task, title, color, secondary_metric) in enumerate(task_configs):
+        ax = fig.add_subplot(gs[1, col])
+
+        train_loss = data.get(f"train_{task}_loss", [])
+        val_loss = data.get(f"val_{task}_loss", [])
+
+        if train_loss:
+            ax.plot(
+                epochs[: len(train_loss)],
+                train_loss,
+                label="Train",
+                linewidth=2,
+                color=color,
+                alpha=0.8,
+            )
+        if val_loss:
+            ax.plot(
+                epochs[: len(val_loss)],
+                val_loss,
+                label="Val",
+                linewidth=2,
+                color=COLORS["secondary"],
+                linestyle="--",
+            )
+
+        # Data-adaptive y-axis for each task
+        task_vals = list(train_loss) + list(val_loss)
+        if task_vals:
+            y_min, y_max = min(task_vals), max(task_vals)
+            y_pad = (y_max - y_min) * 0.15 or 0.01
+            ax.set_ylim(y_min - y_pad, y_max + y_pad)
+
+        ax.set_xlabel("Epoch")
+        ax.set_ylabel("Loss")
+        ax.set_title(title, fontsize=11)
+        ax.grid(True, alpha=0.3)
+        ax.set_xticks(epochs)
+
+        # Secondary metric on twin axis (rightmost panel only to avoid overlap)
+        sec_key = f"val_{task}_{secondary_metric}"
+        sec_data = data.get(sec_key, [])
+        if sec_data and secondary_metric != "loss" and col == 2:
+            ax2 = ax.twinx()
+            ax2.plot(
+                epochs[: len(sec_data)],
+                sec_data,
+                color=COLORS["accent"],
+                linewidth=1.8,
+                linestyle=":",
+                alpha=0.8,
+            )
+            label = "Accuracy" if secondary_metric == "accuracy" else "F1"
+            ax2.set_ylim(0, 1)
+            ax2.set_ylabel(label, color=COLORS["accent"], fontsize=9)
+            ax2.tick_params(axis="y", labelcolor=COLORS["accent"], labelsize=8)
+            lines1, labels1 = ax.get_legend_handles_labels()
+            lines2, labels2 = ax2.get_legend_handles_labels()
+            ax.legend(lines1 + lines2, labels1 + [label], fontsize=8, loc="best")
+        else:
+            ax.legend(fontsize=8, loc="best")
+
+    plt.savefig(OUTPUTS_DIR / "training_loss_curve.png")
+    logger.info(f"Saved loss curve to {OUTPUTS_DIR / 'training_loss_curve.png'}")
+    plt.close()
+
+
+# Multi-Seed Visualization
+
+
+def plot_multiseed_curves(multiseed_dir: Path) -> None:
+    """Plot training curves across multiple seeds with mean +/- std bands.
+
+    Reads from outputs/multiseed/seed_*/training_history.json.
+    Generates:
+      - multiseed_loss_curves.png: total loss with per-seed lines + mean/std band
+      - multiseed_task_metrics.png: per-task metrics across seeds
+    """
+    seed_dirs = sorted(multiseed_dir.glob("seed_*"))
+    if not seed_dirs:
+        logger.warning(f"No seed directories found in {multiseed_dir}")
+        return
+
+    # Load all histories
+    all_data: dict[str, dict[str, list[float]]] = {}
+    for sd in seed_dirs:
+        hp = sd / "training_history.json"
+        if hp.exists():
+            seed_name = sd.name
+            all_data[seed_name] = load_history_from_json(hp)
+            logger.info(f"  Loaded {seed_name}")
+
+    if not all_data:
+        logger.warning("No training_history.json files found in seed directories")
+        return
+
+    n_seeds = len(all_data)
+    seed_names = list(all_data.keys())
+
+    # Determine shared epoch range
+    ref_epochs = all_data[seed_names[0]].get("_epochs", [])
+    n_epochs = min(len(d.get("_epochs", [])) for d in all_data.values())
+    epochs = ref_epochs[:n_epochs]
+
+    if not epochs:
+        logger.warning("No epoch data found")
+        return
+
+    # ---- Figure 1: Total loss with mean +/- std ----
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+
+    for split_idx, (split, title) in enumerate([("train", "Training"), ("val", "Validation")]):
+        ax = axes[split_idx]
+        key = f"{split}_total_loss"
+
+        # Collect per-seed curves
+        curves = []
+        for seed_name, data in all_data.items():
+            vals = data.get(key, [])[:n_epochs]
+            if len(vals) == n_epochs:
+                curves.append(vals)
+                # Individual seed lines (thin, transparent)
+                ax.plot(
+                    epochs,
+                    vals,
+                    linewidth=1,
+                    alpha=0.3,
+                    color=COLORS["primary"],
+                )
+
+        if curves:
+            arr = np.array(curves)
+            mean = arr.mean(axis=0)
+            std = arr.std(axis=0)
+
+            # Mean line (bold)
+            ax.plot(
+                epochs,
+                mean,
+                linewidth=2.5,
+                color=COLORS["primary"],
+                label=f"Mean ({n_seeds} seeds)",
+                marker="o",
+                markersize=4,
+            )
+            # Std band
+            ax.fill_between(
+                epochs,
+                mean - std,
+                mean + std,
+                alpha=0.25,
+                color=COLORS["primary"],
+                label=f"\u00b11 std",
+            )
+
+            # Data-adaptive y-axis
+            y_min = float((mean - std).min())
+            y_max = float((mean + std).max())
+            y_pad = (y_max - y_min) * 0.15 or 0.1
+            ax.set_ylim(y_min - y_pad, y_max + y_pad)
+
+        ax.set_xlabel("Epoch")
+        ax.set_ylabel("Total Loss")
+        ax.set_title(f"{title} Loss")
+        ax.legend(fontsize=10)
+        ax.grid(True, alpha=0.3)
+        ax.set_xticks(epochs)
+
+    fig.suptitle(
+        f"Multi-Seed Training Progress ({n_seeds} seeds)",
+        fontsize=14,
+        fontweight="bold",
+        y=1.02,
+    )
+    plt.tight_layout()
+    output_path = OUTPUTS_DIR / "multiseed_loss_curves.png"
+    plt.savefig(output_path)
+    logger.info(f"Saved multi-seed loss curves to {output_path}")
+    plt.close()
+
+    # ---- Figure 2: Per-task metrics across seeds ----
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+
+    task_configs = [
+        ("summarization", "Summarization", "val_summarization_loss", "Loss", COLORS["summary"]),
+        ("topic", "Topic Classification", "val_topic_accuracy", "Accuracy", COLORS["topic"]),
+        ("emotion", "Emotion Detection", "val_emotion_f1", "F1 Score", COLORS["emotion"]),
+    ]
+
+    for col, (task, title, metric_key, y_label, color) in enumerate(task_configs):
+        ax = axes[col]
+
+        curves = []
+        for seed_name, data in all_data.items():
+            vals = data.get(metric_key, [])[:n_epochs]
+            if len(vals) == n_epochs:
+                curves.append(vals)
+                ax.plot(epochs, vals, linewidth=1, alpha=0.3, color=color)
+
+        if curves:
+            arr = np.array(curves)
+            mean = arr.mean(axis=0)
+            std = arr.std(axis=0)
+
+            ax.plot(
+                epochs,
+                mean,
+                linewidth=2.5,
+                color=color,
+                label=f"Mean \u00b1 std",
+                marker="o",
+                markersize=4,
+            )
+            ax.fill_between(epochs, mean - std, mean + std, alpha=0.25, color=color)
+
+            # Annotate final value
+            ax.annotate(
+                f"{mean[-1]:.3f} \u00b1 {std[-1]:.3f}",
+                xy=(epochs[-1], mean[-1]),
+                xytext=(-15, 15),
+                textcoords="offset points",
+                fontsize=9,
+                fontweight="bold",
+                color=color,
+                bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor=color, alpha=0.8),
+            )
+
+            # Data-adaptive y-axis
+            y_min = float((mean - std).min())
+            y_max = float((mean + std).max())
+            y_pad = (y_max - y_min) * 0.15 or 0.01
+            ax.set_ylim(y_min - y_pad, y_max + y_pad)
+
+        ax.set_xlabel("Epoch")
+        ax.set_ylabel(y_label)
+        ax.set_title(title, fontsize=12)
+        ax.legend(fontsize=9)
+        ax.grid(True, alpha=0.3)
+        ax.set_xticks(epochs)
+
+    fig.suptitle(
+        f"Per-Task Metrics Across Seeds ({n_seeds} seeds)",
+        fontsize=14,
+        fontweight="bold",
+        y=1.02,
+    )
+    plt.tight_layout()
+    output_path = OUTPUTS_DIR / "multiseed_task_metrics.png"
+    plt.savefig(output_path)
+    logger.info(f"Saved multi-seed task metrics to {output_path}")
+    plt.close()
+
+
 # Dashboard Generator
 
 
@@ -1173,24 +1546,85 @@ def main():
     )
     parser.add_argument("--dashboard", action="store_true", help="Generate interactive dashboard")
     parser.add_argument("--all", action="store_true", help="Generate all visualizations")
+    parser.add_argument(
+        "--history",
+        type=Path,
+        default=None,
+        help="Path to training_history.json (bypasses MLflow). "
+        "Auto-detects outputs/training_history.json if MLflow is unavailable.",
+    )
+    parser.add_argument(
+        "--multiseed-dir",
+        type=Path,
+        default=None,
+        help="Path to multi-seed output directory (e.g., outputs/multiseed). "
+        "Generates mean ± std visualizations across seeds.",
+    )
     args = parser.parse_args()
 
     logger.info("=" * 60)
     logger.info("LexiMind Visualization Suite")
     logger.info("=" * 60)
     logger.info("")
+
+    OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    # --- Multi-seed mode ---
+    if args.multiseed_dir:
+        logger.info(f"Multi-seed mode: {args.multiseed_dir}")
+        logger.info("")
+        plot_multiseed_curves(args.multiseed_dir)
+        logger.info("")
+        logger.info("=" * 60)
+        logger.info("Multi-seed visualizations saved to outputs/")
+        logger.info("  • multiseed_loss_curves.png")
+        logger.info("  • multiseed_task_metrics.png")
+        logger.info("=" * 60)
+        return
+
+    # --- JSON history mode (no MLflow needed) ---
+    history_path = args.history
+    if history_path is None:
+        # Auto-detect
+        default_path = OUTPUTS_DIR / "training_history.json"
+        if default_path.exists():
+            history_path = default_path
+
+    if history_path and history_path.exists():
+        logger.info(f"Loading from JSON: {history_path}")
+        logger.info("")
+        plot_loss_curves_from_json(history_path)
+        logger.info("")
+        logger.info("=" * 60)
+        logger.info("Visualizations saved to outputs/")
+        logger.info("  • training_loss_curve.png")
+        logger.info("=" * 60)
+
+        # Fall through to MLflow for additional plots if available
+        try:
+            run = get_latest_run()
+        except Exception:
+            run = None
+
+        if run:
+            logger.info("")
+            logger.info("Also generating MLflow-based plots...")
+            plot_task_metrics(run, interactive=args.interactive)
+            plot_learning_rate(run)
+            plot_training_dynamics(run)
+        return
+
+    # --- MLflow mode (original behavior) ---
     logger.info("Loading MLflow data...")
 
     run = get_latest_run()
     if not run:
         logger.error("No training run found. Make sure training has started.")
-        logger.info("Run `python scripts/train.py` first")
+        logger.info("Run `python scripts/train.py` first, or use --history <path>")
         return
 
     logger.info(f"Analyzing run: {run.info.run_id[:8]}...")
     logger.info("")
-
-    OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
     logger.info("Generating visualizations...")
     logger.info("")

@@ -1,0 +1,20 @@
+# Single-Task Topic Baseline
+# Inherits everything from full.yaml; only topic classification is enabled.
+# Used to measure MTL gain/loss vs single-task baseline (Train-Short-Infer-Long paper).
+# Use: python scripts/train.py training=single_topic
+#
+# Note on training schedule: topic dataset is small (3.4K samples → ~71 opt steps/epoch),
+# so 8 epochs = ~568 total steps. Warmup is shrunk from 350 → 30 to keep ratio at ~5%
+# (otherwise warmup would dominate the cosine schedule).
+
+defaults:
+  - full
+  - _self_
+
+scheduler:
+  warmup_steps: 30
+
+trainer:
+  tasks: [topic]
+  task_weights:
+    topic: 1.0  # No competition with other tasks; weight back to 1.0 (was 0.3 in MTL).

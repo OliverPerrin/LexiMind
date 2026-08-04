@@ -118,14 +118,20 @@ class Tokenizer:
         return cast(List[List[int]], encoded["input_ids"])
 
     def batch_encode(
-        self, texts: Sequence[str], *, max_length: int | None = None
+        self,
+        texts: Sequence[str],
+        *,
+        max_length: int | None = None,
+        padding: str | None = None,
+        pad_to_multiple_of: int | None = None,
     ) -> dict[str, torch.Tensor]:
         normalized = [text.lower() if self.config.lower else text for text in texts]
         encoded = self._tokenizer(
             normalized,
-            padding=self.config.padding,
+            padding=padding if padding is not None else self.config.padding,
             truncation=self.config.truncation,
             max_length=max_length or self.config.max_length,
+            pad_to_multiple_of=pad_to_multiple_of,
             return_tensors="pt",
         )
         input_ids = cast(torch.Tensor, encoded["input_ids"])

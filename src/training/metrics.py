@@ -79,7 +79,7 @@ def calculate_bertscore(
     Args:
         predictions: Generated summaries/descriptions
         references: Reference summaries/descriptions
-        model_type: BERT model to use (default: deberta-xlarge-mnli for best quality)
+        model_type: BERT model to use (default: roberta-large)
         batch_size: Batch size for encoding
         device: Device to use (auto-detected if None)
 

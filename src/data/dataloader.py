@@ -28,7 +28,13 @@ from .tokenization import Tokenizer
 
 
 class SummarizationCollator:
-    """Prepare encoder-decoder batches for seq2seq summarization."""
+    """Prepare encoder-decoder batches for seq2seq summarization.
+
+    Uses per-batch dynamic padding (``padding="longest"``) rounded up to a
+    multiple of ``pad_to_multiple_of`` so every batch fits one of a small set
+    of shapes (good for tensor cores and ``torch.compile`` graph caching)
+    while avoiding the ~17x padding waste on short GoEmotions-style inputs.
+    """
 
     def __init__(
         self,
@@ -36,17 +42,31 @@ class SummarizationCollator:
         *,
         max_source_length: int | None = None,
         max_target_length: int | None = None,
+        padding: str = "longest",
+        pad_to_multiple_of: int | None = 8,
     ) -> None:
         self.tokenizer = tokenizer
         self.max_source_length = max_source_length
         self.max_target_length = max_target_length
+        self.padding = padding
+        self.pad_to_multiple_of = pad_to_multiple_of
 
     def __call__(self, batch: List[SummarizationExample]) -> Dict[str, torch.Tensor]:
         sources = [ex.source for ex in batch]
         targets = [ex.summary for ex in batch]
 
-        src_enc = self.tokenizer.batch_encode(sources, max_length=self.max_source_length)
-        tgt_enc = self.tokenizer.batch_encode(targets, max_length=self.max_target_length)
+        src_enc = self.tokenizer.batch_encode(
+            sources,
+            max_length=self.max_source_length,
+            padding=self.padding,
+            pad_to_multiple_of=self.pad_to_multiple_of,
+        )
+        tgt_enc = self.tokenizer.batch_encode(
+            targets,
+            max_length=self.max_target_length,
+            padding=self.padding,
+            pad_to_multiple_of=self.pad_to_multiple_of,
+        )
 
         ids = tgt_enc["input_ids"]
         mask = tgt_enc["attention_mask"]
@@ -71,15 +91,28 @@ class EmotionCollator:
     """Prepare batches for multi-label emotion classification."""
 
     def __init__(
-        self, tokenizer: Tokenizer, dataset: EmotionDataset, *, max_length: int | None = None
+        self,
+        tokenizer: Tokenizer,
+        dataset: EmotionDataset,
+        *,
+        max_length: int | None = None,
+        padding: str = "longest",
+        pad_to_multiple_of: int | None = 8,
     ) -> None:
         self.tokenizer = tokenizer
         self.binarizer = dataset.binarizer
         self.max_length = max_length
+        self.padding = padding
+        self.pad_to_multiple_of = pad_to_multiple_of
 
     def __call__(self, batch: List[EmotionExample]) -> Dict[str, torch.Tensor]:
         texts = [ex.text for ex in batch]
-        encoded = self.tokenizer.batch_encode(texts, max_length=self.max_length)
+        encoded = self.tokenizer.batch_encode(
+            texts,
+            max_length=self.max_length,
+            padding=self.padding,
+            pad_to_multiple_of=self.pad_to_multiple_of,
+        )
         labels = torch.as_tensor(
             self.binarizer.transform([ex.emotions for ex in batch]),
             dtype=torch.float32,
@@ -95,15 +128,28 @@ class TopicCollator:
     """Prepare batches for single-label topic classification."""
 
     def __init__(
-        self, tokenizer: Tokenizer, dataset: TopicDataset, *, max_length: int | None = None
+        self,
+        tokenizer: Tokenizer,
+        dataset: TopicDataset,
+        *,
+        max_length: int | None = None,
+        padding: str = "longest",
+        pad_to_multiple_of: int | None = 8,
     ) -> None:
         self.tokenizer = tokenizer
         self.encoder = dataset.encoder
         self.max_length = max_length
+        self.padding = padding
+        self.pad_to_multiple_of = pad_to_multiple_of
 
     def __call__(self, batch: List[TopicExample]) -> Dict[str, torch.Tensor]:
         texts = [ex.text for ex in batch]
-        encoded = self.tokenizer.batch_encode(texts, max_length=self.max_length)
+        encoded = self.tokenizer.batch_encode(
+            texts,
+            max_length=self.max_length,
+            padding=self.padding,
+            pad_to_multiple_of=self.pad_to_multiple_of,
+        )
         labels = torch.as_tensor(
             self.encoder.transform([ex.topic for ex in batch]),
             dtype=torch.long,

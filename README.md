@@ -11,11 +11,19 @@ pinned: false
 <!-- markdownlint-disable MD025 -->
 # LexiMind
 
-A multi-task NLP system for literary and academic text understanding. LexiMind jointly performs **abstractive summarization**, **topic classification**, and **multi-label emotion detection** using a single encoder-decoder transformer initialized from [FLAN-T5-base](https://huggingface.co/google/flan-t5-base) (272M parameters).
+**Train Short, Infer Long: Multi-Task NLP for Long-Document Content Discovery.**
 
-**[Live Demo](https://huggingface.co/spaces/OliverPerrin/LexiMind)** · **[Model](https://huggingface.co/OliverPerrin/LexiMind-Model)** · **[Discovery Dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery)** · **[Research Paper](docs/research_paper.tex)**
+LexiMind studies how to train a multi-task NLP model on short-form data (paper abstracts, single-sentence emotion examples, paragraph-level topics) and deploy it on long documents (full books, full papers) via chunking and aggregation. We compare against single-task FLAN-T5 baselines and zero-shot frontier-LLM baselines on the same eval set.
 
-## Results
+The model is a from-scratch encoder-decoder transformer initialized from [FLAN-T5-base](https://huggingface.co/google/flan-t5-base) (272M parameters), jointly trained on **abstractive summarization**, **multi-label emotion detection** (28 classes), and **single-label topic classification** (7 classes).
+
+**[Live Demo](https://huggingface.co/spaces/OliverPerrin/LexiMind)** · **[Model](https://huggingface.co/OliverPerrin/LexiMind-Model)** · **[Discovery Dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery)** · **[Working Paper](docs/research_paper.tex)**
+
+## Status
+
+Working paper in progress. Numbers below are from a prior training configuration (8 epochs, frozen encoder layers 0–3, label smoothing 0.1) and will be replaced once the corrected campaign (5 epochs, full encoder fine-tuning, no smoothing) and single-task baselines complete.
+
+## Preliminary Results
 
 | Task | Metric | Score |
 | ---- | ------ | ----- |
@@ -26,17 +34,16 @@ A multi-task NLP system for literary and academic text understanding. LexiMind j
 | Emotion Detection | Sample-avg F1 | 0.352 |
 | Emotion Detection (tuned thresholds) | Sample-avg F1 / Macro F1 | 0.503 / 0.294 |
 
-Trained for 8 epochs on an RTX 4070 12GB (~9 hours) with BFloat16 mixed precision, `torch.compile`, and cosine LR decay.
+Trained for 8 epochs on an RTX 4070 12GB (~9 hours) with BFloat16 mixed precision, `torch.compile`, and cosine LR decay. New campaign (5 epochs, full encoder unfrozen) targets ~7 hours per run.
 
-## Key Findings
+## Research Questions
 
-From my research paper:
+The working paper investigates four falsifiable claims:
 
-- **Naive MTL produces mixed results**: topic classification benefits (+3.7% accuracy), but emotion detection suffers negative transfer (−0.02 F1) under mean pooling with round-robin scheduling.
-- **Learned attention pooling + temperature sampling eliminates negative transfer entirely**: emotion F1 improves from 0.199 → 0.352 (+77%), surpassing the single-task baseline (0.218).
-- **Summarization is robust to MTL** — quality remains stable across configurations.
-- **FLAN-T5 pre-training is essential** — random initialization produces dramatically worse results on all tasks.
-- **Domain gap matters**: academic summaries (ROUGE-1: 0.319) substantially outperform literary (0.206), driven by an 11:1 training data imbalance.
+1. **Does MTL beat single-task at deployment?** Single-task FLAN-T5 baselines (`single_summarization`, `single_emotion`, `single_topic` configs) train on the same data with identical hyperparameters except the task head. We measure delta vs the joint-MTL configuration.
+2. **What aggregation strategy works for chunked long-document inference?** We compare mean / max / attention-weighted / length-weighted aggregation when running the trained classification heads over chunked book input.
+3. **Which evaluation pitfalls inflate reported MTL gains?** Controlled demonstrations of threshold contamination (tuning thresholds on the same val split used for early stopping) and other bugs we caught in our own pipeline.
+4. **Cost vs quality tradeoff against zero-shot frontier LLMs.** Same eval set, scored against Claude / GPT-4 zero-shot, with API-cost and latency reported.
 
 ## Architecture
 
@@ -60,7 +67,7 @@ All three tasks share the encoder. Summarization uses the full encoder-decoder; 
 - **Temperature-based task sampling** (α=0.5): allocates training steps proportional to dataset size, preventing large tasks from dominating
 - **Attention pooling** for emotion: a learned query attends over encoder outputs, focusing on emotionally salient tokens rather than averaging the full sequence
 - **Fixed loss weights**: summarization=1.0, emotion=1.0, topic=0.3 (reduced to prevent overfitting on the small topic dataset)
-- **Frozen encoder layers 0–3**: preserves FLAN-T5's language understanding in lower layers
+- **Full encoder fine-tuning** (no frozen layers): the prior 4-layer freeze handicapped the most encoder-demanding task (summarization)
 - **Gradient conflict diagnostics**: optional inter-task gradient cosine similarity monitoring
 
 See [docs/architecture.md](docs/architecture.md) for full implementation details, weight loading tables, and training configuration rationale.
@@ -94,8 +101,13 @@ pip install -r requirements.txt
 ### Training
 
 ```bash
-# Full training (~9 hours on RTX 4070 12GB)
+# Multi-task training (~7 hours on RTX 4070 12GB)
 python scripts/train.py training=full
+
+# Single-task baselines for MTL comparison
+python scripts/train.py training=single_summarization
+python scripts/train.py training=single_emotion
+python scripts/train.py training=single_topic
 
 # Quick dev run
 python scripts/train.py training=dev
@@ -103,8 +115,8 @@ python scripts/train.py training=dev
 # Override parameters
 python scripts/train.py training=full training.optimizer.lr=5e-5
 
-# Resume from checkpoint
-python scripts/train.py training=full resume_from=checkpoints/epoch_5.pt
+# Multi-seed campaign for paper headline numbers
+python scripts/train_multiseed.py --seeds 17 42 123 --config training=full
 ```
 
 Experiments are tracked with MLflow (`mlflow ui` to browse).
@@ -153,20 +165,38 @@ src/
 └── utils/           # Device detection, checkpointing, label I/O
 
 scripts/
-├── train.py                    # Hydra training entry point
+├── train.py                    # Hydra training entry point (MTL + single-task baselines)
 ├── evaluate.py                 # Full evaluation suite
 ├── inference.py                # CLI inference
 ├── demo_gradio.py              # Gradio discovery demo
 ├── profile_training.py         # PyTorch profiler
 ├── train_multiseed.py          # Multi-seed training with aggregation
+├── train_bert_baseline.py      # BERT single-task baselines (architecture comparison)
 ├── visualize_training.py       # Training curve visualization
 ├── download_data.py            # Dataset downloader
 └── build_discovery_dataset.py  # Pre-compute discovery dataset
 
-configs/             # Hydra configs (model, training, data)
+configs/training/
+├── full.yaml                   # Joint MTL training (paper headline config)
+├── single_summarization.yaml   # FLAN-T5 single-task summarization baseline
+├── single_emotion.yaml         # FLAN-T5 single-task emotion baseline
+├── single_topic.yaml           # FLAN-T5 single-task topic baseline
+├── medium.yaml                 # Mid-size dev config
+└── dev.yaml                    # Quick smoke-test config
+
 docs/                # Research paper + architecture documentation
 tests/               # Pytest suite
 ```
+
+## Long-Document Deployment (in progress)
+
+Coming Weeks 3–4 of the campaign:
+
+- **Chunked inference module** for long-document classification (chunk → per-chunk logits → mean / max / attention-weighted / length-weighted aggregation)
+- **Hierarchical summarization** for back-cover-blurb generation (chunk → per-chunk summary → meta-summary)
+- **Held-out Gutenberg book evaluation**
+
+This is the deployment scenario the paper studies — short-context model, long-document target.
 
 ## Code Quality
 

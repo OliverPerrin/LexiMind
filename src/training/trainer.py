@@ -33,6 +33,7 @@ from tqdm import tqdm
 
 from ..data.tokenization import Tokenizer
 from .metrics import accuracy, calculate_bleu, calculate_rouge, multilabel_f1, rouge_like
+from .pcgrad import PCGrad
 
 # --------------- Configuration ---------------
 
@@ -65,6 +66,11 @@ class TrainerConfig:
     # Gradient conflict diagnostics
     # Compute inter-task gradient cosine similarity every N steps (0 = disabled)
     gradient_conflict_frequency: int = 0
+
+    # PCGrad: Project Conflicting Gradients (Yu et al., NeurIPS 2020)
+    # When enabled, computes per-task gradients independently and projects
+    # conflicting gradient pairs to reduce negative transfer.
+    use_pcgrad: bool = False
 
     # MLflow
     experiment_name: str = "LexiMind"
@@ -131,6 +137,12 @@ class Trainer:
         mlflow.set_tracking_uri("sqlite:///mlruns.db")
         mlflow.set_experiment(config.experiment_name)
 
+        # PCGrad
+        self.pcgrad: PCGrad | None = None
+        if config.use_pcgrad:
+            self.pcgrad = PCGrad(reduction="sum")
+            print("  PCGrad: enabled (gradient surgery for conflicting task gradients)")
+
         # CUDA optimizations
         if device.type == "cuda":
             torch.backends.cuda.enable_flash_sdp(True)
@@ -162,6 +174,10 @@ class Trainer:
 
             for epoch in pbar:
                 epoch_start = time.perf_counter()
+
+                # Reset PCGrad stats per epoch
+                if self.pcgrad is not None:
+                    self.pcgrad.reset_stats()
 
                 # Train
                 train_metrics = self._run_epoch(train_loaders, train=True, epoch=epoch)
@@ -202,15 +218,25 @@ class Trainer:
         return history
 
     def _setup_scheduler(self, loaders: Dict[str, DataLoader], start_epoch: int) -> None:
-        """Setup cosine LR schedule with warmup."""
+        """Setup cosine LR schedule with warmup.
+
+        Each outer training step consumes one batch per *selected* task
+        (temperature sampling draws ``len(tasks)`` task labels with
+        replacement, so functionally each step does ``len(tasks)`` forward
+        passes but still counts as one optimizer-ready iteration for
+        ``gradient_accumulation_steps``). ``max_batches`` therefore equals
+        the size of the longest loader, and the optimizer steps per epoch
+        are ``max_batches // gradient_accumulation_steps``.
+        """
         if self.config.scheduler_type == "constant":
             self.scheduler = None
             return
 
-        steps_per_epoch = max(len(loader) for loader in loaders.values()) // max(
-            1, self.config.gradient_accumulation_steps
-        )
-        total_steps = steps_per_epoch * (self.config.max_epochs - start_epoch + 1)
+        accum = max(1, self.config.gradient_accumulation_steps)
+        max_batches = max(len(loader) for loader in loaders.values())
+        steps_per_epoch = max_batches // accum
+        epochs_remaining = max(1, self.config.max_epochs - start_epoch + 1)
+        total_steps = steps_per_epoch * epochs_remaining
         warmup = self.config.warmup_steps
 
         def lr_lambda(step: int) -> float:
@@ -220,7 +246,11 @@ class Trainer:
             return max(0.1, 0.5 * (1 + math.cos(math.pi * progress)))
 
         self.scheduler = LambdaLR(self.optimizer, lr_lambda)
-        print(f"  LR schedule: cosine, {warmup} warmup, {total_steps} total steps")
+        print(
+            f"  LR schedule: cosine, warmup={warmup}, "
+            f"{steps_per_epoch} optimizer steps/epoch x {epochs_remaining} epochs "
+            f"= {total_steps} total (max_batches={max_batches}, accum={accum})"
+        )
 
     def _run_epoch(
         self,
@@ -239,7 +269,18 @@ class Trainer:
         phase = "Train" if train else "Val"
         pbar = tqdm(range(max_batches), desc=f"  {phase}", leave=False, file=sys.stderr)
 
-        # Temperature-based task sampling: p_i ∝ n_i^alpha
+        # Temperature-based task sampling: p_i ∝ n_i^alpha.
+        #
+        # Each outer training step draws ``len(task_names)`` task labels
+        # *with replacement* from this distribution, so every step still
+        # runs ``len(task_names)`` forward/backward passes (like
+        # round-robin) but the identity of the tasks in each triple is
+        # stochastic. A task whose probability is p therefore receives
+        # ~p × len(tasks) forward passes per outer step in expectation
+        # (e.g. with p=0.45 over 3 tasks, ~1.35 forwards/step or ~45% of
+        # all task draws). This matches the 45/43/12% figures reported in
+        # the paper while preserving the per-step gradient-accumulation
+        # accounting of round-robin training.
         task_names = list(loaders.keys())
         if self.config.task_sampling == "temperature" and len(task_names) > 1:
             sizes = np.array([len(loaders[t].dataset) for t in task_names], dtype=np.float64)  # type: ignore[arg-type]
@@ -247,11 +288,24 @@ class Trainer:
             probs = sizes**alpha
             probs = probs / probs.sum()
             tqdm.write(
-                f"  Temperature sampling (α={alpha}): "
+                f"  Temperature sampling (α={alpha}, {len(task_names)} draws/step): "
                 + ", ".join(f"{t}={p:.2%}" for t, p in zip(task_names, probs, strict=True))
             )
         else:
             probs = None
+
+        use_pcgrad = train and self.pcgrad is not None
+        if use_pcgrad:
+            # Encoder = shared (subject to PCGrad projection).
+            # Decoder + heads = task-specific (grads pass through unchanged).
+            shared_params = [p for p in self.model.encoder.parameters() if p.requires_grad]
+            shared_ids = {id(p) for p in shared_params}
+            head_params = [
+                p
+                for p in self.model.parameters()
+                if p.requires_grad and id(p) not in shared_ids
+            ]
+            tqdm.write("  PCGrad active: computing per-task gradients with projection")
 
         ctx = torch.enable_grad() if train else torch.no_grad()
         with ctx:
@@ -267,6 +321,9 @@ class Trainer:
                 else:
                     # Round-robin: all tasks every step
                     selected_tasks = task_names
+
+                # For PCGrad: collect task losses first, then do joint backward
+                pcgrad_losses: Dict[str, torch.Tensor] = {}
 
                 for task in selected_tasks:
                     loader = loaders[task]
@@ -294,12 +351,40 @@ class Trainer:
 
                     # Backward (train only)
                     if train:
-                        scaled = (loss * weight) / accum
+                        if use_pcgrad:
+                            # Collect losses for PCGrad (backward later)
+                            pcgrad_losses[task] = loss
+                        else:
+                            scaled = (loss * weight) / accum
+                            scaled.backward()
+
+                # PCGrad: single autograd.grad pass per task over shared+head
+                # params, projection applied only to the shared portion.
+                if use_pcgrad and pcgrad_losses and len(pcgrad_losses) > 1:
+                    pcgrad_stats = self.pcgrad.backward(  # type: ignore[union-attr]
+                        pcgrad_losses,
+                        shared_params=shared_params,
+                        head_params=head_params,
+                        task_weights=self.config.task_weights,
+                        gradient_accumulation_steps=accum,
+                    )
+
+                    for k, v in pcgrad_stats.items():
+                        metrics[f"pcgrad_{k}"].append(v)
+                        if self.global_step % 100 == 0:
+                            mlflow.log_metric(f"pcgrad_{k}", v, step=self.global_step)
+
+                elif use_pcgrad and pcgrad_losses and len(pcgrad_losses) == 1:
+                    # Single task sampled this step, no conflict to resolve.
+                    for task_name, loss_val in pcgrad_losses.items():
+                        w = (self.config.task_weights or {}).get(task_name, 1.0)
+                        scaled = (loss_val * w) / accum
                         scaled.backward()
 
-                # Gradient conflict diagnostics
+                # Gradient conflict diagnostics (non-PCGrad mode)
                 if (
                     train
+                    and not use_pcgrad
                     and self.config.gradient_conflict_frequency > 0
                     and (step + 1) % self.config.gradient_conflict_frequency == 0
                 ):
@@ -361,7 +446,16 @@ class Trainer:
         raise ValueError(f"Unknown task: {task}")
 
     def _forward_summarization(self, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
-        """Seq2seq forward for summarization."""
+        """Seq2seq forward for summarization.
+
+        During training, only cheap ``rouge_like`` is reported per-batch; the
+        expensive rouge-score / BLEU computations on teacher-forced argmax
+        outputs are unreliable as quality signals (they are not the tokens
+        the decoder would actually generate) and consume significant CPU
+        time per epoch, so they are reserved for validation batches where
+        they serve as sanity metrics alongside full generation during
+        ``_validate_generation``.
+        """
         inputs = {"src_ids": batch["src_ids"], "tgt_ids": batch["tgt_ids"]}
         if "src_mask" in batch:
             inputs["src_mask"] = batch["src_mask"]
@@ -374,27 +468,19 @@ class Trainer:
             label_smoothing=self.config.label_smoothing,
         )
 
-        # Decode predictions and references
         preds = self.tokenizer.decode_batch(logits.argmax(dim=-1).tolist())
         refs = self._decode_labels(batch["labels"])
 
-        # Calculate comprehensive metrics
-        metrics = {"rouge_like": rouge_like(preds, refs)}
+        metrics: Dict[str, float] = {"rouge_like": rouge_like(preds, refs)}
 
-        # Proper ROUGE scores (ROUGE-1, ROUGE-2, ROUGE-L)
-        try:
+        if not self.model.training:
             rouge_scores = calculate_rouge(preds, refs)
-            metrics["rouge1"] = rouge_scores["rouge1"]
-            metrics["rouge2"] = rouge_scores["rouge2"]
-            metrics["rougeL"] = rouge_scores["rougeL"]
-        except Exception:
-            pass  # Fall back to rouge_like only if rouge-score not installed
-
-        # BLEU-4 score
-        try:
-            metrics["bleu4"] = calculate_bleu(preds, refs)
-        except Exception:
-            pass
+            metrics.update({
+                "rouge1": rouge_scores["rouge1"],
+                "rouge2": rouge_scores["rouge2"],
+                "rougeL": rouge_scores["rougeL"],
+                "bleu4": calculate_bleu(preds, refs),
+            })
 
         return loss, metrics
 
@@ -485,9 +571,18 @@ class Trainer:
     ) -> Dict[str, float]:
         """Compute inter-task gradient cosine similarity to diagnose conflicts.
 
-        Returns cosine similarity between gradient vectors for each task pair.
-        Negative values indicate conflicting gradients (negative transfer risk).
+        Cosine similarity is computed over the SHARED encoder parameters only,
+        since task-private heads (decoder, emotion head, topic head) only
+        receive gradients from their own task and would produce trivially
+        orthogonal vectors that distort the shared-representation conflict
+        signal. Comparing over the same parameter set across tasks also avoids
+        shape-mismatch errors.
+
+        Returns cosine similarity between encoder-gradient vectors for each
+        task pair. Negative values indicate conflicting gradients on the
+        shared encoder (negative transfer risk).
         """
+        shared_params = [p for p in self.model.encoder.parameters() if p.requires_grad]
         task_grads: Dict[str, torch.Tensor] = {}
 
         for task, loader in loaders.items():
@@ -505,11 +600,14 @@ class Trainer:
 
             loss.backward()
 
-            # Flatten all gradients into a single vector
             grad_vec = []
-            for p in self.model.parameters():
+            for p in shared_params:
                 if p.grad is not None:
-                    grad_vec.append(p.grad.detach().clone().flatten())
+                    grad_vec.append(p.grad.detach().flatten().to(torch.float32))
+                else:
+                    grad_vec.append(
+                        torch.zeros(p.numel(), dtype=torch.float32, device=p.device)
+                    )
             if grad_vec:
                 task_grads[task] = torch.cat(grad_vec)
 

@@ -1,0 +1,211 @@
+\begin{thebibliography}{27}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Aghajanyan et~al.(2021)Aghajanyan, Gupta, Shrivastava, Chen,
+  Zettlemoyer, and Gupta}]{aghajanyan2021muppet}
+Armen Aghajanyan, Anchit Gupta, Akshat Shrivastava, Xilun Chen, Luke
+  Zettlemoyer, and Sonal Gupta. 2021.
+\newblock Muppet: Massive multi-task representations with pre-finetuning.
+\newblock In \emph{Proceedings of the Conference on Empirical Methods in
+  Natural Language Processing (EMNLP)}.
+
+\bibitem[{Aribandi et~al.(2022)Aribandi, Tay, Schuster, Rao, Zheng, Mehta,
+  Zhuber, Tran, Bahri, Ni, Gupta, and Metzler}]{aribandi2022ext5}
+Vamsi Aribandi, Yi~Tay, Tal Schuster, Jinfeng Rao, Huaixiu~Steven Zheng,
+  Sanket~Vaibhav Mehta, Honglei Zhuber, Vinh~Q. Tran, Dara Bahri, Jianmo Ni,
+  Jai Gupta, and Donald Metzler. 2022.
+\newblock {ExT5}: Towards extreme multi-task scaling for transfer learning.
+\newblock In \emph{Proceedings of the International Conference on Learning
+  Representations (ICLR)}.
+
+\bibitem[{Caruana(1997)}]{caruana1997multitask}
+Rich Caruana. 1997.
+\newblock Multitask learning.
+\newblock \emph{Machine Learning}, 28(1):41--75.
+
+\bibitem[{Chen et~al.(2018)Chen, Badrinarayanan, Lee, and
+  Rabinovich}]{chen2018gradnorm}
+Zhao Chen, Vijay Badrinarayanan, Chen-Yu Lee, and Andrew Rabinovich. 2018.
+\newblock {GradNorm}: Gradient normalization for adaptive loss balancing in
+  deep multitask networks.
+\newblock In \emph{Proceedings of the International Conference on Machine
+  Learning (ICML)}.
+
+\bibitem[{Chung et~al.(2022)Chung, Hou, Longpre, Zoph, Tay, Fedus, Li, Wang,
+  Dehghani, Brahma, Webson, Gu, Dai, Suzgun, Chen, Chowdhery, Castro-Ros,
+  Pellat, Robinson, Valter, Narang, Mishra, Yu, Zhao, Singh, Ghahramani, Dean,
+  and Fiedel}]{chung2022scaling}
+Hyung~Won Chung, Le~Hou, Shayne Longpre, Barret Zoph, Yi~Tay, William Fedus,
+  Yunxuan Li, Xuezhi Wang, Mostafa Dehghani, Siddhartha Brahma, Albert Webson,
+  Shixiang~Shane Gu, Zhuyun Dai, Mirac Suzgun, Xinyun Chen, Aakanksha
+  Chowdhery, Alex Castro-Ros, Marie Pellat, Kevin Robinson, and 9 others. 2022.
+\newblock Scaling instruction-finetuned language models.
+\newblock \emph{arXiv preprint arXiv:2210.11416}.
+
+\bibitem[{Cohan et~al.(2018)Cohan, Dernoncourt, Kim, Bui, Kim, Chang, and
+  Gella}]{cohan2018discourse}
+Arman Cohan, Franck Dernoncourt, Doo~Soon Kim, Trung Bui, Seokhwan Kim, Walter
+  Chang, and Nazli Gella. 2018.
+\newblock A discourse-aware attention model for abstractive summarization of
+  long documents.
+\newblock In \emph{Proceedings of the Conference of the North American Chapter
+  of the Association for Computational Linguistics (NAACL-HLT)}.
+
+\bibitem[{Collobert et~al.(2011)Collobert, Weston, Bottou, Karlen, Kavukcuoglu,
+  and Kuksa}]{collobert2011natural}
+Ronan Collobert, Jason Weston, L{\'e}on Bottou, Michael Karlen, Koray
+  Kavukcuoglu, and Pavel Kuksa. 2011.
+\newblock Natural language processing (almost) from scratch.
+\newblock \emph{Journal of Machine Learning Research}, 12:2493--2537.
+
+\bibitem[{Demszky et~al.(2020)Demszky, Movshovitz-Attias, Ko, Cowen, Nemade,
+  and Ravi}]{demszky2020goemotions}
+Dorottya Demszky, Dana Movshovitz-Attias, Jeongwoo Ko, Alan Cowen, Gaurav
+  Nemade, and Sujith Ravi. 2020.
+\newblock {GoEmotions}: A dataset of fine-grained emotions.
+\newblock In \emph{Proceedings of the Annual Meeting of the Association for
+  Computational Linguistics (ACL)}.
+
+\bibitem[{Devlin et~al.(2019)Devlin, Chang, Lee, and
+  Toutanova}]{devlin2019bert}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019.
+\newblock {BERT}: Pre-training of deep bidirectional transformers for language
+  understanding.
+\newblock In \emph{Proceedings of the Conference of the North American Chapter
+  of the Association for Computational Linguistics (NAACL-HLT)}.
+
+\bibitem[{Houlsby et~al.(2019)Houlsby, Giber, Jastrzebski, Morrone,
+  de~Laroussilhe, Gesmundo, Attariyan, and Gelly}]{houlsby2019parameter}
+Neil Houlsby, Andrei Giber, Stanislaw Jastrzebski, Bruna Morrone, Quentin
+  de~Laroussilhe, Andrea Gesmundo, Mona Attariyan, and Sylvain Gelly. 2019.
+\newblock Parameter-efficient transfer learning for {NLP}.
+\newblock In \emph{Proceedings of the International Conference on Machine
+  Learning (ICML)}.
+
+\bibitem[{Hu et~al.(2022)Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and
+  Chen}]{hu2022lora}
+Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean
+  Wang, Lu~Wang, and Weizhu Chen. 2022.
+\newblock {LoRA}: Low-rank adaptation of large language models.
+\newblock In \emph{Proceedings of the International Conference on Learning
+  Representations (ICLR)}.
+
+\bibitem[{Johnson et~al.(2017)Johnson, Schuster, Le, Krikun, Wu, Chen, Thorat,
+  Vi{\'e}gas, Wattenberg, Corrado, Hughes, and Dean}]{johnson2017google}
+Melvin Johnson, Mike Schuster, Quoc~V. Le, Maxim Krikun, Yonghui Wu, Zhifeng
+  Chen, Nikhil Thorat, Fernanda Vi{\'e}gas, Martin Wattenberg, Greg Corrado,
+  Macduff Hughes, and Jeffrey Dean. 2017.
+\newblock Google's multilingual neural machine translation system: Enabling
+  zero-shot translation.
+\newblock \emph{Transactions of the Association for Computational Linguistics},
+  5:339--351.
+
+\bibitem[{Kendall et~al.(2018)Kendall, Gal, and Cipolla}]{kendall2018multi}
+Alex Kendall, Yarin Gal, and Roberto Cipolla. 2018.
+\newblock Multi-task learning using uncertainty to weigh losses for scene
+  geometry and semantics.
+\newblock In \emph{Proceedings of the IEEE Conference on Computer Vision and
+  Pattern Recognition (CVPR)}.
+
+\bibitem[{Kry{\'s}ci{\'n}ski et~al.(2021)Kry{\'s}ci{\'n}ski, Rajani, Agrawal,
+  Xiong, and Radev}]{kryscinski2021booksum}
+Wojciech Kry{\'s}ci{\'n}ski, Nazneen Rajani, Divyansh Agrawal, Caiming Xiong,
+  and Dragomir Radev. 2021.
+\newblock {BookSum}: A collection of datasets for long-form narrative
+  summarization.
+\newblock In \emph{Findings of the Conference on Empirical Methods in Natural
+  Language Processing (EMNLP)}.
+
+\bibitem[{Li et~al.(2025)}]{ortholora2025}
+Bo~Li and 1 others. 2025.
+\newblock Ortho-{LoRA}: Orthogonal low-rank adaptation for multi-task learning.
+\newblock \emph{arXiv preprint arXiv:2601.09684}.
+
+\bibitem[{Lin(2004)}]{lin2004rouge}
+Chin-Yew Lin. 2004.
+\newblock {ROUGE}: A package for automatic evaluation of summaries.
+\newblock In \emph{Text Summarization Branches Out}.
+
+\bibitem[{Lin et~al.(2017)Lin, Goyal, Girshick, He, and
+  Doll{\'a}r}]{lin2017focal}
+Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and Piotr Doll{\'a}r.
+  2017.
+\newblock Focal loss for dense object detection.
+\newblock In \emph{Proceedings of the IEEE International Conference on Computer
+  Vision (ICCV)}.
+
+\bibitem[{Liu et~al.(2021)Liu, Liu, Jin, Stone, and Liu}]{liu2021conflict}
+Bo~Liu, Xingchao Liu, Xiaojie Jin, Peter Stone, and Qiang Liu. 2021.
+\newblock Conflict-averse gradient descent for multi-task learning.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}.
+
+\bibitem[{Mao et~al.(2022)Mao, Zhong, and Han}]{mao2022citesum}
+Yuning Mao, Ming Zhong, and Jiawei Han. 2022.
+\newblock {CiteSum}: Citation text-guided scientific extreme summarization and
+  domain adaptation with limited supervision.
+\newblock In \emph{Proceedings of the Conference on Empirical Methods in
+  Natural Language Processing (EMNLP)}.
+
+\bibitem[{McCann et~al.(2018)McCann, Keskar, Xiong, and
+  Socher}]{mccann2018natural}
+Bryan McCann, Nitish~Shirish Keskar, Caiming Xiong, and Richard Socher. 2018.
+\newblock The natural language decathlon: Multitask learning as question
+  answering.
+\newblock \emph{arXiv preprint arXiv:1806.08730}.
+
+\bibitem[{Nallapati et~al.(2016)Nallapati, Zhou, dos Santos, Gulcehre, and
+  Xiang}]{nallapati2016abstractive}
+Ramesh Nallapati, Bowen Zhou, C{\'i}cero dos Santos, Caglar Gulcehre, and Bing
+  Xiang. 2016.
+\newblock Abstractive text summarization using sequence-to-sequence {RNN}s and
+  beyond.
+\newblock In \emph{Proceedings of the Conference on Computational Natural
+  Language Learning (CoNLL)}.
+
+\bibitem[{Narayan et~al.(2018)Narayan, Cohen, and Lapata}]{narayan2018don}
+Shashi Narayan, Shay~B. Cohen, and Mirella Lapata. 2018.
+\newblock Don't give me the details, just the summary! topic-aware
+  convolutional neural networks for extreme summarization.
+\newblock In \emph{Proceedings of the Conference on Empirical Methods in
+  Natural Language Processing (EMNLP)}.
+
+\bibitem[{Raffel et~al.(2020)Raffel, Shazeer, Roberts, Lee, Narang, Matena,
+  Zhou, Li, and Liu}]{raffel2020exploring}
+Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael
+  Matena, Yanqi Zhou, Wei Li, and Peter~J. Liu. 2020.
+\newblock Exploring the limits of transfer learning with a unified text-to-text
+  transformer.
+\newblock \emph{Journal of Machine Learning Research}, 21(140):1--67.
+
+\bibitem[{Standley et~al.(2020)Standley, Zamir, Chen, Guibas, Malik, and
+  Savarese}]{standley2020tasks}
+Trevor Standley, Amir Zamir, Dawn Chen, Leonidas Guibas, Jitendra Malik, and
+  Silvio Savarese. 2020.
+\newblock Which tasks should be learned together in multi-task learning?
+\newblock In \emph{Proceedings of the International Conference on Machine
+  Learning (ICML)}.
+
+\bibitem[{Yu et~al.(2020)Yu, Kumar, Gupta, Levine, Hausman, and
+  Finn}]{yu2020gradient}
+Tianhe Yu, Saurabh Kumar, Abhishek Gupta, Sergey Levine, Karol Hausman, and
+  Chelsea Finn. 2020.
+\newblock Gradient surgery for multi-task learning.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}.
+
+\bibitem[{Zhang and Sennrich(2019)}]{zhang2019root}
+Biao Zhang and Rico Sennrich. 2019.
+\newblock Root mean square layer normalization.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}.
+
+\bibitem[{Zhang et~al.(2020)Zhang, Kishore, Wu, Weinberger, and
+  Artzi}]{zhang2019bertscore}
+Tianyi Zhang, Varsha Kishore, Felix Wu, Kilian~Q. Weinberger, and Yoav Artzi.
+  2020.
+\newblock {BERTScore}: Evaluating text generation with {BERT}.
+\newblock In \emph{Proceedings of the International Conference on Learning
+  Representations (ICLR)}.
+
+\end{thebibliography}

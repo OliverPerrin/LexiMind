@@ -132,6 +132,59 @@ class TopicDataset(Dataset[TopicExample]):
 T = TypeVar("T")
 
 
+# --------------- Calibration Split ---------------
+#
+# The GoEmotions validation set serves two distinct purposes: (1) model
+# selection during training (early stopping on combined val loss), and
+# (2) per-class threshold calibration for emotion evaluation. Using the
+# same samples for both creates an optimistic bias in tuned-threshold
+# metrics. ``split_emotion_val`` deterministically partitions val into a
+# model-selection half and a calibration half so the threshold-tuning
+# step in ``scripts/evaluate.py`` uses samples the model never influenced
+# via early stopping. The split is driven by a fixed seed so training and
+# evaluation always agree on which half is which.
+
+EMOTION_CALIBRATION_SPLIT_SEED = 20260416
+
+
+def split_emotion_val(
+    examples: List[EmotionExample],
+    *,
+    seed: int = EMOTION_CALIBRATION_SPLIT_SEED,
+    calibration_fraction: float = 0.5,
+) -> tuple[List[EmotionExample], List[EmotionExample]]:
+    """Deterministically split val examples into (model_selection, calibration).
+
+    Both training (early stopping) and evaluation (threshold tuning) must
+    call this with the same seed/fraction so they agree on which samples
+    belong to which half.
+
+    Args:
+        examples: Full emotion validation split.
+        seed: Random seed controlling the shuffle.
+        calibration_fraction: Fraction of val assigned to the calibration
+            half (default 0.5).
+
+    Returns:
+        (model_selection_half, calibration_half)
+    """
+    import random as _random
+
+    rng = _random.Random(seed)
+    indices = list(range(len(examples)))
+    rng.shuffle(indices)
+    n_calib = int(round(len(examples) * calibration_fraction))
+    calib_idx = set(indices[:n_calib])
+    model_sel: List[EmotionExample] = []
+    calib: List[EmotionExample] = []
+    for i, ex in enumerate(examples):
+        if i in calib_idx:
+            calib.append(ex)
+        else:
+            model_sel.append(ex)
+    return model_sel, calib
+
+
 def _safe_json_load(handle, path: Path) -> object:
     try:
         return json.load(handle)
