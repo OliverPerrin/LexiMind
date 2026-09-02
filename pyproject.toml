@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Multi-Task Transformer for Document Analysis"
 authors = ["Oliver Perrin <oliver.t.perrin@gmail.com>"]
 readme = "README.md"
-license = "GPL-3.0"
+license = "MIT"
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
