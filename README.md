@@ -209,7 +209,7 @@ pre-commit run --all-files       # All checks
 
 ## License
 
-GPL-3.0 — see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
