@@ -39,4 +39,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -r requirements-quality.txt
+      - run: python -m ruff check .
+      - run: python -m ruff format --check .
+      - run: python -m mypy src/ --ignore-missing-imports
       - run: python -m pytest tests/test_catalog tests/test_research -q

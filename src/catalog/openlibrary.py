@@ -61,8 +61,13 @@ class OpenLibraryClient:
         url = API_BASE + path + ("?" + urlencode(params) if params else "")
         cache = self.cache_dir / (hashlib.sha256(url.encode()).hexdigest() + ".json")
         if cache.exists():
-            envelope = json.loads(cache.read_text())
-            if envelope["url"] != url or envelope["sha256"] != digest(envelope["data"]):
+            envelope: dict[str, Any] = json.loads(cache.read_text())
+            if (
+                not isinstance(envelope, dict)
+                or not isinstance(envelope.get("data"), dict)
+                or envelope.get("url") != url
+                or envelope.get("sha256") != digest(envelope["data"])
+            ):
                 raise ValueError(f"Corrupt API cache: {cache}")
             return envelope
         if self.offline:
