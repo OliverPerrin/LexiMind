@@ -1,0 +1,72 @@
+data:
+  processed:
+    summarization: data/processed/summarization
+    emotion: data/processed/emotion
+    topic: data/processed/topic
+    books: data/processed/books
+  tokenizer:
+    pretrained_model_name: google/flan-t5-base
+    max_length: 512
+    lower: false
+model:
+  d_model: 768
+  vocab_size: 32128
+  num_encoder_layers: 12
+  num_decoder_layers: 12
+  num_attention_heads: 12
+  ffn_dim: 2048
+  dropout: 0.1
+  activation: gated-gelu
+  use_pretrained: true
+  pretrained_model_name: google/flan-t5-base
+  use_relative_position_bias: true
+  gradient_checkpointing: false
+training:
+  dataloader:
+    batch_size: 16
+    shuffle: true
+    num_workers: 4
+    pin_memory: true
+    persistent_workers: true
+    prefetch_factor: 2
+  optimizer:
+    name: adamw
+    lr: 3.0e-05
+    weight_decay: 0.01
+    eps: 1.0e-06
+    betas:
+    - 0.9
+    - 0.98
+  scheduler:
+    name: cosine
+    warmup_steps: 350
+  trainer:
+    max_epochs: 8
+    gradient_clip_norm: 1.0
+    gradient_accumulation_steps: 3
+    validation_max_length: 128
+    label_smoothing: 0.1
+    task_weights:
+      summarization: 1.0
+      emotion: 1.0
+      topic: 0.3
+    max_train_samples: null
+    max_val_samples: 3000
+    early_stopping_patience: 3
+    log_grad_norm_frequency: 200
+    task_sampling: temperature
+    task_sampling_alpha: 0.5
+    gradient_conflict_frequency: 500
+    use_pcgrad: false
+  compile_encoder: true
+  compile_decoder: false
+  tokenizer_max_length: 512
+  gradient_checkpointing: true
+  use_relative_position_bias: true
+  freeze_encoder_layers: 4
+checkpoint_out: outputs/multiseed_emnlp/seed_17/checkpoints/best.pt
+labels_out: outputs/multiseed_emnlp/seed_17/labels.json
+history_out: outputs/multiseed_emnlp/seed_17/training_history.json
+resume_from: null
+device: cuda
+seed: 17
