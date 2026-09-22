@@ -17,7 +17,7 @@ has a source-attributed catalogue, search, genre filters, content-based recommen
 and a reading list that stays in your browser. The Python project preserves the
 original multi-task transformer and its experimental record.
 
-[Product direction](docs/product.md) · [Catalogue provenance](data/catalog/README.md) ·
+[Live website](https://leximind-five.vercel.app) · [Product direction](docs/product.md) · [Catalogue provenance](data/catalog/README.md) ·
 [Historical results](docs/RESULTS.md) · [Research plan](docs/research_plan_2026.md)
 
 ## Book discovery
@@ -61,6 +61,8 @@ npm run test:e2e
 
 The website deploys from `web/` on Vercel without a GPU, model API key, or database.
 See [web/README.md](web/README.md) for deployment and browser tests.
+The first production deployment and its verification are recorded in
+[docs/deployment.md](docs/deployment.md).
 
 ### Catalogue maintenance
 

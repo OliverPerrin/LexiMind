@@ -1,8 +1,11 @@
 # LexiMind: book discovery
 
-Status: implementation underway, 22 September 2026. Research training and experiments
+Status: first website deployed, 22 September 2026. Research training and experiments
 are paused at the owner's request. Software tests and catalogue verification remain
 part of development.
+
+Live website: https://leximind-five.vercel.app. The first release contains 89 works
+and 84 sourced descriptions. See `docs/deployment.md` for verification and limitations.
 
 ## Purpose
 
