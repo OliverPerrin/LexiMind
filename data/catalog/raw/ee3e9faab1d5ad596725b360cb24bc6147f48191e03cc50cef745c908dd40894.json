@@ -1,0 +1,45 @@
+{
+  "url": "https://openlibrary.org/works/OL15556315W.json",
+  "retrievedAt": "2026-09-22T14:28:50.462656+00:00",
+  "sha256": "130e0d35de9d80e6e870b86ae5785c46476e59231fff67af567ca4d3d67546d1",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Veronica went home to be whole again\r\n\r\n An accident on her wedding day had left Veronica Spencer physically scarred. Emotionally shattered.\r\n\r\n So she returned to the one place she had ever felt secure --Chapman Ranch, in the heart of Wyoming--only to find that everything had changed. Cole Chapman was in charge now!\r\n\r\n To Cole, Veronica was still the undisciplined child of the woman who'd left his father. Veronica vowed to prove Cole wrong, never dreaming that an adolescent crush would suddenly turn to love."
+    },
+    "covers": [
+      6997282
+    ],
+    "key": "/works/OL15556315W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL1437085A"
+        }
+      }
+    ],
+    "title": "Vows of the heart",
+    "subjects": [
+      "Love stories"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL177T"
+    ],
+    "latest_revision": 7,
+    "revision": 7,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2010-12-08T00:38:20.975965"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-31T19:23:00.605643"
+    }
+  }
+}

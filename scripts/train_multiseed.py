@@ -57,9 +57,7 @@ def run_single_seed(
     if use_pcgrad:
         cmd.append("training.trainer.use_pcgrad=true")
     if gradient_conflict_frequency > 0:
-        cmd.append(
-            f"training.trainer.gradient_conflict_frequency={gradient_conflict_frequency}"
-        )
+        cmd.append(f"training.trainer.gradient_conflict_frequency={gradient_conflict_frequency}")
     if config_overrides:
         cmd.extend(config_overrides.split())
 
@@ -224,20 +222,29 @@ def generate_latex_table(aggregated: Dict, seeds: List[int]) -> str:
     """
     # Define the metrics we want in the table, grouped by task
     metric_rows = [
-        ("Summarization", [
-            ("ROUGE-1", "summarization/rouge1"),
-            ("ROUGE-2", "summarization/rouge2"),
-            ("ROUGE-L", "summarization/rougeL"),
-        ]),
-        ("Topic", [
-            ("Accuracy", "topic/accuracy"),
-            ("Macro F1", "topic/macro_f1"),
-        ]),
-        ("Emotion", [
-            ("Sample-avg F1", "emotion/sample_avg_f1"),
-            ("Macro F1", "emotion/macro_f1"),
-            ("Micro F1", "emotion/micro_f1"),
-        ]),
+        (
+            "Summarization",
+            [
+                ("ROUGE-1", "summarization/rouge1"),
+                ("ROUGE-2", "summarization/rouge2"),
+                ("ROUGE-L", "summarization/rougeL"),
+            ],
+        ),
+        (
+            "Topic",
+            [
+                ("Accuracy", "topic/accuracy"),
+                ("Macro F1", "topic/macro_f1"),
+            ],
+        ),
+        (
+            "Emotion",
+            [
+                ("Sample-avg F1", "emotion/sample_avg_f1"),
+                ("Macro F1", "emotion/macro_f1"),
+                ("Micro F1", "emotion/micro_f1"),
+            ],
+        ),
     ]
 
     lines = [
@@ -259,12 +266,10 @@ def generate_latex_table(aggregated: Dict, seeds: List[int]) -> str:
                 std = aggregated[key]["std"]
                 if "accuracy" in key:
                     lines.append(
-                        f"\\quad {display_name} & ${mean*100:.1f} \\pm {std*100:.1f}$ \\\\"
+                        f"\\quad {display_name} & ${mean * 100:.1f} \\pm {std * 100:.1f}$ \\\\"
                     )
                 else:
-                    lines.append(
-                        f"\\quad {display_name} & ${mean:.4f} \\pm {std:.4f}$ \\\\"
-                    )
+                    lines.append(f"\\quad {display_name} & ${mean:.4f} \\pm {std:.4f}$ \\\\")
             else:
                 lines.append(f"\\quad {display_name} & -- \\\\")
 
@@ -272,20 +277,20 @@ def generate_latex_table(aggregated: Dict, seeds: List[int]) -> str:
     frozen_keys = [k for k in aggregated if "frozen_tuned" in k]
     if frozen_keys:
         lines.append(r"\midrule")
-        lines.append(
-            r"\multicolumn{2}{l}{\textit{Emotion (val-tuned $\tau$)}} \\"
-        )
+        lines.append(r"\multicolumn{2}{l}{\textit{Emotion (val-tuned $\tau$)}} \\")
         for key in sorted(frozen_keys):
             metric_name = key.split("/")[-1].replace("frozen_tuned_", "").replace("_", " ").title()
             mean = aggregated[key]["mean"]
             std = aggregated[key]["std"]
             lines.append(f"\\quad {metric_name} & ${mean:.4f} \\pm {std:.4f}$ \\\\")
 
-    lines.extend([
-        r"\bottomrule",
-        r"\end{tabular}",
-        r"\end{table}",
-    ])
+    lines.extend(
+        [
+            r"\bottomrule",
+            r"\end{tabular}",
+            r"\end{table}",
+        ]
+    )
 
     return "\n".join(lines)
 
@@ -345,7 +350,7 @@ def main():
     print(f"  Seeds: {args.seeds}")
     print(f"  Number of runs: {n_seeds}")
     print(f"  Estimated time per seed: ~{ESTIMATED_HOURS_PER_SEED:.0f} hours (RTX 4070 12GB)")
-    print(f"  Estimated total time: ~{est_hours:.0f} hours ({est_hours/24:.1f} days)")
+    print(f"  Estimated total time: ~{est_hours:.0f} hours ({est_hours / 24:.1f} days)")
     if args.use_pcgrad:
         print("  PCGrad: ENABLED (will propagate to each seed run)")
     print(f"  Output directory: {args.output_dir}")
@@ -356,9 +361,7 @@ def main():
     if not args.skip_training:
         train_start = time.time()
         for i, seed in enumerate(args.seeds):
-            conflict_freq = (
-                args.conflict_frequency if seed == args.conflict_seed else 0
-            )
+            conflict_freq = args.conflict_frequency if seed == args.conflict_seed else 0
             _, seed_elapsed = run_single_seed(
                 seed,
                 args.config,

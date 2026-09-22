@@ -1,0 +1,152 @@
+{
+  "url": "https://openlibrary.org/works/OL41081W.json",
+  "retrievedAt": "2026-09-22T14:29:57.660563+00:00",
+  "sha256": "8bba4eec69ed849f4f1be7809c4ab926b5c55df872ad218f2d8f4602d920a117",
+  "data": {
+    "title": "The Raven",
+    "covers": [
+      8246077,
+      785950,
+      2862663,
+      6780821,
+      6780829,
+      6813925,
+      6848923,
+      7902180,
+      8993036,
+      9170425,
+      9995475,
+      9995498,
+      10209192,
+      10398497,
+      10507548,
+      10642069,
+      10894805,
+      11089142,
+      11496258,
+      10545692,
+      10545691,
+      11471609,
+      10176784,
+      -1,
+      11757115,
+      11833054,
+      12376045,
+      15048548,
+      12336348,
+      12568142,
+      13628182
+    ],
+    "subjects": [
+      "busts",
+      "narrative poetry",
+      "supernatural",
+      "talking birds",
+      "American poetry",
+      "poetry",
+      "ravens",
+      "American fantasy poetry",
+      "Young adult nonfiction",
+      "Fantasy poetry",
+      "Gothic poetry",
+      "American children's poetry",
+      "Poetry (poetic works by one author)",
+      "Children's poetry",
+      "Death, poetry",
+      "Translations into French",
+      "Illustrations",
+      "Ravens in art",
+      "Artists' books",
+      "Fiction, general",
+      "American literature",
+      "Fiction, psychological",
+      "American Horror tales",
+      "Translations into Czech",
+      "Translations"
+    ],
+    "key": "/works/OL41081W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL28127A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_times": [
+      "December",
+      "Wintertime",
+      "19th century"
+    ],
+    "excerpts": [
+      {
+        "excerpt": "Once upon a midnight dreary, while I pondered, weak and weary,\r\nOver many a quaint and curious volume of forgotten lore—\r\n    While I nodded, nearly napping, suddenly there came a tapping,\r\nAs of some one gently rapping, rapping at my chamber door.",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "links": [
+      {
+        "title": "The Raven - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/The_Raven",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Raven by Edgar Allan Poe | Poetry Foundation",
+        "url": "https://www.poetryfoundation.org/poems/48860/the-raven",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Raven by Edgar Allan Poe - Poems - Poets.org",
+        "url": "https://poets.org/poem/raven",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "eapoe.org/works/info/pp073",
+        "url": "https://www.eapoe.org/works/info/pp073.htm",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Edgar Allan Poe's The Raven - The English Center",
+        "url": "https://englishcenter.nl/tips/the-raven-edgar-allan-poe/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "subject_people": [
+      "Lenore",
+      "Pallas",
+      "Edgar Allan Poe (1809-1849)"
+    ],
+    "description": "\"The Raven\" is a narrative poem by American writer Edgar Allan Poe. First published in January 1845, the poem is often noted for its musicality, stylized language, and supernatural atmosphere. It tells of a talking raven's mysterious visit to a distraught lover, tracing the man's slow descent into madness. The poem makes use of folk, mythological, religious, and classical references. \"The Raven\" was first attributed to Poe in print in the New York Evening Mirror on January 29, 1845.",
+    "subject_places": [
+      "Israel"
+    ],
+    "latest_revision": 61,
+    "revision": 61,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T08:15:47.909262"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-01-26T15:23:33.852663"
+    }
+  }
+}

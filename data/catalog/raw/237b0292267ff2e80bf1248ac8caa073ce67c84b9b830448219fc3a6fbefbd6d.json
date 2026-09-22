@@ -1,0 +1,140 @@
+{
+  "url": "https://openlibrary.org/works/OL21435W.json",
+  "retrievedAt": "2026-09-22T14:29:00.484152+00:00",
+  "sha256": "a55415132d8664ecee9c028532fda7ecc11d681b8a8f764f05c87e6f310bd8ae",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "California’s gold country, 1850. A time when men sold their souls for a bag of gold and women sold their bodies for a place to sleep.  Angel expects nothing from men but betrayal. Sold into prostitution as a child, she survives by keeping her hatred alive. And what she hates most are the men who use her, leaving her empty and dead inside. Then she meets Michael Hosea. A man who seeks his Father’s heart in everything, Michael Hosea obeys God’s call to marry Angel and to love her unconditionally. Slowly, day by day, he defies Angel’s every bitter expectation until, despite her resistance her frozen heart begins to thaw. But with her unexpected softening come overwhelming feelings of unworthiness and fear. And so Angel runs. Back to the darkness, away from her husband’s pursuing love, terrified of the truth she can no longer deny: Her final healing must come from the One who loves her even more than Michael Hosea does…the One who will never let her go.  A life-changing story of God’s unconditional, redemptive, all-consuming love.\r\n([source][1])\r\n\r\n\r\n  [1]: http://francinerivers.com/books/redeeming-love/"
+    },
+    "links": [
+      {
+        "url": "http://francinerivers.com/books/redeeming-love/",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "francinerivers.com/books/redeeming-love"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Redeeming_Love",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Redeeming Love - Wikipedia"
+      },
+      {
+        "url": "https://www.npr.org/books/titles/422875189/redeeming-love",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Redeeming Love: NPR"
+      }
+    ],
+    "title": "Redeeming Love",
+    "covers": [
+      8272833,
+      9305961,
+      -1
+    ],
+    "subject_places": [
+      "San Francisco (Calif.)",
+      "San Francisco",
+      "California",
+      "Pair-A-Dice",
+      "New England",
+      "New York",
+      "The Palace",
+      "Sacramento"
+    ],
+    "subjects": [
+      "Frontier and pioneer life in fiction",
+      "Prostitutes in fiction",
+      "Frontier and pioneer life",
+      "Prostitutes",
+      "Fiction",
+      "Women pioneers",
+      "frontier life",
+      "love stories",
+      "Romance fiction",
+      "Christian fiction",
+      "historical fiction",
+      "Ficción",
+      "Prostitutas",
+      "Vida fronteriza",
+      "Fiction, christian, historical",
+      "California, fiction",
+      "Frontier and pioneer life, fiction",
+      "San francisco (calif.), fiction",
+      "Fiction, religious",
+      "Fiction, romance, historical",
+      "Fiction, christian, romance",
+      "Fiction, historical",
+      "Large type books",
+      "Fiction, christian, romance, general",
+      "Bible, criticism, interpretation, etc."
+    ],
+    "subject_people": [
+      "Michael Hosea",
+      "Sarah Hosea",
+      "Gomer",
+      "Hosea",
+      "God",
+      "Paul",
+      "Duke",
+      "Alex Stafford",
+      "Mae",
+      "Cleo",
+      "Rab",
+      "The Duchess",
+      "Lucky",
+      "Mai Ling",
+      "Joseph Hochschild",
+      "Miriam Altman",
+      "Virgil",
+      "Jonathan Axle",
+      "Susanna Axle",
+      "Susanna"
+    ],
+    "key": "/works/OL21435W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL24635A"
+        }
+      }
+    ],
+    "subject_times": [
+      "1850",
+      "1835"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "excerpts": [
+      {
+        "comment": "first sentence",
+        "excerpt": "Alex Stafford was just like Mama said.",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "genres": [
+      "/tags/OL177T",
+      "/tags/OL170T"
+    ],
+    "latest_revision": 43,
+    "revision": 43,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-08T21:04:42.588338"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-31T11:08:10.889849"
+    }
+  }
+}

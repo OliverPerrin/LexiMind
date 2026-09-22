@@ -1,0 +1,51 @@
+{
+  "url": "https://openlibrary.org/works/OL1037811W.json",
+  "retrievedAt": "2026-09-22T14:29:21.818260+00:00",
+  "sha256": "4c9a376846894a273d3d6e1fa659d264cc1e761185c6cba54ca14f6583c51f0a",
+  "data": {
+    "description": "Avul Pakir Jainulabdeen Abdul Kalam, the son of a little-educated boat-owner in Rameswaram, Tamil Nadu, had an unparalleled career as a defence scientist, culminating in the highest civilian award of India, the Bharat Ratna. As chief of the country’s defence research and development programme, Kalam demonstrated the great potential for dynamism and innovation that existed in seemingly moribund research establishments. This is the story of Kalam’s rise from obscurity and his personal and professional struggles, as well as the story of Agni, Prithvi, Akash, Trishul and Nag—missiles that have become household names in India and that have raised the nation to the level of a missile power of international reckoning. This is also the saga of independent India’s struggle for technological self-sufficiency and defensive autonomy—a story as much about politics, domestic and international, as it is about science.",
+    "title": "Wings of Fire",
+    "covers": [
+      9153819,
+      4890522,
+      4890524
+    ],
+    "subject_places": [
+      "India"
+    ],
+    "subjects": [
+      "Biography",
+      "Presidents",
+      "Scientists"
+    ],
+    "subject_people": [
+      "A. P. J. Abdul Kalam (1931-)",
+      "Avul Pakir Jainulabdeen Abdul Kalam"
+    ],
+    "key": "/works/OL1037811W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL101656A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "first_publish_date": "1999",
+    "latest_revision": 10,
+    "revision": 10,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T20:11:04.212508"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2023-10-18T11:34:40.987303"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "url": "https://openlibrary.org/works/OL257788W.json",
+  "retrievedAt": "2026-09-22T14:29:18.061032+00:00",
+  "sha256": "963f6b9eb162618555f76bee66f5cbf09a08c59186c8041af0b5283cbdba5d91",
+  "data": {
+    "title": "Cabal",
+    "covers": [
+      3658,
+      2156339,
+      11273015
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "Of all the rash and midnight promises made in the name of love, none, Boone now knew, was more certain to be broken than \"I'll never leave you.\""
+    },
+    "first_publish_date": "December 1988",
+    "key": "/works/OL257788W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL2621804A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "excerpt": "Of all the rash and midnight promises made in the name of love, none, Boone now knew, was more certain to be broken than \"I'll never leave you.\""
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Horror tales",
+      "Short stories",
+      "English Horror tales",
+      "Fiction, horror",
+      "Fiction"
+    ],
+    "description": {
+      "type": "/type/text",
+      "value": "Cabal is a 1988 horror novella by the British author Clive Barker. It was originally published in the United States as part of a collection comprising a novel and several short stories from Barker's sixth and final volume of the Books of Blood.\r\nhttps://en.wikipedia.org/wiki/Cabal_(novella)"
+    },
+    "subject_places": [
+      "Outlaws",
+      "Canada"
+    ],
+    "genres": [
+      "/tags/OL171T"
+    ],
+    "latest_revision": 14,
+    "revision": 14,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-24T00:36:36.861649"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T10:52:29.330364"
+    }
+  }
+}

@@ -111,14 +111,12 @@ class PCGrad:
             )
             task_grads[task_name] = [
                 g if g is not None else torch.zeros_like(p)
-                for g, p in zip(grads, all_params)
+                for g, p in zip(grads, all_params, strict=False)
             ]
 
         # Step 2: Project conflicting shared-param gradients in place.
         shared_only = {name: grads[:n_shared] for name, grads in task_grads.items()}
-        stats = self._project_conflicting_gradients(
-            shared_only, list(task_losses.keys())
-        )
+        stats = self._project_conflicting_gradients(shared_only, list(task_losses.keys()))
         for name in task_grads:
             task_grads[name] = shared_only[name] + task_grads[name][n_shared:]
 
@@ -187,9 +185,9 @@ class PCGrad:
                         offset = 0
                         for k, grad in enumerate(task_grads[name_i]):
                             numel = grad.numel()
-                            task_grads[name_i][k] = g_i_projected[
-                                offset : offset + numel
-                            ].reshape(grad.shape)
+                            task_grads[name_i][k] = g_i_projected[offset : offset + numel].reshape(
+                                grad.shape
+                            )
                             offset += numel
 
                         flat_grads[name_i] = g_i_projected

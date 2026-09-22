@@ -1,0 +1,69 @@
+{
+  "url": "https://openlibrary.org/works/OL51948W.json",
+  "retrievedAt": "2026-09-22T14:29:50.020716+00:00",
+  "sha256": "144823f9d91c29e7087af07ed25b2b0b4e4daa66d7f69d4fcaf85bf0e4a02344",
+  "data": {
+    "description": "There is a well-known saying that the whole of Western Philosophy is footnotes of Plato. This is because his writings have set the schema that philosophy can be said to have followed ever since. Following the teachings of Socrates, Plato's works are among the world's greatest literature. The Apology is the speech made by Socrates in his own defence at his trail, and his justification for his life.Please Note:  This book is easy to read in true text, not scanned images that can sometimes be difficult to decipher.  The Microsoft eBook has a contents page linked to the chapter headings for easy navigation. The Adobe eBook has bookmarks at chapter headings and is printable up to two full copies per year",
+    "title": "Ἀπολογία Σωκράτους",
+    "key": "/works/OL51948W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL12823A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      14407561,
+      6973271,
+      12327220,
+      14106548,
+      14106549,
+      10510440
+    ],
+    "subjects": [
+      "Nonfiction",
+      "Philosophy",
+      "Sophists (Greek philosophy)",
+      "Filosofía griega",
+      "History & Surveys",
+      "Ancient & Classical",
+      "Philosophie",
+      "Fiction, historical, general",
+      "Socrates.",
+      "Language and languages, study and teaching",
+      "Plato",
+      "Socrates",
+      "Spirituality",
+      "Philosophy, ancient",
+      "Criticism and interpretation",
+      "Immortality",
+      "Trials, litigation"
+    ],
+    "subject_people": [
+      "Socrates",
+      "Platon",
+      "Socrate",
+      "Platon (0428?-0348? av. J.-C)"
+    ],
+    "genres": [
+      "/tags/OL170T"
+    ],
+    "latest_revision": 59,
+    "revision": 59,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T16:30:47.596577"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T15:47:52.446983"
+    }
+  }
+}

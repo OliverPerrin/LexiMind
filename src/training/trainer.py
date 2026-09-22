@@ -301,9 +301,7 @@ class Trainer:
             shared_params = [p for p in self.model.encoder.parameters() if p.requires_grad]
             shared_ids = {id(p) for p in shared_params}
             head_params = [
-                p
-                for p in self.model.parameters()
-                if p.requires_grad and id(p) not in shared_ids
+                p for p in self.model.parameters() if p.requires_grad and id(p) not in shared_ids
             ]
             tqdm.write("  PCGrad active: computing per-task gradients with projection")
 
@@ -475,12 +473,14 @@ class Trainer:
 
         if not self.model.training:
             rouge_scores = calculate_rouge(preds, refs)
-            metrics.update({
-                "rouge1": rouge_scores["rouge1"],
-                "rouge2": rouge_scores["rouge2"],
-                "rougeL": rouge_scores["rougeL"],
-                "bleu4": calculate_bleu(preds, refs),
-            })
+            metrics.update(
+                {
+                    "rouge1": rouge_scores["rouge1"],
+                    "rouge2": rouge_scores["rouge2"],
+                    "rougeL": rouge_scores["rougeL"],
+                    "bleu4": calculate_bleu(preds, refs),
+                }
+            )
 
         return loss, metrics
 
@@ -605,9 +605,7 @@ class Trainer:
                 if p.grad is not None:
                     grad_vec.append(p.grad.detach().flatten().to(torch.float32))
                 else:
-                    grad_vec.append(
-                        torch.zeros(p.numel(), dtype=torch.float32, device=p.device)
-                    )
+                    grad_vec.append(torch.zeros(p.numel(), dtype=torch.float32, device=p.device))
             if grad_vec:
                 task_grads[task] = torch.cat(grad_vec)
 

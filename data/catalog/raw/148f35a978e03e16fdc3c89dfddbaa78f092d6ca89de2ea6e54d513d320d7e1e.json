@@ -1,0 +1,51 @@
+{
+  "url": "https://openlibrary.org/works/OL16031718W.json",
+  "retrievedAt": "2026-09-22T14:28:51.659544+00:00",
+  "sha256": "742e56f887c33d3194976598a84fe87d6a0990bde52da258d51860649f518a76",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "If only she could turn back the clock!\r\nJuliet Stone was an acclaimed actress and a very happy bride-to-be. But disaster struck when a strange illness ruined her career and caused her fiance to desert her. \r\nLonely and desperate, Juliet accepted Dr. Damon Masters's proposal of marriage. It would enable him to take an important job in the Middle East, and at least it would keep her busy. She had no feelings for Damon--or so she thought until Monique Lamont, beautiful and brilliant, came back into his life. And by then it was too late ...."
+    },
+    "subjects": [
+      "Fiction",
+      "romance",
+      "Love stories"
+    ],
+    "key": "/works/OL16031718W",
+    "title": "Wife For A Year",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL3328092A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      6907372
+    ],
+    "subject_people": [
+      "Juliet Stone",
+      "Dr. Damon Masters"
+    ],
+    "genres": [
+      "/tags/OL177T"
+    ],
+    "latest_revision": 8,
+    "revision": 8,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2011-08-08T01:24:10.896738"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T17:28:23.748939"
+    }
+  }
+}

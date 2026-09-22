@@ -1296,7 +1296,7 @@ def plot_multiseed_curves(multiseed_dir: Path) -> None:
 
         # Collect per-seed curves
         curves = []
-        for seed_name, data in all_data.items():
+        for _seed_name, data in all_data.items():
             vals = data.get(key, [])[:n_epochs]
             if len(vals) == n_epochs:
                 curves.append(vals)
@@ -1331,7 +1331,7 @@ def plot_multiseed_curves(multiseed_dir: Path) -> None:
                 mean + std,
                 alpha=0.25,
                 color=COLORS["primary"],
-                label=f"\u00b11 std",
+                label="\u00b11 std",
             )
 
             # Data-adaptive y-axis
@@ -1368,11 +1368,11 @@ def plot_multiseed_curves(multiseed_dir: Path) -> None:
         ("emotion", "Emotion Detection", "val_emotion_f1", "F1 Score", COLORS["emotion"]),
     ]
 
-    for col, (task, title, metric_key, y_label, color) in enumerate(task_configs):
+    for col, (_task, title, metric_key, y_label, color) in enumerate(task_configs):
         ax = axes[col]
 
         curves = []
-        for seed_name, data in all_data.items():
+        for _seed_name, data in all_data.items():
             vals = data.get(metric_key, [])[:n_epochs]
             if len(vals) == n_epochs:
                 curves.append(vals)
@@ -1388,7 +1388,7 @@ def plot_multiseed_curves(multiseed_dir: Path) -> None:
                 mean,
                 linewidth=2.5,
                 color=color,
-                label=f"Mean \u00b1 std",
+                label="Mean \u00b1 std",
                 marker="o",
                 markersize=4,
             )

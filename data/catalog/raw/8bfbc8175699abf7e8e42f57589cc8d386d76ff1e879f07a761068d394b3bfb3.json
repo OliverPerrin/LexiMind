@@ -1,0 +1,54 @@
+{
+  "url": "https://openlibrary.org/works/OL27294413W.json",
+  "retrievedAt": "2026-09-22T14:29:24.171954+00:00",
+  "sha256": "d8d960f27c7c72efe5a7e4f5f19738e388f3581270938cafc7aa72384399a00b",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "The Diary of a Young Girl- Anne Frank",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL446842A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL27294413W",
+    "subject_times": [
+      "The Second World War",
+      "The Holocaust"
+    ],
+    "subject_places": [
+      "Neatherlands",
+      "nazi camps"
+    ],
+    "description": "The Diary of a Young Girl, also known as The Diary of Anne Frank, is a book of the writings from the Dutch-language diary kept by Anne Frank while she was in hiding for two years with her family during the Nazi occupation of the Netherlands. The family was apprehended in 1944, and Anne Frank died of typhus in the Bergen-Belsen concentration camp in 1945. Anne's diaries were retrieved by Miep Gies and Bep Voskuijl. Miep gave them to Anne's father, Otto Frank, the family's only survivor, just after the Second World War was over.",
+    "subject_people": [
+      "Anne Frank"
+    ],
+    "covers": [
+      13526331
+    ],
+    "subjects": [
+      "Historical",
+      "Biography"
+    ],
+    "genres": [
+      "/tags/OL170T"
+    ],
+    "latest_revision": 6,
+    "revision": 6,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2022-02-11T01:31:55.292965"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T23:40:20.302727"
+    }
+  }
+}

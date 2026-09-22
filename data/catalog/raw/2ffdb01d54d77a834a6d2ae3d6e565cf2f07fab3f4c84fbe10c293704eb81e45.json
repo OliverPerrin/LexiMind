@@ -1,0 +1,494 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Amystery_and_detective_stories+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-22T14:28:31.835437+00:00",
+  "sha256": "c7d904f9774effe9934e26a3126699cefc4241ae63220ff30d9b103ca7dd93f2",
+  "data": {
+    "numFound": 26934,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 26934,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:mystery_and_detective_stories language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL21218A"
+        ],
+        "author_name": [
+          "Leslie McFarlane"
+        ],
+        "cover_i": 15150728,
+        "first_publish_year": 1930,
+        "key": "/works/OL39160W",
+        "language": [
+          "eng",
+          "ger",
+          "fre",
+          "heb"
+        ],
+        "title": "The Hidden Staircase",
+        "subject": [
+          "Detective and mystery stories",
+          "Fiction",
+          "Juvenile fiction",
+          "Mystery",
+          "Mystery and detective stories",
+          "Drew, nancy (fictitious character), fiction",
+          "Children's fiction",
+          "Adventure stories",
+          "Women detectives",
+          "CollectionID:NDMS"
+        ]
+      },
+      {
+        "author_key": [
+          "OL27695A"
+        ],
+        "author_name": [
+          "Agatha Christie"
+        ],
+        "cover_i": 13670505,
+        "first_publish_year": 1924,
+        "key": "/works/OL471940W",
+        "language": [
+          "eng",
+          "ger",
+          "fre",
+          "spa",
+          "ita",
+          "chi",
+          "dut"
+        ],
+        "title": "Poirot investigates",
+        "subject": [
+          "Hercule Poirot (Fictitious character)",
+          "Private investigators",
+          "Chief Inspector Japp (Fictitious character)",
+          "Belgians",
+          "English Detective and mystery stories",
+          "Detective and mystery stories",
+          "Fiction",
+          "Captain Hastings (Fictitious character)",
+          "English Short stories",
+          "Historical Fiction",
+          "Mystery",
+          "Romance",
+          "England, fiction",
+          "Poirot, hercule (fictitious character), fiction",
+          "Fiction, mystery & detective, traditional",
+          "Fiction, mystery & detective, short stories",
+          "Fiction, mystery & detective, collections & anthologies",
+          "Fiction, crime",
+          "Fiction, mystery & detective, historical",
+          "Private investigators -- England -- Fiction",
+          "Detective and mystery stories, English",
+          "Belgians -- England -- Fiction",
+          "Poirot, Hercule (Fictitious character) -- Fiction",
+          "Murder",
+          "Investigation",
+          "Meurtre",
+          "Romans, nouvelles",
+          "Enquêtes",
+          "Fiction, mystery & detective, general",
+          "Private investigators, fiction",
+          "Fiction, general",
+          "Fiction, short stories (single author)",
+          "Mind and body",
+          "Social sciences"
+        ]
+      },
+      {
+        "author_key": [
+          "OL161167A"
+        ],
+        "author_name": [
+          "Arthur Conan Doyle"
+        ],
+        "cover_i": 13405534,
+        "first_publish_year": 1887,
+        "key": "/works/OL262496W",
+        "language": [
+          "spa",
+          "heb",
+          "fre",
+          "ita",
+          "por",
+          "jpn",
+          "ukr",
+          "ger",
+          "fin",
+          "chi",
+          "eng"
+        ],
+        "title": "A Study in Scarlet",
+        "subject": [
+          "Action & Adventure Fiction",
+          "aortic aneurysm",
+          "Battle of Maiwand",
+          "Blessing and cursing",
+          "British and irish fiction (fictional works by one author)",
+          "Children's fiction",
+          "Classics",
+          "crime scenes",
+          "Detective and mystery stories",
+          "Detective Fiction",
+          "Detectives",
+          "Detectives privados",
+          "Detektive",
+          "Détectives",
+          "English Detective and mystery stories",
+          "English literature",
+          "Ficción",
+          "Fiction",
+          "hemoglobin",
+          "Investigadores privados",
+          "Krimi",
+          "Literature and fiction",
+          "mystery and suspense",
+          "Murder",
+          "Mystery and detective stories",
+          "Mystery fiction",
+          "Novela",
+          "Novela de misterio",
+          "pioneers",
+          "Private investigators",
+          "Scottish Terriers",
+          "Second Anglo-Afghan War",
+          "The Church of Jesus Christ and Latter-day Saints",
+          "Trichinopoly cigars",
+          "Sherlock Holmes",
+          "IIIT",
+          "Long now manual for civilization",
+          "Investigation"
+        ]
+      },
+      {
+        "author_key": [
+          "OL27695A"
+        ],
+        "author_name": [
+          "Agatha Christie"
+        ],
+        "cover_i": 11153508,
+        "first_publish_year": 1924,
+        "key": "/works/OL472549W",
+        "language": [
+          "pol",
+          "por",
+          "eng",
+          "ger",
+          "gre",
+          "fre",
+          "spa",
+          "ita",
+          "heb",
+          "chi",
+          "dut"
+        ],
+        "title": "The Man in the Brown Suit",
+        "subject": [
+          "Fiction",
+          "Mystery",
+          "English literature",
+          "Fiction, mystery & detective, general",
+          "French fiction",
+          "English Detective and mystery stories",
+          "London (england), fiction",
+          "Fiction, mystery & detective, traditional",
+          "Fiction, mystery & detective, international crime & mystery",
+          "Fiction, mystery & detective, amateur sleuth",
+          "Fiction, mystery & detective, women sleuths",
+          "South Africa -- Fiction",
+          "Detective and mystery stories",
+          "London (England) -- Fiction",
+          "Murder -- Investigation -- Fiction",
+          "Women adventurers",
+          "Fiction, thrillers, general",
+          "Race, colonel johnny (fictitious character), fiction",
+          "Fiction, general"
+        ]
+      },
+      {
+        "author_key": [
+          "OL27695A"
+        ],
+        "author_name": [
+          "Agatha Christie"
+        ],
+        "cover_i": 12996574,
+        "first_publish_year": 1925,
+        "key": "/works/OL472542W",
+        "language": [
+          "ita",
+          "ger",
+          "fre",
+          "spa",
+          "eng"
+        ],
+        "title": "The Secret of Chimneys",
+        "subject": [
+          "Fiction",
+          "Mystery",
+          "Superintendent Battle (Fictitious character)",
+          "English Detective and mystery stories",
+          "Murder",
+          "Investigation",
+          "Conspiracies",
+          "Manors",
+          "Detective and mystery stories",
+          "Fiction, mystery & detective, traditional",
+          "Fiction, thrillers, suspense",
+          "London (england), fiction",
+          "Poirot, hercule (fictitious character), fiction",
+          "Fiction, mystery & detective, general",
+          "Fiction, mystery & detective, police procedural",
+          "Fiction, mystery & detective, international crime & mystery",
+          "Fiction, thrillers, general",
+          "Fiction, historical, general",
+          "English literature",
+          "Fiction, general"
+        ]
+      },
+      {
+        "author_key": [
+          "OL21218A"
+        ],
+        "author_name": [
+          "Leslie McFarlane"
+        ],
+        "cover_i": 15150724,
+        "first_publish_year": 1930,
+        "key": "/works/OL39275W",
+        "language": [
+          "heb",
+          "eng"
+        ],
+        "title": "The Secret of the Old Clock",
+        "subject": [
+          "American Detective and mystery stories",
+          "Children's stories, American",
+          "Detective and mystery stories",
+          "Fiction",
+          "Juvenile fiction",
+          "Mystery",
+          "Mystery and detective stories",
+          "Nancy Drew (Fictitious character)",
+          "Adventure stories",
+          "Women detectives",
+          "Wills",
+          "Families",
+          "Inheritance and succession",
+          "Thieves",
+          "Children's fiction",
+          "Drew, nancy (fictitious character), fiction",
+          "Wills, fiction",
+          "Rescue work, fiction",
+          "CollectionID:NDMS"
+        ]
+      },
+      {
+        "author_key": [
+          "OL29881A"
+        ],
+        "author_name": [
+          "A. A. Milne"
+        ],
+        "cover_i": 6299936,
+        "first_publish_year": 1922,
+        "key": "/works/OL476846W",
+        "language": [
+          "hun",
+          "spa",
+          "rus",
+          "eng"
+        ],
+        "title": "The Red House Mystery",
+        "subject": [
+          "Mystery and detective stories",
+          "Fiction",
+          "Detective and mystery stories",
+          "England, fiction",
+          "Fiction, mystery & detective, general",
+          "Large type books",
+          "Parodies, imitations",
+          "Mansions",
+          "Murder",
+          "Investigation",
+          "FICTION / General"
+        ]
+      },
+      {
+        "author_key": [
+          "OL161167A"
+        ],
+        "author_name": [
+          "Arthur Conan Doyle"
+        ],
+        "cover_i": 9246429,
+        "first_publish_year": 1893,
+        "key": "/works/OL262463W",
+        "language": [
+          "jpn",
+          "chi",
+          "por",
+          "fre",
+          "spa",
+          "eng"
+        ],
+        "title": "Memoirs of Sherlock Holmes [11 stories]",
+        "subject": [
+          "Crime & Mystery",
+          "catalepsy",
+          "amyl nitrate",
+          "suicide by hanging",
+          "broughams",
+          "ancestors",
+          "asphyxiation",
+          "blackmail",
+          "brandy",
+          "brokers",
+          "butlers",
+          "cavaliers",
+          "Children's stories",
+          "Classic Literature",
+          "clerks",
+          "coffee",
+          "Detective and mystery stories",
+          "Detective Fiction",
+          "elms",
+          "English",
+          "English children's stories",
+          "English Detective and mystery stories",
+          "English Short stories",
+          "fiction",
+          "gemstones",
+          "gold",
+          "horse racing",
+          "Justices of the Peace",
+          "maids",
+          "maps",
+          "meres",
+          "mixed race children",
+          "Mystery and detective stories",
+          "oaks",
+          "opium",
+          "police",
+          "Private investigators",
+          "Private investigators in fiction",
+          "race horses",
+          "redundancy",
+          "riddles",
+          "scalpels",
+          "scrips",
+          "Short Stories",
+          "stock market",
+          "tobacco pipes",
+          "treaties",
+          "yellow fever",
+          "Great britain, fiction",
+          "Fiction, mystery & detective, general",
+          "Private investigators, fiction",
+          "English literature",
+          "Fiction, mystery & detective, traditional",
+          "British and irish fiction (fictional works by one author)",
+          "Watson, john h. (fictitious character), fiction",
+          "Fiction, mystery & detective, short stories",
+          "England, fiction",
+          "John H. Watson (Fictitious character)",
+          "General",
+          "Mystery & Detective",
+          "Sherlock Holmes (Fictitious character)",
+          "Detective and Mystery Stories-Fiction",
+          "Novela policíaca inglesa",
+          "FICTION / Mystery & Detective / Traditional British",
+          "FICTION / Classics",
+          "Children's fiction",
+          "Fiction, action & adventure",
+          "Long Now Manual for Civilization",
+          "Holmes, Sherlock (Fictitious character) -- Fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL27695A"
+        ],
+        "author_name": [
+          "Agatha Christie"
+        ],
+        "cover_i": 10247294,
+        "first_publish_year": 1940,
+        "key": "/works/OL472250W",
+        "language": [
+          "ger",
+          "eng",
+          "fre",
+          "tur",
+          "spa",
+          "ita",
+          "chi"
+        ],
+        "title": "Sleeping Murder",
+        "subject": [
+          "Fiction",
+          "Jane Marple (Fictitious character)",
+          "Women detectives",
+          "Women detectives in fiction",
+          "Mystery",
+          "Large type books",
+          "English Detective and mystery stories",
+          "Translations into French",
+          "English literature",
+          "Fiction, mystery & detective, traditional",
+          "Fiction, mystery & detective, women sleuths",
+          "Marple, jane (fictitious character), fiction",
+          "England, fiction",
+          "Detective and mystery stories",
+          "Inspectrices de police",
+          "Romans, nouvelles"
+        ]
+      },
+      {
+        "author_key": [
+          "OL2632008A"
+        ],
+        "author_name": [
+          "Raymond Chandler"
+        ],
+        "cover_i": 7268475,
+        "first_publish_year": 1939,
+        "key": "/works/OL15400582W",
+        "language": [
+          "ger",
+          "bul",
+          "ita",
+          "por",
+          "pol",
+          "fre",
+          "eng",
+          "chi",
+          "spa",
+          "swe"
+        ],
+        "title": "The Big Sleep",
+        "subject": [
+          "Fiction",
+          "Philip Marlowe (Fictitious character)",
+          "Private investigators",
+          "Detective and mystery stories",
+          "Women",
+          "General",
+          "Fiction, mystery & detective, hard-boiled",
+          "Marlowe, philip (fictitious character), fiction",
+          "California, fiction",
+          "Los angeles (calif.), fiction",
+          "Private investigators, fiction",
+          "Fiction, mystery & detective, general",
+          "Mystery and detective stories",
+          "English language, textbooks for foreign speakers",
+          "Mystery & detective"
+        ]
+      }
+    ]
+  }
+}

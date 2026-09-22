@@ -1,0 +1,71 @@
+{
+  "url": "https://openlibrary.org/works/OL5738154W.json",
+  "retrievedAt": "2026-09-22T14:28:21.726491+00:00",
+  "sha256": "7c8f6dc623e0109c7b23b38f03776ed1b33db67ef3469d40d8623cb90ddc2f91",
+  "data": {
+    "description": "This book is not only the third book in a trilogy, but it’s Act Three of the the three-act structure for the Mistborn Trilogy—it’s the part of the story where the heroes have discovered that what they thought was the problem all along was not the true danger, and now they’re fighting for not only their own survival but that of the world they live in. The mists are killing people and staying out much longer than they should. The Ashmounts are spewing more and more choking ash into the sky, burying the crops that everyone needs to eat to live. And Ruin, the creature Vin was tricked into freeing from its prison of a millennium, is loose to wreak havoc upon the land. Life under the Lord Ruler is starting to look like paradise in comparison.\r\n\r\nWhile the first book in the trilogy turned the standard fantasy story on its head, this volume (perhaps inevitably?) returns in a way to the tropes the first volume was a reaction against. Yet in this case the enemy is not a human or humanlike Dark Lord, but something more like a force of nature—entropy itself given a will and a guiding personality in the form of Ruin.\r\n\r\nUltimately, the book is about how the characters we have grown to love from the previous volumes—Vin, Elend, Sazed, TenSoon, Spook, Marsh, and others—find the courage and faith to fight on in the face of overwhelming odds, just as Kelsier taught them when he plotted the downfall of the Final Empire.",
+    "links": [
+      {
+        "title": "Book Webpage",
+        "url": "http://brandonsanderson.com/books/mistborn/the-hero-of-ages/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "The Hero of Ages",
+    "covers": [
+      14658094,
+      13540545
+    ],
+    "subjects": [
+      "Fiction",
+      "Fantasy",
+      "Epic Fantasy",
+      "Fantasy fiction",
+      "Fiction, fantasy, general",
+      "Children's fiction",
+      "Imaginary places",
+      "Magic"
+    ],
+    "key": "/works/OL5738154W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL1394865A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "location": "/works/OL5738154W",
+    "identifiers": {
+      "bookbrainz": [
+        "6be27e4a-cb5c-4084-8043-98fed735952c"
+      ],
+      "musicbrainz": [
+        "c51fda54-ede1-4cbe-9165-6958ed11949c"
+      ],
+      "wikidata": [
+        "Q3859308"
+      ]
+    },
+    "genres": [
+      "/tags/OL169T"
+    ],
+    "latest_revision": 27,
+    "revision": 27,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T11:11:21.289926"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-11T19:58:55.615635"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "url": "https://openlibrary.org/works/OL15094430W.json",
+  "retrievedAt": "2026-09-22T14:29:10.371082+00:00",
+  "sha256": "2de0764388a1f91089b76164c10f17471c2a94cbdcbe0032f4ccdcf3ca395620",
+  "data": {
+    "title": "Fear Street - The Knife",
+    "subjects": [
+      "Horror tales",
+      "collectionID:FearStreet",
+      "Children's fiction",
+      "Horror stories"
+    ],
+    "key": "/works/OL15094430W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL35524A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      2547647,
+      1578751,
+      3256015
+    ],
+    "description": "Every private room at Shadyside Hospital holds a shocking secret of its own. Student volunteer Laurie stumbles onto the hospital's sickest secret of all.",
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL337082L"
+        },
+        "position": "14"
+      }
+    ],
+    "genres": [
+      "/tags/OL171T"
+    ],
+    "latest_revision": 12,
+    "revision": 12,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2010-04-28T01:40:37.415752"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-31T16:55:43.074237"
+    }
+  }
+}

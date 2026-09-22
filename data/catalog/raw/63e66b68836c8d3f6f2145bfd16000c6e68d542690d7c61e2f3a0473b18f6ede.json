@@ -1,0 +1,164 @@
+{
+  "url": "https://openlibrary.org/works/OL17797130W.json",
+  "retrievedAt": "2026-09-22T14:28:57.181200+00:00",
+  "sha256": "4b4ca0ab20df9b08e3db410c40a19144a552b38160a9475e89c897dd45273e3a",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "A Gentleman in Moscow is a 2016 novel by Amor Towles. It is his second novel, published five years after his New York Times best seller, Rules of Civility (2011)."
+    },
+    "links": [
+      {
+        "title": "Author's Web Site",
+        "url": "http://www.amortowles.com/gentleman-moscow-amor-towles/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "A Count Becomes a Waiter in a Novel of Soviet Supremacy - The New York Times",
+        "url": "https://www.nytimes.com/2016/09/25/books/review/amor-towles-gentleman-in-moscow.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "http://www.npr.org/2016/09/03/490101866/a-gentleman-in-moscow-is-a-grand-hotel-adventure",
+        "title": "'A Gentleman In Moscow' Is A Grand Hotel Adventure - NPR",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "‘A Gentleman in Moscow’ is a charming reminder of what it means to be classy - The Washington Post",
+        "url": "https://www.washingtonpost.com/entertainment/books/a-gentleman-in-moscow-is-a-charming-reminder-of-what-it-means-to-be-classy/2016/09/19/f77d92a2-7b4c-11e6-beac-57a4a412e93a_story.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Kirkus Review",
+        "url": "https://www.kirkusreviews.com/book-reviews/amor-towles/a-gentleman-in-moscow/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Amor Towles Expands His Portfolio With ‘A Gentleman in Moscow’ - The Wall Street Journal",
+        "url": "https://www.wsj.com/articles/amor-towles-expands-his-portfolio-with-a-gentleman-in-moscow-1472743341",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Hotel That Inspired Amor Towles' 'A Gentleman in Moscow' - Condé Nast Traveler",
+        "url": "https://www.cntraveler.com/story/the-hotel-that-inspired-amor-towles-a-gentleman-in-moscow",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/A_Gentleman_in_Moscow",
+        "title": "A Gentleman in Moscow - Wikipedia",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "http://www.nytimes.com/2016/09/25/books/review/amor-towles-gentleman-in-moscow.html",
+        "title": "New York Times review",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "A Gentleman in Moscow",
+    "covers": [
+      11326818,
+      8080857,
+      8080858,
+      8846118,
+      8755907,
+      10107864,
+      11046683,
+      12196574,
+      13287008,
+      11264538,
+      12211971
+    ],
+    "subject_places": [
+      "Moscow",
+      "The Kremlin",
+      "The Metropol Hotel",
+      "Moscow (Russia)",
+      "Russia"
+    ],
+    "subjects": [
+      "historical fiction",
+      "literary fiction",
+      "political fiction",
+      "Aristocracy (Social class)",
+      "Home detention",
+      "FICTION / Literary",
+      "FICTION / Political",
+      "Fiction",
+      "Interpersonal relations",
+      "Hotels",
+      "FICTION / Historical",
+      "History",
+      "Detention of persons",
+      "Fiction, historical",
+      "Moscow (russia), fiction",
+      "Fiction, political",
+      "nyt:hardcover-fiction=2016-09-25",
+      "New York Times bestseller",
+      "New York Times reviewed",
+      "Fiction, historical, general",
+      "Saint petersburg (russia), fiction",
+      "Hotel Metropol (Moscow, Russia)"
+    ],
+    "subject_people": [
+      "Count Alexander Rostov"
+    ],
+    "key": "/works/OL17797130W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7018678A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subject_times": [
+      "1922"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "excerpts": [
+      {
+        "excerpt": "21 June 1922 APPEARANCE OF COUNT ALEXANDER ILYICH ROSTOV BEFORE THE EMERGENCY COMMITTEE OF THE PEOPLE'S COMMISSARIAT FOR INTERNAL AFFAIRS",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "genres": [
+      "/tags/OL170T",
+      "/tags/OL174T"
+    ],
+    "latest_revision": 20,
+    "revision": 20,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2017-10-13T18:10:05.776186"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-28T13:06:28.110723"
+    }
+  }
+}

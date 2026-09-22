@@ -32,11 +32,15 @@ import argparse
 import json
 import random
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
 from datasets import load_dataset  # type: ignore[import-untyped]
 from tqdm import tqdm
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.catalog.identity import author_names, match_description, matched_work_id, normalize_title
 
 # Output directory
 OUTPUT_DIR = Path(__file__).parent.parent / "data" / "processed"
@@ -482,29 +486,20 @@ def is_english_text(text: str, min_ratio: float = 0.08, max_foreign: int = 5) ->
     return ratio >= min_ratio
 
 
-def normalize_title(title: str) -> str:
-    """Normalize a book title for matching."""
-    # Remove common prefixes/suffixes
-    title = re.sub(r"^(The|A|An)\s+", "", title, flags=re.IGNORECASE)
-    title = re.sub(r"\s*\([^)]*\)\s*", "", title)  # Remove parentheticals
-    title = re.sub(r"\s*:.+$", "", title)  # Remove subtitles
-    title = re.sub(r"[^\w\s]", "", title)  # Remove punctuation
-    return title.lower().strip()
-
-
 # -------- SUMMARIZATION: BOOKS + ARXIV ----------
 
 
-def download_goodreads_descriptions() -> dict[str, dict]:
+def download_goodreads_descriptions() -> dict[str, list[dict]]:
     """
     Download Goodreads book descriptions - back-cover style blurbs.
 
     These are "what the book is about" descriptions, not plot summaries.
-    Returns dict mapping normalized title -> {title, description}
+    Returns title buckets with author evidence; missing authors are rejected.
     """
     print("\nLoading Goodreads book descriptions...")
 
-    descriptions = {}
+    descriptions: dict[str, list[dict]] = {}
+    skipped_identity = 0
 
     # Try multiple sources
     datasets_to_try = [
@@ -540,23 +535,33 @@ def download_goodreads_descriptions() -> dict[str, dict]:
                 if not is_english_text(description):
                     continue
 
+                authors = author_names(item)
+                if not authors:
+                    skipped_identity += 1
+                    continue
                 norm_title = normalize_title(title)
-                if norm_title and norm_title not in descriptions:
-                    descriptions[norm_title] = {
-                        "title": title,
-                        "description": description,
-                    }
+                if norm_title:
+                    descriptions.setdefault(norm_title, []).append(
+                        {
+                            "title": title,
+                            "authors": authors,
+                            "description": description,
+                            "description_source": f"https://huggingface.co/datasets/{ds_name}",
+                        }
+                    )
 
             print(f"    Loaded {len(descriptions):,} descriptions from {ds_name}")
         except Exception as e:
             print(f"    {ds_name} failed: {e}")
 
-    print(f"    Total: {len(descriptions):,} unique book descriptions")
+    print(
+        f"    Total: {len(descriptions):,} title buckets; rejected {skipped_identity:,} without author evidence"
+    )
     return descriptions
 
 
 def download_book_descriptions(
-    goodreads_descriptions: dict[str, dict], max_samples: int = 20000
+    goodreads_descriptions: dict[str, list[dict]], max_samples: int = 20000
 ) -> list[dict[str, Any]]:
     """
     Download book description data by matching Gutenberg texts with Goodreads descriptions.
@@ -572,7 +577,7 @@ def download_book_descriptions(
         gutenberg = load_dataset("pg19", split="train")
 
     records: list[dict[str, Any]] = []
-    matched_titles = set()
+    matched_works = set()
     skipped_quality = 0
     skipped_play = 0
 
@@ -598,16 +603,18 @@ def download_book_descriptions(
         if not title:
             continue
 
-        # Check if we have a Goodreads description for this book
+        # Full title and author identity are mandatory. A title-only fallback
+        # silently paired unrelated books (for example, College Girl).
         norm_title = normalize_title(title)
-        if norm_title not in goodreads_descriptions:
+        candidates = goodreads_descriptions.get(norm_title, [])
+        if not isinstance(candidates, list):
+            continue  # Old title-only indexes must be rebuilt, never trusted.
+        goodreads_data = match_description(metadata, candidates)
+        if goodreads_data is None:
             continue
-
-        # Skip if already matched this book
-        if norm_title in matched_titles:
+        work_id = matched_work_id(metadata)
+        if work_id in matched_works:
             continue
-
-        goodreads_data = goodreads_descriptions[norm_title]
 
         # Skip plays and excluded titles
         if is_excluded_title(title):
@@ -647,7 +654,7 @@ def download_book_descriptions(
             continue
 
         book_excerpt = "\n\n".join(excerpt_parts)[:4000]
-        matched_titles.add(norm_title)
+        matched_works.add(work_id)
 
         records.append(
             {
@@ -655,6 +662,10 @@ def download_book_descriptions(
                 "summary": goodreads_data["description"][:800],  # Back-cover blurbs are shorter
                 "type": "literary",
                 "title": goodreads_data["title"],
+                "authors": goodreads_data["authors"],
+                "work_id": work_id,
+                "identity_status": "title_and_author_matched",
+                "description_source": goodreads_data["description_source"],
             }
         )
 

@@ -1,0 +1,443 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Ascience_fiction+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-22T14:28:07.987675+00:00",
+  "sha256": "c5e5af626a4418ab32ff2de81c0b79a652a42414b6c439fb5481a15e7a3d8700",
+  "data": {
+    "numFound": 74442,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 74442,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:science_fiction language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL13066A"
+        ],
+        "author_name": [
+          "H. G. Wells"
+        ],
+        "cover_i": 6419199,
+        "first_publish_year": 0,
+        "key": "/works/OL52266W",
+        "language": [
+          "ger",
+          "ita",
+          "spa",
+          "cat",
+          "fre",
+          "rus",
+          "eng",
+          "chi",
+          "mon",
+          "por"
+        ],
+        "title": "The Invisible Man",
+        "subject": [
+          "Ciencia-ficción",
+          "Classic Literature",
+          "Fiction",
+          "Mentally ill",
+          "Science Fiction & Fantasy",
+          "Science fiction",
+          "Scientists",
+          "English Science fiction",
+          "Experiments",
+          "Adaptations",
+          "Time travel",
+          "British and irish fiction (fictional works by one author)",
+          "England, fiction",
+          "Scientists, fiction",
+          "Children's fiction",
+          "Mystery and detective stories",
+          "Literature and fiction, science fiction",
+          "Fiction, science fiction, general",
+          "English literature",
+          "English fiction, history and criticism, 20th century",
+          "Wells, h. g. (herbert george), 1866-1946",
+          "FICTION / Classics",
+          "FICTION / Science Fiction / General",
+          "FICTION / Horror",
+          "Juvenile fiction",
+          "Roman pour la jeunesse",
+          "Comic and Graphic Books",
+          "Cartoons and comics",
+          "Comic books, strips",
+          "Animal experimentation",
+          "English language",
+          "French",
+          "Korean",
+          "German",
+          "Fiction, general",
+          "Fiction, historical, general",
+          "Elementary education of adults",
+          "Reading, remedial teaching",
+          "Spanish language",
+          "Readers",
+          "Horror tales",
+          "Psychological fiction",
+          "Scientists -- Fiction",
+          "Mentally ill -- Fiction",
+          "Science -- Experiments -- Fiction",
+          "Science -- Experiments",
+          "Long Now Manual for Civilization",
+          "Science"
+        ]
+      },
+      {
+        "author_key": [
+          "OL34221A"
+        ],
+        "author_name": [
+          "Isaac Asimov"
+        ],
+        "cover_i": 13790511,
+        "first_publish_year": 1953,
+        "key": "/works/OL46401W",
+        "language": [
+          "spa",
+          "tur",
+          "fre",
+          "ita",
+          "por",
+          "ger",
+          "pol",
+          "chi",
+          "eng"
+        ],
+        "title": "The Caves of Steel",
+        "subject": [
+          "Robots",
+          "Fiction",
+          "Fiction, science fiction, hard science fiction",
+          "Fiction, mystery & detective, general",
+          "Interplanetary voyages",
+          "Murder",
+          "American literature",
+          "American Science fiction",
+          "Science fiction",
+          "Overpopulation"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7044246A"
+        ],
+        "author_name": [
+          "刘慈欣"
+        ],
+        "cover_i": 7893958,
+        "first_publish_year": 2010,
+        "key": "/works/OL17610507W",
+        "language": [
+          "ger",
+          "fre",
+          "eng",
+          "chi",
+          "spa"
+        ],
+        "title": "Death's End (The Three-Body Problem Series Book 3)",
+        "subject": [
+          "Fiction",
+          "Science Fiction",
+          "Fiction, science fiction, general",
+          "Human-alien encounters",
+          "Imaginary wars and battles",
+          "Fiction, science fiction, action & adventure",
+          "Chinese Science fiction",
+          "Survival",
+          "Extraterrestrial beings",
+          "Hard Science Fiction",
+          "Alien Contact",
+          "FICTION / Science Fiction / Hard Science Fiction",
+          "FICTION / Science Fiction / Alien Contact",
+          "Chinese fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL34221A"
+        ],
+        "author_name": [
+          "Isaac Asimov"
+        ],
+        "cover_i": 6542967,
+        "first_publish_year": 1954,
+        "key": "/works/OL46398W",
+        "language": [
+          "ita",
+          "chi",
+          "por",
+          "ger",
+          "fre",
+          "pol",
+          "spa",
+          "eng"
+        ],
+        "title": "The Naked Sun",
+        "subject": [
+          "Fiction",
+          "Science fiction",
+          "Robots",
+          "Robots in fiction",
+          "Fiction, science fiction, hard science fiction",
+          "Fiction, mystery & detective, general",
+          "American literature",
+          "Fiction, science fiction, general",
+          "American Science fiction",
+          "Murder",
+          "Investigation",
+          "Space colonies"
+        ]
+      },
+      {
+        "author_key": [
+          "OL235668A"
+        ],
+        "author_name": [
+          "Dan Simmons"
+        ],
+        "cover_i": 484900,
+        "first_publish_year": 1990,
+        "key": "/works/OL1963251W",
+        "language": [
+          "ita",
+          "por",
+          "fre",
+          "pol",
+          "spa",
+          "eng"
+        ],
+        "title": "The Fall of Hyperion",
+        "subject": [
+          "Littérature américaine",
+          "Science-fiction américaine",
+          "Science-fiction",
+          "Fiction, science fiction, action & adventure",
+          "Fiction, science fiction, general"
+        ]
+      },
+      {
+        "author_key": [
+          "OL182660A",
+          "OL3121035A",
+          "OL14432725A"
+        ],
+        "author_name": [
+          "Аркадий Стругацкий",
+          "Борис Стругацкий",
+          "Arkady and Boris Strugatsky"
+        ],
+        "cover_i": 6752719,
+        "first_publish_year": 1978,
+        "key": "/works/OL7967812W",
+        "language": [
+          "por",
+          "fre",
+          "rus",
+          "spa",
+          "eng"
+        ],
+        "title": "Roadside Picnic",
+        "subject": [
+          "science fiction",
+          "Russian science fiction",
+          "alien visitation",
+          "anomalies",
+          "Russian fiction",
+          "Fiction, science fiction, general"
+        ]
+      },
+      {
+        "author_key": [
+          "OL34221A"
+        ],
+        "author_name": [
+          "Isaac Asimov"
+        ],
+        "cover_i": 6502517,
+        "first_publish_year": 1950,
+        "key": "/works/OL46390W",
+        "language": [
+          "dut",
+          "por",
+          "ger",
+          "rus",
+          "spa",
+          "eng"
+        ],
+        "title": "The Foundation Trilogy",
+        "subject": [
+          "American Science fiction",
+          "Fiction",
+          "Psychohistory",
+          "Science fiction",
+          "Life on other planets",
+          "Prophecies",
+          "Fiction, science fiction, general",
+          "Abenteuer",
+          "Science-Fiction-Literatur",
+          "Weltraum",
+          "Prophecy",
+          "Long Now Manual for Civilization"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7044246A"
+        ],
+        "author_name": [
+          "刘慈欣"
+        ],
+        "cover_i": 10526598,
+        "first_publish_year": 2008,
+        "key": "/works/OL16314245W",
+        "language": [
+          "pol",
+          "spa",
+          "tur",
+          "eng",
+          "fre",
+          "ita",
+          "chi",
+          "ger",
+          "por"
+        ],
+        "title": "The Dark Forest (The Three-Body Problem Series Book 2)",
+        "subject": [
+          "Chinese Science fiction",
+          "Fiction",
+          "Science Fiction",
+          "Fiction, science fiction, general",
+          "Human-alien encounters",
+          "Imaginary wars and battles",
+          "FICTION / Science Fiction / General",
+          "General"
+        ]
+      },
+      {
+        "author_key": [
+          "OL25342A"
+        ],
+        "author_name": [
+          "Mary Shelley"
+        ],
+        "cover_i": 12356249,
+        "first_publish_year": 1818,
+        "key": "/works/OL450063W",
+        "language": [
+          "ger",
+          "ita",
+          "por",
+          "fre",
+          "rus",
+          "eng",
+          "chi",
+          "spa",
+          "dut"
+        ],
+        "title": "Frankenstein; or, The Modern Prometheus",
+        "subject": [
+          "Frankenstein (Fictitious character)",
+          "Frankenstein's monster (Fictitious character)",
+          "Fiction",
+          "Victor Frankenstein (Fictitious character)",
+          "Scientists",
+          "Monsters",
+          "Fiction, horror",
+          "Frankenstein (fictitious character), fiction",
+          "Physicians, fiction",
+          "British fiction (fictional works by one author)",
+          "Scientists, fiction",
+          "Geneva (Switzerland), fiction",
+          "Horror stories",
+          "Fiction, science fiction, general",
+          "Fiction, general",
+          "Horror tales",
+          "Frankenstein (Shelley, Mary Wollstonecraft)",
+          "English fiction",
+          "Fiction, gothic",
+          "Monsters, fiction",
+          "English literature",
+          "Shelley, Mary Wollstonecraft, 1797-1851",
+          "English fiction (collections), 19th century",
+          "Literature and fiction, horror and ghost stories",
+          "Readers",
+          "Science fiction, history and criticism",
+          "Horror tales, history and criticism",
+          "Monstrous",
+          "Novela",
+          "Horror fiction",
+          "British and irish fiction (fictional works by one author)",
+          "Fiction, historical, general",
+          "English Science fiction",
+          "English Horror tales",
+          "Scientists in literature",
+          "Monsters in literature",
+          "Science, experiments, fiction",
+          "Reincarnation",
+          "Fiction, science fiction, hard science fiction",
+          "Switzerland, fiction",
+          "Literature and fiction, women authors",
+          "Literature, history and criticism",
+          "Science fiction",
+          "Monstres",
+          "Classic science fiction",
+          "Horror and supernatural fiction",
+          "Classic fiction",
+          "Science in literature",
+          "Illustration",
+          "Gothic fiction",
+          "English language, juvenile literature",
+          "Frankenstein, Victor (Fictitious character) -- Fiction",
+          "Science & technology in literature",
+          "Literary styles & movements - fiction",
+          "English fiction & prose literature - general & miscellaneous - literary criticism",
+          "Horror literature - literary criticism",
+          "Shelley, mary wollstonecraft , 1797-1851",
+          "Classics",
+          "Horror",
+          "Gothic",
+          "Mary shelley",
+          "Mary wollstonecraft shelley",
+          "Women authors",
+          "Ya",
+          "Young adult",
+          "Literature",
+          "Madness",
+          "Mad",
+          "Epistolary fiction",
+          "ghost",
+          "Drama (dramatic works by one author)",
+          "Gothic literature"
+        ]
+      },
+      {
+        "author_key": [
+          "OL34221A"
+        ],
+        "author_name": [
+          "Isaac Asimov"
+        ],
+        "cover_i": 9302081,
+        "first_publish_year": 1969,
+        "key": "/works/OL46374W",
+        "language": [
+          "eng",
+          "rus",
+          "por",
+          "spa",
+          "fre"
+        ],
+        "title": "Nightfall",
+        "subject": [
+          "American Science fiction",
+          "American Fantasy fiction",
+          "Fiction, science fiction, general",
+          "Science fiction"
+        ]
+      }
+    ]
+  }
+}

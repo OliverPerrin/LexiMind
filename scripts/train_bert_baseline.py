@@ -763,12 +763,8 @@ def evaluate_bert_model(
                     tuned_preds = tuned_preds.int()
 
                     results["emotion"]["tuned_macro_f1"] = tuned_macro
-                    results["emotion"]["tuned_sample_avg_f1"] = multilabel_f1(
-                        tuned_preds, targets
-                    )
-                    results["emotion"]["tuned_micro_f1"] = multilabel_micro_f1(
-                        tuned_preds, targets
-                    )
+                    results["emotion"]["tuned_sample_avg_f1"] = multilabel_f1(tuned_preds, targets)
+                    results["emotion"]["tuned_micro_f1"] = multilabel_micro_f1(tuned_preds, targets)
                     # Store thresholds so they can be frozen for test evaluation
                     results["emotion"]["_tuned_thresholds"] = best_thresholds
 
@@ -1214,20 +1210,30 @@ def main():
                     val_data["emotion_val"], tokenizer, val_data["binarizer"], config.max_length
                 )
                 val_emo_loader = DataLoader(
-                    val_emo_ds, batch_size=config.batch_size * 2, shuffle=False, num_workers=4,
+                    val_emo_ds,
+                    batch_size=config.batch_size * 2,
+                    shuffle=False,
+                    num_workers=4,
                     pin_memory=True,
                 )
                 val_eval = evaluate_bert_model(
-                    model, {"emotion": val_emo_loader}, device, config,
+                    model,
+                    {"emotion": val_emo_loader},
+                    device,
+                    config,
                     emotion_classes=list(val_data["binarizer"].classes_),
                 )
                 frozen_thresholds = val_eval.get("emotion", {}).get("_tuned_thresholds")
                 if frozen_thresholds:
-                    print(f"  >>> Val-tuned thresholds: min={min(frozen_thresholds):.2f}, "
-                          f"max={max(frozen_thresholds):.2f}, "
-                          f"mean={sum(frozen_thresholds)/len(frozen_thresholds):.2f}")
-                    print(f"  >>> Val tuned macro F1 (on val): "
-                          f"{val_eval['emotion'].get('tuned_macro_f1', 0):.4f}")
+                    print(
+                        f"  >>> Val-tuned thresholds: min={min(frozen_thresholds):.2f}, "
+                        f"max={max(frozen_thresholds):.2f}, "
+                        f"mean={sum(frozen_thresholds) / len(frozen_thresholds):.2f}"
+                    )
+                    print(
+                        f"  >>> Val tuned macro F1 (on val): "
+                        f"{val_eval['emotion'].get('tuned_macro_f1', 0):.4f}"
+                    )
                     print("  >>> Will apply frozen thresholds to TEST set.\n")
 
             # Build eval dataloaders for the target split
@@ -1237,7 +1243,10 @@ def main():
                     data["emotion_val"], tokenizer, data["binarizer"], config.max_length
                 )
                 eval_loaders["emotion"] = DataLoader(
-                    emo_ds, batch_size=config.batch_size * 2, shuffle=False, num_workers=4,
+                    emo_ds,
+                    batch_size=config.batch_size * 2,
+                    shuffle=False,
+                    num_workers=4,
                     pin_memory=True,
                 )
             if "topic" in tasks:
@@ -1245,12 +1254,18 @@ def main():
                     data["topic_val"], tokenizer, data["label_encoder"], config.max_length
                 )
                 eval_loaders["topic"] = DataLoader(
-                    top_ds, batch_size=config.batch_size * 2, shuffle=False, num_workers=4,
+                    top_ds,
+                    batch_size=config.batch_size * 2,
+                    shuffle=False,
+                    num_workers=4,
                     pin_memory=True,
                 )
 
             eval_results = evaluate_bert_model(
-                model, eval_loaders, device, config,
+                model,
+                eval_loaders,
+                device,
+                config,
                 emotion_classes=list(data["binarizer"].classes_) if "emotion" in tasks else None,
                 topic_classes=list(data["label_encoder"].classes_) if "topic" in tasks else None,
                 frozen_thresholds=frozen_thresholds,
@@ -1263,7 +1278,9 @@ def main():
 
             def make_serializable(obj):
                 if isinstance(obj, dict):
-                    return {k: make_serializable(v) for k, v in obj.items() if not k.startswith("_")}
+                    return {
+                        k: make_serializable(v) for k, v in obj.items() if not k.startswith("_")
+                    }
                 if isinstance(obj, list):
                     return [make_serializable(item) for item in obj]
                 if isinstance(obj, (np.integer, np.int64)):

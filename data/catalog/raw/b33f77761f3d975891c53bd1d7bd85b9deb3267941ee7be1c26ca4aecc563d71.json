@@ -1,0 +1,80 @@
+{
+  "url": "https://openlibrary.org/works/OL2625422W.json",
+  "retrievedAt": "2026-09-22T14:29:30.916722+00:00",
+  "sha256": "b3d73c5e559c5b7e3c90a9730562c2fe12160bfb1eab1c11c132cf08727827db",
+  "data": {
+    "description": "In 1982, having sold his jazz bar to devote himself to writing, Murakami began running to keep fit. A year later, he'd completed a solo course from Athens to Marathon, and now, after dozens of such races, not to mention triathlons and a dozen critically acclaimed books, he reflects upon the influence the sport has had on his life and--even more important--on his writing.Equal parts training log, travelogue, and reminiscence, this revealing memoir covers his four-month preparation for the 2005 New York City Marathon and takes us to places ranging from Tokyo's Jingu Gaien gardens, where he once shared the course with an Olympian, to the Charles River in Boston among young women who outpace him. Through this marvelous lens of sport emerges a panorama of memories and insights: the eureka moment when he decided to become a writer, his greatest triumphs and disappointments, his passion for vintage LPs, and the experience, after fifty, of seeing his race times improve and then fall back.By turns funny and sobering, playful and philosophical, What I Talk About When I Talk About Running is rich and revelatory, both for fans of this masterful yet guardedly private writer and for the exploding population of athletes who find similar satisfaction in running.From the Hardcover edition.",
+    "title": "走ることについて語るときに僕の語ること",
+    "lc_classifications": [
+      "PL856.U673 H37 2007"
+    ],
+    "covers": [
+      7167416,
+      9158571,
+      10724038,
+      8258657,
+      8439139,
+      10907043,
+      11149809,
+      11116695,
+      10273637
+    ],
+    "subject_places": [
+      "Japan"
+    ],
+    "first_publish_date": "2007",
+    "subject_people": [
+      "Haruki Murakami (1949-)",
+      "Haruki Murakami"
+    ],
+    "key": "/works/OL2625422W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL382524A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "dewey_number": [
+      "895.6/45"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Marathon running",
+      "Japanese Authors",
+      "Biography",
+      "Running",
+      "Biography & Autobiography",
+      "Health & Fitness",
+      "New Age",
+      "Nonfiction",
+      "Japanese essays",
+      "Authorship",
+      "Travel",
+      "Japan, biography",
+      "Authors, biography",
+      "nyt:hardcover-nonfiction=2008-08-17",
+      "New York Times bestseller",
+      "autobiography",
+      "japan",
+      "sports",
+      "memoir",
+      "Biographies as Topic"
+    ],
+    "latest_revision": 22,
+    "revision": 22,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T00:06:59.302014"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2025-05-23T10:09:25.907688"
+    }
+  }
+}

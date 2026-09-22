@@ -8,6 +8,10 @@ Data sources (only domains the model was trained on):
   - ArXiv academic papers (summarization training data)
   - Project Gutenberg / Goodreads literary works (summarization training data)
 
+Legacy title-only literary pairs are excluded. Newly matched literary records
+must carry full title/author identity and description-source evidence. Existing
+legacy datasets are not rewritten. Book mood labels are withheld until validated.
+
 The training data has already been filtered by download_data.py for:
   - English content only
   - Quality text (no metadata, errata, technical manuals)
@@ -16,7 +20,6 @@ The training data has already been filtered by download_data.py for:
 """
 
 import json
-import math
 import random
 import sys
 from collections import defaultdict
@@ -26,11 +29,7 @@ from typing import Any
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import torch  # noqa: E402
-from datasets import Dataset  # noqa: E402
 from tqdm import tqdm  # noqa: E402
-
-from src.inference.factory import create_inference_pipeline  # noqa: E402
 
 # --------------- Data Loading ---------------
 
@@ -84,7 +83,7 @@ def load_academic_papers(data_dir: Path, max_samples: int = 500) -> list[dict[st
 def load_literary(data_dir: Path, max_samples: int = 500) -> list[dict[str, Any]]:
     """Load literary samples (Project Gutenberg / Goodreads) from training data."""
     literary: list[dict[str, Any]] = []
-    seen_titles: set[str] = set()
+    seen_works: set[str] = set()
 
     for split in ["train", "test"]:
         summ_file = data_dir / "summarization" / f"{split}.jsonl"
@@ -98,18 +97,29 @@ def load_literary(data_dir: Path, max_samples: int = 500) -> list[dict[str, Any]
                 if item.get("type") != "literary":
                     continue
                 title = item.get("title", "")
-                if not title or title in seen_titles:
+                work_id = item.get("work_id")
+                # Historical title-only training pairs cannot supply trusted
+                # book descriptions to a public discovery dataset.
+                if (
+                    not title
+                    or not work_id
+                    or work_id in seen_works
+                    or item.get("identity_status") != "title_and_author_matched"
+                    or not item.get("description_source")
+                ):
                     continue
                 text = item.get("source", "")
                 summary = item.get("summary", "")
                 if len(text) < 300 or len(summary) < 50:
                     continue
-                seen_titles.add(title)
+                seen_works.add(work_id)
                 literary.append(
                     {
                         "text": text[:2000],
                         "title": title,
                         "reference_summary": summary[:600],
+                        "work_id": work_id,
+                        "description_source": item["description_source"],
                     }
                 )
 
@@ -117,15 +127,16 @@ def load_literary(data_dir: Path, max_samples: int = 500) -> list[dict[str, Any]
     literary = literary[:max_samples]
 
     samples = []
-    for i, item in enumerate(literary):
+    for item in literary:
         samples.append(
             {
-                "id": f"literary_{i}",
+                "id": item["work_id"],
                 "title": item["title"],
                 "text": item["text"],
                 "source_type": "literary",
                 "dataset": "gutenberg",
                 "reference_summary": item["reference_summary"],
+                "description_source": item["description_source"],
             }
         )
 
@@ -139,10 +150,9 @@ def load_literary(data_dir: Path, max_samples: int = 500) -> list[dict[str, Any]
 def run_inference(pipeline: Any, samples: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Run model inference on all samples to get summaries, topics, and emotions.
 
-    Emotion detection uses a low threshold (0.1) and selects the top non-neutral
-    emotion by score.  This yields a meaningful emotion label per item even
-    though the model was trained on social-media text and out-of-domain
-    (academic/literary) sigmoid scores tend to be uniformly low.
+    Social-media emotion predictions have not been validated as literary
+    atmosphere labels. Keep raw scores for auditing and explicitly abstain from
+    tone assignment, regardless of a score's magnitude.
     """
     results: list[dict[str, Any]] = []
 
@@ -162,33 +172,12 @@ def run_inference(pipeline: Any, samples: list[dict[str, Any]]) -> list[dict[str
         topic = topics[0] if topics else None
         emotion = emotions[0] if emotions else None
 
-        # Select a non-neutral emotion using weighted random sampling.
-        # Out-of-domain text produces nearly flat sigmoid scores across emotions
-        # (gaps of ~0.01–0.02), so argmax always picks the same label.
-        # Instead we apply softmax with temperature over non-neutral scores
-        # and sample, which produces a realistic diversity of tone labels.
-        primary_emotion = "neutral"
-        emotion_confidence = 0.0
-        if emotion and emotion.labels:
-            non_neutral = [
-                (label, score)
-                for label, score in zip(emotion.labels, emotion.scores)  # noqa: B905
-                if label != "neutral"
-            ]
-            if non_neutral:
-                nn_labels, nn_scores = zip(*non_neutral)  # noqa: B905
-                # Softmax with temperature to sharpen the distribution slightly
-                temperature = 2.0
-                max_s = max(nn_scores)
-                exps = [math.exp((s - max_s) / temperature) for s in nn_scores]
-                total = sum(exps)
-                weights = [e / total for e in exps]
-                chosen_idx = random.choices(range(len(nn_labels)), weights=weights, k=1)[0]
-                primary_emotion = nn_labels[chosen_idx]
-                emotion_confidence = nn_scores[chosen_idx]
-            else:
-                # Only "neutral" was returned
-                emotion_confidence = emotion.scores[0] if emotion.scores else 0.0
+        # A confident GoEmotions score is not a validated book mood label.
+        raw_emotion_scores = (
+            dict(zip(emotion.labels, emotion.scores, strict=True))
+            if emotion and emotion.labels
+            else {}
+        )
 
         result = {
             "id": sample["id"],
@@ -198,10 +187,13 @@ def run_inference(pipeline: Any, samples: list[dict[str, Any]]) -> list[dict[str
             "dataset": sample["dataset"],
             "topic": topic.label if topic else "Unknown",
             "topic_confidence": topic.confidence if topic else 0.0,
-            "emotion": primary_emotion,
-            "emotion_confidence": emotion_confidence,
+            "emotion": "Unknown",
+            "emotion_confidence": 0.0,
+            "emotion_status": "unvalidated_domain_abstention",
+            "raw_emotion_scores": raw_emotion_scores,
             "generated_summary": summary,
             "reference_summary": sample.get("reference_summary", ""),
+            "description_source": sample.get("description_source"),
         }
         results.append(result)
 
@@ -224,6 +216,11 @@ def run_inference(pipeline: Any, samples: list[dict[str, Any]]) -> list[dict[str
 def main() -> None:
     import argparse
 
+    import torch
+    from datasets import Dataset
+
+    from src.inference.factory import create_inference_pipeline
+
     parser = argparse.ArgumentParser(
         description="Build discovery dataset for the HuggingFace Space demo"
     )
@@ -231,7 +228,9 @@ def main() -> None:
     parser.add_argument("--checkpoint", type=Path, default=Path("checkpoints/best.pt"))
     parser.add_argument("--num-papers", type=int, default=500, help="Academic papers to sample")
     parser.add_argument("--num-literary", type=int, default=500, help="Literary works to sample")
-    parser.add_argument("--output", type=Path, default=Path("data/discovery_dataset.jsonl"))
+    parser.add_argument(
+        "--output", type=Path, default=Path("data/discovery_dataset_verified.jsonl")
+    )
     parser.add_argument("--push-to-hub", action="store_true", help="Push to HuggingFace Hub")
     parser.add_argument("--hub-repo", type=str, default="OliverPerrin/LexiMind-Discovery")
     args = parser.parse_args()

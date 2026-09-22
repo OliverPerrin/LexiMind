@@ -1,0 +1,187 @@
+{
+  "url": "https://openlibrary.org/works/OL17795349W.json",
+  "retrievedAt": "2026-09-22T14:29:01.652592+00:00",
+  "sha256": "ad241200a4e443de25d68eab98d0c2910e22d16bae4c8d699c690e0534fc035c",
+  "data": {
+    "description": "Homegoing is the debut historical fiction novel by Ghanaian-American author Yaa Gyasi, published in 2016. Each chapter in the novel follows a different descendant of an Asante woman named Maame, starting with her two daughters, who are half-sisters, separated by circumstance: Effia marries James Collins, the British governor in charge of Cape Coast Castle, while her half-sister Esi is held captive in the dungeons below. Subsequent chapters follow their children and following generations.\r\n\r\nThe novel was selected in 2016 for the National Book Foundation's \"5 under 35\" award, the National Book Critics Circle's John Leonard Award for best first book, and was longlisted for the Dylan Thomas Prize in 2017. It received the Hemingway Foundation/PEN Award for 2017, an American Book Award, and the Vilcek Prize for Creative Promise in Literature.",
+    "links": [
+      {
+        "url": "https://www.theguardian.com/books/2017/jan/13/homegoing-by-yaa-gyasi-review",
+        "title": "The Guardian: Homegoing by Yaa Gyasi review – the wounds inflicted by slavery",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The New Yorker: Descendants",
+        "url": "https://www.newyorker.com/magazine/2016/05/30/yaa-gyasis-homegoing",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Homegoing_(2016_novel)",
+        "title": "Wikipedia",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "https://www.nytimes.com/2016/06/12/books/review/isabel-wilkerson-reviews-yaa-gyasis-homegoing.html",
+        "title": "The New York Times: Isabel Wilkerson Reviews Yaa Gyasi’s ‘Homegoing’",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "NPR: 'Homegoing' Is A Sprawling Epic, Brimming With Compassion",
+        "url": "http://www.npr.org/2016/06/07/480477931/homegoing-is-a-sprawling-epic-brimming-with-compassion",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "https://www.washingtonpost.com/entertainment/books/homegoing-by-yaa-gyasi-a-bold-tale-of-slavery-for-a-new-roots-generation/2016/06/13/f5802cee-2e85-11e6-9de3-6e6e7a14000c_story.html?utm_term=.0be9da65b600",
+        "title": "The Washington Post: ‘Homegoing,’ by Yaa Gyasi: A bold tale of slavery for a new ‘Roots’ generation",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "http://www.nytimes.com/2016/06/12/books/review/isabel-wilkerson-reviews-yaa-gyasis-homegoing.html",
+        "title": "New York Times review",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "Homegoing",
+    "covers": [
+      8081171,
+      11445512,
+      11326031,
+      -1,
+      11124783,
+      12928674,
+      13529265
+    ],
+    "subject_places": [
+      "Fanteland",
+      "Ghana",
+      "America",
+      "Gold Coast",
+      "Cape Coast Castle",
+      "Baltimore",
+      "Pratt City",
+      "Birmingham AL",
+      "Alabama",
+      "Harlem",
+      "New York City"
+    ],
+    "subjects": [
+      "African American Historical Fiction",
+      "LGBTQ historical fiction",
+      "saga",
+      "literary fiction",
+      "historical fiction",
+      "women",
+      "slavery",
+      "African Americans",
+      "history",
+      "FICTION",
+      "Literary",
+      "Sagas",
+      "Historical",
+      "African American",
+      "Large type books",
+      "FICTION / African American / Historical",
+      "FICTION / Literary",
+      "FICTION / Sagas",
+      "Fiction, african american, historical",
+      "Slaves, fiction",
+      "African americans, fiction",
+      "nyt:hardcover-fiction=2016-06-26",
+      "New York Times bestseller",
+      "New York Times reviewed",
+      "Fiction, african american & black, historical",
+      "collectionID:EanesChallenge",
+      "General",
+      "African American Fiction",
+      "Literature",
+      "collectionID:bannedbooks",
+      "Enslaved persons, fiction"
+    ],
+    "subject_people": [
+      "Maame",
+      "Cobbe Otcher",
+      "Effia Otcher",
+      "Big Man Assare",
+      "Esi Assare",
+      "Quey Collins",
+      "Richard Collins",
+      "Ness Stockham",
+      "Sam",
+      "James Richard Collins",
+      "Akosua Mensah",
+      "Kojo Freeman",
+      "Anna Foster",
+      "Abena Collins",
+      "Ohene Nyarko",
+      "H Black",
+      "Ethe Jackson",
+      "Akua Collins",
+      "Asamoah Agyekum",
+      "Eli Dalton",
+      "Willie Black",
+      "Robert Clifton",
+      "Yaw Agyekum",
+      "Esther Amoah",
+      "Carson Clifton",
+      "Amani Zulema",
+      "Marjorie Agyekum",
+      "Marcus Clifton"
+    ],
+    "key": "/works/OL17795349W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7400941A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subject_times": [
+      "18th century",
+      "19th Century",
+      "20th Century"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "excerpts": [
+      {
+        "comment": "First Sentence",
+        "excerpt": "The night Effia Otcher was born into the musky heat of Fanteland, a fire raged through the woods just outside her father’s compound.",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "genres": [
+      "/tags/OL174T",
+      "/tags/OL170T"
+    ],
+    "latest_revision": 48,
+    "revision": 48,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2017-10-09T11:36:14.122954"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T11:06:46.175286"
+    }
+  }
+}

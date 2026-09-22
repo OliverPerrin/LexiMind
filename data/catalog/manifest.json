@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "source": "https://openlibrary.org/developers/api",
+  "metadataLicense": "https://openlibrary.org/developers/licensing",
+  "build": "python3 scripts/build_book_catalog.py --offline",
+  "selection": "Bounded English-language subject search results; not a representative or exhaustive catalogue.",
+  "count": 89,
+  "withDescription": 84,
+  "withCover": 89,
+  "validatedMoods": 0,
+  "catalogueSha256": "30fa40ae11a0e3457cf4cfd5bd148f9ab7192a9011c8acdf744d28b3a031d2fd",
+  "selectionReviewSha256": "57b2f72fcd27a6f49fa87529881aa75e52e2aacd1de3ef5c45ef29a84257a620",
+  "queries": [
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Ascience_fiction+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "c5e5af626a4418ab32ff2de81c0b79a652a42414b6c439fb5481a15e7a3d8700"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Afantasy+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "544dfbb67618443bd67f1f24dc897ff161913a022124844a49cf83c785c4d9f2"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Amystery_and_detective_stories+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "c7d904f9774effe9934e26a3126699cefc4241ae63220ff30d9b103ca7dd93f2"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Alove_stories+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "65a407fc9f1ba8467fae6d81bdac7d27ddd4333ad16834348e48eed1a6e2a384"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Ahistorical_fiction+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "02395d4900f366123cf47396107face6af1be75a981604eb82dc6d87c511690e"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Ahorror_tales+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "e8036f2cbd573f0daaea34fb2ac511170251cc515ea48b0353173c41166ea00d"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Abiography+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "34b0e0349957e3e9ed336f4a28f6f906912eae53eefe4b9e0b63456d6367e10a"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Ascience+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "443237caebfcba7cb539e32d59af45cc59d88832f5dad0001f58642ff6985e32"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Aphilosophy+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "31259aa3f3318bd25e9733f49ec075dc9fe3029d88d923bf5a42f825a5f2e67e"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Apoetry+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "69eb524b0fdcefa5bb8e0069d9c08f6f07f56502095f12073477d3439bd3befc"
+    }
+  ],
+  "rejected": [
+    {
+      "work": "/works/OL26663382W",
+      "reason": "Work lists both Jennette McCurdy and a misspelled apparent duplicate author; requires identity review."
+    },
+    {
+      "work": "/works/OL1073898W",
+      "reason": "Work attributes The Story of Philosophy to both Will Durant and a Japanese newspaper publisher; ambiguous author attribution requires review."
+    },
+    {
+      "work": "/works/OL28521353W",
+      "reason": "Second Meditations record with the same title and author as OL1317211W; omit duplicate candidate pending work reconciliation."
+    }
+  ],
+  "provenance": {
+    "title_description_subjects": "Open Library work record (search subjects only if work subjects absent)",
+    "authors_firstPublished": "Open Library search document for the same verified work and author IDs",
+    "genres": "Deterministic exact-subject mapping in src/catalog/openlibrary.py",
+    "moods": "Empty: no validated editorial mood source",
+    "isbns": "Empty: edition-level ISBNs are intentionally not flattened into a work identifier"
+  }
+}

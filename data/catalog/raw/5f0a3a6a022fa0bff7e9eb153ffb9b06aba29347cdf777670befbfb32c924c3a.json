@@ -1,0 +1,191 @@
+{
+  "url": "https://openlibrary.org/works/OL262496W.json",
+  "retrievedAt": "2026-09-22T14:28:35.050653+00:00",
+  "sha256": "429d17457932502e945019da2662287fa5203fbf04257e89157d73abeb6bb2ab",
+  "data": {
+    "title": "A Study in Scarlet",
+    "key": "/works/OL262496W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL161167A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "A Study in Scarlet is an 1887 detective novel by British writer Arthur Conan Doyle. The story marks the first appearance of Sherlock Holmes and Dr. Watson, who would become the most famous detective duo in literature.",
+    "covers": [
+      13405534
+    ],
+    "subject_places": [
+      "England",
+      "Inglaterra",
+      "Angleterre",
+      "University of London",
+      "Netley",
+      "Criterion Restaurant",
+      "221B Baker Street",
+      "St. Bartholomew's",
+      "Afghanistan",
+      "Scotland Yard",
+      "St. Petersburg",
+      "Russia",
+      "Copenhagen",
+      "Denmark",
+      "Paris",
+      "France",
+      "United States",
+      "Cleveland",
+      "Salt Lake Valley",
+      "Utah",
+      "Europe",
+      "Madame Charpentier's Boarding House",
+      "Brixton Road",
+      "London",
+      "Baker Street"
+    ],
+    "first_publish_date": "December 1, 2005",
+    "subjects": [
+      "Action & Adventure Fiction",
+      "aortic aneurysm",
+      "Battle of Maiwand",
+      "Blessing and cursing",
+      "British and irish fiction (fictional works by one author)",
+      "Children's fiction",
+      "Classics",
+      "crime scenes",
+      "Detective and mystery stories",
+      "Detective Fiction",
+      "Detectives",
+      "Detectives privados",
+      "Detektive",
+      "Détectives",
+      "English Detective and mystery stories",
+      "English literature",
+      "Ficción",
+      "Fiction",
+      "hemoglobin",
+      "Investigadores privados",
+      "Krimi",
+      "Literature and fiction",
+      "mystery and suspense",
+      "Murder",
+      "Mystery and detective stories",
+      "Mystery fiction",
+      "Novela",
+      "Novela de misterio",
+      "pioneers",
+      "Private investigators",
+      "Scottish Terriers",
+      "Second Anglo-Afghan War",
+      "The Church of Jesus Christ and Latter-day Saints",
+      "Trichinopoly cigars",
+      "Sherlock Holmes",
+      "IIIT",
+      "Long now manual for civilization",
+      "Investigation"
+    ],
+    "links": [
+      {
+        "title": "A Study in Scarlet - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/A_Study_in_Scarlet",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "A Study in Scarlet - Wikisource, the free online library",
+        "url": "https://en.wikisource.org/wiki/A_Study_in_Scarlet",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "A Study in Scarlet | Baker Street Wiki | Fandom",
+        "url": "https://bakerstreet.fandom.com/wiki/A_Study_in_Scarlet",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "VIAF ID: 179061639 (Work)",
+        "url": "http://viaf.org/viaf/179061639",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "arthur-conan-doyle.com/index.php?title=A_Study_in_Scarlet",
+        "url": "https://www.arthur-conan-doyle.com/index.php?title=A_Study_in_Scarlet",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "A Study in Scarlet (Arthur Conan Doyle)",
+        "url": "https://love-books-review.com/blog/a-study-in-scarlet/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "cover_edition": {
+      "key": "/books/OL3567144M"
+    },
+    "subject_people": [
+      "Sherlock Holmes",
+      "John H. Watson",
+      "Enoch Drebber",
+      "Joseph Stangerson",
+      "Stamford",
+      "Gregson",
+      "Inspector G. Lestrade",
+      "Alice Charpentier",
+      "Constable Rance",
+      "Brigham Young",
+      "John Ferrier",
+      "Lucy",
+      "Wiggins",
+      "Jefferson Hope",
+      "Baker Street Irregulars",
+      "John H. Watson (Fictitious character)",
+      "Sherlock Holmes (Fictitious character)",
+      "Lestrade Inspector (Fictitious character)"
+    ],
+    "excerpts": [
+      {
+        "excerpt": "IN the year 1878 I took my degree of Doctor of Medicine of the University of London, and proceeded to Netley to go through the course prescribed for surgeons in the army.",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "subject_times": [
+      "1878",
+      "1881",
+      "1847"
+    ],
+    "lc_classifications": [
+      "PR4622 S78 1961"
+    ],
+    "genres": [
+      "/tags/OL174T",
+      "/tags/OL175T"
+    ],
+    "latest_revision": 48,
+    "revision": 48,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-24T07:26:31.097043"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-26T13:32:45.420439"
+    }
+  }
+}

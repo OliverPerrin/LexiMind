@@ -1,0 +1,68 @@
+{
+  "url": "https://openlibrary.org/works/OL46398W.json",
+  "retrievedAt": "2026-09-22T14:28:11.844929+00:00",
+  "sha256": "15a3a3fcedd8ef6526aa703613ea1d1ff2a818f373b9e304a414e2aceb90c539",
+  "data": {
+    "description": "On the remote planet Solaria the first murder for two hundred years has been committed. The Solarians are Spacers with a civilisation based on robots instead of slaves - and some pretty weird taboos and phobias.\r\nInto this strange set-up comes Terran detective Elijah Baley, assigned to find the murderer and act as an investigator for his government. But as an Earthman, Baley finds aspects of life on Solaria difficult, even terrifying, to cope with. (Men on Earth live deep underground in their vast caves of steel and are terrified of anything outside.)\r\nFrom the moment of his arrival on Solaria, Baley's investigation becomes an ordeal of nerves under the pitiless glare of the naked sun...",
+    "title": "The Naked Sun",
+    "covers": [
+      6542967,
+      1726450,
+      -1,
+      10318141,
+      10942336,
+      10635573,
+      8568431,
+      10375736
+    ],
+    "subject_places": [
+      "Solaria"
+    ],
+    "subjects": [
+      "Fiction",
+      "Science fiction",
+      "Robots",
+      "Robots in fiction",
+      "Fiction, science fiction, hard science fiction",
+      "Fiction, mystery & detective, general",
+      "American literature",
+      "Fiction, science fiction, general",
+      "American Science fiction",
+      "Murder",
+      "Investigation",
+      "Space colonies"
+    ],
+    "subject_people": [
+      "Elijah Baley (Fictitious character)",
+      "R. Daneel Olivaw (Fictitious character)"
+    ],
+    "key": "/works/OL46398W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL34221A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL179T",
+      "/tags/OL175T"
+    ],
+    "latest_revision": 31,
+    "revision": 31,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T11:34:21.437031"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T10:37:14.507126"
+    }
+  }
+}

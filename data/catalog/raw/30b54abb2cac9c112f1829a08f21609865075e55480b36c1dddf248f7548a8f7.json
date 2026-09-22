@@ -1,0 +1,51 @@
+{
+  "url": "https://openlibrary.org/works/OL46374W.json",
+  "retrievedAt": "2026-09-22T14:28:18.475702+00:00",
+  "sha256": "5951536042e11c792f4225acdba549769b8d58c4833df05c73d848e96ab8a893",
+  "data": {
+    "description": "These two renowned writers have invented a world not unlike our own--a world on the edge of chaos, torn between the madness of religious fanaticism and the stubborn denial of scientists. Only a handful of people on the planet Lagash are prepared to face the truth--that their six suns are setting all at once for the first time in 2,000 years, signaling the end of civilization!",
+    "title": "Nightfall",
+    "covers": [
+      9302081
+    ],
+    "subject_places": [
+      "Planet Lahash"
+    ],
+    "subjects": [
+      "American Science fiction",
+      "American Fantasy fiction",
+      "Fiction, science fiction, general",
+      "Science fiction"
+    ],
+    "key": "/works/OL46374W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL34221A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subject_times": [
+      "The Future"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL179T"
+    ],
+    "latest_revision": 29,
+    "revision": 29,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T11:34:21.437031"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-19T07:11:16.553682"
+    }
+  }
+}

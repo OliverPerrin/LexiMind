@@ -1,0 +1,64 @@
+{
+  "url": "https://openlibrary.org/works/OL486967W.json",
+  "retrievedAt": "2026-09-22T14:28:29.439235+00:00",
+  "sha256": "a00a2af09d4591b9237c3ea0b692f8f3834e57ea4814c3def776eefe01176447",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "*The Princess Bride is a timeless tale that pits country against country, good against evil, love against hate. This incredible journey and artfully rendered love story is peppered with strange beasties monstrous and gentle, memorable surprises both terrible and sublime, and such unforgettable characters as...*\r\n\r\n**Westley**, the handsome farm boy who risks death (and much worse) for the woman he loves; **Inigo**, the Spanish swordsman who lives only to avenge his father's death; **Fezzik**, the gentlest giant ever to have uprooted a tree with his bear hands; **Vizzini**, the evil Sicilian, with a mind so keen he's foiled by his own perfect logic; **Prince Humperdinck**, the eviler ruler of Guilder, who has an equally insatiable thirst for war and beauteous Buttercup; **Count Rugen**, the evilest man of all, who thrives on the excruciating pain of others; **Miracle Max**, the King's ex-Miracle Man, who can raise the dead (kind of); and, of course, **Buttercup**... the princess bride, the most perfect, beautiful woman in the history of the world!"
+    },
+    "covers": [
+      9284881,
+      487249,
+      6331111,
+      209528,
+      1121286,
+      209002
+    ],
+    "key": "/works/OL486967W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL30421A"
+        }
+      }
+    ],
+    "title": "The Princess Bride",
+    "subjects": [
+      "Castles",
+      "Fiction",
+      "Princesses",
+      "Good and evil",
+      "Princes",
+      "Fiction, action & adventure",
+      "Fiction, fantasy, general",
+      "Fiction, romance, fantasy",
+      "Romance fiction",
+      "Fantasy",
+      "Juvenile fiction",
+      "Fantasy fiction",
+      "Pirates"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL164T",
+      "/tags/OL169T",
+      "/tags/OL177T"
+    ],
+    "latest_revision": 18,
+    "revision": 18,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-08T03:23:23.992208"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T05:57:16.015809"
+    }
+  }
+}

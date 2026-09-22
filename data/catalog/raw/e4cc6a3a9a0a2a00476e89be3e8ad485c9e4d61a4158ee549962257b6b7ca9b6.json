@@ -1,0 +1,92 @@
+{
+  "url": "https://openlibrary.org/works/OL471940W.json",
+  "retrievedAt": "2026-09-22T14:28:34.518410+00:00",
+  "sha256": "ef9d96b4df5b28a167eb6fac1bed73d2915b39b9b919c1b4e2b57b67bc74073c",
+  "data": {
+    "title": "Poirot investigates",
+    "key": "/works/OL471940W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL27695A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": {
+      "type": "/type/text",
+      "value": "in published order, the first 10 Christie mystery books featuring Poirot are: 1) The Mysterious Affair at Styles, 2) The Murder on the Links, 3) Poirot Investigates, 4) The Murder of Roger Ackroyd, 5) The Big Four, 6) The Mystery of the Blue Train, 7) Black Coffee: A Mystery Play in Three Acts [Charles Osborne novelized the play in 1998 under the title, Black Coffee], 8) Peril at End House, 9) Lord Edgware Dies, and 10) Murder on the Orient Express. Each has its own entry on Goodreads."
+    },
+    "covers": [
+      13670505,
+      13894998
+    ],
+    "subject_places": [
+      "England"
+    ],
+    "subjects": [
+      "Hercule Poirot (Fictitious character)",
+      "Private investigators",
+      "Chief Inspector Japp (Fictitious character)",
+      "Belgians",
+      "English Detective and mystery stories",
+      "Detective and mystery stories",
+      "Fiction",
+      "Captain Hastings (Fictitious character)",
+      "English Short stories",
+      "Historical Fiction",
+      "Mystery",
+      "Romance",
+      "England, fiction",
+      "Poirot, hercule (fictitious character), fiction",
+      "Fiction, mystery & detective, traditional",
+      "Fiction, mystery & detective, short stories",
+      "Fiction, mystery & detective, collections & anthologies",
+      "Fiction, crime",
+      "Fiction, mystery & detective, historical",
+      "Private investigators -- England -- Fiction",
+      "Detective and mystery stories, English",
+      "Belgians -- England -- Fiction",
+      "Poirot, Hercule (Fictitious character) -- Fiction",
+      "Murder",
+      "Investigation",
+      "Meurtre",
+      "Romans, nouvelles",
+      "Enquêtes",
+      "Fiction, mystery & detective, general",
+      "Private investigators, fiction",
+      "Fiction, general",
+      "Fiction, short stories (single author)",
+      "Mind and body",
+      "Social sciences"
+    ],
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL337952L"
+        },
+        "position": "3"
+      }
+    ],
+    "genres": [
+      "/tags/OL175T",
+      "/tags/OL170T",
+      "/tags/OL177T"
+    ],
+    "latest_revision": 27,
+    "revision": 27,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-08T02:57:56.524333"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-07T15:06:40.601053"
+    }
+  }
+}

@@ -1,0 +1,399 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Ahorror_tales+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-22T14:29:08.227828+00:00",
+  "sha256": "e8036f2cbd573f0daaea34fb2ac511170251cc515ea48b0353173c41166ea00d",
+  "data": {
+    "numFound": 5317,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 5317,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:horror_tales language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL27918A"
+        ],
+        "author_name": [
+          "Mark Z. Danielewski"
+        ],
+        "cover_i": 6450442,
+        "first_publish_year": 1998,
+        "key": "/works/OL32195W",
+        "language": [
+          "tur",
+          "por",
+          "fre",
+          "spa",
+          "eng"
+        ],
+        "title": "House of Leaves",
+        "subject": [
+          "Holes",
+          "Documentary films",
+          "Manuscripts",
+          "Fiction",
+          "Fiction, suspense",
+          "Fiction, horror",
+          "Fiction, thrillers, suspense",
+          "Suspense",
+          "Labyrinths",
+          "Dwellings",
+          "Horror tales",
+          "Paranormal fiction",
+          "Perception",
+          "Experimental fiction",
+          "American Experimental fiction",
+          "American Horror tales"
+        ]
+      },
+      {
+        "author_key": [
+          "OL35524A"
+        ],
+        "author_name": [
+          "Robert Lawrence Stine"
+        ],
+        "cover_i": 2547647,
+        "first_publish_year": 1991,
+        "key": "/works/OL15094430W",
+        "language": [
+          "eng",
+          "spa"
+        ],
+        "title": "Fear Street - The Knife",
+        "subject": [
+          "Horror tales",
+          "collectionID:FearStreet",
+          "Children's fiction",
+          "Horror stories"
+        ]
+      },
+      {
+        "author_key": [
+          "OL35524A"
+        ],
+        "author_name": [
+          "Robert Lawrence Stine"
+        ],
+        "cover_i": 8203024,
+        "first_publish_year": 1989,
+        "key": "/works/OL72313W",
+        "language": [
+          "eng",
+          "fre"
+        ],
+        "title": "The New Girl",
+        "subject": [
+          "Ghost stories",
+          "Horror tales",
+          "Horror stories",
+          "Gymnasts",
+          "Fiction",
+          "Horror tales.",
+          "Ghost stories.",
+          "Peur",
+          "Romans",
+          "Amour",
+          "collectionID:FearStreet",
+          "Children's fiction",
+          "Schools, fiction",
+          "Friendship, fiction",
+          "Love, fiction",
+          "Girls, fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL19981A"
+        ],
+        "author_name": [
+          "Stephen King"
+        ],
+        "cover_i": 8259296,
+        "first_publish_year": 1978,
+        "key": "/works/OL81634W",
+        "language": [
+          "ger",
+          "ara",
+          "jpn",
+          "srp",
+          "tur",
+          "heb",
+          "ita",
+          "spa",
+          "pol",
+          "fre",
+          "rus",
+          "eng",
+          "chi",
+          "por",
+          "dut"
+        ],
+        "title": "Misery",
+        "subject": [
+          "dope",
+          "pills",
+          "American Novelists",
+          "Captives",
+          "Fans (Persons)",
+          "Fiction",
+          "Novelists",
+          "Prisoners",
+          "Suspense fiction",
+          "Writers",
+          "abuse",
+          "fear",
+          "horror",
+          "isolation",
+          "prisoner",
+          "suspense",
+          "thriller",
+          "Nurses",
+          "American Horror stories",
+          "Horror tales",
+          "Pepsi",
+          "Fiction, horror",
+          "American literature",
+          "Authors, fiction",
+          "American fiction",
+          "Literary",
+          "Thrillers",
+          "Fiction, thrillers, suspense",
+          "Fiction, science fiction, general",
+          "Horror - General",
+          "Horror & ghost stories",
+          "Fiction - Horror",
+          "Zhang pian xiao shuo"
+        ]
+      },
+      {
+        "author_key": [
+          "OL554155A"
+        ],
+        "author_name": [
+          "Arthur Machen"
+        ],
+        "cover_i": 921610,
+        "first_publish_year": 1894,
+        "key": "/works/OL3388961W",
+        "language": [
+          "fre",
+          "eng",
+          "dut"
+        ],
+        "title": "The Great God Pan",
+        "subject": [
+          "austin osman spare",
+          "arthur machen",
+          "pan",
+          "occult",
+          "esoteric",
+          "classic literature",
+          "decadent",
+          "horror",
+          "gothic",
+          "Authors",
+          "English Horror tales",
+          "Fiction",
+          "Horror tales, English",
+          "Supernatural",
+          "Paranormal fiction",
+          "Fiction, ghost",
+          "Fiction, occult & supernatural",
+          "Fiction, horror",
+          "English Fantasy fiction",
+          "Pan (greek deity)",
+          "Ghost stories"
+        ]
+      },
+      {
+        "author_key": [
+          "OL19981A"
+        ],
+        "author_name": [
+          "Stephen King"
+        ],
+        "cover_i": 14653609,
+        "first_publish_year": 1979,
+        "key": "/works/OL9973101W",
+        "language": [
+          "spa",
+          "dut",
+          "fre",
+          "por",
+          "rus",
+          "ger",
+          "pol",
+          "eng"
+        ],
+        "title": "The Long Walk",
+        "subject": [
+          "Horror",
+          "Suspense",
+          "Fiction",
+          "dystopia",
+          "walking contests",
+          "totalitarianism",
+          "half-tracks",
+          "Horror tales",
+          "American literature",
+          "Fiction, general",
+          "Contests",
+          "Walking",
+          "Survival",
+          "Teenage boys",
+          "Teenage athletes",
+          "Fascism",
+          "Fiction, horror"
+        ]
+      },
+      {
+        "author_key": [
+          "OL35524A"
+        ],
+        "author_name": [
+          "Robert Lawrence Stine"
+        ],
+        "cover_i": 4984834,
+        "first_publish_year": 1990,
+        "key": "/works/OL72282W",
+        "language": [
+          "eng"
+        ],
+        "title": "Haunted",
+        "subject": [
+          "Ghost stories",
+          "Horror tales",
+          "collectionID:FearStreet",
+          "Horror stories",
+          "Children's fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL28127A"
+        ],
+        "author_name": [
+          "Edgar Allan Poe"
+        ],
+        "cover_i": 11838138,
+        "first_publish_year": 1704,
+        "key": "/works/OL41078W",
+        "language": [
+          "epo",
+          "ger",
+          "eng",
+          "fre",
+          "spa",
+          "ita"
+        ],
+        "title": "The Fall of the House of Usher",
+        "subject": [
+          "American fiction (fictional works by one author)",
+          "short stories (single author)",
+          "American Horror tales",
+          "burial vaults",
+          "catalepsy",
+          "dragons",
+          "Fiction",
+          "gothic fiction",
+          "hermitages",
+          "heroic romances",
+          "horror",
+          "horror tales",
+          "hysteria",
+          "knights",
+          "maces",
+          "psychogenic death",
+          "short stories",
+          "tarns",
+          "Fiction, horror",
+          "Roman type",
+          "Artists' books",
+          "Fiction, general"
+        ]
+      },
+      {
+        "author_key": [
+          "OL2621804A"
+        ],
+        "author_name": [
+          "Clive Barker"
+        ],
+        "cover_i": 3658,
+        "first_publish_year": 1988,
+        "key": "/works/OL257788W",
+        "language": [
+          "fre",
+          "spa",
+          "eng"
+        ],
+        "title": "Cabal",
+        "subject": [
+          "Horror tales",
+          "Short stories",
+          "English Horror tales",
+          "Fiction, horror",
+          "Fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL19981A"
+        ],
+        "author_name": [
+          "Stephen King"
+        ],
+        "cover_i": 8413143,
+        "first_publish_year": 1990,
+        "key": "/works/OL81606W",
+        "language": [
+          "und",
+          "pol",
+          "por",
+          "rus",
+          "eng",
+          "fre",
+          "spa",
+          "ita",
+          "dut"
+        ],
+        "title": "Four Past Midnight",
+        "subject": [
+          "paranormal",
+          "nightmares",
+          "cuckoo clocks",
+          "word processors",
+          "Polaroid cameras",
+          "speechwriting",
+          "Dissociative identity disorder",
+          "ambush",
+          "sanity",
+          "caretakers",
+          "plagiarism",
+          "housemaids",
+          "short stories",
+          "diction",
+          "Fiction",
+          "Horror",
+          "Thriller",
+          "supernatural",
+          "red-eye flights",
+          "autopilot",
+          "American Horror tales",
+          "Vdobibl",
+          "Horror fiction",
+          "Horror tales",
+          "New York Times reviewed",
+          "Fiction, horror",
+          "Fiction, short stories (single author)",
+          "Horror stories",
+          "Fiction, romance, general",
+          "Fiction, erotica, general"
+        ]
+      }
+    ]
+  }
+}
