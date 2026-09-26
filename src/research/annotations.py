@@ -14,6 +14,9 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+from .io import parse_json
+from .io import read_json as read_json
+
 RECORD_HASH_FORMAT = "sha256:json-sort-keys-utf8-ensure-ascii-false-compact-v1"
 _WORK = re.compile(r"OL[1-9][0-9]*W\Z")
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
@@ -39,23 +42,6 @@ def canonical_record_bytes(record: dict[str, Any]) -> bytes:
     return json.dumps(
         record, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
     ).encode("utf-8")
-
-
-def _pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f"Duplicate JSON key: {key}")
-        result[key] = value
-    return result
-
-
-def _invalid_constant(value: str) -> None:
-    raise ValueError(f"Non-finite JSON value: {value}")
-
-
-def read_json(path: Path) -> Any:
-    return json.loads(path.read_bytes(), object_pairs_hook=_pairs, parse_constant=_invalid_constant)
 
 
 def _fields(value: Any, required: set[str], name: str) -> dict[str, Any]:
@@ -127,7 +113,7 @@ def build_annotation_packet(
     if set(rubric_paths) != {"recommendation", "mood"}:
         raise ValueError("Both recommendation and mood rubric paths are required")
     catalog_bytes = catalog_path.read_bytes()
-    records = json.loads(catalog_bytes, object_pairs_hook=_pairs, parse_constant=_invalid_constant)
+    records = parse_json(catalog_bytes)
     if not isinstance(records, list) or not records:
         raise ValueError("Catalogue must be a nonempty JSON array")
     items = []

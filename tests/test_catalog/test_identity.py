@@ -1,52 +1,24 @@
-from src.catalog.identity import match_description, matched_work_id, normalize_title
+import pytest
+
+from src.catalog.identity import author_identity, matched_work_id, normalize_title
 
 
-def test_same_title_different_authors_are_not_joined():
-    book = {"title": "College Girl", "author": "Smith, Jane"}
-    wrong = {"title": "College Girl", "authors": ["John Green"], "description": "Wrong work"}
-    right = {"title": "College Girl", "authors": ["Jane Smith"], "description": "Right work"}
-    assert match_description(book, [wrong]) is None
-    assert match_description(book, [wrong, right]) == right
-
-
-def test_missing_authors_and_ambiguous_descriptions_fail_closed():
-    book = {"title": "War Brides", "authors": ["Jane Smith"]}
-    candidate = {**book, "description": "A description"}
-    assert match_description({"title": "War Brides"}, [candidate]) is None
-    assert (
-        match_description(book, [{"title": "War Brides", "description": "Unknown author"}]) is None
-    )
-    assert (
-        match_description(
-            book, [candidate, {**candidate, "description": "A conflicting description"}]
-        )
-        is None
-    )
-
-
-def test_subtitles_and_articles_remain_part_of_identity():
+def test_subtitles_are_retained_for_catalogue_duplicate_keys():
     assert normalize_title("The Island: A Memoir") != normalize_title("Island: A Novel")
-    book = {"title": "Island: A Memoir", "authors": ["Jane Smith"]}
-    assert match_description(book, [{**book, "title": "Island: A Novel"}]) is None
 
 
-def test_work_grouping_is_stable_across_gutenberg_author_format():
+def test_author_order_and_gutenberg_name_format_have_stable_keys():
     assert matched_work_id(
         {"title": "Pride and Prejudice", "author": "Austen, Jane, 1775-1817"}
     ) == matched_work_id({"title": "Pride and Prejudice", "authors": ["Jane Austen"]})
-
-
-def test_missing_or_malformed_coauthors_are_not_silently_dropped():
-    candidate = {"title": "College Girl", "authors": ["Jane Smith"], "description": "Description"}
-    for authors in (["Jane Smith", None], ["Jane Smith", {}], ["Jane Smith", ""], ["Anonymous"]):
-        assert match_description({"title": "College Girl", "authors": authors}, [candidate]) is None
-
-
-def test_nonstring_titles_do_not_become_matchable_string_identifiers():
-    assert (
-        match_description(
-            {"title": None, "authors": ["Jane Smith"]},
-            [{"title": "None", "authors": ["Jane Smith"], "description": "Description"}],
-        )
-        is None
+    assert author_identity({"authors": ["Jane Austen", "Mary Shelley"]}) == author_identity(
+        {"authors": ["Mary Shelley", "Jane Austen"]}
     )
+
+
+@pytest.mark.parametrize(
+    "authors", [None, [], ["Unknown"], ["Jane Austen", ""], ["Jane Austen", None]]
+)
+def test_missing_or_partial_authorship_cannot_establish_identity(authors):
+    with pytest.raises(ValueError, match="author evidence"):
+        matched_work_id({"title": "A book", "authors": authors})

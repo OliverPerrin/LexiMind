@@ -1,0 +1,4 @@
+# Source reconstruction only; no torch, transformers, datasets or model weights.
+-r requirements-quality.txt
+huggingface-hub==1.32.0
+pyarrow==25.0.1

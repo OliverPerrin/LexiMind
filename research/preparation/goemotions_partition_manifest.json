@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "status": "candidate_assignments_not_admitted",
+  "training_authorized": false,
+  "policy": "source-partitions-v1",
+  "salt": "leximind-source-partitions-v1",
+  "repo": "google-research-datasets/go_emotions",
+  "revision": "add492243ff905527e67aeb8b80c082af02207c3",
+  "candidate_manifest": {
+    "path": "research/preparation/goemotions_candidate_manifest.json",
+    "sha256": "cb9a8ab762c293d4e386ac5df28a88abbd03bbb37165befdf753a16ff98be324",
+    "bytes": 22555
+  },
+  "implementation_sha256": "0d4fd90a268147256c55d0e8106cf8c4bdc437d65f6cb81890a19f5a064168f3",
+  "assignments": {
+    "path": "data/research_candidates/go_emotions/add492243ff905527e67aeb8b80c082af02207c3/partitions-v1/assignments.jsonl",
+    "bytes": 11702184,
+    "sha256": "12f94512359c3fcf84c40c1d245b28401ea3e0624b4901d51fb93ab307e185ad"
+  },
+  "source_files": {
+    "train": {
+      "path": "prepared_v2/train.jsonl",
+      "rows": 43410,
+      "bytes": 11790973,
+      "sha256": "1ea6d2278b56dccfc68f446618e4ef201254af10dd2f2b75576de866d58338b6"
+    },
+    "validation": {
+      "path": "prepared_v2/validation.jsonl",
+      "rows": 5426,
+      "bytes": 1494935,
+      "sha256": "714dafc307fff58119b7da82fef21e565a57813296e5278ecf2aaada927b8d65"
+    },
+    "test": {
+      "path": "prepared_v2/test.jsonl",
+      "rows": 5427,
+      "bytes": 1459746,
+      "sha256": "5f61200da5cbbc04b58ebfef28981d661b98144d94eabee652bc2ffd1c11efc9"
+    }
+  },
+  "counts": {
+    "train": 43410,
+    "model_selection": 2745,
+    "calibration": 2681,
+    "test": 5427
+  },
+  "label_names": [
+    "admiration",
+    "amusement",
+    "anger",
+    "annoyance",
+    "approval",
+    "caring",
+    "confusion",
+    "curiosity",
+    "desire",
+    "disappointment",
+    "disapproval",
+    "disgust",
+    "embarrassment",
+    "excitement",
+    "fear",
+    "gratitude",
+    "grief",
+    "joy",
+    "love",
+    "nervousness",
+    "optimism",
+    "pride",
+    "realization",
+    "relief",
+    "remorse",
+    "sadness",
+    "surprise",
+    "neutral"
+  ],
+  "label_counts": {
+    "train": {
+      "admiration": 4130,
+      "amusement": 2328,
+      "anger": 1567,
+      "annoyance": 2470,
+      "approval": 2939,
+      "caring": 1087,
+      "confusion": 1368,
+      "curiosity": 2191,
+      "desire": 641,
+      "disappointment": 1269,
+      "disapproval": 2022,
+      "disgust": 793,
+      "embarrassment": 303,
+      "excitement": 853,
+      "fear": 596,
+      "gratitude": 2662,
+      "grief": 77,
+      "joy": 1452,
+      "love": 2086,
+      "nervousness": 164,
+      "optimism": 1581,
+      "pride": 111,
+      "realization": 1110,
+      "relief": 153,
+      "remorse": 545,
+      "sadness": 1326,
+      "surprise": 1060,
+      "neutral": 14219
+    },
+    "model_selection": {
+      "admiration": 245,
+      "amusement": 145,
+      "anger": 103,
+      "annoyance": 159,
+      "approval": 202,
+      "caring": 85,
+      "confusion": 68,
+      "curiosity": 121,
+      "desire": 37,
+      "disappointment": 92,
+      "disapproval": 152,
+      "disgust": 49,
+      "embarrassment": 18,
+      "excitement": 45,
+      "fear": 44,
+      "gratitude": 181,
+      "grief": 8,
+      "joy": 81,
+      "love": 125,
+      "nervousness": 15,
+      "optimism": 110,
+      "pride": 9,
+      "realization": 66,
+      "relief": 10,
+      "remorse": 45,
+      "sadness": 78,
+      "surprise": 58,
+      "neutral": 895
+    },
+    "calibration": {
+      "admiration": 243,
+      "amusement": 158,
+      "anger": 92,
+      "annoyance": 144,
+      "approval": 195,
+      "caring": 68,
+      "confusion": 84,
+      "curiosity": 127,
+      "desire": 40,
+      "disappointment": 71,
+      "disapproval": 140,
+      "disgust": 48,
+      "embarrassment": 17,
+      "excitement": 51,
+      "fear": 46,
+      "gratitude": 177,
+      "grief": 5,
+      "joy": 91,
+      "love": 127,
+      "nervousness": 6,
+      "optimism": 99,
+      "pride": 6,
+      "realization": 61,
+      "relief": 8,
+      "remorse": 23,
+      "sadness": 65,
+      "surprise": 71,
+      "neutral": 871
+    },
+    "test": {
+      "admiration": 504,
+      "amusement": 264,
+      "anger": 198,
+      "annoyance": 320,
+      "approval": 351,
+      "caring": 135,
+      "confusion": 153,
+      "curiosity": 284,
+      "desire": 83,
+      "disappointment": 151,
+      "disapproval": 267,
+      "disgust": 123,
+      "embarrassment": 37,
+      "excitement": 103,
+      "fear": 78,
+      "gratitude": 352,
+      "grief": 6,
+      "joy": 161,
+      "love": 238,
+      "nervousness": 23,
+      "optimism": 186,
+      "pride": 16,
+      "realization": 145,
+      "relief": 11,
+      "remorse": 56,
+      "sadness": 156,
+      "surprise": 141,
+      "neutral": 1787
+    }
+  },
+  "cross_partition_normalized_text_groups": 71,
+  "within_original_split_cross_partition_text_groups": 0,
+  "overlap_by_pair": [
+    {
+      "partitions": [
+        "train",
+        "model_selection"
+      ],
+      "text_groups": 16
+    },
+    {
+      "partitions": [
+        "train",
+        "calibration"
+      ],
+      "text_groups": 25
+    },
+    {
+      "partitions": [
+        "train",
+        "test"
+      ],
+      "text_groups": 32
+    },
+    {
+      "partitions": [
+        "model_selection",
+        "calibration"
+      ],
+      "text_groups": 0
+    },
+    {
+      "partitions": [
+        "model_selection",
+        "test"
+      ],
+      "text_groups": 5
+    },
+    {
+      "partitions": [
+        "calibration",
+        "test"
+      ],
+      "text_groups": 5
+    }
+  ],
+  "interpretation": [
+    "Original official test membership is unchanged; original candidates are never overwritten.",
+    "GoEmotions original validation groups split 50/50 into selection/calibration; original train stays train.",
+    "AG News original train groups split 90/5/5; fractions are hash thresholds, not exact row quotas.",
+    "Normalization is NFC plus whitespace collapse; case/punctuation remain significant.",
+    "Groups repeated across original official partitions remain visible, not deleted or reassigned.",
+    "No unseen-text or unseen-article claim; AG identities are pinned source rows, not article IDs.",
+    "No labels or test scores influence assignment. Rare-label coverage is reported, not optimized.",
+    "These are unadmitted source assignments, not evidence of source-use clearance or a frozen protocol."
+  ]
+}

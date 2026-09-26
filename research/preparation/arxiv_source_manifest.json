@@ -1,0 +1,277 @@
+{
+  "audit": {
+    "archive_members": [
+      {
+        "bytes": 0,
+        "compressed_bytes": 0,
+        "crc32": "00000000",
+        "name": "arxiv-dataset/",
+        "source_split": null
+      },
+      {
+        "bytes": 312,
+        "compressed_bytes": 178,
+        "crc32": "911ed6a6",
+        "name": "__MACOSX/._arxiv-dataset",
+        "source_split": null
+      },
+      {
+        "bytes": 14272441980,
+        "compressed_bytes": 3415892996,
+        "crc32": "a2513016",
+        "name": "arxiv-dataset/train.txt",
+        "source_split": "train"
+      },
+      {
+        "bytes": 212,
+        "compressed_bytes": 135,
+        "crc32": "1f631060",
+        "name": "__MACOSX/arxiv-dataset/._train.txt",
+        "source_split": null
+      },
+      {
+        "bytes": 2450755,
+        "compressed_bytes": 1084732,
+        "crc32": "02466817",
+        "name": "arxiv-dataset/vocab",
+        "source_split": null
+      },
+      {
+        "bytes": 212,
+        "compressed_bytes": 135,
+        "crc32": "1f631060",
+        "name": "__MACOSX/arxiv-dataset/._vocab",
+        "source_split": null
+      },
+      {
+        "bytes": 438010181,
+        "compressed_bytes": 103765395,
+        "crc32": "500630b5",
+        "name": "arxiv-dataset/test.txt",
+        "source_split": "test"
+      },
+      {
+        "bytes": 212,
+        "compressed_bytes": 135,
+        "crc32": "1f631060",
+        "name": "__MACOSX/arxiv-dataset/._test.txt",
+        "source_split": null
+      },
+      {
+        "bytes": 437257070,
+        "compressed_bytes": 103674892,
+        "crc32": "a75f7fdb",
+        "name": "arxiv-dataset/val.txt",
+        "source_split": "val"
+      },
+      {
+        "bytes": 212,
+        "compressed_bytes": 135,
+        "crc32": "1f631060",
+        "name": "__MACOSX/arxiv-dataset/._val.txt",
+        "source_split": null
+      }
+    ],
+    "duplicate_groups": {
+      "abstract_hash": {
+        "cross_split_groups": 7,
+        "groups": 52,
+        "rows": 118
+      },
+      "article_hash": {
+        "cross_split_groups": 2,
+        "groups": 18,
+        "rows": 155
+      },
+      "article_id": {
+        "cross_split_groups": 0,
+        "groups": 0,
+        "rows": 0
+      },
+      "arxiv_base_id": {
+        "cross_split_groups": 0,
+        "groups": 0,
+        "rows": 0
+      },
+      "normalized_hash": {
+        "cross_split_groups": 2,
+        "groups": 19,
+        "rows": 157
+      }
+    },
+    "rows": 215913,
+    "splits": {
+      "test": {
+        "archive_member": "arxiv-dataset/test.txt",
+        "flags": {
+          "unresolved_arxiv_identifier_format": 2501,
+          "version_not_stated": 6440
+        },
+        "index": {
+          "bytes": 5092049,
+          "path": "data/research_candidates/arxiv/author-release-26f95b9e0f37/index/test.jsonl",
+          "sha256": "55ff6842d06e1977a0a03918aae307ecdf7b317dd95d2d7b15777cfb9960dc91"
+        },
+        "lengths": {
+          "abstract_char_count": {
+            "max": 1953,
+            "sum": 6499370
+          },
+          "article_char_count": {
+            "max": 483199,
+            "sum": 210290909
+          }
+        },
+        "rows": 6440,
+        "source_lines": 6440,
+        "uncompressed_bytes": 438010181,
+        "uncompressed_sha256": "5a8a6de58e0b0121f1492344cb57cb28f8a3ff706c8cb4650fb3f4b9e3d5dab6"
+      },
+      "train": {
+        "archive_member": "arxiv-dataset/train.txt",
+        "flags": {
+          "empty_abstract": 3,
+          "empty_article": 120,
+          "section_sentence_count_mismatch": 46,
+          "unresolved_arxiv_identifier_format": 74279,
+          "version_not_stated": 203037
+        },
+        "index": {
+          "bytes": 161368844,
+          "path": "data/research_candidates/arxiv/author-release-26f95b9e0f37/index/train.jsonl",
+          "sha256": "87eaa9b77b43e7fecc64ce2ddee3eef5f75a5bf27686b672d3d1ca22987d1e7f"
+        },
+        "lengths": {
+          "abstract_char_count": {
+            "max": 160939,
+            "sum": 343835078
+          },
+          "article_char_count": {
+            "max": 743782,
+            "sum": 6787903447
+          }
+        },
+        "rows": 203037,
+        "source_lines": 203037,
+        "uncompressed_bytes": 14272441980,
+        "uncompressed_sha256": "bb80cf1d02272eee72d3882dbe55a3ec62641bbba0770667ae54f3ca257753ee"
+      },
+      "val": {
+        "archive_member": "arxiv-dataset/val.txt",
+        "flags": {
+          "section_sentence_count_mismatch": 1,
+          "unresolved_arxiv_identifier_format": 2493,
+          "version_not_stated": 6436
+        },
+        "index": {
+          "bytes": 5082130,
+          "path": "data/research_candidates/arxiv/author-release-26f95b9e0f37/index/val.jsonl",
+          "sha256": "3c1e13171c79259f22b57155c34933af4d4100ae94343767396a085e11f32dee"
+        },
+        "lengths": {
+          "abstract_char_count": {
+            "max": 1977,
+            "sum": 6441815
+          },
+          "article_char_count": {
+            "max": 240296,
+            "sum": 209961556
+          }
+        },
+        "rows": 6436,
+        "source_lines": 6436,
+        "uncompressed_bytes": 437257070,
+        "uncompressed_sha256": "6f2e7e108300f69a23d011acda072e0ca7fecc68c01740adcfdca954e13c3d66"
+      }
+    },
+    "unique_original_article_ids": 215913,
+    "unique_recognized_arxiv_base_ids": 136640
+  },
+  "conversion": {
+    "helper_sha256": {
+      "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+      "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
+    },
+    "max_expanded_bytes": 30000000000,
+    "max_line_bytes": 8000000,
+    "max_rows": 1000000,
+    "normalization": "article sentences joined by newline, whitespace collapsed, Unicode NFC; case and punctuation retained",
+    "python": "3.14.5",
+    "row_locator": "archive member + 1-based source line + uncompressed byte offset",
+    "script": "scripts/prepare_arxiv_candidate.py",
+    "script_sha256": "f0804f915b8f638f1ae8741f39471c5f6fd1385fbfc2ad696bbed6161b412925",
+    "source_splits": [
+      "train",
+      "val",
+      "test"
+    ],
+    "split_aliases": {
+      "validation": "val"
+    },
+    "split_reassignment": false,
+    "sqlite": "3.53.4",
+    "text_corpus_copied": false
+  },
+  "remaining_gates": [
+    "article-level source-use and version review",
+    "duplicate/identifier generalization policy",
+    "selection/calibration partition",
+    "reviewed preprocessing and length policy",
+    "explicit experiment resumption"
+  ],
+  "schema_version": 1,
+  "source": {
+    "acquisition_receipt": {
+      "path": "data/research_candidates/arxiv/author-release-26f95b9e0f37/raw/acquisition.json",
+      "sha256": "189a1b4ae1b6cad594aa790c34bde4dc5841ac544c03d197c2640fba85da89d1"
+    },
+    "alternative_author_link": "https://drive.google.com/file/d/1b3rmCSIoh6VhD4HKWjI4HOW-cSwcwbeC/view?usp=sharing",
+    "archive_url": "https://archive.org/download/armancohan-long-summarization-paper-code/arxiv-dataset.zip",
+    "author_repository": "https://github.com/armancohan/long-summarization",
+    "author_revision": "6ef082e22b8f49e7195f10c1cdeb5abcf428ff5e",
+    "documents": [
+      {
+        "bytes": 3341,
+        "path": "data/research_candidates/arxiv/author-release-26f95b9e0f37/raw/documents/author_readme.md",
+        "retrieved_at": "2026-09-26T16:29:24.215638+00:00",
+        "sha256": "c0c6cf9ae7a18ff172b4f14750b3c0d75a3eb4c3b21fae10730e5eda054db440",
+        "url": "https://raw.githubusercontent.com/armancohan/long-summarization/6ef082e22b8f49e7195f10c1cdeb5abcf428ff5e/README.md"
+      },
+      {
+        "bytes": 2609,
+        "path": "data/research_candidates/arxiv/author-release-26f95b9e0f37/raw/documents/archive_metadata.json",
+        "retrieved_at": "2026-09-26T16:29:24.725282+00:00",
+        "sha256": "cd8fa7f2ff0f964f9ad5885cf2a0217e2380865126b005e4525a264406295317",
+        "url": "https://archive.org/metadata/armancohan-long-summarization-paper-code"
+      },
+      {
+        "bytes": 101170,
+        "path": "data/research_candidates/arxiv/author-release-26f95b9e0f37/raw/documents/arxiv_license_information.html",
+        "retrieved_at": "2026-09-26T16:29:24.841206+00:00",
+        "sha256": "75ef3cef1c13bad8b20c52aee64d2608eac6c20638b71ec8ab2b6f22c84f233d",
+        "url": "https://info.arxiv.org/help/license/index.html"
+      }
+    ],
+    "metadata_url": "https://archive.org/metadata/armancohan-long-summarization-paper-code",
+    "observed_archive": {
+      "bytes": 3624420843,
+      "path": "data/research_candidates/arxiv/author-release-26f95b9e0f37/raw/arxiv-dataset.zip",
+      "sha256": "82ed30dd7c66a6497eeb3d7c3090c274e9e32c012438f8e0bb3cce3e6c1fcada"
+    },
+    "provider_declared_checksums": {
+      "md5": "6242aaf5cfcc7814473eee8b779c1b9f",
+      "sha1": "26f95b9e0f37e9d2bcef31dd1dcd3d25d9367b4d"
+    },
+    "readme_url": "https://raw.githubusercontent.com/armancohan/long-summarization/6ef082e22b8f49e7195f10c1cdeb5abcf428ff5e/README.md"
+  },
+  "source_use": {
+    "article_level_licenses_recovered": false,
+    "arxiv_terms_url": "https://info.arxiv.org/help/license/index.html",
+    "legal_clearance_asserted": false,
+    "note": "Public access and repository code licensing do not grant one uniform article-text license.",
+    "provider_readme_dataset_license": "not specified in the inspected README",
+    "status": "unreviewed_not_admitted"
+  },
+  "status": "candidate_prepared_not_admitted",
+  "training_authorized": false
+}

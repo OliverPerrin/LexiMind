@@ -18,6 +18,9 @@ requirements. Neither one validates the other's scientific claims.
 | Book discovery | [Recommendation, narrative emotion and evaluation review](book_discovery_review.md), including provider/source-use notes | Whole-book mood gold or representative catalogue coverage |
 | Current data | [Streaming audit](data_readiness.md) of 156,796 records in 12 files; retained identities are missing and 73 normalized-input groups span splits | Automatic deletion policy or reconstruction of historical training data |
 | Fresh emotion candidate | [Pinned GoEmotions reconstruction](goemotions_reconstruction.md): 54,263 source IDs, with 53,963 unique legacy matches and 300 ambiguous matches | Admitted training data, literary mood labels or a new split |
+| Source assignments | [Grouped partition preparation](partitions.md) keeps identical text together within development splits and preserves official tests | Admitted data or unseen-text generalization |
+| Fresh topic candidate | [AG News reconstruction](ag_news_reconstruction.md): 127,600 source rows with pinned file/row identities | Original article identities or resolved source-use rights |
+| Academic extension | [Author-source reconstruction](arxiv_reconstruction.md) retains article IDs and official source partitions | Approved article-text reuse or a trained summarizer |
 | Backbone interface | [Three pinned metadata/source reviews](backbone_interface_review.md) for FLAN-T5, T5Gemma and T5Gemma 2 | Model loading, adapter integration, GPU fit or a selected runtime |
 | Cost accounting | [Ledger schema](compute_accounting.md) that preserves failed spend, unknown values and reused expert costs | Measured compute or an agreed numeric budget |
 | Annotation | [Empty source-linked packet](annotation_preparation.md) for 102 catalogue works and draft rubrics | Collected queries, ratings, adjudication or gold labels |
@@ -27,15 +30,17 @@ The 18,753 legacy literary summary pairs remain logically quarantined pending
 source/work reconciliation. The overlap counts are diagnostic signals: repeated
 text can reflect different source records or annotations. Preserve official IDs
 and report a reviewed policy instead of deleting every identical text blindly.
-The legacy processed files and historical result archive have not been rewritten.
+The legacy processed files and small historical reports have not been rewritten.
+The old all-in-one downloader, campaign launchers and paper/plot generators have
+been removed; the custom transformer, core trainer/inference path and Gradio demo remain.
 
 ## Decisions still needed before training
 
 For M1, admit fresh sources and label contracts, settle the final task suite, choose
 a compatible pinned backbone/runtime, and enumerate shared/private/frozen parameters.
-GoEmotions needs an explicit repeated-text/generalization policy and a distinct
-calibration partition. AG News and the optional arXiv extension still need fresh
-source/identity/use review. Freeze task sampling, expert budget allocation, merge
+GoEmotions and AG News now have [deterministic candidate assignments](partitions.md);
+their repeated-text/generalization and source-use policies still require review.
+The optional arXiv extension needs the same source/identity/use review. Freeze task sampling, expert budget allocation, merge
 coefficient selection, stopping/overshoot rules and the intended effect-size claim.
 Hardware feasibility and numeric B remain deferred until experiments are resumed.
 
@@ -46,8 +51,7 @@ may recur across partitions, while query-family and seed-work groups may not.
 Mood queries remain disabled. Rater judgments belong in separate collection receipts,
 not in the immutable empty packet. No automatic method can manufacture human gold.
 
-Several useful tasks remain possible without a GPU: source reconstruction for the
-other task candidates, dataset-use review, precise preprocessing/split specifications,
+Several useful tasks remain possible without a GPU: dataset-use review, source reconciliation, precise preprocessing/split specifications,
 query sampling and annotation instructions, and implementing software-only adapter
 interface checks. Actual feasibility, data-driven power estimates and any scoring
 must wait for the paused experimental work to resume.
@@ -62,7 +66,6 @@ python scripts/audit_research_preparation.py --target model_study
 python scripts/audit_research_preparation.py --target book_study
 python scripts/prepare_annotation_packet.py --mode validate --packet research/preparation/annotation_packet.json
 python scripts/validate_compute_ledger.py research/preparation/compute_ledger_template.json
-python scripts/audit_research_artifacts.py
 python -m pytest tests/test_research -q
 ```
 
@@ -83,5 +86,5 @@ kept under ignored `data/research_candidates/`, outside the committed packet.
 After deliberately changing and reviewing evidence, refresh its dependent receipts
 first, then run `python scripts/build_preparation_manifest.py --replace`. The
 checker never refreshes hashes automatically. A new hash is a consistency record,
-not scientific approval. The existing packet and full source-linked reviews make
+not scientific approval. The packet and source-linked reviews make
 unfinished decisions explicit for the next research session.

@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import platform
 import re
 import sqlite3
@@ -18,7 +17,6 @@ import sys
 import tempfile
 from collections import Counter
 from datetime import datetime, timezone
-from importlib import import_module
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Iterable
@@ -29,6 +27,10 @@ sys.path.insert(0, str(ROOT))
 
 from src.catalog.locking import advisory_lock
 from src.catalog.storage import write_json_atomic
+from src.research.candidate_io import create_or_verify as _create_or_verify
+from src.research.candidate_io import file_hash, helper_hashes, parquet_rows, sha
+from src.research.candidate_io import json_bytes as _json_bytes
+from src.research.io import read_json
 
 REPO = "google-research-datasets/go_emotions"
 REVISION = "add492243ff905527e67aeb8b80c082af02207c3"
@@ -87,58 +89,12 @@ DOCUMENTS = {
 }
 
 
-def sha(value: str | bytes) -> str:
-    return hashlib.sha256(value.encode("utf-8") if isinstance(value, str) else value).hexdigest()
-
-
-def file_hash(path: Path) -> str:
-    result = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            result.update(chunk)
-    return result.hexdigest()
-
-
 def source_path(split: str) -> str:
     return f"simplified/{split}-00000-of-00001.parquet"
 
 
 def source_url(split: str) -> str:
     return f"https://huggingface.co/datasets/{REPO}/resolve/{REVISION}/{source_path(split)}"
-
-
-def _json_bytes(value: Any) -> bytes:
-    return (
-        json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n"
-    ).encode()
-
-
-def _create_or_verify(path: Path, chunks: Iterable[bytes]) -> dict[str, Any]:
-    """Never replace a differing candidate or source artifact at this location."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
-    temporary = Path(name)
-    digest = hashlib.sha256()
-    size = 0
-    try:
-        with os.fdopen(descriptor, "wb") as handle:
-            for chunk in chunks:
-                handle.write(chunk)
-                digest.update(chunk)
-                size += len(chunk)
-            handle.flush()
-            os.fsync(handle.fileno())
-        expected = digest.hexdigest()
-        if path.exists():
-            if file_hash(path) != expected:
-                raise ValueError(
-                    f"Existing candidate artifact differs; use a separately reviewed location: {path.name}"
-                )
-        else:
-            os.replace(temporary, path)
-        return {"bytes": size, "sha256": expected}
-    finally:
-        temporary.unlink(missing_ok=True)
 
 
 def _check_cached_sources(candidate_dir: Path, receipt: dict[str, Any]) -> None:
@@ -202,7 +158,7 @@ def _check_cached_sources(candidate_dir: Path, receipt: dict[str, Any]) -> None:
 def acquire_sources(candidate_dir: Path, *, fetch: bool) -> dict[str, Any]:
     receipt_path = candidate_dir / "raw/acquisition.json"
     if receipt_path.exists():
-        receipt: dict[str, Any] = json.loads(receipt_path.read_text())
+        receipt: dict[str, Any] = read_json(receipt_path)
         _check_cached_sources(candidate_dir, receipt)
         return receipt
     if not fetch:
@@ -307,26 +263,15 @@ def acquire_sources(candidate_dir: Path, *, fetch: bool) -> dict[str, Any]:
     }
     _create_or_verify(receipt_path, [_json_bytes(receipt)])
     _check_cached_sources(candidate_dir, receipt)
+    receipt = read_json(receipt_path)
     return receipt
 
 
 def iter_parquet_rows(path: Path) -> Iterable[dict[str, Any]]:
-    try:
-        parquet = import_module("pyarrow.parquet")
-    except ImportError as error:
-        raise RuntimeError(
-            "Parquet decoding needs PyArrow only; no datasets or model stack is required"
-        ) from error
-    source = parquet.ParquetFile(path)
-    if set(source.schema_arrow.names) != {"text", "labels", "id"}:
-        raise ValueError("Unexpected simplified Parquet columns")
-    for batch in source.iter_batches(batch_size=1024, columns=["text", "labels", "id"]):
-        yield from batch.to_pylist()
+    return parquet_rows(path, ("text", "labels", "id"))
 
 
-def convert_record(
-    row: dict[str, Any], split: str, number: int, source_sha256: str
-) -> dict[str, Any]:
+def convert_record(row: dict[str, Any], split: str, number: int) -> dict[str, Any]:
     if split not in SPLITS or not isinstance(row, dict):
         raise ValueError("Unsupported split or source record")
     text, comment_id, ids = row.get("text"), row.get("id"), row.get("labels")
@@ -346,16 +291,8 @@ def convert_record(
         "label_ids": list(ids),
         "document_id": f"hf:{REPO}:comment:{comment_id}",
         "provider_comment_id": comment_id,
-        "provider_dataset": REPO,
-        "provider_revision": REVISION,
-        "provider_config": "simplified",
         "provider_split": split,
-        "split": split,
-        "identity_scope": "provider_document",
-        "document_identity_basis": "provider_comment_id",
-        "identity_source": source_url(split),
-        "source_provenance": {"file_sha256": source_sha256, "row": number},
-        "candidate_status": "not_admitted",
+        "source_row": number,
     }
 
 
@@ -494,7 +431,7 @@ def prepare_candidate(
                     for number, raw in enumerate(
                         iter_parquet_rows(candidate_dir / "raw" / source_path(split)), 1
                     ):
-                        row = convert_record(raw, split, number, receipt["files"][split]["sha256"])
+                        row = convert_record(raw, split, number)
                         rows += 1
                         counts.update(row["emotions"])
                         duplicate_label_rows += len(set(row["label_ids"])) != len(row["label_ids"])
@@ -518,9 +455,9 @@ def prepare_candidate(
                         )
 
                 details = _create_or_verify(
-                    candidate_dir / "prepared" / f"{split}.jsonl", encoded_rows()
+                    candidate_dir / "prepared_v2" / f"{split}.jsonl", encoded_rows()
                 )
-                prepared[split] = {"path": f"prepared/{split}.jsonl", "rows": rows, **details}
+                prepared[split] = {"path": f"prepared_v2/{split}.jsonl", "rows": rows, **details}
                 label_counts[split] = dict(sorted(counts.items()))
                 print(f"Prepared unadmitted {split}: {rows} source records", file=sys.stderr)
             db.execute("CREATE INDEX candidate_match ON candidates(match_key,split)")
@@ -542,10 +479,30 @@ def prepare_candidate(
         finally:
             db.close()
     prepared_labels = _create_or_verify(
-        candidate_dir / "prepared/labels.json", [_json_bytes(LABELS)]
+        candidate_dir / "prepared_v2/labels.json", [_json_bytes(LABELS)]
     )
     return {
         "schema_version": 1,
+        "prepared_record_version": 2,
+        "row_provenance": "provider_split selects acquisition.files[split]; source_row is one-based in that immutable Parquet file. Common provider/config/revision/status metadata belongs to this manifest.",
+        "identity_scope": "provider_document_with_official_comment_id",
+        "row_identity_field": "document_id",
+        "preserved_v1_files": {
+            split: {
+                "path": f"prepared/{split}.jsonl",
+                "bytes": (candidate_dir / "prepared" / f"{split}.jsonl").stat().st_size,
+                "sha256": file_hash(candidate_dir / "prepared" / f"{split}.jsonl"),
+            }
+            for split in SPLITS
+            if (candidate_dir / "prepared" / f"{split}.jsonl").is_file()
+        },
+        "preserved_v1_label_map": {
+            "path": "prepared/labels.json",
+            "bytes": (candidate_dir / "prepared/labels.json").stat().st_size,
+            "sha256": file_hash(candidate_dir / "prepared/labels.json"),
+        }
+        if (candidate_dir / "prepared/labels.json").is_file()
+        else None,
         "status": "candidate_prepared_not_admitted",
         "training_authorized": False,
         "repo": REPO,
@@ -555,6 +512,7 @@ def prepare_candidate(
         if candidate_dir.resolve().is_relative_to(ROOT)
         else candidate_dir.name,
         "preparation_script_sha256": file_hash(Path(__file__)),
+        "preparation_helper_sha256": helper_hashes(ROOT),
         "acquisition_receipt_sha256": file_hash(candidate_dir / "raw/acquisition.json"),
         "tooling": {
             "python_version": platform.python_version(),
@@ -563,7 +521,7 @@ def prepare_candidate(
         },
         "acquisition": receipt,
         "prepared_files": prepared,
-        "prepared_label_map": {"path": "prepared/labels.json", **prepared_labels},
+        "prepared_label_map": {"path": "prepared_v2/labels.json", **prepared_labels},
         "label_names": LABELS,
         "label_counts": label_counts,
         "duplicate_review": {
@@ -615,7 +573,7 @@ def main() -> int:
         parser.error("In-repository candidate text must stay under data/research_candidates")
     if any(
         manifest_path.is_relative_to(candidate / subdirectory)
-        for subdirectory in ("raw", "prepared")
+        for subdirectory in ("raw", "prepared", "prepared_v2")
     ):
         parser.error("The committed manifest cannot replace raw or prepared candidate artifacts")
     with advisory_lock(args.candidate_dir / ".prepare.lock"):

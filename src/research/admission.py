@@ -14,6 +14,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from .io import file_hash, read_json
+
 HEAD_INITIALIZATION = "identical task-specific initialization within each matched training seed"
 SPLITS = ("train", "model_selection", "calibration", "test")
 RUNTIME_FIELDS = {
@@ -81,23 +83,7 @@ def _canonical(value: Any) -> str:
 
 
 def _read_json(path: Path) -> dict:
-    def pairs(items):
-        value = {}
-        for key, item in items:
-            if key in value:
-                raise AdmissionError(f"Duplicate JSON key in {path.name}: {key}")
-            value[key] = item
-        return value
-
-    def constant(value):
-        raise AdmissionError(f"Non-finite JSON value: {value}")
-
-    return _object(
-        json.loads(
-            path.read_text(encoding="utf-8"), object_pairs_hook=pairs, parse_constant=constant
-        ),
-        path.name,
-    )
+    return _object(read_json(path), path.name)
 
 
 def _reference(root: Path, reference: Any, name: str) -> tuple[Path, dict]:
@@ -115,11 +101,7 @@ def _reference(root: Path, reference: Any, name: str) -> tuple[Path, dict]:
     expected = _digest(ref["sha256"], name + ".sha256")
     if path.stat().st_size != ref["bytes"]:
         raise AdmissionError(f"{name} byte count changed")
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    if digest.hexdigest() != expected:
+    if file_hash(path) != expected:
         raise AdmissionError(f"{name} SHA-256 changed")
     return path, ref
 

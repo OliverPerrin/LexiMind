@@ -9,7 +9,7 @@ Date: December 2025
 
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import torch
 from torch.utils.data import DataLoader
@@ -21,6 +21,7 @@ from .dataset import (
     SummarizationExample,
     TopicDataset,
     TopicExample,
+    validate_known_labels,
 )
 from .tokenization import Tokenizer
 
@@ -33,7 +34,7 @@ class SummarizationCollator:
     Uses per-batch dynamic padding (``padding="longest"``) rounded up to a
     multiple of ``pad_to_multiple_of`` so every batch fits one of a small set
     of shapes (good for tensor cores and ``torch.compile`` graph caching)
-    while avoiding the ~17x padding waste on short GoEmotions-style inputs.
+    while limiting padding to the current minibatch.
     """
 
     def __init__(
@@ -101,11 +102,14 @@ class EmotionCollator:
     ) -> None:
         self.tokenizer = tokenizer
         self.binarizer = dataset.binarizer
+        self.known_labels = set(dataset.emotion_classes)
         self.max_length = max_length
         self.padding = padding
         self.pad_to_multiple_of = pad_to_multiple_of
 
     def __call__(self, batch: List[EmotionExample]) -> Dict[str, torch.Tensor]:
+        for example in batch:
+            validate_known_labels(example.emotions, self.known_labels, "emotion")
         texts = [ex.text for ex in batch]
         encoded = self.tokenizer.batch_encode(
             texts,
@@ -138,11 +142,14 @@ class TopicCollator:
     ) -> None:
         self.tokenizer = tokenizer
         self.encoder = dataset.encoder
+        self.known_labels = set(dataset.topic_classes)
         self.max_length = max_length
         self.padding = padding
         self.pad_to_multiple_of = pad_to_multiple_of
 
     def __call__(self, batch: List[TopicExample]) -> Dict[str, torch.Tensor]:
+        for example in batch:
+            validate_known_labels([example.topic], self.known_labels, "topic")
         texts = [ex.text for ex in batch]
         encoded = self.tokenizer.batch_encode(
             texts,
@@ -236,3 +243,41 @@ def build_topic_dataloader(
         pin_memory=pin_memory,
         persistent_workers=num_workers > 0,
     )
+
+
+def build_task_dataloaders(
+    datasets: dict,
+    tokenizer: Tokenizer,
+    *,
+    batch_size: int,
+    shuffle: bool,
+    max_length: int,
+    classification_max_length: int,
+    num_workers: int = 0,
+    pin_memory: bool = False,
+) -> dict[str, DataLoader]:
+    """Build only requested task loaders, with the same dynamic collators."""
+    loaders = {}
+    for task, dataset in datasets.items():
+        common: dict[str, Any] = dict(
+            batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=pin_memory
+        )
+        if task == "summarization":
+            loaders[task] = build_summarization_dataloader(
+                dataset,
+                tokenizer,
+                max_source_length=max_length,
+                max_target_length=max_length,
+                **common,
+            )
+        elif task == "emotion":
+            loaders[task] = build_emotion_dataloader(
+                dataset, tokenizer, max_length=classification_max_length, **common
+            )
+        elif task == "topic":
+            loaders[task] = build_topic_dataloader(
+                dataset, tokenizer, max_length=classification_max_length, **common
+            )
+        else:
+            raise ValueError(f"Unknown task '{task}'")
+    return loaders
