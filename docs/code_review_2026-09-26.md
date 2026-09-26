@@ -91,17 +91,18 @@ this change does not retroactively validate them.
 
 ## Verification and remaining boundaries
 
-During review, the full local Python suite passed 193 tests;
-the web suite passed 37 unit tests. Final totals and hosted CI are recorded with the
-release in `docs/deployment.md`. Unit tests use synthetic data and temporary files;
+The final local and hosted checks passed 205 Python tests, 37 web unit tests and
+16 browser tests. Hosted CI and the release are recorded in `docs/deployment.md`.
+Unit tests use synthetic data and temporary files;
 visualization tests no longer write into the project's historical outputs directory.
 No historical model metrics were recomputed.
 
 CI now installs a pinned CPU PyTorch wheel and test dependencies instead of resolving
 the entire research environment and downloading CUDA libraries on a CPU runner.
 The preceding green job spent nearly nine minutes installing dependencies and 26 seconds
-running tests. The new environment cache and eliminated duplicate PR/push workflows
-reduce repeated work; hosted timing must be checked before claiming a CI speedup.
+running tests. The new job completed in 1m34s, including 205 tests (12.53s test time).
+The environment cache and eliminated duplicate PR/push workflows reduce repeated
+work. These are observed CI runs, not a controlled hardware comparison.
 
 Native device testing was unavailable: no iOS simulators were configured and no
 Android SDK was installed. T3 browser checks cover controls and responsive geometry;

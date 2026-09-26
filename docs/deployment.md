@@ -1,4 +1,33 @@
-# Initial book-discovery release
+# Book-discovery deployments
+
+## Continuation — 26 September 2026
+
+Updated production: **https://leximind-five.vercel.app**
+
+- Application revision: `6e0fd25`; deployment `dpl_AXq74BfLBs8xLSMshhGZuHoiJ6f2`.
+- 102 work records, 96 source descriptions and 16 genres. Every original 89-work
+  identifier remains present, so existing saved-book IDs continue to resolve.
+- Added source-subject browsing, portable shelf export/import, storage recovery,
+  bounded recommendation pagination, publication-receipt validation and safer imports.
+- Local and hosted validation passed **205 Python tests, 37 web unit tests and
+  16 desktop/narrow-viewport browser tests**, plus lint, formatting, type checks,
+  source-integrity checks and production builds.
+- The hosted Python test job completed in **1m34s**, versus **10m04s** for the
+  preceding setup. The new job uses a CPU-only wheel, pinned test dependencies and
+  an environment cache; this is one observed CI comparison, not a controlled
+  benchmark of hardware or model training.
+- Public T3 verification confirmed the 102-book catalogue, book/source pages,
+  exact subject filtering and rejection of an unsupported shelf import without
+  changing stored preferences. Desktop screenshots were inspected. Native iOS/
+  Android devices were unavailable; narrow-viewport screenshots were intermittent.
+- No research training, real-checkpoint inference, evaluation campaigns, paid
+  teacher calls, or Hugging Face redeployment occurred.
+
+Review: [software findings and timings](code_review_2026-09-26.md),
+[model-stack boundary](model_stack_audit_2026-09-26.md),
+[pull request 2](https://github.com/OliverPerrin/LexiMind/pull/2).
+
+## Initial release — 22 September 2026
 
 Deployed 22 September 2026: **https://leximind-five.vercel.app**
 
