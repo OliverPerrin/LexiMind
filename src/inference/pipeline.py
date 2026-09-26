@@ -110,7 +110,14 @@ class InferencePipeline:
         chosen = device or self.config.device
         if chosen is None:
             param = next(model.parameters(), None)
-            chosen = param.device if param else "cpu"
+            buffer = next(model.buffers(), None)
+            chosen = (
+                param.device
+                if param is not None
+                else buffer.device
+                if buffer is not None
+                else "cpu"
+            )
         self.device = torch.device(chosen)
 
         self.model.to(self.device)
@@ -129,7 +136,9 @@ class InferencePipeline:
         encoded = self.tokenizer.batch_encode(list(texts))
         src_ids = encoded["input_ids"].to(self.device)
         src_mask = encoded["attention_mask"].to(self.device)
-        max_len = max_length or self.config.summary_max_length
+        max_len = self.config.summary_max_length if max_length is None else max_length
+        if max_len < 1:
+            raise ValueError("max_length must be positive")
 
         model = cast(Any, self.model)
         if not hasattr(model, "encoder") or not hasattr(model, "decoder"):
@@ -142,25 +151,33 @@ class InferencePipeline:
             )
             memory = model.encoder(src_ids, mask=enc_mask)
 
-            # Decode with constraints to improve quality
-            ban_ids = [self.tokenizer.bos_token_id, self.tokenizer.pad_token_id]
-            unk = getattr(self.tokenizer._tokenizer, "unk_token_id", None)
-            if isinstance(unk, int):
-                ban_ids.append(unk)
+            return self._summarize_memory(memory, src_mask, max_len)
 
-            generated = model.decoder.greedy_decode(
-                memory=memory,
-                max_len=max_len,
-                start_token_id=self.tokenizer.bos_token_id,
-                end_token_id=self.tokenizer.eos_token_id,
-                device=self.device,
-                min_len=10,
-                ban_token_ids=[i for i in ban_ids if i is not None],
-                no_repeat_ngram_size=3,
-                repetition_penalty=self.config.summary_repetition_penalty,
-                length_penalty=self.config.summary_length_penalty,
-                memory_mask=src_mask,
-            )
+    def _summarize_memory(
+        self, memory: torch.Tensor, src_mask: torch.Tensor, max_len: int
+    ) -> List[str]:
+        """Decode already-encoded memory; caller holds inference_mode."""
+        model = cast(Any, self.model)
+
+        # Keep the established decoding settings unchanged.
+        ban_ids = [self.tokenizer.bos_token_id, self.tokenizer.pad_token_id]
+        unk = getattr(self.tokenizer._tokenizer, "unk_token_id", None)
+        if isinstance(unk, int):
+            ban_ids.append(unk)
+
+        generated = model.decoder.greedy_decode(
+            memory=memory,
+            max_len=max_len,
+            start_token_id=self.tokenizer.bos_token_id,
+            end_token_id=self.tokenizer.eos_token_id,
+            device=self.device,
+            min_len=10,
+            ban_token_ids=[i for i in ban_ids if i is not None],
+            no_repeat_ngram_size=3,
+            repetition_penalty=self.config.summary_repetition_penalty,
+            length_penalty=self.config.summary_length_penalty,
+            memory_mask=src_mask,
+        )
 
         # Decode and format summaries
         raw_summaries = self.tokenizer.decode_batch(generated.tolist())
@@ -186,18 +203,27 @@ class InferencePipeline:
         input_ids = encoded["input_ids"].to(self.device)
         attention_mask = encoded["attention_mask"].to(self.device)
         inputs = {"input_ids": input_ids, "attention_mask": attention_mask}
-        thresh = threshold or self.config.emotion_threshold
+        thresh = self.config.emotion_threshold if threshold is None else threshold
+        if not 0 <= thresh <= 1:
+            raise ValueError("Emotion threshold must be in [0, 1]")
 
         with torch.inference_mode():
             logits = self.model.forward("emotion", inputs)
-            probs = torch.sigmoid(logits)
+            return self._emotion_predictions(logits, thresh)
+
+    def _emotion_predictions(
+        self, logits: torch.Tensor, threshold: float
+    ) -> List[EmotionPrediction]:
+        if logits.ndim != 2 or logits.shape[-1] != len(self.emotion_labels or []):
+            raise ValueError("Emotion logits do not match the supplied label order")
+        probs = torch.sigmoid(logits)
 
         results = []
         for row in probs.cpu():
             pairs = [
                 (label, score)
-                for label, score in zip(self.emotion_labels, row.tolist(), strict=False)
-                if score >= thresh
+                for label, score in zip(self.emotion_labels or [], row.tolist(), strict=True)
+                if score >= threshold
             ]
             results.append(
                 EmotionPrediction(
@@ -223,14 +249,19 @@ class InferencePipeline:
 
         with torch.inference_mode():
             logits = self.model.forward("topic", inputs)
-            probs = F.softmax(logits, dim=-1)
+            return self._topic_predictions(logits)
+
+    def _topic_predictions(self, logits: torch.Tensor) -> List[TopicPrediction]:
+        if logits.ndim != 2 or logits.shape[-1] != len(self.topic_labels or []):
+            raise ValueError("Topic logits do not match the supplied label order")
+        probs = F.softmax(logits, dim=-1)
 
         results = []
         for row in probs.cpu():
             idx = int(row.argmax().item())
             results.append(
                 TopicPrediction(
-                    label=self.topic_labels[idx],
+                    label=(self.topic_labels or [])[idx],
                     confidence=row[idx].item(),
                 )
             )
@@ -244,6 +275,31 @@ class InferencePipeline:
             raise RuntimeError("Both emotion_labels and topic_labels required")
 
         text_list = list(texts)
+        if not text_list:
+            return {"summaries": [], "emotion": [], "topic": []}
+        model = cast(Any, self.model)
+        # Older/custom model implementations retain the existing task-forward
+        # fallback. LexiMind's model can reuse one encoder pass for all tasks.
+        if callable(getattr(model, "classify_encoded", None)):
+            if not 0 <= self.config.emotion_threshold <= 1:
+                raise ValueError("Emotion threshold must be in [0, 1]")
+            if self.config.summary_max_length < 1:
+                raise ValueError("summary_max_length must be positive")
+            encoded = self.tokenizer.batch_encode(text_list)
+            ids = encoded["input_ids"].to(self.device)
+            mask = encoded["attention_mask"].to(self.device)
+            with torch.inference_mode():
+                memory = model.encoder(ids, mask=mask.unsqueeze(1) & mask.unsqueeze(2))
+                return {
+                    "summaries": self._summarize_memory(
+                        memory, mask, self.config.summary_max_length
+                    ),
+                    "emotion": self._emotion_predictions(
+                        model.classify_encoded("emotion", memory, mask),
+                        self.config.emotion_threshold,
+                    ),
+                    "topic": self._topic_predictions(model.classify_encoded("topic", memory, mask)),
+                }
         return {
             "summaries": self.summarize(text_list),
             "emotion": self.predict_emotions(text_list),

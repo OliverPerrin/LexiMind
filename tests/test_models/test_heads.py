@@ -102,3 +102,14 @@ def test_projection_head_2d_and_3d_behavior_and_grad():
     loss.backward()
     grads = [p.grad for p in head.parameters() if p.requires_grad]
     assert any(g is not None for g in grads)
+
+
+def test_all_padding_pooling_is_finite_and_preserves_bias_only_output():
+    for pooler in ("mean", "max", "attention"):
+        head = ClassificationHead(d_model=4, num_labels=2, pooler=pooler, dropout=0.0)
+        inputs = torch.randn(2, 3, 4, requires_grad=True)
+        mask = torch.zeros(2, 3, dtype=torch.long)
+        output = head(inputs, mask=mask)
+        torch.testing.assert_close(output, head.out_proj(torch.zeros(2, 4)))
+        output.sum().backward()
+        assert torch.isfinite(inputs.grad).all()

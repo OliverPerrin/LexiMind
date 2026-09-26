@@ -76,6 +76,12 @@ class TrainerConfig:
     experiment_name: str = "LexiMind"
     run_name: str | None = None
 
+    def __post_init__(self) -> None:
+        if self.gradient_accumulation_steps < 1:
+            raise ValueError("gradient_accumulation_steps must be positive")
+        if self.task_sampling not in {"temperature", "round_robin"}:
+            raise ValueError("task_sampling must be temperature or round_robin")
+
 
 # --------------- Early Stopping ---------------
 
@@ -174,6 +180,7 @@ class Trainer:
 
             for epoch in pbar:
                 epoch_start = time.perf_counter()
+                stop_training = False
 
                 # Reset PCGrad stats per epoch
                 if self.pcgrad is not None:
@@ -202,11 +209,13 @@ class Trainer:
                                 f"\nEarly stopping at epoch {epoch} (best loss: {self.early_stopping.best_value:.4f})"
                             )
 
-                            break
+                            stop_training = True
 
                 # Checkpoint
                 if checkpoint_callback:
                     checkpoint_callback(epoch, self.model, history)
+                if stop_training:
+                    break
 
                 # Update progress
                 epoch_time = time.perf_counter() - epoch_start
@@ -226,15 +235,19 @@ class Trainer:
         passes but still counts as one optimizer-ready iteration for
         ``gradient_accumulation_steps``). ``max_batches`` therefore equals
         the size of the longest loader, and the optimizer steps per epoch
-        are ``max_batches // gradient_accumulation_steps``.
+        are ``ceil(max_batches / gradient_accumulation_steps)`` including the
+        final partial accumulation window.
         """
         if self.config.scheduler_type == "constant":
             self.scheduler = None
             return
 
+        if not loaders or any(len(loader) == 0 for loader in loaders.values()):
+            raise ValueError("Every selected task requires a nonempty data loader")
+
         accum = max(1, self.config.gradient_accumulation_steps)
         max_batches = max(len(loader) for loader in loaders.values())
-        steps_per_epoch = max_batches // accum
+        steps_per_epoch = math.ceil(max_batches / accum)
         epochs_remaining = max(1, self.config.max_epochs - start_epoch + 1)
         total_steps = steps_per_epoch * epochs_remaining
         warmup = self.config.warmup_steps
@@ -261,10 +274,16 @@ class Trainer:
     ) -> Dict[str, float]:
         """Run one epoch with configurable task sampling strategy."""
         self.model.train(train)
+        if not loaders or any(len(loader) == 0 for loader in loaders.values()):
+            raise ValueError("Every selected task requires a nonempty data loader")
         metrics: Dict[str, List[float]] = defaultdict(list)
+        metric_weights: Dict[str, List[int]] = defaultdict(list)
+        diagnostic_batches: Dict[str, Dict] = {}
         iterators = {task: iter(loader) for task, loader in loaders.items()}
         max_batches = max(len(loader) for loader in loaders.values())
         accum = self.config.gradient_accumulation_steps
+        if train:
+            self.optimizer.zero_grad(set_to_none=True)
 
         phase = "Train" if train else "Val"
         pbar = tqdm(range(max_batches), desc=f"  {phase}", leave=False, file=sys.stderr)
@@ -318,7 +337,14 @@ class Trainer:
                     )
                 else:
                     # Round-robin: all tasks every step
-                    selected_tasks = task_names
+                    selected_tasks = (
+                        task_names
+                        if train
+                        else [task for task in task_names if step < len(loaders[task])]
+                    )
+
+                # Normalize the remainder by its actual number of outer steps.
+                window_size = min(accum, max_batches - (step // accum) * accum)
 
                 # For PCGrad: collect task losses first, then do joint backward
                 pcgrad_losses: Dict[str, torch.Tensor] = {}
@@ -328,32 +354,50 @@ class Trainer:
                     batch = self._get_batch(iterators, loader, task)
                     if batch is None:
                         continue
+                    if train and self.config.gradient_conflict_frequency > 0:
+                        diagnostic_batches[task] = batch
 
                     # Forward with AMP
                     dtype = torch.bfloat16 if self.use_bfloat16 else torch.float16
                     with torch.autocast("cuda", dtype=dtype, enabled=self.use_amp):
                         loss, task_metrics = self._forward_task(task, batch)
 
-                    # Skip NaN
-                    if torch.isnan(loss):
-                        continue
+                    if not torch.isfinite(loss):
+                        raise FloatingPointError(
+                            f"Non-finite {task} loss at epoch {epoch}, step {step}"
+                        )
 
                     # Record metrics
-                    metrics[f"{task}_loss"].append(loss.item())
+                    loss_value = loss.item()
+                    metrics[f"{task}_loss"].append(loss_value)
+                    # Validation visits each example once. Loss is token-averaged
+                    # for summarization and example-averaged for classifiers.
+                    if not train:
+                        batch_size = len(batch["labels"])
+                        loss_count = (
+                            int((batch["labels"] != -100).sum())
+                            if task == "summarization"
+                            else batch_size
+                        )
+                        metric_weights[f"{task}_loss"].append(loss_count)
                     for name, val in task_metrics.items():
                         metrics[f"{task}_{name}"].append(val)
+                        if not train:
+                            metric_weights[f"{task}_{name}"].append(batch_size)
 
                     # Track step loss for both train and val
                     weight = (self.config.task_weights or {}).get(task, 1.0)
-                    step_loss += loss.item() * weight
+                    step_loss += loss_value * weight
 
                     # Backward (train only)
                     if train:
                         if use_pcgrad:
                             # Collect losses for PCGrad (backward later)
-                            pcgrad_losses[task] = loss
+                            # Temperature sampling can select the same task more
+                            # than once. All draws must contribute to its gradient.
+                            pcgrad_losses[task] = pcgrad_losses.get(task, 0) + loss
                         else:
-                            scaled = (loss * weight) / accum
+                            scaled = (loss * weight) / window_size
                             scaled.backward()
 
                 # PCGrad: single autograd.grad pass per task over shared+head
@@ -364,7 +408,7 @@ class Trainer:
                         shared_params=shared_params,
                         head_params=head_params,
                         task_weights=self.config.task_weights,
-                        gradient_accumulation_steps=accum,
+                        gradient_accumulation_steps=window_size,
                     )
 
                     for k, v in pcgrad_stats.items():
@@ -376,7 +420,7 @@ class Trainer:
                     # Single task sampled this step, no conflict to resolve.
                     for task_name, loss_val in pcgrad_losses.items():
                         w = (self.config.task_weights or {}).get(task_name, 1.0)
-                        scaled = (loss_val * w) / accum
+                        scaled = (loss_val * w) / window_size
                         scaled.backward()
 
                 # Gradient conflict diagnostics (non-PCGrad mode)
@@ -386,18 +430,18 @@ class Trainer:
                     and self.config.gradient_conflict_frequency > 0
                     and (step + 1) % self.config.gradient_conflict_frequency == 0
                 ):
-                    conflict_stats = self._compute_gradient_conflicts(loaders, iterators)
+                    conflict_stats = self._compute_gradient_conflicts(diagnostic_batches)
                     for k, v in conflict_stats.items():
                         metrics[f"grad_{k}"].append(v)
                         mlflow.log_metric(f"grad_{k}", v, step=self.global_step)
 
                 # Optimizer step
-                if train and (step + 1) % accum == 0:
+                if train and ((step + 1) % accum == 0 or step + 1 == max_batches):
                     torch.nn.utils.clip_grad_norm_(
                         self.model.parameters(), self.config.gradient_clip_norm
                     )
                     self.optimizer.step()
-                    self.optimizer.zero_grad()
+                    self.optimizer.zero_grad(set_to_none=True)
                     if self.scheduler:
                         self.scheduler.step()
                         # Log learning rate to MLflow
@@ -405,13 +449,24 @@ class Trainer:
                         mlflow.log_metric("learning_rate", current_lr, step=self.global_step)
                     self.global_step += 1
 
-                if step_loss > 0:
+                if train and step_loss > 0:
                     metrics["total_loss"].append(step_loss)
                     if train:
                         pbar.set_postfix({"loss": f"{step_loss:.3f}"})
 
         # Average metrics
         averaged = {k: sum(v) / len(v) for k, v in metrics.items() if v}
+        if not train:
+            for key, weights in metric_weights.items():
+                denominator = sum(weights)
+                if denominator:
+                    averaged[key] = (
+                        sum(v * n for v, n in zip(metrics[key], weights, strict=True)) / denominator
+                    )
+            averaged["total_loss"] = sum(
+                averaged[f"{task}_loss"] * (self.config.task_weights or {}).get(task, 1.0)
+                for task in task_names
+            )
         tqdm.write(
             f"[{phase.lower()}] epoch {epoch}: "
             + ", ".join(f"{k}={v:.4f}" for k, v in averaged.items() if k != "epoch")
@@ -566,8 +621,7 @@ class Trainer:
 
     def _compute_gradient_conflicts(
         self,
-        loaders: Dict[str, DataLoader],
-        iterators: Dict,
+        batches: Dict[str, Dict],
     ) -> Dict[str, float]:
         """Compute inter-task gradient cosine similarity to diagnose conflicts.
 
@@ -578,38 +632,39 @@ class Trainer:
         signal. Comparing over the same parameter set across tasks also avoids
         shape-mismatch errors.
 
+        Uses the latest already-consumed batch per task: diagnostics neither
+        steal training batches nor clear/replace accumulated parameter gradients.
+        CPU/CUDA RNG state is restored after probes, including training-mode dropout.
+
         Returns cosine similarity between encoder-gradient vectors for each
         task pair. Negative values indicate conflicting gradients on the
         shared encoder (negative transfer risk).
         """
         shared_params = [p for p in self.model.encoder.parameters() if p.requires_grad]
+        if not shared_params:
+            return {}
         task_grads: Dict[str, torch.Tensor] = {}
-
-        for task, loader in loaders.items():
-            self.optimizer.zero_grad()
-            batch = self._get_batch(iterators, loader, task)
-            if batch is None:
-                continue
-
-            dtype = torch.bfloat16 if self.use_bfloat16 else torch.float16
-            with torch.autocast("cuda", dtype=dtype, enabled=self.use_amp):
-                loss, _ = self._forward_task(task, batch)
-
-            if torch.isnan(loss):
-                continue
-
-            loss.backward()
-
-            grad_vec = []
-            for p in shared_params:
-                if p.grad is not None:
-                    grad_vec.append(p.grad.detach().flatten().to(torch.float32))
-                else:
-                    grad_vec.append(torch.zeros(p.numel(), dtype=torch.float32, device=p.device))
-            if grad_vec:
-                task_grads[task] = torch.cat(grad_vec)
-
-        self.optimizer.zero_grad()
+        devices = (
+            [self.device.index if self.device.index is not None else torch.cuda.current_device()]
+            if self.device.type == "cuda"
+            else []
+        )
+        with torch.random.fork_rng(devices=devices):
+            for task, batch in batches.items():
+                dtype = torch.bfloat16 if self.use_bfloat16 else torch.float16
+                with torch.autocast("cuda", dtype=dtype, enabled=self.use_amp):
+                    loss, _ = self._forward_task(task, batch)
+                if not torch.isfinite(loss):
+                    continue
+                grads = torch.autograd.grad(loss, shared_params, allow_unused=True)
+                task_grads[task] = torch.cat(
+                    [
+                        grad.detach().flatten().to(torch.float32)
+                        if grad is not None
+                        else torch.zeros(p.numel(), dtype=torch.float32, device=p.device)
+                        for p, grad in zip(shared_params, grads, strict=True)
+                    ]
+                )
 
         # Compute pairwise cosine similarity
         stats: Dict[str, float] = {}

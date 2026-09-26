@@ -5,16 +5,16 @@ Generates publication-quality visualizations of training progress including:
 - Training/validation loss curves with best checkpoint markers
 - Per-task metrics (summarization, emotion, topic)
 - Learning rate schedule visualization
-- 3D loss landscape exploration
+- Optional, explicitly labelled synthetic loss-surface illustrations
 - Confusion matrices for classification tasks
-- Embedding space projections (t-SNE)
+- Optional, explicitly labelled synthetic cluster projections (t-SNE)
 - Training dynamics analysis
 
 Usage:
     python scripts/visualize_training.py                 # Generate core plots
     python scripts/visualize_training.py --interactive   # HTML plots (requires plotly)
-    python scripts/visualize_training.py --landscape     # Include 3D loss landscape
-    python scripts/visualize_training.py --all           # Generate everything
+    python scripts/visualize_training.py --landscape --illustrations  # Synthetic illustration
+    python scripts/visualize_training.py --all           # Available observed plots only
 
 Author: Oliver Perrin
 Date: December 2025
@@ -25,12 +25,16 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.plot_inputs import load_confusion_report
 
 # Optional imports for advanced features
 HAS_PLOTLY = False
@@ -612,55 +616,18 @@ def plot_learning_rate(run) -> None:
 # Advanced Visualizations
 
 
-def plot_confusion_matrix(run, task: str = "topic") -> None:
-    """
-    Plot confusion matrix for classification tasks.
-
-    Loads predictions from evaluation output if available.
-    """
-    # Load labels
-    labels_path = ARTIFACTS_DIR / "labels.json"
-    if task == "topic":
-        default_labels = ["World", "Sports", "Business", "Sci/Tech"]
-    else:  # emotion - top 8 for visibility
-        default_labels = [
-            "admiration",
-            "amusement",
-            "anger",
-            "annoyance",
-            "approval",
-            "caring",
-            "curiosity",
-            "desire",
-        ]
-
-    if labels_path.exists():
-        with open(labels_path) as f:
-            all_labels = json.load(f)
-            labels = all_labels.get(f"{task}_labels", default_labels)
-    else:
-        labels = default_labels
-
-    # Ensure we have labels
-    if not labels:
-        labels = default_labels
-
-    # Generate sample confusion matrix (placeholder - would use actual predictions)
+def plot_confusion_matrix(run, task: str = "topic", *, report_path: Path | None = None) -> None:
+    """Plot an explicitly supplied count matrix with its own recorded labels."""
+    if report_path is None:
+        logger.warning(
+            "Confusion matrix skipped: provide --evaluation-report with observed counts and labels"
+        )
+        return
+    labels, observed = load_confusion_report(report_path, task)
+    cm = np.asarray(observed, dtype=np.float64)
     n_classes = len(labels)
-    np.random.seed(42)
-
-    # Create a realistic-looking confusion matrix with diagonal dominance
-    cm = np.zeros((n_classes, n_classes))
-    for i in range(n_classes):
-        # Diagonal dominance (good classification)
-        cm[i, i] = np.random.randint(80, 120)
-        # Some off-diagonal errors
-        for j in range(n_classes):
-            if i != j:
-                cm[i, j] = np.random.randint(0, 15)
-
-    # Normalize
-    cm_normalized = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
+    totals = cm.sum(axis=1, keepdims=True)
+    cm_normalized = np.divide(cm, totals, out=np.zeros_like(cm), where=totals > 0)
 
     # Plot
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -676,7 +643,7 @@ def plot_confusion_matrix(run, task: str = "topic") -> None:
         cbar_kws={"label": "Proportion"},
     )
 
-    ax.set_title(f"Confusion Matrix: {task.title()} Classification")
+    ax.set_title(f"Confusion Matrix: {task.title()} Classification\nSource: {report_path.name}")
     ax.set_xlabel("Predicted Label")
     ax.set_ylabel("True Label")
 
@@ -692,17 +659,22 @@ def plot_confusion_matrix(run, task: str = "topic") -> None:
     plt.close()
 
 
-def plot_3d_loss_landscape(run) -> None:
+def plot_3d_loss_landscape(run, *, illustrative: bool = False) -> None:
     """
     Visualize loss landscape in 3D around the optimal point.
 
     This creates a synthetic visualization showing how loss varies
     as model parameters are perturbed from the optimal solution.
     """
+    if not illustrative:
+        logger.warning(
+            "Loss surface skipped: no measured parameter perturbations; --illustrations enables a labelled synthetic example"
+        )
+        return
     if not HAS_PLOTLY:
         logger.warning("Plotly not installed. Install with: pip install plotly")
-        logger.info("Generating static 3D view instead...")
-        plot_3d_loss_landscape_static(run)
+        logger.info("Generating static illustrative 3D view instead...")
+        plot_3d_loss_landscape_static(run, illustrative=True)
         return
 
     import plotly.graph_objects as go
@@ -788,12 +760,12 @@ def plot_3d_loss_landscape(run) -> None:
             marker=dict(size=10, color="green", symbol="diamond"),
             text=["Converged"],
             textposition="top center",
-            name="Converged",
+            name="Illustrative endpoint",
         )
     )
 
     fig.update_layout(
-        title="Loss Landscape & Optimization Trajectory",
+        title="Synthetic loss surface and illustrative trajectory (not measured)",
         scene=dict(
             xaxis_title="Parameter Direction 1",
             yaxis_title="Parameter Direction 2",
@@ -804,13 +776,16 @@ def plot_3d_loss_landscape(run) -> None:
         height=700,
     )
 
-    output_path = OUTPUTS_DIR / "loss_landscape_3d.html"
+    output_path = OUTPUTS_DIR / "illustration_loss_surface_3d.html"
     fig.write_html(str(output_path))
     logger.info(f"Saved 3D loss landscape to {output_path}")
 
 
-def plot_3d_loss_landscape_static(run) -> None:
-    """Create a static 3D loss landscape visualization using matplotlib."""
+def plot_3d_loss_landscape_static(run, *, illustrative: bool = False) -> None:
+    """Create an explicitly requested synthetic illustration, never a measured surface."""
+    if not illustrative:
+        logger.warning("Synthetic loss surface skipped; --illustrations is required")
+        return
     if not HAS_MPLOT3D:
         logger.warning("mpl_toolkits.mplot3d not available")
         return
@@ -868,30 +843,35 @@ def plot_3d_loss_landscape_static(run) -> None:
         c="green",
         s=100,
         marker="*",
-        label="Converged",
+        label="Illustrative endpoint",
     )
 
     ax.set_xlabel("θ₁ Direction")
     ax.set_ylabel("θ₂ Direction")
     ax.set_zlabel("Loss")
-    ax.set_title("Loss Landscape & Gradient Descent Path")
+    ax.set_title("Synthetic loss surface and illustrative trajectory (not measured)")
     ax.legend(loc="upper left")
 
     fig.colorbar(surf, ax=ax, shrink=0.5, aspect=10, label="Loss")
 
     plt.tight_layout()
-    output_path = OUTPUTS_DIR / "loss_landscape_3d.png"
+    output_path = OUTPUTS_DIR / "illustration_loss_surface_3d.png"
     plt.savefig(output_path)
     logger.info(f"Saved 3D loss landscape to {output_path}")
     plt.close()
 
 
-def plot_embedding_space(run) -> None:
+def plot_embedding_space(run, *, illustrative: bool = False) -> None:
     """
     Visualize learned embeddings using t-SNE dimensionality reduction.
 
     Shows how the model clusters different topics/emotions in embedding space.
     """
+    if not illustrative:
+        logger.warning(
+            "Embedding plot skipped: no measured embeddings; --illustrations enables a labelled synthetic example"
+        )
+        return
     if not HAS_SKLEARN:
         logger.warning("scikit-learn not installed. Install with: pip install scikit-learn")
         return
@@ -945,7 +925,7 @@ def plot_embedding_space(run) -> None:
 
     ax.set_xlabel("t-SNE Dimension 1")
     ax.set_ylabel("t-SNE Dimension 2")
-    ax.set_title("Embedding Space Visualization (t-SNE)")
+    ax.set_title("Synthetic clusters projected with t-SNE (not learned model embeddings)")
     ax.legend(title="Topic", loc="upper right")
     ax.grid(True, alpha=0.3)
 
@@ -954,7 +934,7 @@ def plot_embedding_space(run) -> None:
     ax.set_yticks([])
 
     plt.tight_layout()
-    output_path = OUTPUTS_DIR / "embedding_space.png"
+    output_path = OUTPUTS_DIR / "illustration_synthetic_embeddings.png"
     plt.savefig(output_path)
     logger.info(f"Saved embedding visualization to {output_path}")
     plt.close()
@@ -1542,10 +1522,24 @@ def main():
         help="Generate interactive HTML plots (requires plotly)",
     )
     parser.add_argument(
-        "--landscape", action="store_true", help="Include 3D loss landscape visualization"
+        "--landscape",
+        action="store_true",
+        help="Request the illustrative loss surface (also requires --illustrations)",
     )
     parser.add_argument("--dashboard", action="store_true", help="Generate interactive dashboard")
-    parser.add_argument("--all", action="store_true", help="Generate all visualizations")
+    parser.add_argument(
+        "--all", action="store_true", help="Generate available observed visualizations"
+    )
+    parser.add_argument(
+        "--evaluation-report",
+        type=Path,
+        help="JSON containing observed topic.confusion_matrix, topic.labels and optional num_samples",
+    )
+    parser.add_argument(
+        "--illustrations",
+        action="store_true",
+        help="Opt in to clearly labelled synthetic illustrations, separate from measured results",
+    )
     parser.add_argument(
         "--history",
         type=Path,
@@ -1639,13 +1633,13 @@ def main():
     if args.landscape or args.all:
         logger.info("")
         logger.info("Generating 3D loss landscape...")
-        plot_3d_loss_landscape(run)
+        plot_3d_loss_landscape(run, illustrative=args.illustrations)
 
     if args.all:
         logger.info("")
         logger.info("Generating additional visualizations...")
-        plot_confusion_matrix(run, task="topic")
-        plot_embedding_space(run)
+        plot_confusion_matrix(run, task="topic", report_path=args.evaluation_report)
+        plot_embedding_space(run, illustrative=args.illustrations)
 
     if args.dashboard or args.interactive:
         logger.info("")
@@ -1665,10 +1659,16 @@ def main():
         "training_dynamics.png",
     ]
 
-    if args.landscape or args.all:
-        outputs.append("loss_landscape_3d.html" if HAS_PLOTLY else "loss_landscape_3d.png")
-    if args.all:
-        outputs.extend(["confusion_matrix_topic.png", "embedding_space.png"])
+    if (args.landscape or args.all) and args.illustrations:
+        outputs.append(
+            "illustration_loss_surface_3d.html"
+            if HAS_PLOTLY
+            else "illustration_loss_surface_3d.png"
+        )
+    if args.all and args.evaluation_report:
+        outputs.append("confusion_matrix_topic.png")
+    if args.all and args.illustrations:
+        outputs.append("illustration_synthetic_embeddings.png")
     if args.dashboard or args.interactive:
         outputs.append("training_dashboard.html")
 

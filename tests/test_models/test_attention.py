@@ -153,3 +153,31 @@ class TestMultiHeadAttention:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+def test_masked_logits_cannot_leak_and_empty_rows_have_finite_zero_attention():
+    attention = ScaledDotProductAttention(scale_scores=False)
+    mask = torch.tensor([[[True, False], [False, False]]])
+    for manual in (False, True):
+        query = torch.tensor([[[[100.0], [100.0]]]], requires_grad=True)
+        key = torch.tensor([[[[0.0], [200.0]]]], requires_grad=True)
+        value = torch.tensor([[[[10.0], [200.0]]]], requires_grad=True)
+        output, weights = attention(query, key, value, mask=mask, return_attn_weights=manual)
+        torch.testing.assert_close(output, torch.tensor([[[[10.0], [0.0]]]]))
+        if weights is not None:
+            torch.testing.assert_close(weights, torch.tensor([[[[1.0, 0.0], [0.0, 0.0]]]]))
+        output.sum().backward()
+        assert all(torch.isfinite(tensor.grad).all() for tensor in (query, key, value))
+
+
+def test_sdpa_and_manual_attention_agree_with_batched_masks_and_position_bias():
+    torch.manual_seed(15)
+    attention = ScaledDotProductAttention()
+    query, key, value = [torch.randn(2, 2, 3, 4) for _ in range(3)]
+    mask = torch.tensor([[[True, True, False]] * 3, [[True, False, False]] * 3])
+    bias = torch.randn(1, 2, 3, 3)
+    fast, _ = attention(query, key, value, mask=mask, position_bias=bias)
+    reference, _ = attention(
+        query, key, value, mask=mask, position_bias=bias, return_attn_weights=True
+    )
+    torch.testing.assert_close(fast, reference, atol=1e-6, rtol=1e-5)

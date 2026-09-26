@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import random
 import sys
 import time
@@ -56,6 +57,7 @@ from src.data.dataset import (
     TopicExample,
     load_emotion_jsonl,
     load_topic_jsonl,
+    split_emotion_val,
 )
 from src.training.metrics import (
     bootstrap_confidence_interval,
@@ -365,7 +367,7 @@ class BertTrainer:
             total_batches = sum(sizes.values())
         else:
             total_batches = sum(len(v) for v in train_loaders.values())
-        self.steps_per_epoch = total_batches // config.gradient_accumulation_steps
+        self.steps_per_epoch = math.ceil(total_batches / config.gradient_accumulation_steps)
         self.total_steps = self.steps_per_epoch * config.max_epochs
 
         # LR scheduler: linear warmup + cosine decay (matching LexiMind)
@@ -418,7 +420,7 @@ class BertTrainer:
         alpha = self.config.task_sampling_alpha
 
         # Compute sampling probabilities
-        raw = {k: s ** (1.0 / alpha) for k, s in sizes.items()}
+        raw = {k: s**alpha for k, s in sizes.items()}
         total = sum(raw.values())
         probs = {k: v / total for k, v in raw.items()}
 
@@ -462,19 +464,28 @@ class BertTrainer:
             attention_mask = batch["attention_mask"].to(self.device)
             labels = batch["labels"].to(self.device)
 
+            window_size = min(
+                self.config.gradient_accumulation_steps,
+                total_batches
+                - (step_in_epoch // self.config.gradient_accumulation_steps)
+                * self.config.gradient_accumulation_steps,
+            )
+
             # Forward pass with AMP
             with autocast(dtype=torch.bfloat16, enabled=self.config.use_amp):
                 logits = self.model(task, input_ids, attention_mask)
                 loss = self._compute_loss(task, logits, labels)
                 loss = loss * self._get_task_weight(task)
-                loss = loss / self.config.gradient_accumulation_steps
+                loss = loss / window_size
 
             # Backward
             self.scaler.scale(loss).backward()
-            epoch_losses[task].append(loss.item() * self.config.gradient_accumulation_steps)
+            epoch_losses[task].append(loss.item() * window_size)
 
             # Optimizer step (every N accumulation steps)
-            if (step_in_epoch + 1) % self.config.gradient_accumulation_steps == 0:
+            if (
+                step_in_epoch + 1
+            ) % self.config.gradient_accumulation_steps == 0 or step_in_epoch + 1 == total_batches:
                 self.scaler.unscale_(self.optimizer)
                 torch.nn.utils.clip_grad_norm_(
                     self.model.parameters(), self.config.gradient_clip_norm
@@ -512,7 +523,7 @@ class BertTrainer:
             all_logits = []
             all_labels = []
             total_loss = 0.0
-            n_batches = 0
+            n_examples = 0
 
             for batch in loader:
                 input_ids = batch["input_ids"].to(self.device)
@@ -523,14 +534,14 @@ class BertTrainer:
                     logits = self.model(task, input_ids, attention_mask)
                     loss = self._compute_loss(task, logits, labels)
 
-                total_loss += loss.item()
-                n_batches += 1
+                total_loss += loss.item() * labels.shape[0]
+                n_examples += labels.shape[0]
                 all_logits.append(logits.float().cpu())
                 all_labels.append(labels.float().cpu())
 
             all_logits_t = torch.cat(all_logits, dim=0)
             all_labels_t = torch.cat(all_labels, dim=0)
-            results[f"val_{task}_loss"] = total_loss / max(n_batches, 1)
+            results[f"val_{task}_loss"] = total_loss / max(n_examples, 1)
 
             if task == "emotion":
                 preds = (torch.sigmoid(all_logits_t) > self.config.emotion_threshold).int()
@@ -857,6 +868,9 @@ def load_data(config: BertBaselineConfig, eval_split: str = "validation"):
     emo_train = load_emotion_jsonl(str(data_dir / "emotion" / "train.jsonl"))
     emo_eval_path = _resolve_split_path(data_dir, "emotion", eval_split)
     emo_eval = load_emotion_jsonl(str(emo_eval_path))
+    emo_calibration = []
+    if eval_split in {"validation", "val"}:
+        emo_eval, emo_calibration = split_emotion_val(emo_eval)
 
     # Load topic data
     top_train = load_topic_jsonl(str(data_dir / "topic" / "train.jsonl"))
@@ -883,6 +897,7 @@ def load_data(config: BertBaselineConfig, eval_split: str = "validation"):
     return {
         "emotion_train": emo_train,
         "emotion_val": emo_eval,
+        "emotion_calibration": emo_calibration,
         "topic_train": top_train,
         "topic_val": top_eval,
         "binarizer": binarizer,
@@ -1042,72 +1057,30 @@ def run_experiment(mode: str, config: BertBaselineConfig) -> Dict[str, Any]:
 
 
 def print_comparison_summary(all_results: Dict[str, Dict[str, Any]]) -> None:
-    """Print a side-by-side comparison of all experiments."""
-    print(f"\n{'═' * 70}")
-    print("  BERT BASELINE COMPARISON SUMMARY")
-    print(f"{'═' * 70}")
-
-    # Header
-    modes = list(all_results.keys())
-    header = f"{'Metric':<30}" + "".join(f"{m:>16}" for m in modes) + f"{'LexiMind':>16}"
-    print(f"\n  {header}")
-    print(f"  {'─' * len(header)}")
-
-    # LexiMind reference values
-    lexmind = {
-        "topic_accuracy": 0.8571,
-        "topic_macro_f1": 0.8539,
-        "emotion_sample_f1": 0.3523,
-        "emotion_macro_f1": 0.1432,
-        "emotion_micro_f1": 0.4430,
-        "emotion_tuned_macro_f1": 0.2936,
-    }
-
-    # Topic metrics
-    print(f"\n  {'Topic Classification':}")
-    for metric_name, display_name in [
-        ("accuracy", "Accuracy"),
-        ("macro_f1", "Macro F1"),
-    ]:
-        row = f"  {display_name:<30}"
+    """Print stored BERT values only; never synthesize a LexiMind comparison."""
+    print("\nBERT BASELINE REPORT VALUES")
+    print("Splits, thresholds and calibration policies must match before comparing runs.")
+    print(
+        "Historical LexiMind values are available in docs/RESULTS.md and generated archive tables."
+    )
+    modes = list(all_results)
+    print(f"{'Metric':<38}" + "".join(f"{mode:>20}" for mode in modes))
+    fields = [
+        ("topic", "accuracy"),
+        ("topic", "macro_f1"),
+        ("emotion", "default_threshold"),
+        ("emotion", "sample_avg_f1"),
+        ("emotion", "macro_f1"),
+        ("emotion", "micro_f1"),
+        ("emotion", "tuned_macro_f1"),
+        ("emotion", "frozen_tuned_macro_f1"),
+    ]
+    for task, metric in fields:
+        row = f"{task + '/' + metric:<38}"
         for mode in modes:
-            eval_data = all_results[mode].get("evaluation", {})
-            topic = eval_data.get("topic", {})
-            val = topic.get(metric_name, None)
-            row += f"{val:>16.4f}" if val is not None else f"{'—':>16}"
-        lm_key = f"topic_{metric_name}"
-        row += f"{lexmind.get(lm_key, 0):>16.4f}"
+            value = all_results[mode].get("evaluation", {}).get(task, {}).get(metric)
+            row += f"{value:>20.4f}" if value is not None else f"{'unreported':>20}"
         print(row)
-
-    # Emotion metrics
-    print(f"\n  {'Emotion Detection':}")
-    for metric_name, display_name in [
-        ("sample_avg_f1", "Sample-avg F1 (τ=0.3)"),
-        ("macro_f1", "Macro F1 (τ=0.3)"),
-        ("micro_f1", "Micro F1 (τ=0.3)"),
-        ("tuned_macro_f1", "Tuned Macro F1"),
-        ("tuned_sample_avg_f1", "Tuned Sample-avg F1"),
-    ]:
-        row = f"  {display_name:<30}"
-        for mode in modes:
-            eval_data = all_results[mode].get("evaluation", {})
-            emo = eval_data.get("emotion", {})
-            val = emo.get(metric_name, None)
-            row += f"{val:>16.4f}" if val is not None else f"{'—':>16}"
-        lm_key = f"emotion_{metric_name}"
-        row += f"{lexmind.get(lm_key, 0):>16.4f}"
-        print(row)
-
-    # Training time
-    print(f"\n  {'Training Time':}")
-    row = f"  {'Hours':<30}"
-    for mode in modes:
-        t = all_results[mode].get("training", {}).get("total_time_seconds", 0) / 3600
-        row += f"{t:>15.1f}h"
-    row += f"{'~9.0h':>16}"
-    print(row)
-
-    print(f"\n{'═' * 70}\n")
 
 
 def main():
@@ -1205,9 +1178,12 @@ def main():
             # Tune thresholds on val set if evaluating on test (three-way split)
             frozen_thresholds = None
             if eval_split == "test" and "emotion" in tasks and val_data is not None:
-                print("\n  >>> Tuning per-class thresholds on VALIDATION set...")
+                print("\n  >>> Tuning per-class thresholds on held-out CALIBRATION half...")
                 val_emo_ds = BertEmotionDataset(
-                    val_data["emotion_val"], tokenizer, val_data["binarizer"], config.max_length
+                    val_data["emotion_calibration"],
+                    tokenizer,
+                    val_data["binarizer"],
+                    config.max_length,
                 )
                 val_emo_loader = DataLoader(
                     val_emo_ds,

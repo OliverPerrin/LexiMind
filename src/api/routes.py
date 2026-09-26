@@ -8,6 +8,7 @@ Author: Oliver Perrin
 Date: December 2025
 """
 
+import logging
 from typing import cast
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -17,6 +18,7 @@ from .dependencies import get_pipeline
 from .schemas import SummaryRequest, SummaryResponse
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/summarize", response_model=SummaryResponse)
@@ -26,10 +28,11 @@ def summarize(
 ) -> SummaryResponse:
     try:
         outputs = pipeline.batch_predict([payload.text])
-    except Exception as exc:  # noqa: BLE001 - surface inference error to client
+    except Exception as exc:  # noqa: BLE001 - retain details in server logs only
+        logger.exception("Text analysis failed")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(exc),
+            detail="Text analysis temporarily unavailable",
         ) from exc
     summaries = cast(list[str], outputs["summaries"])
     emotion_preds = cast(list[EmotionPrediction], outputs["emotion"])

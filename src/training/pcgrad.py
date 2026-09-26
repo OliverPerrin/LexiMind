@@ -51,6 +51,8 @@ class PCGrad:
         Args:
             reduction: How to combine projected gradients ("sum" or "mean")
         """
+        if reduction not in {"sum", "mean"}:
+            raise ValueError("PCGrad reduction must be sum or mean")
         self.reduction = reduction
         self._conflict_count = 0
         self._total_pairs = 0
@@ -87,53 +89,57 @@ class PCGrad:
         if not task_losses:
             return {}
 
+        if gradient_accumulation_steps < 1:
+            raise ValueError("gradient_accumulation_steps must be positive")
         task_weights = task_weights or {}
-        accum = gradient_accumulation_steps
-
         shared = [p for p in shared_params if p.requires_grad]
         heads = [p for p in (head_params or []) if p.requires_grad]
-        if not shared and not heads:
-            return {}
-
         all_params = shared + heads
+        if not all_params:
+            return {}
+        if len({id(p) for p in all_params}) != len(all_params):
+            raise ValueError("Shared and private parameter lists must be disjoint and unique")
         n_shared = len(shared)
-
-        # Step 1: Per-task gradients over all params (single autograd pass per task).
+        # Keep original shared gradients for projection, and sum private grads
+        # directly. An unused private head needs neither a dense zero allocation
+        # per task nor a zero .grad that would trigger AdamW weight decay.
         task_grads: Dict[str, List[torch.Tensor]] = {}
-        for task_name, loss in task_losses.items():
-            weight = task_weights.get(task_name, 1.0)
-            scaled_loss = (loss * weight) / accum
+        private_totals: List[torch.Tensor | None] = [None] * len(heads)
+        shared_used = [False] * n_shared
+        for task_index, (task_name, loss) in enumerate(task_losses.items()):
+            scaled_loss = loss * task_weights.get(task_name, 1.0) / gradient_accumulation_steps
             grads = torch.autograd.grad(
                 scaled_loss,
                 all_params,
-                retain_graph=True,
+                retain_graph=task_index + 1 < len(task_losses),
                 allow_unused=True,
             )
-            task_grads[task_name] = [
-                g if g is not None else torch.zeros_like(p)
-                for g, p in zip(grads, all_params, strict=False)
-            ]
+            task_grads[task_name] = []
+            for i, (param, grad) in enumerate(zip(shared, grads[:n_shared], strict=True)):
+                shared_used[i] |= grad is not None
+                task_grads[task_name].append(grad if grad is not None else torch.zeros_like(param))
+            for i, grad in enumerate(grads[n_shared:]):
+                if grad is not None:
+                    private_totals[i] = (
+                        grad if private_totals[i] is None else private_totals[i] + grad
+                    )
 
-        # Step 2: Project conflicting shared-param gradients in place.
-        shared_only = {name: grads[:n_shared] for name, grads in task_grads.items()}
-        stats = self._project_conflicting_gradients(shared_only, list(task_losses.keys()))
-        for name in task_grads:
-            task_grads[name] = shared_only[name] + task_grads[name][n_shared:]
-
-        # Step 3: Sum per-task grads (projected for shared, plain for heads)
-        # and accumulate into .grad so gradient accumulation still works.
-        n_tasks = len(task_grads)
-        for i, p in enumerate(all_params):
-            combined = torch.zeros_like(p)
-            for name in task_grads:
-                combined = combined + task_grads[name][i]
-            if self.reduction == "mean" and n_tasks > 0:
-                combined = combined / n_tasks
-            if p.grad is None:
-                p.grad = combined
+        stats = self._project_conflicting_gradients(task_grads, list(task_losses)) if shared else {}
+        divisor = len(task_losses) if self.reduction == "mean" else 1
+        combined: List[torch.Tensor | None] = [
+            sum((grads[i] for grads in task_grads.values()), torch.zeros_like(param))
+            if shared_used[i]
+            else None
+            for i, param in enumerate(shared)
+        ] + private_totals
+        for param, grad in zip(all_params, combined, strict=True):
+            if grad is None:
+                continue
+            grad = grad / divisor
+            if param.grad is None:
+                param.grad = grad
             else:
-                p.grad = p.grad + combined
-
+                param.grad.add_(grad)
         return stats
 
     def _project_conflicting_gradients(
@@ -141,62 +147,43 @@ class PCGrad:
         task_grads: Dict[str, List[torch.Tensor]],
         task_names: List[str],
     ) -> Dict[str, float]:
-        """Project conflicting gradient pairs using PCGrad algorithm.
+        """Project each gradient against fixed, original other-task gradients.
 
-        Modifies task_grads in-place. For each pair (i, j), if cosine similarity
-        is negative, projects g_i onto the normal plane of g_j.
-
-        Returns cosine similarity stats for logging.
+        The progressively projected gradient belongs only to the current task;
+        using it as the next task's reference changes the PCGrad algorithm.
         """
         stats: Dict[str, float] = {}
-
-        flat_grads: Dict[str, torch.Tensor] = {}
-        for name in task_names:
-            flat_grads[name] = torch.cat([g.flatten() for g in task_grads[name]])
-
-        order = list(range(len(task_names)))
-        random.shuffle(order)
-
-        for idx_i in order:
-            name_i = task_names[idx_i]
-            for idx_j in order:
-                if idx_i == idx_j:
-                    continue
-                name_j = task_names[idx_j]
-
-                g_i = flat_grads[name_i]
-                g_j = flat_grads[name_j]
-
-                cos_sim = F.cosine_similarity(g_i.unsqueeze(0), g_j.unsqueeze(0)).item()
-
-                pair_key = "_".join(sorted([name_i, name_j]))
-                if f"cos_sim_{pair_key}" not in stats:
-                    stats[f"cos_sim_{pair_key}"] = cos_sim
-                    stats[f"conflict_{pair_key}"] = 1.0 if cos_sim < 0 else 0.0
-
-                if cos_sim < 0:
-                    self._conflict_count += 1
-                    dot = torch.dot(g_i, g_j)
-                    g_j_norm_sq = torch.dot(g_j, g_j)
-                    if g_j_norm_sq > 1e-12:
-                        proj_coeff = dot / g_j_norm_sq
-                        g_i_projected = g_i - proj_coeff * g_j
-
-                        offset = 0
-                        for k, grad in enumerate(task_grads[name_i]):
-                            numel = grad.numel()
-                            task_grads[name_i][k] = g_i_projected[offset : offset + numel].reshape(
-                                grad.shape
-                            )
-                            offset += numel
-
-                        flat_grads[name_i] = g_i_projected
-
+        originals = {
+            name: torch.cat([g.flatten() for g in task_grads[name]]) for name in task_names
+        }
+        # Report symmetric conflicts from original gradients, not from whichever
+        # partially projected pair happened to be visited first.
+        for i, first in enumerate(task_names):
+            for second in task_names[i + 1 :]:
+                cosine = F.cosine_similarity(originals[first][None], originals[second][None]).item()
+                key = "_".join(sorted([first, second]))
+                stats[f"cos_sim_{key}"] = cosine
+                stats[f"conflict_{key}"] = float(cosine < 0)
                 self._total_pairs += 1
+                self._conflict_count += int(cosine < 0)
 
-        if self._total_pairs > 0:
+        for name in task_names:
+            projected = originals[name].clone()
+            others = [other for other in task_names if other != name]
+            random.shuffle(others)
+            for other in others:
+                reference = originals[other]
+                dot = torch.dot(projected, reference)
+                norm_sq = torch.dot(reference, reference)
+                if dot < 0 and norm_sq > 1e-12:
+                    projected = projected - dot / norm_sq * reference
+            offset = 0
+            for i, grad in enumerate(task_grads[name]):
+                size = grad.numel()
+                task_grads[name][i] = projected[offset : offset + size].reshape(grad.shape)
+                offset += size
+        if self._total_pairs:
             stats["conflict_rate"] = self._conflict_count / self._total_pairs
-
         return stats
 
     def reset_stats(self) -> None:

@@ -9,6 +9,8 @@ That was too strong: the reports do not pin checkpoint hashes, dataset revisions
 resolved evaluation settings or code revisions. This record distinguishes report
 contents from evidence linking a report to a particular training run.
 
+**September 26 code-only update:** [model-stack repairs](model_stack_audit_2026-09-26.md) correct future training, calibration and decoding behavior. In particular, future BERT runs now split model-selection and calibration data. Statements below about the “current” code describe the September 22 audit snapshot; the archived historical results have not been rerun or retroactively repaired.
+
 ## Preserved evidence
 
 [Manifest](../research/results/manifest.json) records original paths, archived file

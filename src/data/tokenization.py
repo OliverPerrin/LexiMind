@@ -41,7 +41,7 @@ class Tokenizer:
         # T5 uses different special tokens than BART:
         # T5: pad=0, eos=1, no explicit bos (uses pad or eos as decoder start)
         # BART: bos=0, pad=1, eos=2
-        # We use eos_token_id as bos for T5 decoder start (common practice)
+        # T5 convention: use pad_token_id as the decoder start token.
         eos_id = self._tokenizer.eos_token_id
         bos_id = self._tokenizer.bos_token_id
 
@@ -160,4 +160,5 @@ class Tokenizer:
         decoder_inputs = torch.full_like(labels, pad)
         decoder_inputs[:, 0] = bos
         decoder_inputs[:, 1:] = labels[:, :-1]
+        decoder_inputs.masked_fill_(decoder_inputs == -100, pad)
         return decoder_inputs
