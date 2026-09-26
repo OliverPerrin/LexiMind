@@ -1,11 +1,12 @@
 # LexiMind: book discovery
 
-Status: first website deployed, 22 September 2026. Research training and experiments
+Status: continuation reviewed, 26 September 2026. Research training and experiments
 are paused at the owner's request. Software tests and catalogue verification remain
 part of development.
 
-Live website: https://leximind-five.vercel.app. The first release contains 89 works
-and 84 sourced descriptions. See `docs/deployment.md` for verification and limitations.
+Live website: https://leximind-five.vercel.app. The current catalogue contains 102 works
+and 96 sourced descriptions; the original 89-work snapshot is preserved. See
+`docs/deployment.md` for release verification and limitations.
 
 ## Purpose
 
@@ -22,6 +23,7 @@ model has been trained.
 - Content-based recommendations using text similarity and explicit metadata, with
   grounded reasons and modest author/genre diversity.
 - More like this, favourites, a reading list, hidden books, and a way to restore them.
+- Source-subject browsing, portable shelf exports and imports that preserve existing entries.
 - Preferences stay in browser local storage. No account or cross-device sync.
 - A responsive Next.js application deployable independently from Python research.
 
@@ -67,13 +69,14 @@ committed package lock establish the web dependencies.
 ## Resume points
 
 1. Add more independently identified works while reviewing rejected source records.
-2. Add optional export/import of a reading list, then accounts only if cross-device
-   use becomes important.
-3. Define a book-domain mood annotation guide with evidence and uncertainty before
+2. Shelf export/import is implemented. Accounts remain optional if automatic
+   cross-device use becomes important.
+3. Review the draft `docs/mood_annotation_guide.md` before collecting any labels or
    enabling mood filtering. A genre, a character's expressed emotion, and a reader's
-   experience are different targets.
-4. Prepare a held-out-by-work set of queries and relevance judgments. Human relevance
-   judgments, not implementation tests, determine recommendation quality.
+   experience are different targets. No gold labels have been collected.
+4. Review `docs/recommendation_judgments.md` before preparing a held-out-by-work set
+   of queries and human relevance judgments. Its collection remains empty while
+   research is paused; implementation tests do not determine recommendation quality.
 5. Once research is resumed, compare a pretrained embedding retrieval baseline with
    MTL-derived features. Keep judgement/evaluation data out of training and model
    selection. See `docs/eval_protocol.md` for the draft research protocol.

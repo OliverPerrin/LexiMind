@@ -28,8 +28,10 @@ It includes:
 
 - Search by title, author, or what you want to read.
 - Genre browsing and “more like this” recommendations.
+- Browse the source subjects linked from each book.
 - Favourites that influence recommendations, saved books, and hide/restore controls.
 - Local browser persistence, with no account or cross-device sync.
+- Versioned shelf exports and safe imports that merge with existing preferences.
 - Accessible book details and an explanation of where the information comes from.
 
 Recommendations currently use weighted TF-IDF text similarity, metadata overlap, and
@@ -68,6 +70,8 @@ The first production deployment and its verification are recorded in
 
 The deployed snapshot is `web/data/books.json`. The importer uses cached, identified,
 rate-limited Open Library API requests and records source hashes and review decisions.
+The current catalogue has 102 works and 96 source descriptions. Its publication receipt
+is verified before website builds; the original 89-work snapshot remains archived.
 See [data/catalog/README.md](data/catalog/README.md) for the exact rebuild command.
 Do not regenerate it from the old Gutenberg/Goodreads title-only matches.
 
@@ -111,6 +115,12 @@ source .venv/bin/activate
 python -m pip install -r requirements-quality.txt
 python -m pytest tests/test_catalog tests/test_research -q
 ```
+
+Software tests for the model stack use `requirements-test.txt` plus a suitable PyTorch
+wheel. CI installs a pinned CPU wheel and runs with Hugging Face networking disabled;
+the tests use synthetic components and temporary artifacts, not research checkpoints.
+See [the September code review](docs/code_review_2026-09-26.md) for fixes, measured
+software performance, and the remaining research validation boundaries.
 
 For the legacy model environment, use Poetry with `pyproject.toml` and an appropriate
 PyTorch installation for the target machine. The original model dependencies are not
