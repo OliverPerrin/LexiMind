@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-09-26",
+  "status": "source_and_metadata_review_only",
+  "selected_model": null,
+  "selected_runtime_version": null,
+  "feasibility_authorized": false,
+  "metadata_source": "research/preparation/repository_metadata.json",
+  "metadata_source_sha256": "4de507dbdb29032287ddbce7f9553ded4fd76b668211ca9a705da96c57668a5e",
+  "installed_source_version": "5.12.1",
+  "software_test_transformers_pin": "5.17.0",
+  "source_version_is_not_runtime_selection": true,
+  "runtime_helper_source": {
+    "file": "modeling_utils.py",
+    "installed_version": "5.12.1",
+    "local_sha256": "98a17fb9c5a04127f770da4d686932a5c5321cfb25833c057df8ab9f9577ce43",
+    "official_source_url": "https://github.com/huggingface/transformers/blob/ddb849abe009d1089e6c691bfc897f27211c663c/src/transformers/modeling_utils.py#L2330",
+    "evidence": "Static source read; no module import or model/config instantiation",
+    "installed_to_official_byte_equivalence_checked": true,
+    "line_references": [
+      2330,
+      2360,
+      2388,
+      2410
+    ],
+    "upstream_source_commit": "ddb849abe009d1089e6c691bfc897f27211c663c",
+    "upstream_sha256": "98a17fb9c5a04127f770da4d686932a5c5321cfb25833c057df8ab9f9577ce43",
+    "installed_matches_official_source": true
+  },
+  "candidates": [
+    {
+      "repo": "google/flan-t5-base",
+      "revision": "7bcac572ce56db69c1ea7c8af255c5d7c9672fc2",
+      "config_source_url": "https://huggingface.co/google/flan-t5-base/blob/7bcac572ce56db69c1ea7c8af255c5d7c9672fc2/config.json",
+      "config_sha256": "7c1853dbfa0e4aac093eb109a358b6ab25fe86b7c15185a91322f0ed26f0f940",
+      "checked_at": "2026-09-26",
+      "status": "unselected_source_review_only",
+      "selected_for_training": false,
+      "gating": false,
+      "card_license": "apache-2.0",
+      "terms_acceptance": "not_established_by_metadata_read",
+      "structural_config_facts": {
+        "encoder_layers": 12,
+        "decoder_layers": 12,
+        "encoder_hidden_size": 768,
+        "decoder_hidden_size": 768,
+        "encoder_query_heads": 12,
+        "encoder_kv_heads": 12,
+        "attention_head_dim": 64,
+        "vocab_size": 32128
+      },
+      "interface": {
+        "family": "t5",
+        "class": "T5ForConditionalGeneration",
+        "encoder_accessor": "get_encoder() -> encoder",
+        "encoder_module_path": "encoder",
+        "decoder_module_path": "decoder",
+        "encoder_lora_pattern": "^encoder\\.block\\.\\d+\\.layer\\.0\\.SelfAttention\\.(q|v)$",
+        "private_decoder_lora_pattern": "^decoder\\.block\\.\\d+\\.layer\\.[01]\\.(SelfAttention|EncDecAttention)\\.(q|v)$",
+        "expected_encoder_targets_from_config": 24,
+        "head_input_width": 768,
+        "decoder_start_policy": "prepare_decoder_input_ids_from_labels -> _shift_right reads config.decoder_start_token_id (saved 0)",
+        "saved_special_tokens": {
+          "decoder_start_token_id": 0,
+          "pad_token_id": 0,
+          "eos_token_id": 1
+        },
+        "context_fields": {
+          "n_positions": 512,
+          "relative_attention_max_distance": 128,
+          "relative_attention_num_buckets": 32
+        },
+        "tying_notes": "Saved tie_word_embeddings=false is normalized by installed T5Config; actual resolved config and alias map need future loading verification.",
+        "source_code": [
+          {
+            "file": "models/t5/modeling_t5.py",
+            "installed_version": "5.12.1",
+            "local_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+            "official_source_url": "https://github.com/huggingface/transformers/blob/ddb849abe009d1089e6c691bfc897f27211c663c/src/transformers/models/t5/modeling_t5.py#L150",
+            "evidence": "Static source read; no module import or model/config instantiation",
+            "installed_to_official_byte_equivalence_checked": true,
+            "line_references": [
+              150,
+              175,
+              582,
+              603,
+              939,
+              993,
+              1122
+            ],
+            "upstream_source_commit": "ddb849abe009d1089e6c691bfc897f27211c663c",
+            "upstream_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+            "installed_matches_official_source": true
+          },
+          {
+            "file": "models/t5/configuration_t5.py",
+            "installed_version": "5.12.1",
+            "local_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+            "official_source_url": "https://github.com/huggingface/transformers/blob/ddb849abe009d1089e6c691bfc897f27211c663c/src/transformers/models/t5/configuration_t5.py#L77",
+            "evidence": "Static source read; no module import or model/config instantiation",
+            "installed_to_official_byte_equivalence_checked": true,
+            "line_references": [
+              77,
+              86
+            ],
+            "upstream_source_commit": "ddb849abe009d1089e6c691bfc897f27211c663c",
+            "upstream_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+            "installed_matches_official_source": true
+          }
+        ]
+      },
+      "tokenizer_files_reviewed": false,
+      "generation_config_reviewed": false,
+      "model_instantiated": false,
+      "weights_loaded": false,
+      "runtime_module_matching_validated": false,
+      "hardware_fit": null,
+      "throughput": null,
+      "quality_comparison": null,
+      "required_checks": [
+        "Resolve exact library/tokenizer/processor/generation revisions and settings",
+        "Verify actual named-module allowlists and shared/private parameter aliases",
+        "Verify checkpoint load plus encoder-output and generation compatibility",
+        "Measure declared-length resource requirements only after experiments are resumed"
+      ]
+    },
+    {
+      "repo": "google/t5gemma-b-b-ul2",
+      "revision": "97ea9b7e92738bb57437867277ae38e65345b8d7",
+      "config_source_url": "https://huggingface.co/google/t5gemma-b-b-ul2/blob/97ea9b7e92738bb57437867277ae38e65345b8d7/config.json",
+      "config_sha256": "575334409716886ac2952f5a275ed92868deef8a0ea560258d9970a431c6fb3a",
+      "checked_at": "2026-09-26",
+      "status": "unselected_source_review_only",
+      "selected_for_training": false,
+      "gating": "manual",
+      "card_license": "gemma",
+      "terms_acceptance": "not_established_by_metadata_read",
+      "structural_config_facts": {
+        "encoder_layers": 12,
+        "decoder_layers": 12,
+        "encoder_hidden_size": 768,
+        "decoder_hidden_size": 768,
+        "encoder_query_heads": 12,
+        "encoder_kv_heads": 12,
+        "attention_head_dim": 64,
+        "vocab_size": 256000
+      },
+      "interface": {
+        "family": "t5gemma",
+        "class": "T5GemmaForConditionalGeneration",
+        "encoder_accessor": "inherited get_encoder() -> model.encoder",
+        "encoder_module_path": "model.encoder",
+        "decoder_module_path": "model.decoder",
+        "encoder_lora_pattern": "^model\\.encoder\\.layers\\.\\d+\\.self_attn\\.(q_proj|v_proj)$",
+        "private_decoder_lora_pattern": "^model\\.decoder\\.layers\\.\\d+\\.(self_attn|cross_attn)\\.(q_proj|v_proj)$",
+        "expected_encoder_targets_from_config": 24,
+        "head_input_width": 768,
+        "decoder_start_policy": "prepare_decoder_input_ids_from_labels -> _shift_right reads config.decoder.bos_token_id (code default 2, absent from nested raw snapshot)",
+        "saved_special_tokens": {
+          "pad_token_id": 0,
+          "eos_token_id": [
+            1,
+            107
+          ],
+          "decoder_start_token_id": null,
+          "nested_decoder_bos_token_id": null
+        },
+        "code_default_special_tokens": {
+          "nested_decoder_bos_token_id": 2,
+          "nested_decoder_pad_token_id": 0
+        },
+        "context_fields": {
+          "encoder_max_position_embeddings": 8192,
+          "decoder_max_position_embeddings": 8192,
+          "sliding_window": 4096,
+          "layer_pattern": "alternating sliding_attention/full_attention"
+        },
+        "tying_notes": "Conditional generator declares output-projection/decoder-embedding tying, subject to resolved configuration.",
+        "source_code": [
+          {
+            "file": "models/t5gemma/modeling_t5gemma.py",
+            "installed_version": "5.12.1",
+            "local_sha256": "d3252f6cf8b10ac2c5446513c353437d5271db2c0521f56c9fb8e2d4116a4a17",
+            "official_source_url": "https://github.com/huggingface/transformers/blob/ddb849abe009d1089e6c691bfc897f27211c663c/src/transformers/models/t5gemma/modeling_t5gemma.py#L245",
+            "evidence": "Static source read; no module import or model/config instantiation",
+            "installed_to_official_byte_equivalence_checked": true,
+            "line_references": [
+              245,
+              277,
+              404,
+              484,
+              595,
+              619,
+              833,
+              886,
+              947,
+              1051,
+              1130,
+              1152
+            ],
+            "upstream_source_commit": "ddb849abe009d1089e6c691bfc897f27211c663c",
+            "upstream_sha256": "d3252f6cf8b10ac2c5446513c353437d5271db2c0521f56c9fb8e2d4116a4a17",
+            "installed_matches_official_source": true
+          },
+          {
+            "file": "models/t5gemma/configuration_t5gemma.py",
+            "installed_version": "5.12.1",
+            "local_sha256": "70590c486978bc55146d2a0d1a9482d8c34f926d437d7b606536b4e3c9433664",
+            "official_source_url": "https://github.com/huggingface/transformers/blob/ddb849abe009d1089e6c691bfc897f27211c663c/src/transformers/models/t5gemma/configuration_t5gemma.py#L68",
+            "evidence": "Static source read; no module import or model/config instantiation",
+            "installed_to_official_byte_equivalence_checked": true,
+            "line_references": [
+              68,
+              88,
+              137,
+              169
+            ],
+            "upstream_source_commit": "ddb849abe009d1089e6c691bfc897f27211c663c",
+            "upstream_sha256": "70590c486978bc55146d2a0d1a9482d8c34f926d437d7b606536b4e3c9433664",
+            "installed_matches_official_source": true
+          }
+        ]
+      },
+      "tokenizer_files_reviewed": false,
+      "generation_config_reviewed": false,
+      "model_instantiated": false,
+      "weights_loaded": false,
+      "runtime_module_matching_validated": false,
+      "hardware_fit": null,
+      "throughput": null,
+      "quality_comparison": null,
+      "required_checks": [
+        "Resolve exact library/tokenizer/processor/generation revisions and settings",
+        "Verify actual named-module allowlists and shared/private parameter aliases",
+        "Verify checkpoint load plus encoder-output and generation compatibility",
+        "Measure declared-length resource requirements only after experiments are resumed"
+      ]
+    },
+    {
+      "repo": "google/t5gemma-2-270m-270m",
+      "revision": "7c38f16641f455ef0685b18431faf1b17722d5a1",
+      "config_source_url": "https://huggingface.co/google/t5gemma-2-270m-270m/blob/7c38f16641f455ef0685b18431faf1b17722d5a1/config.json",
+      "config_sha256": "dc0abad09fc94797f7bd091b63b8d33ff6a70daf803683287acba57d8844d01c",
+      "checked_at": "2026-09-26",
+      "status": "unselected_source_review_only",
+      "selected_for_training": false,
+      "gating": "manual",
+      "card_license": "gemma",
+      "terms_acceptance": "not_established_by_metadata_read",
+      "structural_config_facts": {
+        "encoder_layers": 18,
+        "decoder_layers": 18,
+        "encoder_hidden_size": 640,
+        "decoder_hidden_size": 640,
+        "encoder_query_heads": 4,
+        "encoder_kv_heads": 1,
+        "attention_head_dim": 256,
+        "vocab_size": 262144
+      },
+      "interface": {
+        "family": "t5gemma2",
+        "class": "T5Gemma2ForConditionalGeneration",
+        "encoder_accessor": "get_encoder() -> model.encoder (multimodal wrapper); text stack at text_model",
+        "encoder_module_path": "model.encoder.text_model",
+        "decoder_module_path": "model.decoder",
+        "encoder_lora_pattern": "^model\\.encoder\\.text_model\\.layers\\.\\d+\\.self_attn\\.(q_proj|v_proj)$",
+        "private_decoder_lora_pattern": "^model\\.decoder\\.layers\\.\\d+\\.self_attn\\.(q_proj|v_proj)$",
+        "expected_encoder_targets_from_config": 36,
+        "head_input_width": 640,
+        "decoder_start_policy": "prepare_decoder_input_ids_from_labels reads config.decoder.bos_token_id (code default 2); raw outer BOS is 2",
+        "saved_special_tokens": {
+          "bos_token_id": 2,
+          "pad_token_id": 0,
+          "eos_token_id": 1,
+          "decoder_start_token_id": null,
+          "nested_decoder_bos_token_id": null
+        },
+        "code_default_special_tokens": {
+          "nested_decoder_bos_token_id": 2,
+          "nested_decoder_pad_token_id": 0
+        },
+        "context_fields": {
+          "text_encoder_max_position_embeddings": 32768,
+          "decoder_max_position_embeddings": 32768,
+          "full_attention_rope_factor": 8.0,
+          "sliding_window": 512,
+          "layer_pattern": "five sliding_attention then one full_attention, repeated"
+        },
+        "tying_notes": "Model declares shared encoder-text/decoder embeddings and output projection ties; freeze pretrained embedding aliases under this proposal.",
+        "additional_boundaries": [
+          "No separate cross_attn module: decoder self_attn uses T5Gemma2MergedAttention projections on self and encoder memory.",
+          "Encoder wrapper constructs vision_tower even when text-only forward skips image features.",
+          "Encoder forward builds bidirectional masks despite a generic false bidirectionality flag in the saved text config."
+        ],
+        "source_code": [
+          {
+            "file": "models/t5gemma2/modeling_t5gemma2.py",
+            "installed_version": "5.12.1",
+            "local_sha256": "1edd50d85c72f15f460f4370f15dab00508206c054758e712f75e14270babae3",
+            "official_source_url": "https://github.com/huggingface/transformers/blob/ddb849abe009d1089e6c691bfc897f27211c663c/src/transformers/models/t5gemma2/modeling_t5gemma2.py#L253",
+            "evidence": "Static source read; no module import or model/config instantiation",
+            "installed_to_official_byte_equivalence_checked": true,
+            "line_references": [
+              253,
+              286,
+              332,
+              432,
+              504,
+              524,
+              707,
+              731,
+              754,
+              828,
+              855,
+              869,
+              923,
+              957,
+              1089,
+              1122,
+              1181,
+              1221
+            ],
+            "upstream_source_commit": "ddb849abe009d1089e6c691bfc897f27211c663c",
+            "upstream_sha256": "1edd50d85c72f15f460f4370f15dab00508206c054758e712f75e14270babae3",
+            "installed_matches_official_source": true
+          },
+          {
+            "file": "models/t5gemma2/configuration_t5gemma2.py",
+            "installed_version": "5.12.1",
+            "local_sha256": "446242da642241b4ea63ec06bba69e4305a4a4ec86ac0b646d8492c5fb2cbcfc",
+            "official_source_url": "https://github.com/huggingface/transformers/blob/ddb849abe009d1089e6c691bfc897f27211c663c/src/transformers/models/t5gemma2/configuration_t5gemma2.py#L244",
+            "evidence": "Static source read; no module import or model/config instantiation",
+            "installed_to_official_byte_equivalence_checked": true,
+            "line_references": [
+              244,
+              257,
+              316,
+              402
+            ],
+            "upstream_source_commit": "ddb849abe009d1089e6c691bfc897f27211c663c",
+            "upstream_sha256": "446242da642241b4ea63ec06bba69e4305a4a4ec86ac0b646d8492c5fb2cbcfc",
+            "installed_matches_official_source": true
+          }
+        ]
+      },
+      "tokenizer_files_reviewed": false,
+      "generation_config_reviewed": false,
+      "model_instantiated": false,
+      "weights_loaded": false,
+      "runtime_module_matching_validated": false,
+      "hardware_fit": null,
+      "throughput": null,
+      "quality_comparison": null,
+      "required_checks": [
+        "Resolve exact library/tokenizer/processor/generation revisions and settings",
+        "Verify actual named-module allowlists and shared/private parameter aliases",
+        "Verify checkpoint load plus encoder-output and generation compatibility",
+        "Measure declared-length resource requirements only after experiments are resumed"
+      ]
+    }
+  ],
+  "proposed_interface": {
+    "status": "draft_for_study_design; not_executed",
+    "implementation": "upstream_conditional_generation_model_with_explicit_private_task_wrapper",
+    "shared_trainable": "encoder_only_QV_LoRA",
+    "private_trainable": [
+      "emotion_head",
+      "topic_head",
+      "summarization_decoder_adapters"
+    ],
+    "frozen": [
+      "all_original_base_weights",
+      "all_pretrained_embedding_aliases",
+      "lm_output_projection",
+      "vision_tower",
+      "multimodal_projector",
+      "normalization_parameters"
+    ],
+    "adapter_variant": "standard_LoRA",
+    "rank": null,
+    "alpha": null,
+    "dropout": null,
+    "bias": "none",
+    "initialization": "Matched adapter/private-head tensors across arms within each backbone and seed; not generated in this review.",
+    "joint": "All tasks update one shared encoder adapter; each task updates only its private component.",
+    "specialists": "Independent identical-base copies; each updates its encoder adapter and own private component.",
+    "merge": "Only effective shared encoder deltas alpha/r * B @ A are merged; corresponding specialist private components are retained.",
+    "head_recalibration": "Separate explicitly budgeted condition if later adopted.",
+    "target_name_warning": "Patterns apply to inspected pre-wrapper names; no PEFT target matching has been executed."
+  },
+  "official_documentation": [
+    "https://huggingface.co/docs/transformers/model_doc/t5",
+    "https://huggingface.co/docs/transformers/model_doc/t5gemma",
+    "https://huggingface.co/docs/transformers/model_doc/t5gemma2",
+    "https://huggingface.co/docs/peft/package_reference/lora"
+  ],
+  "context_conclusion": "Position metadata and advertised family capacity do not establish effective long-document handling, full-book coverage or hardware fit.",
+  "review_document": "docs/research/backbone_interface_review.md",
+  "prohibited_actions_performed": [],
+  "upstream_source_commit": "ddb849abe009d1089e6c691bfc897f27211c663c"
+}

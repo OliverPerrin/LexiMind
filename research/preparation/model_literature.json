@@ -1,0 +1,616 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-26",
+  "scope": "Nine-paper targeted methods/code review for model-recipe design. No training, model inference, benchmark evaluations, dataset downloads or paid API calls.",
+  "status": "substantive_bounded_review; experiment_protocol_not_frozen; novelty_not_established",
+  "sourceCount": 9,
+  "sources": [
+    {
+      "id": "task_arithmetic",
+      "title": "Editing Models with Task Arithmetic",
+      "url": "https://arxiv.org/abs/2212.04089v3",
+      "version": "arXiv v3",
+      "versionDate": "2023-03-31",
+      "read_scope": {
+        "level": "methods_and_experimental_appendices",
+        "detail": "Full-text method and relevant experimental-appendix sections; targeted reading, not all proofs or references.",
+        "sections": [
+          "2",
+          "4",
+          "B.1",
+          "D.2",
+          "D.3",
+          "D.6",
+          "D.7"
+        ],
+        "pdfPages": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          19,
+          25,
+          27,
+          28
+        ]
+      },
+      "supported_claims": [
+        "Heterogeneous T5-base classification and generation merging is evaluated in D.6.",
+        "Open-vocabulary/frozen-head choices differ from private-head LexiMind."
+      ],
+      "limitations": [
+        "External expert and validation-search costs are not a matched total-budget campaign."
+      ],
+      "locators": [
+        {
+          "label": "Definitions and head policy",
+          "url": "https://arxiv.org/pdf/2212.04089v3#page=3",
+          "location": "Section 2, PDF pp2-3",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Vision expert and joint protocols",
+          "url": "https://arxiv.org/pdf/2212.04089v3#page=25",
+          "location": "B.1 p19; D.2-D.3 p25",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Heterogeneous NLP suite",
+          "url": "https://arxiv.org/pdf/2212.04089v3#page=27",
+          "location": "D.6 pp27-28; D.7 pp28-29",
+          "kind": "paper_full_text"
+        }
+      ],
+      "checkedAt": "2026-09-26",
+      "pdfUrl": "https://arxiv.org/pdf/2212.04089v3",
+      "pdfSha256": "6d8bb9f18b58f6cafae018139746afc90023be5dc18586b665863db5028c4191",
+      "independentlyReplicated": false
+    },
+    {
+      "id": "ties",
+      "title": "TIES-Merging: Resolving Interference When Merging Models",
+      "url": "https://arxiv.org/abs/2306.01708v2",
+      "version": "arXiv v2; NeurIPS 2023",
+      "versionDate": "2023-10-27",
+      "read_scope": {
+        "level": "methods_and_experimental_appendices",
+        "detail": "Full-text method and relevant experimental-appendix sections; targeted reading, not all proofs or references.",
+        "sections": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "C.1",
+          "C.4",
+          "C.6"
+        ],
+        "pdfPages": [
+          4,
+          5,
+          6,
+          7,
+          20,
+          22,
+          23
+        ],
+        "visuallyCheckedPages": [
+          23
+        ]
+      },
+      "supported_claims": [
+        "NLP uses rank classification over candidate strings.",
+        "The fixed merge recipe was selected on PEFT tasks before transfer to other settings."
+      ],
+      "limitations": [
+        "Early-stopped expert and joint runs do not establish matched total compute.",
+        "PEFT study uses IA3, not LoRA."
+      ],
+      "locators": [
+        {
+          "label": "Algorithm and setup",
+          "url": "https://arxiv.org/pdf/2306.01708v2#page=4",
+          "location": "Sections 3-6, Algorithm 1, pp4-7",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Runtime and fixed recipe",
+          "url": "https://arxiv.org/pdf/2306.01708v2#page=20",
+          "location": "C.1 p20; C.4 p22",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Training and label-string evaluation",
+          "url": "https://arxiv.org/pdf/2306.01708v2#page=23",
+          "location": "C.6 p23",
+          "kind": "paper_full_text"
+        }
+      ],
+      "checkedAt": "2026-09-26",
+      "pdfUrl": "https://arxiv.org/pdf/2306.01708v2",
+      "pdfSha256": "828742490193a58a3be52c339318f341e7eafced2ffa919d8e45e0ffeebaeb6f",
+      "independentlyReplicated": false
+    },
+    {
+      "id": "dare",
+      "title": "Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch",
+      "url": "https://arxiv.org/abs/2311.03099v3",
+      "version": "arXiv v3; ICML 2024",
+      "versionDate": "2024-06-13",
+      "read_scope": {
+        "level": "methods_appendices_and_official_code",
+        "detail": "Full-text method and relevant experimental-appendix sections; targeted reading, not all proofs or references.",
+        "sections": [
+          "3",
+          "4.1",
+          "4.3",
+          "A.2",
+          "A.3",
+          "A.4"
+        ],
+        "pdfPages": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          14,
+          15
+        ],
+        "officialCode": "merge_plms_glue.py, merge exclusion and evaluation blocks"
+      },
+      "supported_claims": [
+        "DARE sparsifies/rescales deltas before merging.",
+        "The inspected GLUE code retains the target classifier and evaluates the target only."
+      ],
+      "limitations": [
+        "Current pinned code is not guaranteed to be the paper-time commit.",
+        "Full expert-plus-search budget equivalence is not established."
+      ],
+      "codeRevision": "6d49ad96fd69c92013654b837041b868aa806564",
+      "locators": [
+        {
+          "label": "Method, tasks and sweeps",
+          "url": "https://arxiv.org/pdf/2311.03099v3#page=5",
+          "location": "Sections 3-4 pp3-7; A.2-A.4 pp14-15",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Classifier exclusion and target evaluation",
+          "url": "https://github.com/yule-BUAA/MergeLM/blob/6d49ad96fd69c92013654b837041b868aa806564/merge_plms_glue.py#L72",
+          "location": "Source lines 72-105",
+          "kind": "official_code"
+        }
+      ],
+      "checkedAt": "2026-09-26",
+      "pdfUrl": "https://arxiv.org/pdf/2311.03099v3",
+      "pdfSha256": "2072d68a55aa86280b47f55523781a17e70029aecf9bef23dc6e6b22ab6c175f",
+      "independentlyReplicated": false
+    },
+    {
+      "id": "fisher",
+      "title": "Merging Models with Fisher-Weighted Averaging",
+      "url": "https://arxiv.org/abs/2111.09832v2",
+      "version": "arXiv v2",
+      "versionDate": "2022-08-26",
+      "read_scope": {
+        "level": "methods_and_experimental_appendices",
+        "detail": "Full-text method and relevant experimental-appendix sections; targeted reading, not all proofs or references.",
+        "sections": [
+          "2",
+          "3.1",
+          "3.2",
+          "3.3",
+          "3.4",
+          "C",
+          "D"
+        ],
+        "pdfPages": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          14
+        ]
+      },
+      "supported_claims": [
+        "Shared-body merging retains task-specific heads.",
+        "The cost comparison includes Fisher estimation and validation, in an expert-reuse transfer setting."
+      ],
+      "limitations": [
+        "Not a joint-training campaign with equal total expert-creation cost.",
+        "Some results are validation scores; STS-B is discretized."
+      ],
+      "locators": [
+        {
+          "label": "Fisher objective and private heads",
+          "url": "https://arxiv.org/pdf/2111.09832v2#page=4",
+          "location": "Sections 2.3-2.4 pp4-5; unmergeable parameters p5",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Access, selection and FLOPs",
+          "url": "https://arxiv.org/pdf/2111.09832v2#page=7",
+          "location": "Section 3.3 pp7-8",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Fine-tuning details",
+          "url": "https://arxiv.org/pdf/2111.09832v2#page=14",
+          "location": "Appendices C-D p14",
+          "kind": "paper_full_text"
+        }
+      ],
+      "checkedAt": "2026-09-26",
+      "pdfUrl": "https://arxiv.org/pdf/2111.09832v2",
+      "pdfSha256": "d9d5882c924963c46eb38805e7d39b198bc677d71f29f28f21246c35eed59735",
+      "independentlyReplicated": false
+    },
+    {
+      "id": "atm",
+      "title": "ATM: Improving Model Merging by Alternating Tuning and Merging",
+      "url": "https://arxiv.org/abs/2411.03055v4",
+      "version": "arXiv v4",
+      "versionDate": "2025-08-08",
+      "read_scope": {
+        "level": "methods_and_experimental_appendices",
+        "detail": "Full-text method and relevant experimental-appendix sections; targeted reading, not all proofs or references.",
+        "sections": [
+          "2",
+          "3",
+          "4.1",
+          "4.2",
+          "4.3",
+          "7.1",
+          "7.2"
+        ],
+        "pdfPages": [
+          3,
+          4,
+          5,
+          6,
+          10,
+          11
+        ],
+        "visuallyCheckedPages": [
+          6
+        ]
+      },
+      "supported_claims": [
+        "PA-ATM revisits training data; PH-ATM trains on validation data.",
+        "The exact gradient argument requires single-step full-batch gradient descent."
+      ],
+      "limitations": [
+        "This version evaluates vision, not NLP.",
+        "Head policy unresolved; experiment prose omits Cars although Table 1 includes it."
+      ],
+      "locators": [
+        {
+          "label": "Method and assumptions",
+          "url": "https://arxiv.org/pdf/2411.03055v4#page=3",
+          "location": "Sections 2-3, pp3-4",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Budget and data-regime differences",
+          "url": "https://arxiv.org/pdf/2411.03055v4#page=5",
+          "location": "Sections 4.1-4.3 pp5-6; Table 1 p6",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Detailed budget tables",
+          "url": "https://arxiv.org/pdf/2411.03055v4#page=11",
+          "location": "Section 7 and Tables 2-3, pp10-11",
+          "kind": "paper_full_text"
+        }
+      ],
+      "checkedAt": "2026-09-26",
+      "pdfUrl": "https://arxiv.org/pdf/2411.03055v4",
+      "pdfSha256": "3c9d7a7aad483c1e5d74e19466182944c388d8bf8357bddf96884e075b7640d5",
+      "independentlyReplicated": false
+    },
+    {
+      "id": "dfmerge",
+      "title": "Dynamic Fisher-weighted Model Merging via Bayesian Optimization",
+      "url": "https://aclanthology.org/2025.naacl-long.254/",
+      "version": "NAACL 2025 proceedings PDF, pp4923-4935",
+      "versionDate": "2025-04",
+      "datePrecision": "month",
+      "read_scope": {
+        "level": "methods_and_experimental_appendices",
+        "detail": "Full-text method and relevant experimental-appendix sections; targeted reading, not all proofs or references.",
+        "sections": [
+          "3",
+          "4.1",
+          "5",
+          "Limitations",
+          "Computational Resources",
+          "A"
+        ],
+        "pdfPages": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          12
+        ],
+        "visuallyCheckedPages": [
+          12
+        ]
+      },
+      "supported_claims": [
+        "Expert and joint training use unequal stated step allocations.",
+        "Bayesian coefficient selection and repeatedly conditioned Fisher estimation add costs beyond arithmetic."
+      ],
+      "limitations": [
+        "Labeled validation is required for coefficient selection.",
+        "Prompted label-string tasks do not test LexiMind private heads."
+      ],
+      "locators": [
+        {
+          "label": "Merge objective and coefficient search",
+          "url": "https://aclanthology.org/2025.naacl-long.254.pdf#page=4",
+          "location": "Section 3, PDF pp4-5",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Tasks and search protocol",
+          "url": "https://aclanthology.org/2025.naacl-long.254.pdf#page=5",
+          "location": "Section 4.1 and Table 1, PDF p5",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Expert versus joint schedule",
+          "url": "https://aclanthology.org/2025.naacl-long.254.pdf#page=12",
+          "location": "Appendix A, PDF p12 / proceedings p4934",
+          "kind": "paper_full_text"
+        }
+      ],
+      "checkedAt": "2026-09-26",
+      "pdfUrl": "https://aclanthology.org/2025.naacl-long.254.pdf",
+      "pdfSha256": "c44d5c85700dc9a855d3928a4bc12ef4f2465dd55648b0221a27c6549a1fafca",
+      "independentlyReplicated": false
+    },
+    {
+      "id": "realistic",
+      "title": "Realistic Evaluation of Model Merging for Compositional Generalization",
+      "url": "https://arxiv.org/abs/2409.18314v1",
+      "version": "arXiv v1",
+      "versionDate": "2024-09-26",
+      "read_scope": {
+        "level": "methods_and_experimental_appendices",
+        "detail": "Full-text method and relevant experimental-appendix sections; targeted reading, not all proofs or references.",
+        "sections": [
+          "2",
+          "3",
+          "4",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G"
+        ],
+        "pdfPages": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "visuallyCheckedPages": [
+          5
+        ]
+      },
+      "supported_claims": [
+        "Held-in performance and compositional transfer are separately evaluated.",
+        "Merge/statistic FLOPs and validation search have explicit boundaries; NLP uses open-vocabulary outputs."
+      ],
+      "limitations": [
+        "Total specialist-creation versus joint-training cost equality is not established.",
+        "Different modalities use different backbones and training procedures."
+      ],
+      "locators": [
+        {
+          "label": "Output interface and NLP suite",
+          "url": "https://arxiv.org/pdf/2409.18314v1#page=5",
+          "location": "Section 2 p2; Section 3.2/Table 1 p5",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Cost/access matrix",
+          "url": "https://arxiv.org/pdf/2409.18314v1#page=7",
+          "location": "Sections 4.2-4.3, Table 2 p7; C pp17-19",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Training, LoRA and selection",
+          "url": "https://arxiv.org/pdf/2409.18314v1#page=17",
+          "location": "B.2-B.3 p17; E/Table 5 and G p20",
+          "kind": "paper_full_text"
+        }
+      ],
+      "checkedAt": "2026-09-26",
+      "pdfUrl": "https://arxiv.org/pdf/2409.18314v1",
+      "pdfSha256": "0f410446fd99da1681554c14b216dbd77fe97effddcdd0e1f64d926b417398b0",
+      "independentlyReplicated": false
+    },
+    {
+      "id": "featcal",
+      "title": "FeatCal: Feature Calibration for Post-Merging Models",
+      "url": "https://arxiv.org/abs/2605.13030v1",
+      "version": "arXiv v1 preprint",
+      "versionDate": "2026-05-13",
+      "read_scope": {
+        "level": "methods_and_experimental_appendices",
+        "detail": "Full-text method and relevant experimental-appendix sections; targeted reading, not all proofs or references.",
+        "sections": [
+          "3",
+          "4",
+          "5",
+          "A",
+          "G",
+          "H",
+          "K"
+        ],
+        "pdfPages": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          15,
+          20,
+          21,
+          22,
+          25,
+          26
+        ],
+        "visuallyCheckedPages": [
+          15,
+          26
+        ]
+      },
+      "supported_claims": [
+        "Layerwise feature fitting updates existing parameters.",
+        "Efficiency figures exclude evaluation/offline search and use each method's native calibration stream."
+      ],
+      "limitations": [
+        "Not an equal end-to-end recipe budget.",
+        "Base full-finetune versus large LoRA is confounded by scale; private-head policy needs separate design."
+      ],
+      "locators": [
+        {
+          "label": "Calibration method",
+          "url": "https://arxiv.org/pdf/2605.13030v1#page=4",
+          "location": "Section 4, pp4-6; G pp20-21; H/Algorithm 1 p22",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Models and selection",
+          "url": "https://arxiv.org/pdf/2605.13030v1#page=6",
+          "location": "Section 5.1 pp6-7; A p15",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Efficiency boundary",
+          "url": "https://arxiv.org/pdf/2605.13030v1#page=25",
+          "location": "Appendix K pp25-26; Tables 5 and 13",
+          "kind": "paper_full_text"
+        }
+      ],
+      "checkedAt": "2026-09-26",
+      "pdfUrl": "https://arxiv.org/pdf/2605.13030v1",
+      "pdfSha256": "60fbf33415635e6b7e216d6f20dda598b30a5b5bf11e1837cdc2a4fa81e94dbf",
+      "independentlyReplicated": false
+    },
+    {
+      "id": "nsc",
+      "title": "Label-Free Cross-Task LoRA Merging with Null-Space Compression",
+      "url": "https://arxiv.org/abs/2603.26317v1",
+      "version": "arXiv v1; record states accepted at CVPR 2026",
+      "versionDate": "2026-03-27",
+      "read_scope": {
+        "level": "methods_and_experimental_appendices",
+        "detail": "Versioned HTML methods and experimental appendix plus official README; local PDF download failed, web PDF available. No experiment code executed.",
+        "sections": [
+          "3",
+          "4.1",
+          "4.2",
+          "4.3",
+          "A.1",
+          "A.2",
+          "A.3",
+          "A.4"
+        ],
+        "officialCode": "README only; not the implementation"
+      },
+      "supported_claims": [
+        "Learned coefficients use unlabeled validation inputs and LoRA geometry.",
+        "Dense prediction, NLI and VQA/captioning are separate evaluated settings."
+      ],
+      "limitations": [
+        "Dense/NLI private-head retention remains unresolved.",
+        "No matched joint-training arm established; label-free is not data-free."
+      ],
+      "codeRevision": "412098bda9b1126b0e054e2d6970e9014ef7b90e",
+      "locators": [
+        {
+          "label": "Method and algorithm",
+          "url": "https://arxiv.org/html/2603.26317v1#S3",
+          "location": "Section 3, Equations 1-6, Algorithm 1",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Tasks and comparisons",
+          "url": "https://arxiv.org/html/2603.26317v1#S4",
+          "location": "Section 4, Tables 1-3",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Optimization, projector and training",
+          "url": "https://arxiv.org/html/2603.26317v1#S1.SS3",
+          "location": "Appendix A.3-A.4",
+          "kind": "paper_full_text"
+        },
+        {
+          "label": "Released scope and interface",
+          "url": "https://github.com/wonyoung01/nsc_merging/blob/412098bda9b1126b0e054e2d6970e9014ef7b90e/README.md",
+          "location": "Getting Started; VLM merging experiment; hardware",
+          "kind": "official_readme"
+        }
+      ],
+      "checkedAt": "2026-09-26",
+      "pdfUrl": "https://arxiv.org/pdf/2603.26317v1",
+      "pdfSha256": null,
+      "independentlyReplicated": false,
+      "htmlSha256": "42cf7882ebda3f93c5ffcd0a2d25d689f632d790f0ae29770cd68395e7f2565c"
+    }
+  ],
+  "searchQueries": [
+    "model merging multi-task joint heterogeneous benchmark 2025 2026",
+    "model merging budget joint 2026 NLP",
+    "MergeBench language models benchmark",
+    "Merging Models with Fisher-Weighted Averaging arxiv"
+  ],
+  "primaryDiscoveryDomains": [
+    "arxiv.org",
+    "aclanthology.org",
+    "openreview.net"
+  ],
+  "followUpCandidates": [
+    {
+      "id": "samerging_2512_21288",
+      "title": "Model Merging via Multi-Teacher Knowledge Distillation",
+      "url": "https://arxiv.org/abs/2512.21288",
+      "version": null,
+      "checkedAt": "2026-09-26",
+      "read_scope": "Search metadata/abstract only; not part of nine-paper evidence matrix.",
+      "reason": "Potentially relevant if distillation becomes an active arm; full methods, version and cost protocol remain to be reviewed."
+    }
+  ],
+  "openQuestions": [
+    "Choose private-head encoder merging versus an all-text output interface without conflating them.",
+    "Separate training-from-scratch and existing-expert reuse resource regimes.",
+    "Resolve exact head and complete development-cost policies before selecting a replication target.",
+    "Collect work-grouped human book-relevance and validated mood evidence before applied quality claims."
+  ],
+  "reviewDocument": "docs/research/model_recipe_review.md"
+}

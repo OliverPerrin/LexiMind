@@ -1,5 +1,35 @@
 # LexiMind Phase 2 — Research Plan
 
+## September 26 research preparation — current decision record
+
+The current proposal is in [research/study_decisions.md](research/study_decisions.md)
+and [the machine-readable design](../configs/research/study_design.json). This update
+takes precedence where the older sections differ. Training, model execution and
+research evaluations remain paused; literature/source preparation and software
+contract checks have progressed.
+
+- A nine-paper methods review establishes that heterogeneous-output merging and
+  joint comparisons already exist. The first LexiMind study is framed as a controlled
+  replication/application, with no originality claim or promised result.
+- Keep benchmark-task retention (M1) separate from book relevance (B1). Book judgments
+  do not gate an otherwise valid benchmark-only study, and benchmark emotion scores
+  do not establish book mood. Both still need their own data/protocol admission.
+- Working arms are joint LoRA, total-budget task specialists, and reuse of those
+  specialist encoder deltas for task arithmetic and TIES. Private modules, selection
+  access, materialization and full cost accounting are explicit. Numeric budget,
+  backbone, dataset admission and adapter integration remain unresolved.
+- [The data audit](research/data_readiness.md) covers 156,796 current rows. Missing
+  parent/source identities and repeated inputs/targets require reconstruction and
+  policy review before new research use; existing files are retained.
+- [The backbone review](research/backbone_interface_review.md) uses pinned configs
+  and source only. Nominal context does not establish usable context, consumer-GPU
+  fit, or full-book understanding. A config read is not an integration.
+- Annotation packets and compute ledgers have validators and explicit empty
+  templates. No book labels, study measurements or trained results were manufactured.
+
+Start at [research/README.md](research/README.md) for evidence and reproducible
+preparation commands. The September 22 archive remains a historical result record.
+
 ## September 22, 2026 update — current scope and pause
 
 **This section supersedes the August proposal below.** The earlier text is retained

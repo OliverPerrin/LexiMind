@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "study_id": "leximind-recipes-preparation-v1",
+  "status": "draft",
+  "training_authorized": false,
+  "novelty_claim": "none; controlled replication and application study",
+  "model_study": {
+    "question": "Given the same total student-training allowance and common task interfaces, how do joint adaptation, task specialists and merged specialist encoders trade task retention against additional selection and deployment cost?",
+    "access_regime": "all_task_training_data_available",
+    "claims_excluded": [
+      "first heterogeneous-output merging study",
+      "causal effect of output type from one dataset per type",
+      "book mood validity from Reddit emotion scores",
+      "model quality from software tests"
+    ],
+    "adaptation_family": "lora",
+    "backbone": {
+      "selected_repo": null,
+      "selected_revision": null,
+      "implementation": "upstream_transformers_candidate",
+      "selection_status": "metadata_review_only",
+      "selected_runtime": null
+    },
+    "shared_scope": "encoder_attention_effective_deltas",
+    "private_scope": {
+      "emotion": "pooler_and_classifier",
+      "topic": "pooler_and_classifier",
+      "summarization": "decoder_attention_adapters"
+    },
+    "embedding_and_layernorm_updates": false,
+    "head_initialization": "identical task-specific initialization within each matched training seed",
+    "merge_space": "effective_weight_deltas",
+    "materialization": "into_same_base_weights_without_rank_recompression",
+    "merge_private_policy": "retain_corresponding_specialist_private_modules_without_updates",
+    "post_merge_training": false,
+    "task_suite_status": "candidates_only_not_frozen",
+    "selected_dataset_manifest": null,
+    "adapter_module_manifest": null,
+    "tasks": [
+      {
+        "task_id": "emotion",
+        "candidate_dataset": "google-research-datasets/go_emotions",
+        "target": "comment-level multilabel emotion",
+        "primary_metric": "macro_f1_frozen_calibration_thresholds"
+      },
+      {
+        "task_id": "topic",
+        "candidate_dataset": "fancyzhx/ag_news",
+        "target": "single-label news topic",
+        "primary_metric": "macro_f1"
+      },
+      {
+        "task_id": "summarization",
+        "candidate_dataset": "ccdv/arxiv-summarization",
+        "target": "article-to-abstract generation",
+        "primary_metric": "rougeL",
+        "admission": "extension_only_after_identity_rights_and_length_audit"
+      }
+    ],
+    "arms": [
+      {
+        "arm_id": "joint",
+        "role": "joint",
+        "adaptation_family": "lora",
+        "training_allocation": "B_total",
+        "selection_policy": "same_predeclared_validation_allowance",
+        "deployed_encoders": 1
+      },
+      {
+        "arm_id": "specialists",
+        "role": "specialists",
+        "adaptation_family": "lora",
+        "training_allocation": "B_total_across_tasks",
+        "selection_policy": "same_predeclared_validation_allowance",
+        "deployed_encoders": "one_per_task"
+      },
+      {
+        "arm_id": "task_arithmetic",
+        "role": "merge",
+        "operator": "weighted_effective_delta_sum",
+        "reuses_arm": "specialists",
+        "include_expert_training_cost": true,
+        "deployed_encoders": 1
+      },
+      {
+        "arm_id": "ties",
+        "role": "merge",
+        "operator": "ties_on_effective_encoder_deltas",
+        "reuses_arm": "specialists",
+        "include_expert_training_cost": true,
+        "deployed_encoders": 1
+      }
+    ],
+    "budget": {
+      "status": "proposed_boundary_pending_authorized_feasibility",
+      "primary_unit": "synchronized_training_wall_seconds",
+      "B": null,
+      "hardware_id": null,
+      "boundary": "synchronized forward, backward and optimizer window; transfers, compilation, evaluation, selection and failures logged separately",
+      "tokens_are_auxiliary_not_compute_equivalence": true,
+      "equal_selection_access": true,
+      "count_all_expert_training": true,
+      "report_total_development_cost": true,
+      "specialist_allocation": null,
+      "overshoot_rule": null,
+      "feasibility_evidence": null,
+      "selection_allowance": null,
+      "timing_boundary_id": null
+    },
+    "checkpoint_selection": "final budget checkpoint primary; any validation-selected checkpoint is a separately declared secondary analysis",
+    "training_seeds": {
+      "status": "proposed",
+      "values": [
+        17,
+        42,
+        123
+      ]
+    },
+    "unresolved": [
+      "final task suite and rights",
+      "fresh immutable data/labels and work reconciliation",
+      "backbone implementation and adapter allowlist",
+      "hardware feasibility and B",
+      "task sampling and specialist allocation",
+      "merge coefficients and equal selection opportunity",
+      "noninferiority tolerances or superiority claim",
+      "protocol review and explicit experiment resumption"
+    ],
+    "pretrained_base_updates": false,
+    "unadapted_reference": "Excluded for private classifiers: random new heads are not a meaningful unadapted baseline. A frozen-encoder trained-head control would require its own declared budget."
+  },
+  "applied_study": {
+    "question": "Which source-backed representations improve graded query-to-work relevance within an explicitly eligible catalogue?",
+    "independent_from_model_study": true,
+    "catalogue_population_claim": "current curated catalogue only; not a representative population sample",
+    "ranking": "all_eligible_catalogue_works",
+    "exclude_seed_work": true,
+    "primary_metric": "ndcg_at_10",
+    "gain_mapping": [
+      0,
+      1,
+      3,
+      7
+    ],
+    "unjudged_policy": "primary scoring requires complete judged eligibility; null is abstention, never zero",
+    "pool_conditional_scores": "secondary only, with frozen pool definition and coverage reported",
+    "baseline_feature_contracts": [
+      {
+        "arm_id": "lexical_text",
+        "fields": [
+          "title",
+          "description"
+        ],
+        "status": "future_scoring_not_run"
+      },
+      {
+        "arm_id": "lexical_metadata",
+        "fields": [
+          "title",
+          "description",
+          "authors",
+          "source_subjects",
+          "source_genres"
+        ],
+        "status": "website_software_baseline_not_quality_evaluated"
+      },
+      {
+        "arm_id": "frozen_embeddings",
+        "fields": [
+          "title",
+          "description"
+        ],
+        "status": "deferred_model_execution"
+      },
+      {
+        "arm_id": "validated_model_features",
+        "status": "deferred_until_book_domain_evidence"
+      }
+    ],
+    "judgments_collected": false,
+    "mood_queries_enabled": false,
+    "unresolved": [
+      "query sample and eligible-work policy",
+      "rater access and rubric review",
+      "complete relevance judgments or frozen pooled secondary design",
+      "query-family and seed-work partitions over the fixed catalogue",
+      "power/uncertainty design after variance information",
+      "explicit evaluation resumption"
+    ],
+    "generalization": "new_query_families_fixed_catalogue",
+    "collection_manifest": null,
+    "partition_manifest": null,
+    "eligibility_manifest": null,
+    "rubric_review": null
+  },
+  "deferred": [
+    "distillation",
+    "teacher_generation",
+    "reinforcement_learning",
+    "uncontrolled_existing_expert_reuse",
+    "rank_recompression_ablation",
+    "post_merge_head_readaptation",
+    "all_training_and_model_evaluation"
+  ]
+}
