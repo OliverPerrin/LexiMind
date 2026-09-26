@@ -1,0 +1,121 @@
+{
+  "url": "https://openlibrary.org/works/OL94858W.json",
+  "retrievedAt": "2026-09-26T07:12:29.516876+00:00",
+  "sha256": "3db789f4255b3544f91da61119ef7b1a7a294a3b2aacdc5898b2b67d21914280",
+  "data": {
+    "description": "An Arab and a Jew open a restaurant together across the street from the United Nations....\r\n\r\nIt sounds like the beginning of an ethnic joke, but it's the axis around which spins the long-awaited new Tom Robbins novel, a gutsy, fun-loving, and alarmingly provocative book in which a bean can philosophizes, a dessert spoon mystifies, a young waitress takes on the New York art world, and a rowdy redneck welder discovers the lost god of Palestine--while the illusions that obscure humanity's view of the true universe fall away, one by one, like Salome's veils.\r\n\r\nOr like the walls of the repeatedly bombed restaurant--for Isaac & Ishmael's, an experiment in international brotherhood, is assaulted by Arabs, Jews, and Christians alike (and not because of its lousy menu). Its greatest crisis, however, comes when it engenders a showdown between the Dance of the Seven Veils and the Super Bowl.\r\n\r\nSkinny Legs and All, Robbins's most political novel, is also his most controversial, dealing as it does--in Robins's audacious manner--with the most sensitive issues of the day: race, politics marriage, art, religion, money and lust.\r\n\r\nThis time, the bestselling author of Jitterbug Perfume, Even Cowgirls Get the Blues, et al., is writing about the upcoming millennium as seen through the violently scratched lens of the Middle East. But though Jerusalem, ancient an new, is the book's spiritual and psychological setting, every scene but the last takes place in a contemporary America. Leave it to a daredevil like Tom Robbins to pull that one off.\r\n\r\nSkinny Legs and All lyrically weaves through what some call the \"End Days\" of our planet. Refusing to avert its gaze from the horrors of the apocalypse, it also refuses to let the alleged end of the world spoil its mood. And its mood is defiantly upbeat.\r\n\r\nIn Skinny Legs and All, the reader will encounter some of the most unusual characters in all fiction, some of the most juicy phrases, some of the most intriguing stories, some of the most challenging ideas. Characters, phrases, stories, and ideas dance together on the page, wild and sexy, like Salome herself. Or was it Jezebel?",
+    "links": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Skinny_Legs_and_All_(novel)",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Skinny Legs and All (novel) - Wikipedia"
+      },
+      {
+        "url": "https://www.publishersweekly.com/978-0-553-05775-1",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Fiction Book Review: Skinny Legs and All by Tom Robbins, Author ..."
+      },
+      {
+        "url": "https://www.kirkusreviews.com/book-reviews/tom-robbins/skinny-legs-and-all/",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "SKINNY LEGS AND ALL by Tom Robbins | Kirkus Reviews"
+      },
+      {
+        "url": "https://www.enotes.com/topics/skinny-legs",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Skinny Legs and All Themes - eNotes.com"
+      },
+      {
+        "url": "http://www.rambles.net/robbins_skinny.html",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Rambles.NET: Tom Robbins, Skinny Legs & All"
+      }
+    ],
+    "title": "Skinny Legs and All",
+    "covers": [
+      8363398
+    ],
+    "subject_places": [
+      "New York (N.Y.)",
+      "New York City",
+      "New York",
+      "Isaac & Ishmael's",
+      "America"
+    ],
+    "subjects": [
+      "Fiction",
+      "Restaurants",
+      "contemporary fiction",
+      "literary fiction",
+      "Fiction, general",
+      "Arab-Israeli conflict"
+    ],
+    "subject_people": [
+      "Salome",
+      "Ellen Cherry Charles",
+      "Randolph Petway III",
+      "Spike Cohen",
+      "Roland Abu Hadee",
+      "Buddy Winkler",
+      "Jackie Shaftoe",
+      "Raoul Ritz",
+      "Ultima Sommerville",
+      "Turn Around Norman",
+      "Verlin Charles",
+      "Patsy Charles",
+      "Can o' Beans",
+      "Dirty Sock",
+      "Spoon",
+      "Painted Stick",
+      "Conch Shell",
+      "Jezebel",
+      "Dan Quayle"
+    ],
+    "key": "/works/OL94858W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL32223A"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "comment": "first sentence",
+        "excerpt": "This is the room of the wolfmother wallpaper.",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL174T"
+    ],
+    "latest_revision": 18,
+    "revision": 18,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-17T15:01:03.173645"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T10:21:27.514523"
+    }
+  }
+}

@@ -1,0 +1,206 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3A%22literary+fiction%22+language%3Aeng&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-26T07:12:23.463684+00:00",
+  "sha256": "a0dbb3363eb5102661b26bdaef1dc88314dccdc1b5de348b76f28036c340a37f",
+  "data": {
+    "numFound": 1414,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 1414,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:\"literary fiction\" language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL15330765A"
+        ],
+        "author_name": [
+          "Palle Vasu"
+        ],
+        "cover_i": 15024571,
+        "first_publish_year": 2025,
+        "key": "/works/OL43113687W",
+        "language": [
+          "eng"
+        ],
+        "title": "We Were Never Meant To Be",
+        "subject": [
+          "Literary Fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7919580A"
+        ],
+        "author_name": [
+          "Sally Rooney"
+        ],
+        "cover_i": 14836043,
+        "first_publish_year": 2024,
+        "key": "/works/OL37949460W",
+        "language": [
+          "eng"
+        ],
+        "title": "Intermezzo",
+        "subject": [
+          "Fiction",
+          "Literary Fiction",
+          "Grief",
+          "Brotherhood"
+        ]
+      },
+      {
+        "author_key": [
+          "OL3112635A"
+        ],
+        "author_name": [
+          "José Saramago"
+        ],
+        "cover_i": 10482411,
+        "first_publish_year": 1995,
+        "key": "/works/OL27420W",
+        "language": [
+          "spa",
+          "fre",
+          "por",
+          "kor",
+          "ger",
+          "tur",
+          "eng"
+        ],
+        "title": "Ensaio Sobre a Cegueira",
+        "subject": [
+          "Blind",
+          "Blindness",
+          "Fiction",
+          "Modern Literature",
+          "Allegories",
+          "Psychological fiction",
+          "Psychology",
+          "Epidemics",
+          "Survival",
+          "Blind in literature",
+          "Violence",
+          "Large type books",
+          "Novela",
+          "Portugal",
+          "Dystopian",
+          "Literary Fiction",
+          "Disease Outbreaks"
+        ]
+      },
+      {
+        "author_key": [
+          "OL32223A"
+        ],
+        "author_name": [
+          "Tom Robbins"
+        ],
+        "cover_i": 8363398,
+        "first_publish_year": 1990,
+        "key": "/works/OL94858W",
+        "language": [
+          "tur",
+          "gre",
+          "ger",
+          "rus",
+          "eng"
+        ],
+        "title": "Skinny Legs and All",
+        "subject": [
+          "Fiction",
+          "Restaurants",
+          "contemporary fiction",
+          "literary fiction",
+          "Fiction, general",
+          "Arab-Israeli conflict"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1393502A"
+        ],
+        "author_name": [
+          "Chimamanda Ngozi Adichie"
+        ],
+        "cover_i": 15143740,
+        "first_publish_year": 2025,
+        "key": "/works/OL42407991W",
+        "language": [
+          "eng",
+          "spa"
+        ],
+        "title": "Dream Count",
+        "subject": [
+          "Fiction",
+          "Literary Fiction",
+          "Contemporary",
+          "Historical Fiction",
+          "Feminism",
+          "Novels"
+        ]
+      },
+      {
+        "author_key": [
+          "OL26769A"
+        ],
+        "author_name": [
+          "Salman Rushdie"
+        ],
+        "cover_i": 8312209,
+        "first_publish_year": 1988,
+        "key": "/works/OL457175W",
+        "language": [
+          "dut",
+          "ita",
+          "por",
+          "gre",
+          "ger",
+          "fre",
+          "heb",
+          "spa",
+          "eng"
+        ],
+        "title": "The Satanic Verses",
+        "subject": [
+          "General & Literary Fiction",
+          "East Indians",
+          "Didactic fiction",
+          "literary fiction",
+          "families",
+          "Islam",
+          "Fiction",
+          "Survival after airplane accidents, shipwrecks",
+          "Survival",
+          "open_syllabus_project",
+          "metamorphosis",
+          "death",
+          "Family",
+          "Description and travel",
+          "Travel",
+          "Fiction, general",
+          "India, fiction",
+          "England, fiction",
+          "London (england), fiction",
+          "Criticism and interpretation",
+          "Islam in literature",
+          "Good and evil",
+          "English fiction",
+          "Roman de l'Inde de langue anglaise",
+          "Traductions françaises",
+          "Habiletés de survie",
+          "Romans, nouvelles",
+          "Indiens (Habitants de l'Inde)",
+          "Hijacking of aircraft",
+          "Identity (Psychology)",
+          "Airplane crash survival",
+          "Survie après accidents d'avion",
+          "General",
+          "Nicaragua, description and travel",
+          "Journeys"
+        ]
+      }
+    ]
+  }
+}

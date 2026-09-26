@@ -76,7 +76,17 @@ export default async function BookPage({ params }: Props) {
             {book.subjects.length > 0 && (
               <section className="dialog-subjects">
                 <h2>Follow a thread</h2>
-                <p>{book.subjects.slice(0, 12).join(" · ")}</p>
+                <div className="subject-tags">
+                  {book.subjects.slice(0, 12).map((subject) => (
+                    <Link
+                      key={subject}
+                      href={`/?subject=${encodeURIComponent(subject)}`}
+                      aria-label={`Browse books about ${subject}`}
+                    >
+                      {subject}
+                    </Link>
+                  ))}
+                </div>
               </section>
             )}
             <div className="dialog-actions">

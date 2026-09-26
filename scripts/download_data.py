@@ -36,14 +36,28 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from datasets import load_dataset  # type: ignore[import-untyped]
 from tqdm import tqdm
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.catalog.identity import author_names, match_description, matched_work_id, normalize_title
+from src.catalog.source_documents import (
+    booksum_display_title,
+    booksum_document_identity,
+    gutenberg_document_identity,
+)
+from src.catalog.splits import split_source_records, split_summarization_records
+from src.catalog.storage import write_text_atomic
 
 # Output directory
 OUTPUT_DIR = Path(__file__).parent.parent / "data" / "processed"
+
+
+def load_dataset(*args: Any, **kwargs: Any) -> Any:
+    """Import the download dependency only when explicitly preparing sources."""
+    from datasets import load_dataset as hf_load_dataset
+
+    return hf_load_dataset(*args, **kwargs)
+
 
 # ------------ LABEL DEFINITIONS ------------
 
@@ -177,10 +191,13 @@ GUTENBERG_SUBJECT_MAP = {
 def write_jsonl(records: list[dict[str, Any]], path: Path, desc: str = "Writing") -> None:
     """Write records to JSONL file."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
-        for record in tqdm(records, desc=desc, leave=False):
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
-    print(f"  {len(records):,} samples -> {path}")
+    write_text_atomic(
+        path,
+        (
+            json.dumps(record, ensure_ascii=False, allow_nan=False) + "\n"
+            for record in tqdm(records, desc=desc)
+        ),
+    )
 
 
 # ------------ ENGLISH LANGUAGE FILTER ------------
@@ -705,7 +722,7 @@ def download_booksum(max_samples: int = 20000) -> list[dict[str, Any]]:
 
             # Extract book title from book_id (e.g., "The Last of the Mohicans.chapters 1-2")
             book_id = item.get("book_id", "")
-            book_title = book_id.split(".")[0] if "." in book_id else book_id
+            book_title = booksum_display_title(book_id) if isinstance(book_id, str) else ""
             chapter_name = item.get("summary_id", "") or item.get("summary_name", "")
 
             if not (chapter and summary and len(chapter) > 300):
@@ -738,6 +755,10 @@ def download_booksum(max_samples: int = 20000) -> list[dict[str, Any]]:
                     "split": split,
                     "title": book_title,
                     "chapter": chapter_name,
+                    **booksum_document_identity(item),
+                    "summary_provider": item.get("source"),
+                    "summary_source_url": item.get("summary_url"),
+                    "provider_split": split,
                 }
             )
         all_records.extend(records)
@@ -970,27 +991,12 @@ def download_summarization(max_books: int = 20000, max_arxiv: int = 50000) -> No
     arxiv_summ = download_arxiv_summarization(max_arxiv)
     all_records.extend(arxiv_summ)
 
-    # Shuffle and split
-    random.shuffle(all_records)
-
-    # Split by original split if available, else 90/5/5
-    train_records = [
-        r for r in all_records if r.get("split", "train") == "train" or "split" not in r
-    ]
-    val_records = [r for r in all_records if r.get("split") == "validation"]
-    test_records = [r for r in all_records if r.get("split") == "test"]
-
-    # If no split info, do 90/5/5
-    if len(val_records) < 100:
-        n = len(train_records)
-        random.shuffle(train_records)
-        val_records = train_records[int(n * 0.9) : int(n * 0.95)]
-        test_records = train_records[int(n * 0.95) :]
-        train_records = train_records[: int(n * 0.9)]
-
-    # Remove split key before saving
-    for r in train_records + val_records + test_records:
-        r.pop("split", None)
+    # Source partitions are preserved. All examples of a verified literary work
+    # stay together; conflicts fail before any dataset file is replaced.
+    partitions = split_summarization_records(all_records)
+    train_records = partitions["train"]
+    val_records = partitions["validation"]
+    test_records = partitions["test"]
 
     write_jsonl(train_records, out_dir / "train.jsonl", "train")
     write_jsonl(val_records, out_dir / "validation.jsonl", "val")
@@ -1211,7 +1217,7 @@ def is_clean_prose(text: str) -> bool:
     return True
 
 
-def download_gutenberg(max_samples: int = 30000) -> None:
+def download_gutenberg(max_samples: int = 30000, *, seed: int = 42) -> None:
     """Download Gutenberg books for language modeling (English only)."""
     print("\nDownloading Gutenberg Books (English only)...")
     out_dir = OUTPUT_DIR / "books"
@@ -1219,8 +1225,10 @@ def download_gutenberg(max_samples: int = 30000) -> None:
 
     try:
         gutenberg = load_dataset("sedthh/gutenberg_english", split="train")
+        provider = "sedthh/gutenberg_english"
     except Exception:
         gutenberg = load_dataset("pg19", split="train")
+        provider = "deepmind/pg19"
 
     records: list[dict[str, Any]] = []
     indices = list(range(len(gutenberg)))
@@ -1242,28 +1250,42 @@ def download_gutenberg(max_samples: int = 30000) -> None:
 
         # Extract title and author
         title = metadata.get("title", "") if isinstance(metadata, dict) else ""
-        author = metadata.get("author", "") if isinstance(metadata, dict) else ""
+        author = (
+            metadata.get("authors", metadata.get("author", ""))
+            if isinstance(metadata, dict)
+            else ""
+        )
         if not title:
-            title = item.get("title", f"Unknown Book #{i}")
+            title = item.get("short_book_title") or item.get("title", f"Unknown Book #{i}")
 
         if not text or len(text) < 1000:
             continue
+
+        identity = gutenberg_document_identity(
+            item, metadata if isinstance(metadata, dict) else {}, provider, text
+        )
 
         paragraphs = re.split(r"\n\s*\n", text)
         for para in paragraphs:
             para = para.strip()
             if is_clean_prose(para):
                 records.append(
-                    {"text": para, "title": title, "author": author, "type": "gutenberg"}
+                    {
+                        "text": para,
+                        "title": title,
+                        "author": author,
+                        "type": "gutenberg",
+                        **identity,
+                        "provider_split": "train",
+                    }
                 )
                 if len(records) >= max_samples:
                     break
 
-    random.shuffle(records)
-    n = len(records)
-    write_jsonl(records[: int(n * 0.9)], out_dir / "train.jsonl", "train")
-    write_jsonl(records[int(n * 0.9) : int(n * 0.95)], out_dir / "validation.jsonl", "val")
-    write_jsonl(records[int(n * 0.95) :], out_dir / "test.jsonl", "test")
+    partitions = split_source_records(records, seed=seed)
+    for split, grouped_records in partitions.items():
+        write_jsonl(grouped_records, out_dir / f"{split}.jsonl", split)
+    print("  Split by provider document; canonical work/edition isolation remains unresolved.")
 
 
 # ------------ MAIN ------------
@@ -1298,7 +1320,7 @@ def main() -> None:
     if args.task in ["all", "topic"]:
         download_topics(args.max_topics)
     if args.task in ["all", "gutenberg"]:
-        download_gutenberg(args.max_gutenberg)
+        download_gutenberg(args.max_gutenberg, seed=args.seed)
 
     print("\n" + "=" * 60)
     print("Download complete!")

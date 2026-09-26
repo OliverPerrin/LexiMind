@@ -1,0 +1,212 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Aessays+language%3Aeng&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-26T07:12:32.969295+00:00",
+  "sha256": "926927c7fe29709d45558b246a2bcdf6c6ee3a3b30b529af8d240d70762a0fc5",
+  "data": {
+    "numFound": 34168,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 34168,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:essays language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL124171A"
+        ],
+        "author_name": [
+          "Albert Camus"
+        ],
+        "cover_i": 12726570,
+        "first_publish_year": 1955,
+        "key": "/works/OL1230690W",
+        "language": [
+          "eng",
+          "fre"
+        ],
+        "title": "The Myth of Sisyphus and Other Essays",
+        "subject": [
+          "French essays",
+          "Life",
+          "Suicide",
+          "Absurd (philosophy)",
+          "Existentialism",
+          "Philosophy",
+          "History and criticism",
+          "French literature",
+          "French philosophy",
+          "Essays",
+          "Mythology",
+          "Modern philosophy"
+        ]
+      },
+      {
+        "author_key": [
+          "OL124171A"
+        ],
+        "author_name": [
+          "Albert Camus"
+        ],
+        "cover_i": 1014395,
+        "first_publish_year": 1941,
+        "key": "/works/OL1230601W",
+        "language": [
+          "spa",
+          "jpn",
+          "tur",
+          "heb",
+          "eng",
+          "ita",
+          "ger",
+          "por",
+          "fre"
+        ],
+        "title": "Le mythe de Sisyphe",
+        "subject": [
+          "French essays",
+          "Life",
+          "Suicide",
+          "Absurd (Philosophy)",
+          "Existentialism",
+          "Philosophy",
+          "History and criticism",
+          "French literature",
+          "French philosophy",
+          "Essays",
+          "Mythology",
+          "Modern philosophy",
+          "French language materials",
+          "Continental european fiction (fictional works by one author)",
+          "Mythology, greek",
+          "Kings and rulers, mythology",
+          "Essays (single author)",
+          "Filosofia",
+          "Absurd (Philosophy) in literature",
+          "Absurde (Philosophie) dans la littérature",
+          "Translations"
+        ]
+      },
+      {
+        "author_key": [
+          "OL448939A"
+        ],
+        "author_name": [
+          "David Foster Wallace"
+        ],
+        "cover_i": 188471,
+        "first_publish_year": 2005,
+        "key": "/works/OL2943594W",
+        "language": [
+          "eng"
+        ],
+        "title": "Consider the lobster, and other essays",
+        "subject": [
+          "Criticism",
+          "Essays",
+          "Nonfiction",
+          "Essays (single author)",
+          "American essays",
+          "Literary collections"
+        ]
+      },
+      {
+        "author_key": [
+          "OL393550A"
+        ],
+        "author_name": [
+          "David Sedaris"
+        ],
+        "cover_i": 8567510,
+        "first_publish_year": 2000,
+        "key": "/works/OL2693077W",
+        "language": [
+          "dut",
+          "ger",
+          "fre",
+          "spa",
+          "eng"
+        ],
+        "title": "Me Talk Pretty One Day",
+        "subject": [
+          "David Sedaris",
+          "teens",
+          "teenagers",
+          "YA",
+          "young adult",
+          "juvenile",
+          "Nonfiction",
+          "Biography",
+          "Bio",
+          "Humor",
+          "Americans",
+          "Essays",
+          "French language",
+          "culture shock",
+          "Large type books",
+          "American literature",
+          "Humor, form, essays",
+          "LGBTQ humor",
+          "Lambda Literary Awards",
+          "Lambda Literary Award Winner",
+          "LGBTQ essays",
+          "German language materials",
+          "Wit and humor",
+          "Wit and Humor as Topic",
+          "Personal memoirs",
+          "Nature"
+        ]
+      },
+      {
+        "author_key": [
+          "OL32981A"
+        ],
+        "author_name": [
+          "Joyce Carol Oates"
+        ],
+        "cover_i": 6908758,
+        "first_publish_year": 2000,
+        "key": "/works/OL14958204W",
+        "language": [
+          "eng"
+        ],
+        "title": "The best American essays of the century",
+        "subject": [
+          "American essays",
+          "Essays",
+          "American essays, 20th century"
+        ]
+      },
+      {
+        "author_key": [
+          "OL8946931A",
+          "OL12566445A"
+        ],
+        "author_name": [
+          "Brianna Wiest",
+          "Andrea Hernández González"
+        ],
+        "cover_i": 10524689,
+        "first_publish_year": 2018,
+        "key": "/works/OL23746568W",
+        "language": [
+          "eng",
+          "ger"
+        ],
+        "title": "101 Essays That Will Change The Way You Think",
+        "subject": [
+          "Self-Help",
+          "Self-improvement",
+          "BODY, MIND & SPIRIT / Meditation",
+          "Essays",
+          "Literary collections",
+          "Emotions and cognition",
+          "Self-actualization (Psychology)",
+          "Change (Psychology)",
+          "Thought and thinking",
+          "Philosophy"
+        ]
+      }
+    ]
+  }
+}

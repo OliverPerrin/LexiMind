@@ -1,23 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import type { Book } from "@/lib/types";
 import { Icon } from "./icons";
 
-export function BookCover({
+export const BookCover = memo(function BookCover({
   book,
   eager = false,
 }: {
   book: Book;
   eager?: boolean;
 }) {
-  const [failed, setFailed] = useState(false);
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const tone =
     Array.from(book.id).reduce((sum, letter) => sum + letter.charCodeAt(0), 0) %
     5;
   return (
     <div className={`book-cover cover-tone-${tone}`}>
-      {book.coverUrl && !failed ? (
+      {book.coverUrl && failedUrl !== book.coverUrl ? (
         // Source covers are cached independently of Next's image service; fallback remains usable offline.
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -25,7 +25,7 @@ export function BookCover({
           alt=""
           loading={eager ? "eager" : "lazy"}
           decoding="async"
-          onError={() => setFailed(true)}
+          onError={() => setFailedUrl(book.coverUrl)}
         />
       ) : (
         <div className="cover-fallback" aria-hidden="true">
@@ -38,4 +38,4 @@ export function BookCover({
       )}
     </div>
   );
-}
+});

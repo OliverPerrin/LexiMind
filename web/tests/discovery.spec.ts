@@ -152,3 +152,105 @@ test("shareable book page has sources, related books and a real missing-page res
     page.getByRole("heading", { name: "This chapter is missing." }),
   ).toBeVisible();
 });
+
+test("shelf exports round-trip and imports merge without dropping unknown IDs", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const card = page.locator(".book-card").first();
+  const title = await card.locator("h3").innerText();
+  await card
+    .getByRole("button", { name: `Save ${title}`, exact: true })
+    .click();
+  await page.getByRole("button", { name: /My shelf/ }).click();
+  await page.getByText("Back up or move your shelf", { exact: true }).click();
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export shelf", exact: true }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(
+    /^leximind-shelf-\d{4}-\d{2}-\d{2}\.json$/,
+  );
+  const stream = await download.createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+  const exported = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  expect(exported.format).toBe("leximind.reading-shelf");
+  expect(exported.version).toBe(1);
+  expect(exported.preferences.saved).toHaveLength(1);
+  exported.preferences.saved.push("OL999999999W");
+  await page
+    .getByLabel("Choose a shelf export")
+    .setInputFiles({
+      name: "merge.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(exported)),
+    });
+  await expect(page.locator(".transfer-message")).toContainText(
+    "Your existing shelf was kept",
+  );
+  await expect(page.locator(".unavailable-books summary")).toContainText(
+    "1 book is outside this catalogue",
+  );
+  await expect(page.locator(".book-card h3")).toHaveText(title);
+  const before = await page.evaluate(() =>
+    localStorage.getItem("leximind.reading-shelf.v1"),
+  );
+  await page
+    .getByLabel("Choose a shelf export")
+    .setInputFiles({
+      name: "invalid.json",
+      mimeType: "application/json",
+      buffer: Buffer.from('{"format":"leximind.reading-shelf","version":99}'),
+    });
+  await expect(page.locator(".transfer-error")).toContainText(
+    "unsupported version",
+  );
+  expect(
+    await page.evaluate(() =>
+      localStorage.getItem("leximind.reading-shelf.v1"),
+    ),
+  ).toBe(before);
+});
+
+test("source subjects link into exact topic discovery and can be cleared", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.locator(".book-card .cover-button").first().click();
+  const topic = page.getByRole("dialog").locator(".subject-tags a").first();
+  const subject = await topic.innerText();
+  await topic.click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: `Remove topic ${subject}`, exact: true }),
+  ).toBeVisible();
+  expect(await page.locator(".book-card").count()).toBeGreaterThan(0);
+  await page
+    .getByRole("button", { name: `Remove topic ${subject}`, exact: true })
+    .click();
+  await expect(page.locator(".active-chip")).toHaveCount(0);
+  await page.goto(`/?subject=${encodeURIComponent(subject)}`);
+  await expect(
+    page.getByRole("button", { name: `Remove topic ${subject}`, exact: true }),
+  ).toBeVisible();
+});
+
+test("another tab's storage clear updates the active shelf", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/");
+  const title = await page.locator(".book-card h3").first().innerText();
+  await page
+    .getByRole("button", { name: `Save ${title}`, exact: true })
+    .click();
+  await page.getByRole("button", { name: /My shelf/ }).click();
+  await expect(page.locator(".book-card h3")).toHaveText(title);
+  const other = await context.newPage();
+  await other.goto("/");
+  await other.evaluate(() => localStorage.clear());
+  await expect(
+    page.getByRole("heading", { name: "A shelf full of possibilities." }),
+  ).toBeVisible();
+  await other.close();
+});

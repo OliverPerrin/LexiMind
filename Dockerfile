@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY scripts/demo_gradio.py scripts/
 COPY src/catalog/ src/catalog/
 COPY web/data/books.json web/data/books.json
+COPY web/data/catalog-manifest.json web/data/catalog-manifest.json
 COPY data/discovery_dataset.jsonl data/
 
 # Copy evaluation metrics if available (demo handles absence gracefully)

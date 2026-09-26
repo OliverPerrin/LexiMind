@@ -31,6 +31,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from tqdm import tqdm  # noqa: E402
 
+from src.catalog.storage import write_text_atomic
+
 # --------------- Data Loading ---------------
 
 
@@ -268,11 +270,17 @@ def main() -> None:
     # ── Save locally ──
     print(f"\nSaving to {args.output}...")
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    with open(args.output, "w") as f:
-        for item in results:
-            # Remove internal fields
-            item.pop("_ground_truth_emotion", None)
-            f.write(json.dumps(item) + "\n")
+    write_text_atomic(
+        args.output,
+        (
+            json.dumps(
+                {key: value for key, value in item.items() if key != "_ground_truth_emotion"},
+                allow_nan=False,
+            )
+            + "\n"
+            for item in results
+        ),
+    )
 
     print(f"Saved {len(results)} items")
 

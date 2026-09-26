@@ -33,7 +33,9 @@ _DATA_PATHS = [
 
 
 ALL_ITEMS, CATALOGUE_NOTICES = load_demo_items(
-    Path(__file__).parent.parent / "web/data/books.json", _DATA_PATHS
+    Path(__file__).parent.parent / "web/data/books.json",
+    _DATA_PATHS,
+    Path(__file__).parent.parent / "web/data/catalog-manifest.json",
 )
 print(f"Loaded {len(ALL_ITEMS)} source-aware discovery items")
 

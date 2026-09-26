@@ -1,0 +1,56 @@
+{
+  "url": "https://openlibrary.org/works/OL42407991W.json",
+  "retrievedAt": "2026-09-26T07:12:30.608827+00:00",
+  "sha256": "13682757abeca958f4e3097671e12f1b8f4fb26ff3d672f2e46edf3952a651ca",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "Dream Count",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL1393502A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL42407991W",
+    "identifiers": {
+      "librarything": [
+        "31007308"
+      ],
+      "wikidata": [
+        "Q133079148"
+      ]
+    },
+    "description": {
+      "type": "/type/text",
+      "value": "Chiamaka is a Nigerian travel writer living in America. Alone in the midst of the pandemic, she recalls her past lovers and grapples with her choices and regrets. Zikora, her best friend, is a lawyer who has been successful at everything until—betrayed and brokenhearted—she must turn to the person she thought she needed least. Omelogor, Chiamaka’s bold, outspoken cousin, is a financial powerhouse in Nigeria who begins to question how well she knows herself. And Kadiatou, Chiamaka’s housekeeper, is proudly raising her daughter in America—but faces an unthinkable hardship that threatens all she has worked to achieve."
+    },
+    "subjects": [
+      "Fiction",
+      "Literary Fiction",
+      "Contemporary",
+      "Historical Fiction",
+      "Feminism",
+      "Novels"
+    ],
+    "genres": [
+      "/tags/OL174T",
+      "/tags/OL170T"
+    ],
+    "latest_revision": 4,
+    "revision": 4,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2025-01-24T21:52:15.631553"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-15T14:07:55.942151"
+    }
+  }
+}

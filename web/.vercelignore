@@ -6,3 +6,6 @@ tests
 playwright.config.ts
 **/*.test.ts
 tsconfig.tsbuildinfo
+scripts
+AGENTS.md
+CLAUDE.md

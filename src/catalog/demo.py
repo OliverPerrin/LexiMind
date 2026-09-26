@@ -7,30 +7,38 @@ import json
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
-from .openlibrary import validate_book
+from .openlibrary import load_catalogue
 
 
 def has_validated_tone(item: dict[str, Any]) -> bool:
+    source = item.get("emotion_source")
+    emotion = item.get("emotion")
+    status = item.get("emotion_status")
+    if not isinstance(source, str) or not isinstance(emotion, str) or not isinstance(status, str):
+        return False
+    try:
+        url = urlsplit(source)
+        valid_source = url.scheme == "https" and bool(url.hostname)
+    except ValueError:
+        return False
     return (
-        item.get("emotion_status") in {"validated_editorial", "validated_in_domain"}
-        and bool(item.get("emotion_source"))
-        and item.get("emotion") not in {None, "", "neutral", "Unknown"}
+        status in {"validated_editorial", "validated_in_domain"}
+        and valid_source
+        and emotion.strip().casefold() not in {"", "neutral", "unknown"}
     )
 
 
 def load_demo_items(
-    catalogue_path: Path, legacy_paths: list[Path]
+    catalogue_path: Path, legacy_paths: list[Path], receipt_path: Path | None = None
 ) -> tuple[list[dict[str, Any]], list[str]]:
     """Canonical books plus historical papers; never reuse old literary joins."""
     items: list[dict[str, Any]] = []
     notices = []
     if catalogue_path.exists():
-        books = json.loads(catalogue_path.read_text())
-        if not isinstance(books, list):
-            raise ValueError("Book catalogue must be an array")
+        books = load_catalogue(catalogue_path, receipt_path)
         for book in books:
-            validate_book(book)
             items.append(
                 {
                     "id": book["id"],
@@ -57,22 +65,30 @@ def load_demo_items(
     for path in legacy_paths:
         if not path.exists():
             continue
-        for line in path.read_text().splitlines():
-            if not line.strip():
-                continue
-            item = json.loads(line)
-            if item.get("source_type") != "academic":
-                continue
-            if not has_validated_tone(item):
-                item = {
-                    **item,
-                    "emotion": "Unknown",
-                    "emotion_confidence": 0.0,
-                    "emotion_status": "unvalidated_domain_abstention",
-                }
-            items.append(item)
+        with path.open(encoding="utf-8") as stream:
+            papers = _read_papers(stream)
+        items.extend(papers)
         break
     return items, notices
+
+
+def _read_papers(lines: Any) -> list[dict[str, Any]]:
+    papers = []
+    for line in lines:
+        if not line.strip():
+            continue
+        item = json.loads(line)
+        if not isinstance(item, dict) or item.get("source_type") != "academic":
+            continue
+        if not has_validated_tone(item):
+            item = {
+                **item,
+                "emotion": "Unknown",
+                "emotion_confidence": 0.0,
+                "emotion_status": "unvalidated_domain_abstention",
+            }
+        papers.append(item)
+    return papers
 
 
 def _plain_markdown(value: str) -> str:

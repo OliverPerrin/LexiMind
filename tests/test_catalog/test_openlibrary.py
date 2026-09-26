@@ -31,6 +31,7 @@ def fixture_records():
         "covers": [123],
     }
     return search, {
+        "url": "https://openlibrary.org/works/OL1W.json",
         "data": work,
         "retrievedAt": "2026-09-22T00:00:00+00:00",
         "sha256": digest(work),
@@ -51,6 +52,7 @@ def test_book_preserves_source_and_does_not_invent_moods():
 def test_missing_description_is_missing_not_generated():
     search, response = fixture_records()
     del response["data"]["description"]
+    response["sha256"] = digest(response["data"])
     book = make_book(search, response)
     assert book["description"] == ""
     assert book["descriptionSource"] is None
@@ -58,7 +60,7 @@ def test_missing_description_is_missing_not_generated():
 
 def test_identity_disagreement_is_rejected():
     search, response = fixture_records()
-    with pytest.raises(ValueError, match="identity mismatch"):
+    with pytest.raises(ValueError, match="identity mismatch|metadata"):
         make_book({**search, "key": "/works/OL99W"}, response)
     with pytest.raises(ValueError, match="author identity mismatch"):
         make_book({**search, "author_key": ["OL99A"]}, response)

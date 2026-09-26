@@ -34,3 +34,19 @@ def test_work_grouping_is_stable_across_gutenberg_author_format():
     assert matched_work_id(
         {"title": "Pride and Prejudice", "author": "Austen, Jane, 1775-1817"}
     ) == matched_work_id({"title": "Pride and Prejudice", "authors": ["Jane Austen"]})
+
+
+def test_missing_or_malformed_coauthors_are_not_silently_dropped():
+    candidate = {"title": "College Girl", "authors": ["Jane Smith"], "description": "Description"}
+    for authors in (["Jane Smith", None], ["Jane Smith", {}], ["Jane Smith", ""], ["Anonymous"]):
+        assert match_description({"title": "College Girl", "authors": authors}, [candidate]) is None
+
+
+def test_nonstring_titles_do_not_become_matchable_string_identifiers():
+    assert (
+        match_description(
+            {"title": None, "authors": ["Jane Smith"]},
+            [{"title": "None", "authors": ["Jane Smith"], "description": "Description"}],
+        )
+        is None
+    )

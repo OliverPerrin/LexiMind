@@ -17,6 +17,7 @@ export interface Book {
 export interface RecommendationOptions {
   query?: string;
   genres?: string[];
+  subjects?: string[];
   moods?: string[];
   seedIds?: string[];
   savedIds?: string[];
@@ -29,4 +30,9 @@ export interface Recommendation {
   /** Relative ranking score; not a probability, rating, or quality assessment. */
   score: number;
   reasons: string[];
+}
+
+export interface SearchResults {
+  items: Recommendation[];
+  total: number;
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewedAt": "2026-09-22",
+  "reviewedAt": "2026-09-26",
   "excludedWorks": {
     "OL1073898W": {
       "sourceContentHash": "91ab0e91a036b673a078726af7b663619e1ac97d27080f8ab97ca8c9d23d08c9",
@@ -13,6 +13,18 @@
     "OL28521353W": {
       "sourceContentHash": "ca75da30c48916dbc732cbd168faed3c968c964cb293d4109b69b5e522aaad82",
       "reason": "Second Meditations record with the same title and author as OL1317211W; omit duplicate candidate pending work reconciliation."
+    },
+    "OL17715915W": {
+      "sourceContentHash": "bc9a43e685b624dae35687e566adc0a72cc26a5e364c9db2ac8b7c5c6436bd2c",
+      "reason": "Description credits Adam Rutherford but work lists three people as authors without distinguishing contributor roles. Excluded pending role verification."
+    },
+    "OL17762235W": {
+      "sourceContentHash": "70e64a9a92bad38c602f08ad4f836bad131133ab910d9121d07bb216192d7c08",
+      "reason": "Description credits Siddhartha Mukherjee but work also lists Dennis Boutsikaris without a contributor role. Excluded pending role verification."
+    },
+    "OL23746568W": {
+      "sourceContentHash": "6cdea18b9281731568ca36a4e1d492a8fcc050fd67ac8ab609fd09035ef313b3",
+      "reason": "Description credits Brianna Wiest but work also lists Andrea Hernández González without a contributor role. Excluded pending role verification."
     }
   },
   "withheldDescriptions": {

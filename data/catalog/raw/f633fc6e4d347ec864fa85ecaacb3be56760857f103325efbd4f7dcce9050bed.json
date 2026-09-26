@@ -1,0 +1,57 @@
+{
+  "url": "https://openlibrary.org/works/OL2943594W.json",
+  "retrievedAt": "2026-09-26T07:12:34.520819+00:00",
+  "sha256": "05967d07ee4a7624006b62e2f02a762745248c3936242febbf9a4bf62da3e2ae",
+  "data": {
+    "first_publish_date": "2005",
+    "description": {
+      "type": "/type/text",
+      "value": "Do lobsters feel pain? Did Franz Kafka have a funny bone? What is John Updike's deal, anyway? And what happens when adult-video starlets meet their fans in person? David Foster Wallace answers these questions and more in essays that are enthralling narrative adventures. Whether covering the three-ring circus of a vicious presidential race, plunging into the wars between dictionary writers, or confronting the World's Largest Lobster Cooker, Wallace projects a quality of thought that is uniquely his and a voice as powerful and distinct as any in American letters."
+    },
+    "title": "Consider the lobster, and other essays",
+    "covers": [
+      188471,
+      187591,
+      11135351,
+      11298190
+    ],
+    "lc_classifications": [
+      "PS3573.A425635 C66 2005"
+    ],
+    "key": "/works/OL2943594W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL448939A"
+        }
+      }
+    ],
+    "dewey_number": [
+      "814/.54"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Criticism",
+      "Essays",
+      "Nonfiction",
+      "Essays (single author)",
+      "American essays",
+      "Literary collections"
+    ],
+    "latest_revision": 9,
+    "revision": 9,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T01:10:04.959273"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-06-07T00:12:54.815783"
+    }
+  }
+}

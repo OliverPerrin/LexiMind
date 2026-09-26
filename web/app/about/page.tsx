@@ -57,7 +57,8 @@ export default function About() {
         <p>
           Your shelf is stored only in this browser. There is no account, and it
           won’t sync between devices. Clearing your browser’s site data will
-          clear your shelf.
+          clear your shelf. You can export a backup from My shelf and import it
+          in another browser. Importing adds to the books you already saved.
         </p>
         <h2>Sources you can follow.</h2>
         <p>

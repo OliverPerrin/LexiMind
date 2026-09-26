@@ -2095,3 +2095,140 @@ button:focus:not(:focus-visible) {
 body:has(dialog[open]) {
   overflow: hidden;
 }
+
+/* Source facets remain explicit rather than inferred emotion labels. */
+.subject-filter {
+  margin-top: 24px;
+}
+.subject-filter label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+.subject-filter select {
+  width: 100%;
+  max-width: 100%;
+  background: #fffef9;
+  color: var(--ink);
+  border: 1px solid #bfc7b5;
+  border-radius: 3px;
+  padding: 8px;
+  font: inherit;
+  font-size: 11px;
+}
+.subject-filter p {
+  font-size: 10px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-top: 9px;
+}
+.subject-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+.subject-tags a {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--green);
+  border: 1px solid #c6d0bc;
+  padding: 5px 9px;
+  border-radius: 3px;
+  background: #edf0e5;
+  overflow-wrap: anywhere;
+}
+.subject-tags a:hover {
+  background: #dce5cf;
+  border-color: var(--green);
+}
+.collection h1.collection-title {
+  font-family: var(--serif);
+  font-size: 52px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.6px;
+  margin-top: 9px;
+}
+.shelf-transfer {
+  margin-top: 22px;
+  padding: 16px 19px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #f1f2e8;
+}
+.shelf-transfer summary {
+  cursor: pointer;
+  width: fit-content;
+  max-width: 100%;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1.7;
+  padding-block: 3px;
+}
+.shelf-transfer summary:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 4px;
+}
+.shelf-transfer p {
+  color: var(--muted);
+  max-width: 720px;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 10px 0;
+}
+.shelf-transfer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.shelf-transfer p.shelf-file-note {
+  font-size: 10px;
+}
+.shelf-transfer p.transfer-message {
+  color: var(--green);
+  margin-bottom: 0;
+}
+.shelf-transfer p.transfer-error {
+  color: #92391f;
+  margin-bottom: 0;
+}
+.unavailable-books {
+  margin-top: 10px;
+}
+.unavailable-books ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+@media (max-width: 600px) {
+  .subject-filter {
+    margin-top: 14px;
+  }
+  .subject-filter select {
+    min-height: 40px;
+    font-size: 12px;
+  }
+  .subject-filter p {
+    margin-top: 6px;
+  }
+  .shelf-transfer {
+    padding: 13px 15px;
+    margin-top: 18px;
+  }
+  .shelf-transfer p {
+    font-size: 11px;
+  }
+  .collection h1.collection-title {
+    font-size: 43px;
+  }
+}

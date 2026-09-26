@@ -103,7 +103,8 @@
     "descriptionSource": "https://openlibrary.org/works/OL1230601W",
     "coverUrl": "https://covers.openlibrary.org/b/id/1014395-L.jpg",
     "genres": [
-      "Philosophy"
+      "Philosophy",
+      "Essays"
     ],
     "subjects": [
       "Absurd (Philosophy)",
@@ -152,7 +153,8 @@
     "descriptionSource": "https://openlibrary.org/works/OL1230690W",
     "coverUrl": "https://covers.openlibrary.org/b/id/12726570-L.jpg",
     "genres": [
-      "Philosophy"
+      "Philosophy",
+      "Essays"
     ],
     "subjects": [
       "Absurd (philosophy)",
@@ -219,6 +221,37 @@
     },
     "sourceRevision": 46,
     "sourceContentHash": "5ea1ea5e81c04caadd5c2e48d5da71a9fb6819326006c68a6041c24862946d84"
+  },
+  {
+    "id": "OL14958204W",
+    "title": "The best American essays of the century",
+    "authors": [
+      "Joyce Carol Oates"
+    ],
+    "description": "Fifty five unforgettable essays by the finest American writers of the twentieth century.",
+    "descriptionSource": "https://openlibrary.org/works/OL14958204W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/6908758-L.jpg",
+    "genres": [
+      "Essays"
+    ],
+    "subjects": [
+      "American essays",
+      "American essays, 20th century",
+      "Essays"
+    ],
+    "moods": [],
+    "firstPublished": 2000,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL14958204W",
+      "retrievedAt": "2026-09-26T07:12:36.503928+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL14958204W",
+      "isbns": []
+    },
+    "sourceRevision": 6,
+    "sourceContentHash": "17d96d7e8d7e2777467d901e7bcd5427761d7636b4267332d4e44554ca5cbe9a"
   },
   {
     "id": "OL15094430W",
@@ -828,6 +861,46 @@
     "sourceContentHash": "4b4ca0ab20df9b08e3db410c40a19144a552b38160a9475e89c897dd45273e3a"
   },
   {
+    "id": "OL17800180W",
+    "title": "Classical Mechanics (Physics)",
+    "authors": [
+      "Leonard Susskind",
+      "George Hrabovsky"
+    ],
+    "description": "A string theorist and a citizen scientist instruct lay readers on elementary principles of physics and associated math that amateur enthusiasts should know in order to study more advanced topics, in a reference that covers such topics as classical mechanics, electromagnetic fields and chaos theory.\n\n\"A first course in physics and associated math for the ardent amateur ... beginning with classical mechanics\"--Dust jacket flap.",
+    "descriptionSource": "https://openlibrary.org/works/OL17800180W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10156509-L.jpg",
+    "genres": [
+      "Science"
+    ],
+    "subjects": [
+      "Mechanics",
+      "Mécanique",
+      "New York Times bestseller",
+      "Ouvrages de vulgarisation",
+      "Physics",
+      "Popular Science",
+      "Popular Science and Mathematics",
+      "Popular works",
+      "Problems, exercises",
+      "Theoretische Mechanik",
+      "nyt:hardcover-nonfiction=2013-02-24"
+    ],
+    "moods": [],
+    "firstPublished": 2013,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL17800180W",
+      "retrievedAt": "2026-09-26T07:12:16.795185+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL17800180W",
+      "isbns": []
+    },
+    "sourceRevision": 9,
+    "sourceContentHash": "69708f3aca5e1caac683d1b4b47e2cbf2f5615e4a0f39a46f6cf0cd57a4dfd3c"
+  },
+  {
     "id": "OL17800586W",
     "title": "the sun and her flowers",
     "authors": [
@@ -864,6 +937,46 @@
     },
     "sourceRevision": 11,
     "sourceContentHash": "4ca4ad7dd41e53ed171eb9319740f23d5061fbf717f7caa35b801db17d1ee422"
+  },
+  {
+    "id": "OL17807435W",
+    "title": "Time Travelling with a Hamster",
+    "authors": [
+      "Ross Welford"
+    ],
+    "description": "On Al Chaudhury’s twelfth birthday his beloved Grandpa Byron gave him a letter from Al’s late father. In it Al receives a mission: travel back to 1984 in a secret time machine and save his father’s life. He manages to overcome many challenges and various daring-do's, without losing his hamster along the way.",
+    "descriptionSource": "https://openlibrary.org/works/OL17807435W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8093758-L.jpg",
+    "genres": [
+      "Science fiction",
+      "Science",
+      "Children's books"
+    ],
+    "subjects": [
+      "Children's fiction",
+      "Science fiction",
+      "charming",
+      "children",
+      "family",
+      "friends",
+      "hamster",
+      "popular science",
+      "space",
+      "time travel"
+    ],
+    "moods": [],
+    "firstPublished": 2015,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL17807435W",
+      "retrievedAt": "2026-09-26T07:12:21.222587+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL17807435W",
+      "isbns": []
+    },
+    "sourceRevision": 5,
+    "sourceContentHash": "84adb8e270b62cab4e8b2ce32b64b8d1f80877813189c9c0d4b99e0d9e444778"
   },
   {
     "id": "OL18012166W",
@@ -1156,6 +1269,56 @@
     "sourceContentHash": "9020539e66d150dbea9db2ef1ee27fb3bbdd06f35e027f353a36ad81afdf83c3"
   },
   {
+    "id": "OL1966501W",
+    "title": "The Blind Watchmaker",
+    "authors": [
+      "Richard Dawkins"
+    ],
+    "description": "In De blinde horlogemaker spelen zowel Paley als Darwin een belangrijke rol. De eerstgenoemde als belichaming van het geloof in een voor ede mens onbekende doelgerichtheid van de natuur. Darwin als ontdekker van het principe van de natuurlijke selectie. Uiterst boeiend schrijft Dawkins over zijn pogingen Darwins evolutieleer met behulp van computers na te bootsen. Het kunstmatige landschap van de computer verschaft meer inzicht in de ontwikkeling van de genen, de belangrijkste bouwstenen van het leven.\r\n[(bron)][1]\r\n\r\n\r\n  [1]: http://www.bol.com/nl/p/de-blinde-horlogemaker/1001004005445663/?country=BE",
+    "descriptionSource": "https://openlibrary.org/works/OL1966501W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/95763-L.jpg",
+    "genres": [
+      "Science"
+    ],
+    "subjects": [
+      "575",
+      "Biodiversity",
+      "Biological Evolution",
+      "Biology",
+      "Darwinismus",
+      "Evolutie",
+      "Evolution",
+      "Evolution (Biology)",
+      "Evolution (biologi)",
+      "Evolution.",
+      "Evolution.\u001e 0",
+      "Evolutionstheorie",
+      "Genetic Selection",
+      "Genetic inheritance",
+      "Genetics",
+      "Natural selection",
+      "Naturligt urval",
+      "Natuurlijke selectie",
+      "Popular Science",
+      "Qh366.2 .d37 1986",
+      "Selection naturelle",
+      "open_syllabus_project"
+    ],
+    "moods": [],
+    "firstPublished": 1986,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL1966501W",
+      "retrievedAt": "2026-09-26T07:12:18.025300+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL1966501W",
+      "isbns": []
+    },
+    "sourceRevision": 8,
+    "sourceContentHash": "1e023574c976164d17c4ccdd95104cef3b2855788d2ed65afd154d7687234d54"
+  },
+  {
     "id": "OL19667762W",
     "title": "If He Had Been With Me",
     "authors": [
@@ -1425,6 +1588,50 @@
     },
     "sourceRevision": 16,
     "sourceContentHash": "4c709f398fc77838eba2af41bd3c30f8e5e32d0bfc74da1da6dfb64bc9864247"
+  },
+  {
+    "id": "OL21181790W",
+    "title": "The End of Everything (Astrophysically Speaking)",
+    "authors": [
+      "Katie Mack"
+    ],
+    "description": "**From one of the most dynamic rising stars in astrophysics, an accessible and eye-opening look—in the bestselling tradition of Sean Carroll and Carlo Rovelli—at the five different ways the universe could end, and the mind-blowing lessons each scenario reveals about the most important concepts in physics.**\r\n\r\nWe know the universe had a beginning. With the Big Bang, it went from a state of unimaginable density to an all-encompassing cosmic fireball to a simmering fluid of matter and energy, laying down the seeds for everything from dark matter to black holes to one rocky planet orbiting a star near the edge of a spiral galaxy that happened to develop life. But what happens at the end of the story? In billions of years, humanity could still exist in some unrecognizable form, venturing out to distant space, finding new homes and building new civilizations. But the death of the universe is final. What might such a cataclysm look like? And what does it mean for us?\r\n\r\nDr. Katie Mack has been contemplating these questions since she was eighteen, when her astronomy professor first informed her the universe could end at any moment, setting her on the path toward theoretical astrophysics. Now, with lively wit and humor, she unpacks them in The End of Everything, taking us on a mind-bending tour through each of the cosmos’ possible finales: the Big Crunch; the Heat Death; Vacuum Decay; the Big Rip; and the Bounce. In the tradition of Neil DeGrasse’s bestseller Astrophysics for People in a Hurry, Mack guides us through major concepts in quantum mechanics, cosmology, string theory, and much more, in a wildly fun, surprisingly upbeat ride to the farthest reaches of everything we know.",
+    "descriptionSource": "https://openlibrary.org/works/OL21181790W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10342810-L.jpg",
+    "genres": [
+      "Science",
+      "Philosophy"
+    ],
+    "subjects": [
+      "Astronomy",
+      "Astrophysics",
+      "Cosmology",
+      "Education",
+      "End of the universe",
+      "End of the world (astronomy)",
+      "Nonfiction",
+      "Philosophy",
+      "Physics",
+      "Popular Science",
+      "SCIENCE / Astronomy",
+      "SCIENCE / Cosmology",
+      "SCIENCE / Physics / Astrophysics",
+      "Science",
+      "Space"
+    ],
+    "moods": [],
+    "firstPublished": 2020,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL21181790W",
+      "retrievedAt": "2026-09-26T07:12:20.656158+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL21181790W",
+      "isbns": []
+    },
+    "sourceRevision": 5,
+    "sourceContentHash": "8b297d892575f140ab790da4571129dccb195d53eb4692611997d4b5b03d0915"
   },
   {
     "id": "OL21435W",
@@ -1839,6 +2046,61 @@
     "sourceContentHash": "62910413c4dc1f54cc628c93dcfdfbc75fbcf6cae3e95cdcba7d48fed351829d"
   },
   {
+    "id": "OL2693077W",
+    "title": "Me Talk Pretty One Day",
+    "authors": [
+      "David Sedaris"
+    ],
+    "description": "A recent transplant to Paris, humorist David Sedaris, bestselling author of “Naked”, presents a collection of his strongest work yet, including the title story about his hilarious attempt to learn French.\r\n\r\nDavid Sedaris' move to Paris from New York inspired these hilarious pieces, including the title essay, about his attempts to learn French from a sadistic teacher who declares that every day spent with you is like having a caesarean section. His family is another inspiration. **You Can't Kill the Rooster is a portrait of his brother, who talks incessant hip-hop slang** to his bewildered father. And no one hones a finer fury in response to such modern annoyances as restaurant meals presented in ludicrous towers of food and cashiers with six-inch fingernails.",
+    "descriptionSource": "https://openlibrary.org/works/OL2693077W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8567510-L.jpg",
+    "genres": [
+      "Biography",
+      "Essays"
+    ],
+    "subjects": [
+      "American literature",
+      "Americans",
+      "Bio",
+      "Biography",
+      "David Sedaris",
+      "Essays",
+      "French language",
+      "German language materials",
+      "Humor",
+      "Humor, form, essays",
+      "LGBTQ essays",
+      "LGBTQ humor",
+      "Lambda Literary Award Winner",
+      "Lambda Literary Awards",
+      "Large type books",
+      "Nature",
+      "Nonfiction",
+      "Personal memoirs",
+      "Wit and Humor as Topic",
+      "Wit and humor",
+      "YA",
+      "culture shock",
+      "juvenile",
+      "teenagers",
+      "teens",
+      "young adult"
+    ],
+    "moods": [],
+    "firstPublished": 2000,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL2693077W",
+      "retrievedAt": "2026-09-26T07:12:35.606475+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL2693077W",
+      "isbns": []
+    },
+    "sourceRevision": 15,
+    "sourceContentHash": "f79d17bba1b11d53d26c3c4d8e62906b4b4ce17208f17410f68b310b18d59881"
+  },
+  {
     "id": "OL27294413W",
     "title": "The Diary of a Young Girl- Anne Frank",
     "authors": [
@@ -1867,6 +2129,51 @@
     },
     "sourceRevision": 6,
     "sourceContentHash": "d8d960f27c7c72efe5a7e4f5f19738e388f3581270938cafc7aa72384399a00b"
+  },
+  {
+    "id": "OL27420W",
+    "title": "Ensaio Sobre a Cegueira",
+    "authors": [
+      "José Saramago"
+    ],
+    "description": "Uma cegueira branca se espalha de forma fulminante. Internados em quarentena ou perdidos pela cidade, os cegos devem enfrentar o que há de mais primitivo na espécie humana: a vontade de sobreviver à qualquer custo.\r\n\r\nJosé Saramago, vencedor do Prêmio Nobel de Literatura de 1998, tece uma aterrorizante parábola sobre o ser humano, que revela o que há de pior em nós mesmos.",
+    "descriptionSource": "https://openlibrary.org/works/OL27420W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10482411-L.jpg",
+    "genres": [
+      "Literary fiction"
+    ],
+    "subjects": [
+      "Allegories",
+      "Blind",
+      "Blind in literature",
+      "Blindness",
+      "Disease Outbreaks",
+      "Dystopian",
+      "Epidemics",
+      "Fiction",
+      "Large type books",
+      "Literary Fiction",
+      "Modern Literature",
+      "Novela",
+      "Portugal",
+      "Psychological fiction",
+      "Psychology",
+      "Survival",
+      "Violence"
+    ],
+    "moods": [],
+    "firstPublished": 1995,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL27420W",
+      "retrievedAt": "2026-09-26T07:12:26.939642+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL27420W",
+      "isbns": []
+    },
+    "sourceRevision": 25,
+    "sourceContentHash": "169566891c46b19192eb07986397634d475ce8ea631f419d1da931bb536a60e9"
   },
   {
     "id": "OL2746369W",
@@ -1922,6 +2229,40 @@
     },
     "sourceRevision": 29,
     "sourceContentHash": "1b79385db4eb165d53306204c921fc4458985e2bdb37ea141d12699a4393d5a6"
+  },
+  {
+    "id": "OL2943594W",
+    "title": "Consider the lobster, and other essays",
+    "authors": [
+      "David Foster Wallace"
+    ],
+    "description": "Do lobsters feel pain? Did Franz Kafka have a funny bone? What is John Updike's deal, anyway? And what happens when adult-video starlets meet their fans in person? David Foster Wallace answers these questions and more in essays that are enthralling narrative adventures. Whether covering the three-ring circus of a vicious presidential race, plunging into the wars between dictionary writers, or confronting the World's Largest Lobster Cooker, Wallace projects a quality of thought that is uniquely his and a voice as powerful and distinct as any in American letters.",
+    "descriptionSource": "https://openlibrary.org/works/OL2943594W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/188471-L.jpg",
+    "genres": [
+      "Essays"
+    ],
+    "subjects": [
+      "American essays",
+      "Criticism",
+      "Essays",
+      "Essays (single author)",
+      "Literary collections",
+      "Nonfiction"
+    ],
+    "moods": [],
+    "firstPublished": 2005,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL2943594W",
+      "retrievedAt": "2026-09-26T07:12:34.520819+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL2943594W",
+      "isbns": []
+    },
+    "sourceRevision": 9,
+    "sourceContentHash": "05967d07ee4a7624006b62e2f02a762745248c3936242febbf9a4bf62da3e2ae"
   },
   {
     "id": "OL318900W",
@@ -2111,6 +2452,38 @@
     },
     "sourceRevision": 7,
     "sourceContentHash": "3038fb012151a9c5329063c0698fe09f1c0c4bec595d6cf437580012527069ee"
+  },
+  {
+    "id": "OL37949460W",
+    "title": "Intermezzo",
+    "authors": [
+      "Sally Rooney"
+    ],
+    "description": "Aside from the fact that they are brothers, Peter and Ivan Koubek seem to have little in common.\r\n\r\nPeter is a Dublin lawyer in his thirties—successful, competent, and apparently unassailable. But in the wake of their father’s death, he’s medicating himself to sleep and struggling to manage his relationships with two very different women—his enduring first love, Sylvia, and Naomi, a college student for whom life is one long joke.\r\n\r\nIvan is a twenty-two-year-old competitive chess player. He has always seen himself as socially awkward, a loner, the antithesis of his glib elder brother. Now, in the early weeks of his bereavement, Ivan meets Margaret, an older woman emerging from her own turbulent past, and their lives become rapidly and intensely intertwined.\r\n\r\nFor two grieving brothers and the people they love, this is a new interlude—a period of desire, despair, and possibility; a chance to find out how much one life might hold inside itself without breaking.",
+    "descriptionSource": "https://openlibrary.org/works/OL37949460W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14836043-L.jpg",
+    "genres": [
+      "Literary fiction"
+    ],
+    "subjects": [
+      "Brotherhood",
+      "Fiction",
+      "Grief",
+      "Literary Fiction"
+    ],
+    "moods": [],
+    "firstPublished": 2024,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL37949460W",
+      "retrievedAt": "2026-09-26T07:12:26.278331+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL37949460W",
+      "isbns": []
+    },
+    "sourceRevision": 4,
+    "sourceContentHash": "f0205e8acf11664cad971bf1af5dd1c24afa82646ae7359df287f17f4e1f06ab"
   },
   {
     "id": "OL38382569W",
@@ -2501,6 +2874,41 @@
     "sourceContentHash": "79bfe5f7d8bfa9de30d355b74281b56b8c0716a999fa59e73cb822896ee7a314"
   },
   {
+    "id": "OL42407991W",
+    "title": "Dream Count",
+    "authors": [
+      "Chimamanda Ngozi Adichie"
+    ],
+    "description": "Chiamaka is a Nigerian travel writer living in America. Alone in the midst of the pandemic, she recalls her past lovers and grapples with her choices and regrets. Zikora, her best friend, is a lawyer who has been successful at everything until—betrayed and brokenhearted—she must turn to the person she thought she needed least. Omelogor, Chiamaka’s bold, outspoken cousin, is a financial powerhouse in Nigeria who begins to question how well she knows herself. And Kadiatou, Chiamaka’s housekeeper, is proudly raising her daughter in America—but faces an unthinkable hardship that threatens all she has worked to achieve.",
+    "descriptionSource": "https://openlibrary.org/works/OL42407991W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/15143740-L.jpg",
+    "genres": [
+      "Historical fiction",
+      "Literary fiction"
+    ],
+    "subjects": [
+      "Contemporary",
+      "Feminism",
+      "Fiction",
+      "Historical Fiction",
+      "Literary Fiction",
+      "Novels"
+    ],
+    "moods": [],
+    "firstPublished": 2025,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL42407991W",
+      "retrievedAt": "2026-09-26T07:12:30.608827+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL42407991W",
+      "isbns": []
+    },
+    "sourceRevision": 4,
+    "sourceContentHash": "13682757abeca958f4e3097671e12f1b8f4fb26ff3d672f2e46edf3952a651ca"
+  },
+  {
     "id": "OL42577236W",
     "title": "Thank You for Leaving",
     "authors": [
@@ -2528,6 +2936,35 @@
     },
     "sourceRevision": 3,
     "sourceContentHash": "b10b8fb04577b889ff0a47dc2b7ac9323b0a92553dc896d053e591e3a7ca13d2"
+  },
+  {
+    "id": "OL43113687W",
+    "title": "We Were Never Meant To Be",
+    "authors": [
+      "Palle Vasu"
+    ],
+    "description": "",
+    "descriptionSource": null,
+    "coverUrl": "https://covers.openlibrary.org/b/id/15024571-L.jpg",
+    "genres": [
+      "Literary fiction"
+    ],
+    "subjects": [
+      "Literary Fiction"
+    ],
+    "moods": [],
+    "firstPublished": 2025,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL43113687W",
+      "retrievedAt": "2026-09-26T07:12:24.566630+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL43113687W",
+      "isbns": []
+    },
+    "sourceRevision": 8,
+    "sourceContentHash": "6d2023e0511c23a28d1836daef8e544e6c5ee3262165fe5f5a6e6c1745485599"
   },
   {
     "id": "OL450063W",
@@ -2728,6 +3165,69 @@
     },
     "sourceRevision": 37,
     "sourceContentHash": "5fd875bea3fb985a4c43d8f97769def21c95c358182927b2781c283e80c2c07c"
+  },
+  {
+    "id": "OL457175W",
+    "title": "The Satanic Verses",
+    "authors": [
+      "Salman Rushdie"
+    ],
+    "description": "The Satanic Verses is Salman Rushdie's fourth novel, first published September 26, 1988 and inspired in part by the life of the Islamic prophet Muhammad. As with his previous books, Rushdie used magical realism and relied on contemporary events and people to create his characters. The title refers to the satanic verses, a group of Quranic verses that refer to three pagan Meccan goddesses: Allāt, Uzza, and Manāt. The part of the story that deals with the \"satanic verses\" was based on accounts from the historians al-Waqidi and al-Tabari.\r\n\r\nIn the United Kingdom, The Satanic Verses received positive reviews, was a 1988 Booker Prize finalist (losing to Peter Carey's Oscar and Lucinda) and won the 1988 Whitbread Award for novel of the year.",
+    "descriptionSource": "https://openlibrary.org/works/OL457175W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8312209-L.jpg",
+    "genres": [
+      "Literary fiction"
+    ],
+    "subjects": [
+      "Airplane crash survival",
+      "Criticism and interpretation",
+      "Description and travel",
+      "Didactic fiction",
+      "East Indians",
+      "England, fiction",
+      "English fiction",
+      "Family",
+      "Fiction",
+      "Fiction, general",
+      "General",
+      "General & Literary Fiction",
+      "Good and evil",
+      "Habiletés de survie",
+      "Hijacking of aircraft",
+      "Identity (Psychology)",
+      "India, fiction",
+      "Indiens (Habitants de l'Inde)",
+      "Islam",
+      "Islam in literature",
+      "Journeys",
+      "London (england), fiction",
+      "Nicaragua, description and travel",
+      "Roman de l'Inde de langue anglaise",
+      "Romans, nouvelles",
+      "Survie après accidents d'avion",
+      "Survival",
+      "Survival after airplane accidents, shipwrecks",
+      "Traductions françaises",
+      "Travel",
+      "death",
+      "families",
+      "literary fiction",
+      "metamorphosis",
+      "open_syllabus_project"
+    ],
+    "moods": [],
+    "firstPublished": 1988,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL457175W",
+      "retrievedAt": "2026-09-26T07:12:31.844261+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL457175W",
+      "isbns": []
+    },
+    "sourceRevision": 60,
+    "sourceContentHash": "f60c6b36f2d2b6c27230e75d2df9bfc201d2f94486c73c14f59cfa602c6c77d9"
   },
   {
     "id": "OL46374W",
@@ -3973,6 +4473,40 @@
     },
     "sourceRevision": 11,
     "sourceContentHash": "b70913471238769bf346a3c75c16caa8742b119b51ec495799f05bfe21c0d8db"
+  },
+  {
+    "id": "OL94858W",
+    "title": "Skinny Legs and All",
+    "authors": [
+      "Tom Robbins"
+    ],
+    "description": "An Arab and a Jew open a restaurant together across the street from the United Nations....\r\n\r\nIt sounds like the beginning of an ethnic joke, but it's the axis around which spins the long-awaited new Tom Robbins novel, a gutsy, fun-loving, and alarmingly provocative book in which a bean can philosophizes, a dessert spoon mystifies, a young waitress takes on the New York art world, and a rowdy redneck welder discovers the lost god of Palestine--while the illusions that obscure humanity's view of the true universe fall away, one by one, like Salome's veils.\r\n\r\nOr like the walls of the repeatedly bombed restaurant--for Isaac & Ishmael's, an experiment in international brotherhood, is assaulted by Arabs, Jews, and Christians alike (and not because of its lousy menu). Its greatest crisis, however, comes when it engenders a showdown between the Dance of the Seven Veils and the Super Bowl.\r\n\r\nSkinny Legs and All, Robbins's most political novel, is also his most controversial, dealing as it does--in Robins's audacious manner--with the most sensitive issues of the day: race, politics marriage, art, religion, money and lust.\r\n\r\nThis time, the bestselling author of Jitterbug Perfume, Even Cowgirls Get the Blues, et al., is writing about the upcoming millennium as seen through the violently scratched lens of the Middle East. But though Jerusalem, ancient an new, is the book's spiritual and psychological setting, every scene but the last takes place in a contemporary America. Leave it to a daredevil like Tom Robbins to pull that one off.\r\n\r\nSkinny Legs and All lyrically weaves through what some call the \"End Days\" of our planet. Refusing to avert its gaze from the horrors of the apocalypse, it also refuses to let the alleged end of the world spoil its mood. And its mood is defiantly upbeat.\r\n\r\nIn Skinny Legs and All, the reader will encounter some of the most unusual characters in all fiction, some of the most juicy phrases, some of the most intriguing stories, some of the most challenging ideas. Characters, phrases, stories, and ideas dance together on the page, wild and sexy, like Salome herself. Or was it Jezebel?",
+    "descriptionSource": "https://openlibrary.org/works/OL94858W",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8363398-L.jpg",
+    "genres": [
+      "Literary fiction"
+    ],
+    "subjects": [
+      "Arab-Israeli conflict",
+      "Fiction",
+      "Fiction, general",
+      "Restaurants",
+      "contemporary fiction",
+      "literary fiction"
+    ],
+    "moods": [],
+    "firstPublished": 1990,
+    "source": {
+      "name": "Open Library",
+      "url": "https://openlibrary.org/works/OL94858W",
+      "retrievedAt": "2026-09-26T07:12:29.516876+00:00"
+    },
+    "identifiers": {
+      "openLibraryWork": "/works/OL94858W",
+      "isbns": []
+    },
+    "sourceRevision": 18,
+    "sourceContentHash": "3db789f4255b3544f91da61119ef7b1a7a294a3b2aacdc5898b2b67d21914280"
   },
   {
     "id": "OL979517W",

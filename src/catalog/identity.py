@@ -43,8 +43,11 @@ def author_names(record: dict[str, Any]) -> list[str]:
     for author in value:
         if isinstance(author, dict):
             author = author.get("name", "")
-        if isinstance(author, str) and author.strip():
-            names.append(author.strip())
+        if not isinstance(author, str) or not author.strip():
+            return []  # Never silently discard a missing/malformed coauthor.
+        if normalize_author(author) in {"unknown", "anonymous", "various", "n a"}:
+            return []  # These labels do not establish a person's identity.
+        names.append(author.strip())
     return names
 
 
@@ -55,14 +58,17 @@ def author_identity(record: dict[str, Any]) -> tuple[str, ...]:
 def match_description(
     book: dict[str, Any], candidates: list[dict[str, Any]]
 ) -> dict[str, Any] | None:
-    title = normalize_title(str(book.get("title", "")))
+    title = normalize_title(book["title"]) if isinstance(book.get("title"), str) else ""
     authors = author_identity(book)
     if not title or not authors:
         return None
     matches = [
         row
         for row in candidates
-        if normalize_title(str(row.get("title", ""))) == title and author_identity(row) == authors
+        if isinstance(row, dict)
+        and isinstance(row.get("title"), str)
+        and normalize_title(row["title"]) == title
+        and author_identity(row) == authors
     ]
     # Repeated identical source records are harmless; conflicting blurbs are not.
     unique = {json.dumps(row, sort_keys=True): row for row in matches}
@@ -71,7 +77,8 @@ def match_description(
 
 def matched_work_id(book: dict[str, Any]) -> str:
     """Stable conservative grouping key, not a claim of canonical authority."""
-    title, authors = normalize_title(str(book.get("title", ""))), author_identity(book)
+    title = normalize_title(book["title"]) if isinstance(book.get("title"), str) else ""
+    authors = author_identity(book)
     if not title or not authors:
         raise ValueError("Work identity requires a complete title and author evidence")
     value = json.dumps([title, authors], ensure_ascii=False, separators=(",", ":"))

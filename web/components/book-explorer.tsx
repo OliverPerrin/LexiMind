@@ -1,96 +1,107 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import type { Book } from "@/lib/types";
-import { recommendBooks } from "@/lib/recommendations";
+import { searchBooks } from "@/lib/recommendations";
+import { type ShelfKey } from "@/lib/shelf";
+import { useReadingShelf } from "./use-reading-shelf";
+import { ShelfTransfer } from "./shelf-transfer";
+import { BookDialog } from "./book-dialog";
+import { BookCard } from "./book-card";
 import { BookCover } from "./book-cover";
 import { Icon } from "./icons";
 
-const STORAGE_KEY = "leximind.reading-shelf.v1";
-type Preferences = {
-  saved: string[];
-  favorites: string[];
-  dismissed: string[];
-};
-type ShelfTab = "saved" | "favorites" | "dismissed";
-const emptyPreferences: Preferences = {
-  saved: [],
-  favorites: [],
-  dismissed: [],
-};
-
-function readPreferences(): Preferences {
-  try {
-    const value = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
-    if (!value || typeof value !== "object") return emptyPreferences;
-    const ids = (key: string): string[] =>
-      Array.isArray(value[key])
-        ? [
-            ...new Set(
-              value[key].filter(
-                (id: unknown): id is string => typeof id === "string",
-              ),
-            ),
-          ]
-        : [];
-    return {
-      saved: ids("saved"),
-      favorites: ids("favorites"),
-      dismissed: ids("dismissed"),
-    };
-  } catch {
-    return emptyPreferences;
-  }
-}
-
 export function BookExplorer({ books }: { books: Book[] }) {
   const [view, setView] = useState<"explore" | "shelf">("explore");
-  const [shelfTab, setShelfTab] = useState<ShelfTab>("saved");
+  const [shelfTab, setShelfTab] = useState<ShelfKey>("saved");
   const [draft, setDraft] = useState("");
   const [query, setQuery] = useState("");
   const [genres, setGenres] = useState<string[]>([]);
   const [moods, setMoods] = useState<string[]>([]);
+  const [subjects, setSubjects] = useState<string[]>([]);
   const [seedId, setSeedId] = useState<string | null>(null);
-  const [preferences, setPreferences] = useState<Preferences>(emptyPreferences);
-  const [storageReady, setStorageReady] = useState(false);
-  const [storageError, setStorageError] = useState(false);
+  const {
+    preferences,
+    ready: storageReady,
+    error: storageError,
+    toggle,
+    importPreferences,
+  } = useReadingShelf();
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [notice, setNotice] = useState("");
   const [pageSize, setPageSize] = useState(16);
   const resultsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Read browser-only preferences after hydration; actions persist explicit changes.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPreferences(readPreferences());
-    setStorageReady(true);
     const entry = new URLSearchParams(window.location.search);
     const linkedBook = books.find((book) => book.id === entry.get("book"));
     const linkedSeed = books.find((book) => book.id === entry.get("similar"));
+    // Apply source-linked discovery entry points after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (linkedBook) setSelectedBook(linkedBook);
-    if (linkedSeed) {
-      setSeedId(linkedSeed.id);
+    const linkedSubjects = entry
+      .getAll("subject")
+      .filter((value) => value.trim() && value.length <= 300)
+      .slice(0, 8);
+    if (linkedSubjects.length) setSubjects(linkedSubjects);
+    if (linkedSeed || linkedSubjects.length) {
+      if (linkedSeed) setSeedId(linkedSeed.id);
       requestAnimationFrame(() =>
         resultsRef.current?.scrollIntoView({ block: "start" }),
       );
     }
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY) setPreferences(readPreferences());
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
   }, [books]);
 
-  const availableGenres = useMemo(
-    () => [...new Set(books.flatMap((book) => book.genres))].sort(),
-    [books],
+  const catalogueIndex = useMemo(() => {
+    const byId = new Map(books.map((book) => [book.id, book]));
+    const genreCounts = new Map<string, number>();
+    const subjectCounts = new Map<string, number>();
+    const moodSet = new Set<string>();
+    for (const book of books) {
+      for (const genre of new Set(book.genres))
+        genreCounts.set(genre, (genreCounts.get(genre) ?? 0) + 1);
+      for (const subject of new Set(book.subjects))
+        subjectCounts.set(subject, (subjectCounts.get(subject) ?? 0) + 1);
+      for (const mood of book.moods) moodSet.add(mood);
+    }
+    return {
+      byId,
+      knownIds: new Set(byId.keys()),
+      genres: [...genreCounts].sort(([a], [b]) => a.localeCompare(b)),
+      subjects: [...subjectCounts]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 50),
+      moods: [...moodSet].sort(),
+    };
+  }, [books]);
+  const availableMoods = catalogueIndex.moods;
+  const seed = seedId ? catalogueIndex.byId.get(seedId) : undefined;
+  const shelfIndex = useMemo(
+    () => ({
+      saved: new Set(preferences.saved),
+      favorites: new Set(preferences.favorites),
+      dismissed: new Set(preferences.dismissed),
+    }),
+    [preferences],
   );
-  const availableMoods = useMemo(
-    () => [...new Set(books.flatMap((book) => book.moods))].sort(),
-    [books],
+  const shelfCounts = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(shelfIndex).map(([key, ids]) => [
+          key,
+          [...ids].filter((id) => catalogueIndex.byId.has(id)).length,
+        ]),
+      ) as Record<ShelfKey, number>,
+    [shelfIndex, catalogueIndex],
   );
-  const seed = books.find((book) => book.id === seedId);
   const featured = useMemo(() => {
     const preferred = [
       "Circe",
@@ -112,87 +123,96 @@ export function BookExplorer({ books }: { books: Book[] }) {
 
   const rankedBooks = useMemo(
     () =>
-      recommendBooks(books, {
-        query,
-        genres,
-        moods,
-        seedIds: seedId ? [seedId] : [],
-        savedIds: preferences.favorites,
-        dismissedIds: preferences.dismissed,
-        limit: books.length,
-      }),
+      view === "explore"
+        ? searchBooks(books, {
+            query,
+            genres,
+            moods,
+            subjects,
+            seedIds: seedId ? [seedId] : [],
+            savedIds: preferences.favorites,
+            dismissedIds: preferences.dismissed,
+            limit: pageSize,
+          })
+        : { items: [], total: 0 },
     [
+      view,
       books,
       query,
       genres,
       moods,
+      subjects,
+      pageSize,
       seedId,
       preferences.favorites,
       preferences.dismissed,
     ],
   );
+  const currentShelf = preferences[shelfTab];
   const shelfBooks = useMemo(
     () =>
-      books
-        .filter((book) => preferences[shelfTab].includes(book.id))
-        .map((book) => ({ book, score: 0, reasons: [] as string[] })),
-    [books, preferences, shelfTab],
+      view === "shelf"
+        ? currentShelf.flatMap((id) => {
+            const book = catalogueIndex.byId.get(id);
+            return book ? [{ book, score: 0, reasons: [] as string[] }] : [];
+          })
+        : [],
+    [view, currentShelf, catalogueIndex],
   );
-  const results = view === "explore" ? rankedBooks : shelfBooks;
+  const results =
+    view === "explore" ? rankedBooks.items : shelfBooks.slice(0, pageSize);
+  const totalResults =
+    view === "explore" ? rankedBooks.total : shelfBooks.length;
   const activeFilters = Boolean(
-    query || genres.length || moods.length || seedId,
+    query || genres.length || moods.length || subjects.length || seedId,
   );
-  const shelfCount = books.filter((book) =>
-    preferences.saved.includes(book.id),
-  ).length;
+  const shelfCount = shelfCounts.saved;
 
-  function updatePreference(key: ShelfTab, book: Book) {
-    const removing = preferences[key].includes(book.id);
-    const next = {
-      ...preferences,
-      [key]: removing
-        ? preferences[key].filter((id) => id !== book.id)
-        : [...preferences[key], book.id],
-    };
-    if (!removing && key !== "dismissed")
-      next.dismissed = next.dismissed.filter((id) => id !== book.id);
-    setPreferences(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      setStorageError(false);
-    } catch {
-      setStorageError(true);
-    }
-    const messages: Record<ShelfTab, string[]> = {
-      saved: [
-        `Saved ${book.title} to your reading list.`,
-        `Removed ${book.title} from your reading list.`,
-      ],
-      favorites: [
-        `Added ${book.title} to your favourites.`,
-        `Removed ${book.title} from your favourites.`,
-      ],
-      dismissed: [
-        `Hidden ${book.title}. You can restore it from your shelf.`,
-        `Restored ${book.title} to discovery.`,
-      ],
-    };
-    setNotice(messages[key][removing ? 1 : 0]);
-  }
+  const updatePreference = useCallback(
+    async (key: ShelfKey, book: Book) => {
+      try {
+        const enabled = await toggle(key, book.id);
+        const removing = !enabled;
+        const messages: Record<ShelfKey, string[]> = {
+          saved: [
+            `Saved ${book.title} to your reading list.`,
+            `Removed ${book.title} from your reading list.`,
+          ],
+          favorites: [
+            `Added ${book.title} to your favourites.`,
+            `Removed ${book.title} from your favourites.`,
+          ],
+          dismissed: [
+            `Hidden ${book.title}. You can restore it from your shelf.`,
+            `Restored ${book.title} to discovery.`,
+          ],
+        };
+        setNotice(messages[key][removing ? 1 : 0]);
+      } catch (cause) {
+        setNotice(
+          cause instanceof Error
+            ? cause.message
+            : "The shelf could not be updated.",
+        );
+      }
+    },
+    [toggle],
+  );
 
-  function resetFilters() {
+  const resetFilters = useCallback(() => {
     setDraft("");
     setQuery("");
     setGenres([]);
     setMoods([]);
+    setSubjects([]);
     setSeedId(null);
     setPageSize(16);
-  }
+  }, []);
   function explore() {
     setView("explore");
     setPageSize(16);
   }
-  function scrollToResults() {
+  const scrollToResults = useCallback(() => {
     requestAnimationFrame(() =>
       resultsRef.current?.scrollIntoView({
         behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -201,7 +221,7 @@ export function BookExplorer({ books }: { books: Book[] }) {
         block: "start",
       }),
     );
-  }
+  }, []);
   function search(event?: FormEvent, value = draft) {
     event?.preventDefault();
     setDraft(value);
@@ -210,22 +230,36 @@ export function BookExplorer({ books }: { books: Book[] }) {
     setPageSize(16);
     scrollToResults();
   }
-  function moreLike(book: Book) {
-    resetFilters();
-    setSeedId(book.id);
-    setView("explore");
-    setSelectedBook(null);
-    scrollToResults();
-    setNotice(`Showing books related to ${book.title}.`);
-  }
-  function toggleFilter(value: string, kind: "genre" | "mood") {
-    const setter = kind === "genre" ? setGenres : setMoods;
+  const moreLike = useCallback(
+    (book: Book) => {
+      resetFilters();
+      setSeedId(book.id);
+      setView("explore");
+      setSelectedBook(null);
+      scrollToResults();
+      setNotice(`Showing books related to ${book.title}.`);
+    },
+    [resetFilters, scrollToResults],
+  );
+  function toggleFilter(value: string, kind: "genre" | "mood" | "subject") {
+    const setter =
+      kind === "genre" ? setGenres : kind === "mood" ? setMoods : setSubjects;
     setter((selected) =>
       selected.includes(value)
         ? selected.filter((item) => item !== value)
         : [...selected, value],
     );
     setPageSize(16);
+  }
+
+  const CollectionHeading = view === "shelf" ? "h1" : "h2";
+
+  function browseSubject(subject: string) {
+    resetFilters();
+    setSubjects([subject]);
+    setSelectedBook(null);
+    setView("explore");
+    scrollToResults();
   }
 
   return (
@@ -382,7 +416,10 @@ export function BookExplorer({ books }: { books: Book[] }) {
                       ? "FOLLOW THAT THREAD"
                       : "THE OPEN SHELF"}
               </p>
-              <h2 id="collection-title">
+              <CollectionHeading
+                id="collection-title"
+                className="collection-title"
+              >
                 {view === "shelf"
                   ? "Your reading life."
                   : seed
@@ -390,7 +427,7 @@ export function BookExplorer({ books }: { books: Book[] }) {
                     : activeFilters
                       ? "A little closer to your next read."
                       : "There’s a story for you here."}
-              </h2>
+              </CollectionHeading>
             </div>
             {view === "explore" && (
               <p className="collection-note">
@@ -412,12 +449,18 @@ export function BookExplorer({ books }: { books: Book[] }) {
                 Your shelf stays in this browser. No account needed; it won’t
                 sync to other devices.
               </p>
+              <ShelfTransfer
+                preferences={preferences}
+                knownIds={catalogueIndex.knownIds}
+                ready={storageReady}
+                onImport={importPreferences}
+              />
               <div
                 className="shelf-tabs"
                 role="group"
                 aria-label="Shelf sections"
               >
-                {(["saved", "favorites", "dismissed"] as ShelfTab[]).map(
+                {(["saved", "favorites", "dismissed"] as ShelfKey[]).map(
                   (tab) => (
                     <button
                       key={tab}
@@ -433,13 +476,7 @@ export function BookExplorer({ books }: { books: Book[] }) {
                         : tab === "favorites"
                           ? "Favourites"
                           : "Hidden"}
-                      <span>
-                        {
-                          books.filter((book) =>
-                            preferences[tab].includes(book.id),
-                          ).length
-                        }
-                      </span>
+                      <span>{shelfCounts[tab]}</span>
                     </button>
                   ),
                 )}
@@ -476,7 +513,7 @@ export function BookExplorer({ books }: { books: Book[] }) {
                   >
                     All genres<span>{books.length}</span>
                   </button>
-                  {availableGenres.map((genre) => (
+                  {catalogueIndex.genres.map(([genre, count]) => (
                     <button
                       key={genre}
                       className={`genre-option ${genres.includes(genre) ? "selected" : ""}`}
@@ -484,12 +521,7 @@ export function BookExplorer({ books }: { books: Book[] }) {
                       aria-pressed={genres.includes(genre)}
                     >
                       {genre}
-                      <span>
-                        {
-                          books.filter((book) => book.genres.includes(genre))
-                            .length
-                        }
-                      </span>
+                      <span>{count}</span>
                     </button>
                   ))}
                 </div>
@@ -510,6 +542,32 @@ export function BookExplorer({ books }: { books: Book[] }) {
                     </div>
                   </div>
                 )}
+                <div className="subject-filter">
+                  <label htmlFor="subject-filter">Follow a topic</label>
+                  <select
+                    id="subject-filter"
+                    value=""
+                    onChange={(event) => {
+                      if (event.target.value)
+                        toggleFilter(event.target.value, "subject");
+                    }}
+                  >
+                    <option value="">Choose a source subject…</option>
+                    {catalogueIndex.subjects.map(([subject, count]) => (
+                      <option
+                        key={subject}
+                        value={subject}
+                        disabled={subjects.includes(subject)}
+                      >
+                        {subject} ({count})
+                      </option>
+                    ))}
+                  </select>
+                  <p>
+                    Topics come from the source records. Book details have more
+                    to explore.
+                  </p>
+                </div>
                 <div className="sidebar-note">
                   <Icon name="spark" width="23" height="23" />
                   <h4>Your taste. More possibilities.</h4>
@@ -521,7 +579,11 @@ export function BookExplorer({ books }: { books: Book[] }) {
               </aside>
             )}
             <div className="results-area">
-              {(seed || query || genres.length > 0 || moods.length > 0) &&
+              {(seed ||
+                query ||
+                genres.length > 0 ||
+                moods.length > 0 ||
+                subjects.length > 0) &&
                 view === "explore" && (
                   <div className="active-filters" aria-label="Active filters">
                     {seed && (
@@ -549,8 +611,20 @@ export function BookExplorer({ books }: { books: Book[] }) {
                         key={genre}
                         className="active-chip"
                         onClick={() => toggleFilter(genre, "genre")}
+                        aria-label={`Remove genre ${genre}`}
                       >
                         {genre}
+                        <Icon name="close" width="14" height="14" />
+                      </button>
+                    ))}
+                    {subjects.map((subject) => (
+                      <button
+                        key={subject}
+                        className="active-chip"
+                        onClick={() => toggleFilter(subject, "subject")}
+                        aria-label={`Remove topic ${subject}`}
+                      >
+                        Topic: {subject}
                         <Icon name="close" width="14" height="14" />
                       </button>
                     ))}
@@ -559,6 +633,7 @@ export function BookExplorer({ books }: { books: Book[] }) {
                         key={mood}
                         className="active-chip"
                         onClick={() => toggleFilter(mood, "mood")}
+                        aria-label={`Remove mood ${mood}`}
                       >
                         {mood}
                         <Icon name="close" width="14" height="14" />
@@ -568,7 +643,7 @@ export function BookExplorer({ books }: { books: Book[] }) {
                 )}
               <div className="results-heading">
                 <p role="status">
-                  {results.length} {results.length === 1 ? "book" : "books"}
+                  {totalResults} {totalResults === 1 ? "book" : "books"}
                   {view === "shelf"
                     ? " on this shelf"
                     : activeFilters
@@ -577,14 +652,14 @@ export function BookExplorer({ books }: { books: Book[] }) {
                 </p>
                 <span>
                   {view === "explore" &&
-                    (preferences.favorites.length > 0
+                    (shelfCounts.favorites > 0
                       ? "Shaped by your favourites"
                       : activeFilters
                         ? "Sorted by relevance"
                         : "A place to begin")}
                 </span>
               </div>
-              {results.length === 0 ? (
+              {totalResults === 0 ? (
                 <div className="empty-state">
                   <span className="empty-icon">
                     <Icon
@@ -624,91 +699,27 @@ export function BookExplorer({ books }: { books: Book[] }) {
                 </div>
               ) : (
                 <div className="book-grid">
-                  {results.slice(0, pageSize).map(({ book, reasons }) => (
-                    <article key={book.id} className="book-card">
-                      <div className="card-cover-wrap">
-                        <button
-                          className="cover-button"
-                          aria-label={`View ${book.title}`}
-                          onClick={() => setSelectedBook(book)}
-                        >
-                          <BookCover book={book} />
-                        </button>
-                        <button
-                          className={`favorite-button ${preferences.favorites.includes(book.id) ? "is-favorite" : ""}`}
-                          aria-label={`${preferences.favorites.includes(book.id) ? "Remove" : "Add"} ${book.title} ${preferences.favorites.includes(book.id) ? "from" : "to"} favourites`}
-                          aria-pressed={preferences.favorites.includes(book.id)}
-                          disabled={!storageReady}
-                          onClick={() => updatePreference("favorites", book)}
-                        >
-                          <Icon name="heart" width="17" height="17" />
-                        </button>
-                      </div>
-                      <div className="card-copy">
-                        <p className="book-genre">
-                          {book.genres[0] ?? "From the library"}
-                        </p>
-                        <h3>
-                          <button onClick={() => setSelectedBook(book)}>
-                            {book.title}
-                          </button>
-                        </h3>
-                        <p className="book-author">{book.authors.join(", ")}</p>
-                        {reasons.length > 0 && (
-                          <p className="match-reason">{reasons[0]}</p>
-                        )}
-                        <div className="card-actions">
-                          <button
-                            className={`save-button ${preferences.saved.includes(book.id) ? "is-saved" : ""}`}
-                            disabled={!storageReady}
-                            onClick={() => updatePreference("saved", book)}
-                            aria-label={`${preferences.saved.includes(book.id) ? "Unsave" : "Save"} ${book.title}`}
-                            aria-pressed={preferences.saved.includes(book.id)}
-                          >
-                            <Icon
-                              name={
-                                preferences.saved.includes(book.id)
-                                  ? "check"
-                                  : "bookmark"
-                              }
-                              width="15"
-                              height="15"
-                            />
-                            {preferences.saved.includes(book.id)
-                              ? "Saved"
-                              : "Save"}
-                          </button>
-                          {view === "shelf" && shelfTab === "dismissed" ? (
-                            <button
-                              className="similar-button"
-                              onClick={() =>
-                                updatePreference("dismissed", book)
-                              }
-                            >
-                              Restore
-                              <Icon name="eye" width="14" height="14" />
-                            </button>
-                          ) : (
-                            <button
-                              className="similar-button"
-                              onClick={() => moreLike(book)}
-                              aria-label={`More like ${book.title}`}
-                            >
-                              More like this
-                              <Icon name="arrow" width="14" height="14" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </article>
+                  {results.map(({ book, reasons }) => (
+                    <BookCard
+                      key={book.id}
+                      book={book}
+                      reason={reasons[0] ?? ""}
+                      saved={shelfIndex.saved.has(book.id)}
+                      favorite={shelfIndex.favorites.has(book.id)}
+                      restore={view === "shelf" && shelfTab === "dismissed"}
+                      ready={storageReady}
+                      onOpen={setSelectedBook}
+                      onPreference={updatePreference}
+                      onSimilar={moreLike}
+                    />
                   ))}
                 </div>
               )}
-              {results.length > pageSize && (
+              {totalResults > pageSize && (
                 <div className="load-more">
                   <p>
-                    You’ve explored {Math.min(pageSize, results.length)} of{" "}
-                    {results.length} books.
+                    You’ve explored {Math.min(pageSize, totalResults)} of{" "}
+                    {totalResults} books.
                   </p>
                   <button
                     className="button button-secondary"
@@ -761,179 +772,31 @@ export function BookExplorer({ books }: { books: Book[] }) {
       </div>
       {storageError && (
         <div className="storage-warning" role="alert">
-          Your browser couldn’t save your shelf. Changes are available for this
-          visit only.
+          {storageError === "invalid"
+            ? "The saved shelf could not be read, so its original data was left untouched."
+            : "Your browser couldn’t save your shelf."}{" "}
+          Changes are available for this visit. Export your shelf to keep a
+          copy.
         </div>
       )}
       {selectedBook && (
         <BookDialog
           book={selectedBook}
-          saved={preferences.saved.includes(selectedBook.id)}
-          favorite={preferences.favorites.includes(selectedBook.id)}
-          dismissed={preferences.dismissed.includes(selectedBook.id)}
+          saved={shelfIndex.saved.has(selectedBook.id)}
+          favorite={shelfIndex.favorites.has(selectedBook.id)}
+          dismissed={shelfIndex.dismissed.has(selectedBook.id)}
           storageReady={storageReady}
           onClose={() => setSelectedBook(null)}
           onSave={() => updatePreference("saved", selectedBook)}
           onFavorite={() => updatePreference("favorites", selectedBook)}
-          onHide={() => {
-            updatePreference("dismissed", selectedBook);
+          onHide={async () => {
+            await updatePreference("dismissed", selectedBook);
             setSelectedBook(null);
           }}
           onSimilar={() => moreLike(selectedBook)}
+          onSubject={browseSubject}
         />
       )}
     </>
-  );
-}
-
-function BookDialog({
-  book,
-  saved,
-  favorite,
-  dismissed,
-  storageReady,
-  onClose,
-  onSave,
-  onFavorite,
-  onHide,
-  onSimilar,
-}: {
-  book: Book;
-  saved: boolean;
-  favorite: boolean;
-  dismissed: boolean;
-  storageReady: boolean;
-  onClose: () => void;
-  onSave: () => void;
-  onFavorite: () => void;
-  onHide: () => void;
-  onSimilar: () => void;
-}) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    const opener =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-    dialog?.showModal();
-    return () => {
-      dialog?.close();
-      if (opener?.isConnected) opener.focus({ preventScroll: true });
-    };
-  }, []);
-  return (
-    <dialog
-      className="book-dialog"
-      ref={dialogRef}
-      aria-labelledby="dialog-title"
-      onClose={onClose}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
-    >
-      <div className="dialog-inner">
-        <button
-          className="dialog-close"
-          onClick={onClose}
-          aria-label="Close book details"
-        >
-          <Icon name="close" />
-        </button>
-        <div className="dialog-cover-column">
-          <BookCover book={book} eager />
-          <button
-            className={`button button-secondary favorite-detail ${favorite ? "is-favorite" : ""}`}
-            onClick={onFavorite}
-            disabled={!storageReady}
-            aria-pressed={favorite}
-          >
-            <Icon name="heart" width="17" height="17" />
-            {favorite ? "A favourite" : "Mark as a favourite"}
-          </button>
-        </div>
-        <div className="dialog-copy">
-          <p className="eyebrow">A NEW CHAPTER AWAITS</p>
-          <h2 id="dialog-title">{book.title}</h2>
-          <p className="dialog-author">
-            {book.authors.join(", ")}
-            {book.firstPublished ? <span> · {book.firstPublished}</span> : null}
-          </p>
-          <div className="book-tags">
-            {book.genres.map((genre) => (
-              <span key={genre}>{genre}</span>
-            ))}
-          </div>
-          <p className="dialog-description">
-            {book.description ||
-              "A description isn’t available for this book yet. Visit the source record to learn more."}
-          </p>
-          {book.subjects.length > 0 && (
-            <div className="dialog-subjects">
-              <h3>Between these pages</h3>
-              <p>{book.subjects.slice(0, 8).join(" · ")}</p>
-            </div>
-          )}
-          <div className="dialog-actions">
-            <button
-              className="button button-primary"
-              onClick={onSave}
-              disabled={!storageReady}
-              aria-pressed={saved}
-            >
-              <Icon
-                name={saved ? "check" : "bookmark"}
-                width="17"
-                height="17"
-              />
-              {saved ? "Saved to reading list" : "Save to reading list"}
-            </button>
-            <button className="button button-secondary" onClick={onSimilar}>
-              More like this
-              <Icon name="arrow" width="17" height="17" />
-            </button>
-          </div>
-          <div className="source-note">
-            <a href={book.source.url} target="_blank" rel="noopener noreferrer">
-              View on {book.source.name}
-              <Icon name="external" width="13" height="13" />
-            </a>
-            <Link className="book-permalink" href={`/books/${book.id}`}>
-              Open book page
-              <Icon name="arrow" width="13" height="13" />
-            </Link>
-            <p>
-              Book details from {book.source.name}.
-              {book.descriptionSource &&
-              book.descriptionSource !== book.source.url &&
-              /^https:\/\//.test(book.descriptionSource) ? (
-                <>
-                  {" "}
-                  <a
-                    href={book.descriptionSource}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Description source
-                  </a>
-                  .
-                </>
-              ) : (
-                ""
-              )}
-            </p>
-          </div>
-          <button
-            className="quiet-link hide-book"
-            onClick={onHide}
-            disabled={!storageReady}
-          >
-            {dismissed
-              ? "Restore to discovery"
-              : "Hide this book from discovery"}
-          </button>
-        </div>
-      </div>
-    </dialog>
   );
 }

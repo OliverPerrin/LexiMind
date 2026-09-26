@@ -2,14 +2,19 @@
   "schemaVersion": 1,
   "source": "https://openlibrary.org/developers/api",
   "metadataLicense": "https://openlibrary.org/developers/licensing",
-  "build": "python3 scripts/build_book_catalog.py --offline",
+  "build": "python3 scripts/build_book_catalog.py --offline --per-subject 10",
+  "buildOptions": {
+    "perSubject": 10,
+    "extraQueryLimit": 6
+  },
   "selection": "Bounded English-language subject search results; not a representative or exhaustive catalogue.",
-  "count": 89,
-  "withDescription": 84,
-  "withCover": 89,
+  "count": 102,
+  "withDescription": 96,
+  "withCover": 102,
   "validatedMoods": 0,
-  "catalogueSha256": "30fa40ae11a0e3457cf4cfd5bd148f9ab7192a9011c8acdf744d28b3a031d2fd",
-  "selectionReviewSha256": "57b2f72fcd27a6f49fa87529881aa75e52e2aacd1de3ef5c45ef29a84257a620",
+  "catalogueSha256": "1dbb04f8a9ae433f0077603520258e9206fb105572949d775802373799ee5ef7",
+  "catalogueFileSha256": "702cf3e16c091daafe1d293248dfed1955fe0545e4ca5c3089de3467f1ad4c6f",
+  "selectionReviewSha256": "35f563e7f3c0c2495feeeccc5a047567a584785a72eda303339e442392548a58",
   "queries": [
     {
       "url": "https://openlibrary.org/search.json?q=subject%3Ascience_fiction+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
@@ -50,6 +55,18 @@
     {
       "url": "https://openlibrary.org/search.json?q=subject%3Apoetry+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
       "sha256": "69eb524b0fdcefa5bb8e0069d9c08f6f07f56502095f12073477d3439bd3befc"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3A%22popular+science%22+language%3Aeng&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "8e41ce3a30c72a67ff2711a72da65e8b4a8fafdecb1116eef13d4d1a0e8f1d3c"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3A%22literary+fiction%22+language%3Aeng&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "a0dbb3363eb5102661b26bdaef1dc88314dccdc1b5de348b76f28036c340a37f"
+    },
+    {
+      "url": "https://openlibrary.org/search.json?q=subject%3Aessays+language%3Aeng&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "926927c7fe29709d45558b246a2bcdf6c6ee3a3b30b529af8d240d70762a0fc5"
     }
   ],
   "rejected": [
@@ -64,6 +81,18 @@
     {
       "work": "/works/OL28521353W",
       "reason": "Second Meditations record with the same title and author as OL1317211W; omit duplicate candidate pending work reconciliation."
+    },
+    {
+      "work": "/works/OL17762235W",
+      "reason": "Description credits Siddhartha Mukherjee but work also lists Dennis Boutsikaris without a contributor role. Excluded pending role verification."
+    },
+    {
+      "work": "/works/OL17715915W",
+      "reason": "Description credits Adam Rutherford but work lists three people as authors without distinguishing contributor roles. Excluded pending role verification."
+    },
+    {
+      "work": "/works/OL23746568W",
+      "reason": "Description credits Brianna Wiest but work also lists Andrea Hernández González without a contributor role. Excluded pending role verification."
     }
   ],
   "provenance": {

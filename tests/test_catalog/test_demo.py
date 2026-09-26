@@ -62,3 +62,24 @@ def test_validated_tone_requires_explicit_status_and_source():
             "emotion_source": "https://example.org/editorial-labels",
         }
     )
+    assert not has_validated_tone(
+        {
+            "emotion": ["joy"],
+            "emotion_status": "validated_editorial",
+            "emotion_source": "https://example.org/source",
+        }
+    )
+    assert not has_validated_tone(
+        {
+            "emotion": "joy",
+            "emotion_status": "validated_editorial",
+            "emotion_source": "javascript:alert(1)",
+        }
+    )
+    assert not has_validated_tone(
+        {
+            "emotion": "joy",
+            "emotion_status": ["validated_editorial"],
+            "emotion_source": "https://example.org/source",
+        }
+    )

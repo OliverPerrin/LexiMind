@@ -1,0 +1,51 @@
+{
+  "url": "https://openlibrary.org/works/OL37949460W.json",
+  "retrievedAt": "2026-09-26T07:12:26.278331+00:00",
+  "sha256": "f0205e8acf11664cad971bf1af5dd1c24afa82646ae7359df287f17f4e1f06ab",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "Intermezzo",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7919580A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL37949460W",
+    "description": {
+      "type": "/type/text",
+      "value": "Aside from the fact that they are brothers, Peter and Ivan Koubek seem to have little in common.\r\n\r\nPeter is a Dublin lawyer in his thirties—successful, competent, and apparently unassailable. But in the wake of their father’s death, he’s medicating himself to sleep and struggling to manage his relationships with two very different women—his enduring first love, Sylvia, and Naomi, a college student for whom life is one long joke.\r\n\r\nIvan is a twenty-two-year-old competitive chess player. He has always seen himself as socially awkward, a loner, the antithesis of his glib elder brother. Now, in the early weeks of his bereavement, Ivan meets Margaret, an older woman emerging from her own turbulent past, and their lives become rapidly and intensely intertwined.\r\n\r\nFor two grieving brothers and the people they love, this is a new interlude—a period of desire, despair, and possibility; a chance to find out how much one life might hold inside itself without breaking."
+    },
+    "subjects": [
+      "Fiction",
+      "Literary Fiction",
+      "Grief",
+      "Brotherhood"
+    ],
+    "subject_places": [
+      "Ireland"
+    ],
+    "subject_times": [
+      "Present Day"
+    ],
+    "genres": [
+      "/tags/OL174T"
+    ],
+    "latest_revision": 4,
+    "revision": 4,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2024-03-17T17:51:09.520354"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-04T19:36:01.663606"
+    }
+  }
+}

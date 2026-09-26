@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { recommendBooks } from "./recommendations";
+import { recommendBooks, searchBooks } from "./recommendations";
 import type { Book } from "./types";
 
 function book(id: number, title: string, genre: string, description: string, author = "Author"): Book {
@@ -37,6 +37,12 @@ test("author searches work with accents and case normalization", () => {
 
 test("no matches returns an honest empty result", () => {
   assert.deepEqual(recommendBooks(catalogue, { query: "xyzzynonexistent" }), []);
+});
+
+test("query words cannot access inherited alias object properties", () => {
+  for (const query of ["constructor", "__proto__", "prototype", "hasOwnProperty"]) {
+    assert.doesNotThrow(() => searchBooks(catalogue, { query }));
+  }
 });
 
 test("facets and dismissals are hard constraints, not score penalties", () => {
@@ -82,4 +88,48 @@ test("results are deterministic, bounded, and leave source books unchanged", () 
   assert.equal(recommendBooks(catalogue, { limit: 3 }).length, 3);
   assert.deepEqual(recommendBooks(catalogue, { limit: 0 }), []);
   assert.equal(JSON.stringify(catalogue), before);
+});
+
+test("pagination retains exact totals and the same ranking prefix as a full result", () => {
+  for (const options of [{}, { query: "planets" }, { seedIds: ["OL1W"] }, { savedIds: ["OL3W"] }]) {
+    const first = searchBooks(catalogue, { ...options, limit: 1 });
+    const second = searchBooks(catalogue, { ...options, limit: 3 });
+    const all = recommendBooks(catalogue, options);
+    assert.equal(first.total, all.length);
+    assert.equal(second.total, all.length);
+    assert.deepEqual(first.items, all.slice(0, 1));
+    assert.deepEqual(second.items, all.slice(0, 3));
+    assert.deepEqual(searchBooks(catalogue, { ...options, limit: 0 }), { items: [], total: all.length });
+  }
+});
+
+test("source-subject matching is exact, case-insensitive, and intersects other facets", () => {
+  const books = catalogue.map((b, i) => ({ ...b, subjects: i < 2 ? ["Space exploration"] : ["Family"] }));
+  assert.equal(searchBooks(books, { subjects: ["space exploration"], limit: 1 }).total, 2);
+  assert.equal(searchBooks(books, { subjects: ["Space"], limit: 1 }).total, 0);
+  assert.equal(searchBooks(books, { subjects: ["Space exploration"], genres: ["Mystery"] }).total, 0);
+});
+
+test("longest excluded genre wins regardless of catalogue order", () => {
+  const books = [book(20, "Astronomy", "Science", "Planets and physics."), ...catalogue];
+  const results = recommendBooks(books, { query: "without science fiction" });
+  assert.ok(results.some(item => item.book.id === "OL20W"));
+  assert.ok(results.every(item => !item.book.genres.includes("Science fiction")));
+});
+
+test("cached results cannot be poisoned by returned arrays or another preference set", () => {
+  const original = searchBooks(catalogue, { query: "planets", limit: 2 });
+  const expected = structuredClone(original);
+  original.items[0].reasons.push("invented reason");
+  original.items.reverse();
+  recommendBooks(catalogue, { query: "planets", dismissedIds: ["OL1W"] });
+  assert.deepEqual(searchBooks(catalogue, { query: "planets", limit: 2 }), expected);
+});
+
+test("eviction and catalogue replacement preserve deterministic results", () => {
+  const expected = recommendBooks(catalogue);
+  for (let i = 0; i < 12; i++) recommendBooks(catalogue, { query: `query-${i}` });
+  assert.deepEqual(recommendBooks(catalogue), expected);
+  const replacement = [...catalogue, book(100, "Other", "New genre", "An added book.")];
+  assert.equal(searchBooks(replacement, { limit: 1 }).total, catalogue.length + 1);
 });
