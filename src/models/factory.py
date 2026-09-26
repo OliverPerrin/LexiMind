@@ -54,6 +54,8 @@ class ModelConfig:
     gradient_checkpointing: bool = False
 
     def __post_init__(self):
+        if self.num_attention_heads <= 0:
+            raise ValueError("Model dimensions must be positive")
         if self.d_model % self.num_attention_heads != 0:
             raise ValueError(
                 f"d_model ({self.d_model}) must be divisible by num_attention_heads ({self.num_attention_heads})"

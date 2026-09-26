@@ -1,0 +1,129 @@
+{
+  "observed_on": "2026-09-22",
+  "purpose": "inventory of current local bytes; NOT a pinned historical or future benchmark dataset",
+  "files": [
+    {
+      "path": "data/processed/books/test.jsonl",
+      "sha256": "223018a9656f6c87f2951bdee6210d78cbffff90ff21dcfcd9b63ffe14528e47",
+      "bytes": 1213556,
+      "rows": 1500,
+      "types": {
+        "gutenberg": 1500
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/books/train.jsonl",
+      "sha256": "f20def48eec167508c9d1770944ce12cf40b92d9e1889b0a5a2f0f9c94e993e3",
+      "bytes": 22053187,
+      "rows": 27000,
+      "types": {
+        "gutenberg": 27000
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/books/validation.jsonl",
+      "sha256": "57a3a8c63f9454a2e6bcc616edfc153e399c092df54f949912f5e880f05f5f55",
+      "bytes": 1236629,
+      "rows": 1500,
+      "types": {
+        "gutenberg": 1500
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/emotion/test.jsonl",
+      "sha256": "34b54f88cb0425f7778e8593151cc80227039d2fab7a620b90712204f442ce2a",
+      "bytes": 593172,
+      "rows": 5427,
+      "types": {
+        "unspecified": 5427
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/emotion/train.jsonl",
+      "sha256": "0b2ea898e47b375c6fedee4540d3b8196ceaf46b3f067c163789ba8a07bbc853",
+      "bytes": 4774263,
+      "rows": 43410,
+      "types": {
+        "unspecified": 43410
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/emotion/validation.jsonl",
+      "sha256": "8eb09b3e163674714cedbe81929235bdaf4b72976c0577d1c9333d51ec11727e",
+      "bytes": 595897,
+      "rows": 5426,
+      "types": {
+        "unspecified": 5426
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/summarization/test.jsonl",
+      "sha256": "438fb582d0cb0d7a91570b69955863f328635d7fa3bd1413a780c10f433dbdd3",
+      "bytes": 17893661,
+      "rows": 3440,
+      "types": {
+        "literary": 934,
+        "academic": 2506
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/summarization/train.jsonl",
+      "sha256": "47f9b3c4e845b3da010756ec735caea290cb70ae308e9a7e7da4605ce651e6dc",
+      "bytes": 316193892,
+      "rows": 61877,
+      "types": {
+        "academic": 45001,
+        "literary": 16876
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/summarization/validation.jsonl",
+      "sha256": "08cb329933edb9e9425275d82617d80d75b07a3b76916b1c446c1226a5462fa7",
+      "bytes": 17599256,
+      "rows": 3436,
+      "types": {
+        "academic": 2493,
+        "literary": 943
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/topic/test.jsonl",
+      "sha256": "63f0291f274116aba4f5abc272a728fca6c815344188c2840e88f955430e30fb",
+      "bytes": 136740,
+      "rows": 189,
+      "types": {
+        "unspecified": 189
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/topic/train.jsonl",
+      "sha256": "faa645fe82f9c724dbdde43d6a1010277a50e6e421452c66a7bd3221255e1ba3",
+      "bytes": 2504019,
+      "rows": 3402,
+      "types": {
+        "unspecified": 3402
+      },
+      "historical_run_identity": "not established"
+    },
+    {
+      "path": "data/processed/topic/validation.jsonl",
+      "sha256": "b807167b5c48a8df4c9efd78a0add8ce70259623a0a68399b5db1440c811e02a",
+      "bytes": 130512,
+      "rows": 189,
+      "types": {
+        "unspecified": 189
+      },
+      "historical_run_identity": "not established"
+    }
+  ]
+}

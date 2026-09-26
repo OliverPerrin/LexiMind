@@ -1,0 +1,61 @@
+{
+  "url": "https://openlibrary.org/works/OL17800180W.json",
+  "retrievedAt": "2026-09-26T07:12:16.795185+00:00",
+  "sha256": "69708f3aca5e1caac683d1b4b47e2cbf2f5615e4a0f39a46f6cf0cd57a4dfd3c",
+  "data": {
+    "subjects": [
+      "Physics",
+      "Problems, exercises",
+      "Popular works",
+      "nyt:hardcover-nonfiction=2013-02-24",
+      "New York Times bestseller",
+      "Mechanics",
+      "Mécanique",
+      "Ouvrages de vulgarisation",
+      "Popular Science",
+      "Theoretische Mechanik",
+      "Popular Science and Mathematics"
+    ],
+    "key": "/works/OL17800180W",
+    "title": "Classical Mechanics (Physics)",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7021331A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      },
+      {
+        "author": {
+          "key": "/authors/OL7482110A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      -1
+    ],
+    "subtitle": "The Theoretical Minimum",
+    "description": {
+      "type": "/type/text",
+      "value": "A string theorist and a citizen scientist instruct lay readers on elementary principles of physics and associated math that amateur enthusiasts should know in order to study more advanced topics, in a reference that covers such topics as classical mechanics, electromagnetic fields and chaos theory.\n\n\"A first course in physics and associated math for the ardent amateur ... beginning with classical mechanics\"--Dust jacket flap."
+    },
+    "latest_revision": 9,
+    "revision": 9,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2017-10-20T19:02:29.826734"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2024-09-09T04:16:42.582660"
+    }
+  }
+}

@@ -414,6 +414,7 @@ class TransformerDecoder(nn.Module):
 
         # Initialize with start token
         generated = torch.full((B, 1), start_token_id, dtype=torch.long, device=device)
+        finished = torch.zeros(B, dtype=torch.bool, device=device)
 
         for _ in range(max_len - 1):
             # Full forward pass on entire generated sequence
@@ -430,12 +431,15 @@ class TransformerDecoder(nn.Module):
 
             # Greedy: pick highest probability token
             next_token = next_logits.argmax(dim=-1, keepdim=True)  # (B, 1)
+            if end_token_id is not None:
+                next_token = next_token.masked_fill(finished.unsqueeze(-1), end_token_id)
+                finished |= next_token.squeeze(-1) == end_token_id
 
             # Append to generated
             generated = torch.cat([generated, next_token], dim=1)
 
             # Check for EOS
-            if end_token_id is not None and (next_token == end_token_id).all():
+            if end_token_id is not None and finished.all():
                 break
 
         return generated
@@ -519,7 +523,11 @@ class TransformerDecoder(nn.Module):
                     if len(gen_seq) < no_repeat_ngram_size - 1:
                         continue
 
-                    prefix = tuple(gen_seq[-(no_repeat_ngram_size - 1) :])
+                    prefix = (
+                        tuple(gen_seq[-(no_repeat_ngram_size - 1) :])
+                        if no_repeat_ngram_size > 1
+                        else ()
+                    )
                     banned_for_this_batch = set()
 
                     for i in range(len(gen_seq) - no_repeat_ngram_size + 1):
@@ -540,6 +548,10 @@ class TransformerDecoder(nn.Module):
 
             # Greedy selection
             next_token = next_step_logits.argmax(dim=-1, keepdim=True)  # (B, 1)
+            if end_token_id is not None:
+                # Finished rows must not append new words while other rows
+                # continue. Repeated EOS is removed by tokenizer decoding.
+                next_token = next_token.masked_fill(finished.unsqueeze(-1), end_token_id)
 
             # Update generated sequence
             generated = torch.cat([generated, next_token], dim=1)

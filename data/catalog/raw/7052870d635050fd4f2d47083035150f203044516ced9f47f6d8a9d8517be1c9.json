@@ -1,0 +1,97 @@
+{
+  "url": "https://openlibrary.org/works/OL17807435W.json",
+  "retrievedAt": "2026-09-26T07:12:21.222587+00:00",
+  "sha256": "84adb8e270b62cab4e8b2ce32b64b8d1f80877813189c9c0d4b99e0d9e444778",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "On Al Chaudhury’s twelfth birthday his beloved Grandpa Byron gave him a letter from Al’s late father. In it Al receives a mission: travel back to 1984 in a secret time machine and save his father’s life. He manages to overcome many challenges and various daring-do's, without losing his hamster along the way."
+    },
+    "links": [
+      {
+        "url": "https://www.amazon.co.uk/Time-Travelling-Hamster-Ross-Welford/dp/000815631X/ref=la_B01LZKBZLX_1_1?s=books&ie=UTF8&qid=1510524635&sr=1-1",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Amazon UK"
+      },
+      {
+        "url": "https://www.amazon.com/Time-Traveling-Hamster-Ross-Welford/dp/0399551492/ref=sr_1_1?ie=UTF8&qid=1510525464&sr=8-1&keywords=time+travelling+with+a+hamster",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Amazon US (different information)"
+      },
+      {
+        "url": "https://www.theguardian.com/books/2016/feb/06/time-travelling-hamster-ross-welford-review",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "The Guardian - Review"
+      },
+      {
+        "url": "https://www.irishtimes.com/culture/books/reviews-time-travelling-with-a-hamster-dreaming-the-bear-little-one-1.2569609",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Irish Times - Review"
+      },
+      {
+        "url": "https://www.kirkusreviews.com/book-reviews/ross-welford/time-traveling-with-a-hamster/",
+        "type": {
+          "key": "/type/link"
+        },
+        "title": "Kirkus Reviews"
+      }
+    ],
+    "title": "Time Travelling with a Hamster",
+    "covers": [
+      8093758
+    ],
+    "subject_places": [
+      "London"
+    ],
+    "subjects": [
+      "hamster",
+      "charming",
+      "children",
+      "time travel",
+      "space",
+      "family",
+      "friends",
+      "popular science",
+      "Children's fiction",
+      "Science fiction"
+    ],
+    "key": "/works/OL17807435W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL7403201A"
+        }
+      }
+    ],
+    "subject_times": [
+      "1980s-2010s"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL179T"
+    ],
+    "latest_revision": 5,
+    "revision": 5,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2017-11-12T22:12:00.683251"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-28T09:18:59.040659"
+    }
+  }
+}

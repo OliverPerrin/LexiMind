@@ -1,0 +1,61 @@
+{
+  "url": "https://openlibrary.org/works/OL1810842W.json",
+  "retrievedAt": "2026-09-22T14:29:53.690837+00:00",
+  "sha256": "a235dc6884adfbefd8bdadfb4452f620c27c81c3518a9ee696e47d37f4c9fa35",
+  "data": {
+    "subtitle": "a historical introduction to philosophy",
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2020-08-16T01:18:47.304612"
+    },
+    "title": "The great conversation",
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T22:24:49.591859"
+    },
+    "covers": [
+      1454089,
+      -1,
+      1128670,
+      1128671,
+      126739,
+      1127839,
+      9368543,
+      9011737,
+      9011762
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "EVERYWHERE AND AT all times, we humans have wondered at our own existence and at our place in the scheme of things."
+    },
+    "first_publish_date": "1991",
+    "latest_revision": 13,
+    "key": "/works/OL1810842W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL217191A"
+        }
+      }
+    ],
+    "dewey_number": [
+      "190"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Textbooks",
+      "Philosophy",
+      "Introductions",
+      "History",
+      "Filosofie",
+      "Philosophy, history",
+      "Philosophy, introductions"
+    ],
+    "revision": 13
+  }
+}

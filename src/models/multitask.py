@@ -72,6 +72,25 @@ class MultiTaskModel(nn.Module):
         del self._modules[f"head_{name}"]
         del self.heads[name]
 
+    def classify_encoded(
+        self, task: str, encoded: torch.Tensor, mask: torch.Tensor | None = None
+    ) -> torch.Tensor:
+        """Apply an encoder-side head to shared memory without encoding again.
+
+        This adds no parameters or checkpoint keys. Callers must use memory and
+        the matching padding mask from the same batch; generation has its own
+        decoder path.
+        """
+        if task not in self.heads:
+            raise KeyError(f"Unknown task/head '{task}'")
+        head = self.heads[task]
+        check_head = getattr(head, "_orig_mod", head)
+        if isinstance(check_head, ClassificationHead):
+            return head(encoded, mask=mask)
+        if isinstance(check_head, TokenClassificationHead):
+            return head(encoded)
+        raise ValueError(f"Task '{task}' is not an encoder-side classification head")
+
     def forward(
         self,
         task: str,

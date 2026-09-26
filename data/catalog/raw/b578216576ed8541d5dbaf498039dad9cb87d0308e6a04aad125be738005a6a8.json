@@ -1,0 +1,58 @@
+{
+  "url": "https://openlibrary.org/works/OL3457792W.json",
+  "retrievedAt": "2026-09-22T14:28:54.857059+00:00",
+  "sha256": "1b3d32ce6d6b3bccf2375e4820532978e20f7cb8ceac858395aa98bcf4c96fac",
+  "data": {
+    "covers": [
+      218941,
+      7011454
+    ],
+    "first_publish_date": "February 1, 2001",
+    "key": "/works/OL3457792W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL575932A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subjects": [
+      "Fiction, Romance, Contemporary",
+      "Love stories, fiction"
+    ],
+    "title": "Magic in Vienna",
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_places": [
+      "Vienna"
+    ],
+    "description": "Vienna was enchanting, like another world\r\n\r\nIt was everything Cordelia hoped it would be. She couldn't say the same for her charge's uncle, Dr. Charles Trescombe!\r\n\r\nHe regarded Cordelia as plain and dull and sensible. She looked at Charles with pity--still young, handsome, but buried in books and medical studies. What a waste, she thought.\r\n\r\nIt was foolish to fall in love with him. Only when he smiled at her could she believe in the magical possibility that he might return her love....",
+    "lc_classifications": [
+      "PR6064.E42 M3 1994"
+    ],
+    "dewey_number": [
+      "823/.914"
+    ],
+    "subject_people": [
+      "Cordelia",
+      "Dr. Charles Trescombe"
+    ],
+    "genres": [
+      "/tags/OL177T"
+    ],
+    "latest_revision": 10,
+    "revision": 10,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T03:38:25.957765"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T10:19:11.985218"
+    }
+  }
+}

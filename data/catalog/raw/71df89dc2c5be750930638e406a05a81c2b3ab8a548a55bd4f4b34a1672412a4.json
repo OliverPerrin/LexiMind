@@ -1,0 +1,89 @@
+{
+  "url": "https://openlibrary.org/works/OL98174W.json",
+  "retrievedAt": "2026-09-22T14:29:41.176627+00:00",
+  "sha256": "6f5d09761ed5e13fe3b941bdfa8a932a2a5739b35ad583b863b2b039282c7445",
+  "data": {
+    "title": "Jenseits von Gut und Böse",
+    "covers": [
+      8245356,
+      8689928,
+      8889482,
+      9181644,
+      10510104,
+      10845980,
+      12091257,
+      12373487,
+      12622049,
+      9287926,
+      11542235
+    ],
+    "subjects": [
+      "Ethics",
+      "Philosophy",
+      "Translations into English",
+      "Good and evil.",
+      "German Philosophy",
+      "Asceticism",
+      "Good and evil",
+      "Nonfiction",
+      "open_syllabus_project",
+      "Continental european drama (dramatic works by one author)",
+      "Philosophy, German",
+      "Morale",
+      "Philosophie",
+      "Ethics (philosophy)",
+      "History & Surveys",
+      "Modern",
+      "Good & evil",
+      "Modern Philosophy"
+    ],
+    "subject_people": [
+      "Friedrich Wilhelm Nietzsche (1844-1900)"
+    ],
+    "key": "/works/OL98174W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL20157A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subject_times": [
+      "19th century"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "identifiers": {
+      "wikidata": [
+        "Q579794"
+      ]
+    },
+    "links": [
+      {
+        "title": "Beyond Good and Evil-Ebookzy",
+        "url": "https://ebookzy.com/beyond-good-and-evil/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "description": {
+      "type": "/type/text",
+      "value": "Since the French Revolution the influence of woman in Europe has DECLINED in proportion as she has increased her rights and claims; and the \"emancipation of woman,\" insofar as it is desired and demanded by women themselves (and not only by masculine shallow-pates), thus proves to be a remarkable symptom of the increased weakening and deadening of the most womanly instincts."
+    },
+    "latest_revision": 30,
+    "revision": 30,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-17T16:58:29.600954"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-07-14T09:02:27.220677"
+    }
+  }
+}

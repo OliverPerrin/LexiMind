@@ -1,0 +1,60 @@
+{
+  "url": "https://openlibrary.org/works/OL19667762W.json",
+  "retrievedAt": "2026-09-22T14:28:47.360348+00:00",
+  "sha256": "36a3fc0da9a6f22efa239d49b045a486b00022cd8c199cc8ce4a03295a4e1334",
+  "data": {
+    "description": "A New York Times Bestseller\r\n\r\n*A BookTok Viral Sensation*\r\n\r\nAn achingly authentic and raw portrait of love, regret, and the life-altering impact of the relationships we hold closest to us, this YA romance bestseller is perfect for fans of Colleen Hoover, Jenny Han, and You've Reached Sam.\r\n\r\nIf he had been with me, everything would have been different…\r\n\r\nAutumn and Finn used to be inseparable. But then something changed. Or they changed. Now, they do their best to ignore each other.\r\n\r\nAutumn has her boyfriend Jamie, and her close-knit group of friends. And Finn has become that boy at school, the one everyone wants to be around.\r\n\r\nThat still doesn't stop the way Autumn feels every time she and Finn cross paths, and the growing, nagging thought that maybe things could have been different. Maybe they should be together.\r\n\r\nBut come August, things will change forever. And as time passes, Autumn will be forced to confront how else life might have been different if they had never parted ways…",
+    "covers": [
+      14339089,
+      9614548
+    ],
+    "key": "/works/OL19667762W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7512907A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "If He Had Been With Me",
+    "subjects": [
+      "Friendship",
+      "Fiction",
+      "Love",
+      "Love stories",
+      "Children's fiction",
+      "Love, fiction",
+      "Friendship, fiction",
+      "Romance",
+      "contemporary",
+      "young adult",
+      "coming-of-age",
+      "grief",
+      "loss",
+      "regret",
+      "second chances",
+      "love triangle",
+      "family",
+      "New York Times bestseller"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL177T"
+    ],
+    "latest_revision": 10,
+    "revision": 10,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2019-05-15T05:37:32.930125"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-07T19:43:08.827564"
+    }
+  }
+}

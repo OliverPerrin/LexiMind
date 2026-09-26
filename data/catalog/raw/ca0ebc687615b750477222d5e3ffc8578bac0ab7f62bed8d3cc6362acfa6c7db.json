@@ -1,0 +1,95 @@
+{
+  "url": "https://openlibrary.org/works/OL1230601W.json",
+  "retrievedAt": "2026-09-22T14:29:47.006622+00:00",
+  "sha256": "5aff3e19f0ea70fa5afe011b6ed718c06f28b014c64e55d2caf3bd72f7fd45db",
+  "data": {
+    "title": "Le mythe de Sisyphe",
+    "covers": [
+      1014395,
+      2209953,
+      966710,
+      96992,
+      420160,
+      9956351,
+      9406425,
+      8824673,
+      12140467,
+      3344440,
+      12317097,
+      10151906,
+      5258385,
+      12758796,
+      12920359,
+      13125632,
+      13502099,
+      13775151,
+      8157281,
+      13247603
+    ],
+    "first_publish_date": "June 1, 2000",
+    "key": "/works/OL1230601W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL124171A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "THERE is but one truly serious philosophical problem, and that is suicide."
+    },
+    "subjects": [
+      "French essays",
+      "Life",
+      "Suicide",
+      "Absurd (Philosophy)",
+      "Existentialism",
+      "Philosophy",
+      "History and criticism",
+      "French literature",
+      "French philosophy",
+      "Essays",
+      "Mythology",
+      "Modern philosophy",
+      "French language materials",
+      "Continental european fiction (fictional works by one author)",
+      "Mythology, greek",
+      "Kings and rulers, mythology",
+      "Essays (single author)",
+      "Filosofia",
+      "Absurd (Philosophy) in literature",
+      "Absurde (Philosophie) dans la littérature",
+      "Translations"
+    ],
+    "description": "«Il n'y a qu'un problème philosophique vraiment sérieux : c'est le suicide.» Avec cette formule foudroyante, qui semble rayer d'un trait toute la philosophie, un jeune homme de moins de trente ans commence son analyse de la sensibilité absurde. Il décrit le «mal de l'esprit» dont souffre l'époque actuelle : «L'absurde naît de la confrontation de l'appel humain avec le silence déraisonnable du monde.»",
+    "links": [
+      {
+        "title": "Une critique du Le Mythe de Sisyphe d’Albert Camus",
+        "url": "https://love-books-review.com/fr/le-mythe-de-sisyphe-de-albert-camus/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "genres": [
+      "/tags/OL176T"
+    ],
+    "latest_revision": 19,
+    "revision": 19,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T20:48:02.913910"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T14:23:04.911671"
+    }
+  }
+}

@@ -32,14 +32,32 @@ import argparse
 import json
 import random
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
-from datasets import load_dataset  # type: ignore[import-untyped]
 from tqdm import tqdm
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.catalog.identity import author_names, match_description, matched_work_id, normalize_title
+from src.catalog.source_documents import (
+    booksum_display_title,
+    booksum_document_identity,
+    gutenberg_document_identity,
+)
+from src.catalog.splits import split_source_records, split_summarization_records
+from src.catalog.storage import write_text_atomic
 
 # Output directory
 OUTPUT_DIR = Path(__file__).parent.parent / "data" / "processed"
+
+
+def load_dataset(*args: Any, **kwargs: Any) -> Any:
+    """Import the download dependency only when explicitly preparing sources."""
+    from datasets import load_dataset as hf_load_dataset
+
+    return hf_load_dataset(*args, **kwargs)
+
 
 # ------------ LABEL DEFINITIONS ------------
 
@@ -173,10 +191,13 @@ GUTENBERG_SUBJECT_MAP = {
 def write_jsonl(records: list[dict[str, Any]], path: Path, desc: str = "Writing") -> None:
     """Write records to JSONL file."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
-        for record in tqdm(records, desc=desc, leave=False):
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
-    print(f"  {len(records):,} samples -> {path}")
+    write_text_atomic(
+        path,
+        (
+            json.dumps(record, ensure_ascii=False, allow_nan=False) + "\n"
+            for record in tqdm(records, desc=desc)
+        ),
+    )
 
 
 # ------------ ENGLISH LANGUAGE FILTER ------------
@@ -482,29 +503,20 @@ def is_english_text(text: str, min_ratio: float = 0.08, max_foreign: int = 5) ->
     return ratio >= min_ratio
 
 
-def normalize_title(title: str) -> str:
-    """Normalize a book title for matching."""
-    # Remove common prefixes/suffixes
-    title = re.sub(r"^(The|A|An)\s+", "", title, flags=re.IGNORECASE)
-    title = re.sub(r"\s*\([^)]*\)\s*", "", title)  # Remove parentheticals
-    title = re.sub(r"\s*:.+$", "", title)  # Remove subtitles
-    title = re.sub(r"[^\w\s]", "", title)  # Remove punctuation
-    return title.lower().strip()
-
-
 # -------- SUMMARIZATION: BOOKS + ARXIV ----------
 
 
-def download_goodreads_descriptions() -> dict[str, dict]:
+def download_goodreads_descriptions() -> dict[str, list[dict]]:
     """
     Download Goodreads book descriptions - back-cover style blurbs.
 
     These are "what the book is about" descriptions, not plot summaries.
-    Returns dict mapping normalized title -> {title, description}
+    Returns title buckets with author evidence; missing authors are rejected.
     """
     print("\nLoading Goodreads book descriptions...")
 
-    descriptions = {}
+    descriptions: dict[str, list[dict]] = {}
+    skipped_identity = 0
 
     # Try multiple sources
     datasets_to_try = [
@@ -540,23 +552,33 @@ def download_goodreads_descriptions() -> dict[str, dict]:
                 if not is_english_text(description):
                     continue
 
+                authors = author_names(item)
+                if not authors:
+                    skipped_identity += 1
+                    continue
                 norm_title = normalize_title(title)
-                if norm_title and norm_title not in descriptions:
-                    descriptions[norm_title] = {
-                        "title": title,
-                        "description": description,
-                    }
+                if norm_title:
+                    descriptions.setdefault(norm_title, []).append(
+                        {
+                            "title": title,
+                            "authors": authors,
+                            "description": description,
+                            "description_source": f"https://huggingface.co/datasets/{ds_name}",
+                        }
+                    )
 
             print(f"    Loaded {len(descriptions):,} descriptions from {ds_name}")
         except Exception as e:
             print(f"    {ds_name} failed: {e}")
 
-    print(f"    Total: {len(descriptions):,} unique book descriptions")
+    print(
+        f"    Total: {len(descriptions):,} title buckets; rejected {skipped_identity:,} without author evidence"
+    )
     return descriptions
 
 
 def download_book_descriptions(
-    goodreads_descriptions: dict[str, dict], max_samples: int = 20000
+    goodreads_descriptions: dict[str, list[dict]], max_samples: int = 20000
 ) -> list[dict[str, Any]]:
     """
     Download book description data by matching Gutenberg texts with Goodreads descriptions.
@@ -572,7 +594,7 @@ def download_book_descriptions(
         gutenberg = load_dataset("pg19", split="train")
 
     records: list[dict[str, Any]] = []
-    matched_titles = set()
+    matched_works = set()
     skipped_quality = 0
     skipped_play = 0
 
@@ -598,16 +620,18 @@ def download_book_descriptions(
         if not title:
             continue
 
-        # Check if we have a Goodreads description for this book
+        # Full title and author identity are mandatory. A title-only fallback
+        # silently paired unrelated books (for example, College Girl).
         norm_title = normalize_title(title)
-        if norm_title not in goodreads_descriptions:
+        candidates = goodreads_descriptions.get(norm_title, [])
+        if not isinstance(candidates, list):
+            continue  # Old title-only indexes must be rebuilt, never trusted.
+        goodreads_data = match_description(metadata, candidates)
+        if goodreads_data is None:
             continue
-
-        # Skip if already matched this book
-        if norm_title in matched_titles:
+        work_id = matched_work_id(metadata)
+        if work_id in matched_works:
             continue
-
-        goodreads_data = goodreads_descriptions[norm_title]
 
         # Skip plays and excluded titles
         if is_excluded_title(title):
@@ -647,7 +671,7 @@ def download_book_descriptions(
             continue
 
         book_excerpt = "\n\n".join(excerpt_parts)[:4000]
-        matched_titles.add(norm_title)
+        matched_works.add(work_id)
 
         records.append(
             {
@@ -655,6 +679,10 @@ def download_book_descriptions(
                 "summary": goodreads_data["description"][:800],  # Back-cover blurbs are shorter
                 "type": "literary",
                 "title": goodreads_data["title"],
+                "authors": goodreads_data["authors"],
+                "work_id": work_id,
+                "identity_status": "title_and_author_matched",
+                "description_source": goodreads_data["description_source"],
             }
         )
 
@@ -694,7 +722,7 @@ def download_booksum(max_samples: int = 20000) -> list[dict[str, Any]]:
 
             # Extract book title from book_id (e.g., "The Last of the Mohicans.chapters 1-2")
             book_id = item.get("book_id", "")
-            book_title = book_id.split(".")[0] if "." in book_id else book_id
+            book_title = booksum_display_title(book_id) if isinstance(book_id, str) else ""
             chapter_name = item.get("summary_id", "") or item.get("summary_name", "")
 
             if not (chapter and summary and len(chapter) > 300):
@@ -727,6 +755,10 @@ def download_booksum(max_samples: int = 20000) -> list[dict[str, Any]]:
                     "split": split,
                     "title": book_title,
                     "chapter": chapter_name,
+                    **booksum_document_identity(item),
+                    "summary_provider": item.get("source"),
+                    "summary_source_url": item.get("summary_url"),
+                    "provider_split": split,
                 }
             )
         all_records.extend(records)
@@ -959,27 +991,12 @@ def download_summarization(max_books: int = 20000, max_arxiv: int = 50000) -> No
     arxiv_summ = download_arxiv_summarization(max_arxiv)
     all_records.extend(arxiv_summ)
 
-    # Shuffle and split
-    random.shuffle(all_records)
-
-    # Split by original split if available, else 90/5/5
-    train_records = [
-        r for r in all_records if r.get("split", "train") == "train" or "split" not in r
-    ]
-    val_records = [r for r in all_records if r.get("split") == "validation"]
-    test_records = [r for r in all_records if r.get("split") == "test"]
-
-    # If no split info, do 90/5/5
-    if len(val_records) < 100:
-        n = len(train_records)
-        random.shuffle(train_records)
-        val_records = train_records[int(n * 0.9) : int(n * 0.95)]
-        test_records = train_records[int(n * 0.95) :]
-        train_records = train_records[: int(n * 0.9)]
-
-    # Remove split key before saving
-    for r in train_records + val_records + test_records:
-        r.pop("split", None)
+    # Source partitions are preserved. All examples of a verified literary work
+    # stay together; conflicts fail before any dataset file is replaced.
+    partitions = split_summarization_records(all_records)
+    train_records = partitions["train"]
+    val_records = partitions["validation"]
+    test_records = partitions["test"]
 
     write_jsonl(train_records, out_dir / "train.jsonl", "train")
     write_jsonl(val_records, out_dir / "validation.jsonl", "val")
@@ -1200,7 +1217,7 @@ def is_clean_prose(text: str) -> bool:
     return True
 
 
-def download_gutenberg(max_samples: int = 30000) -> None:
+def download_gutenberg(max_samples: int = 30000, *, seed: int = 42) -> None:
     """Download Gutenberg books for language modeling (English only)."""
     print("\nDownloading Gutenberg Books (English only)...")
     out_dir = OUTPUT_DIR / "books"
@@ -1208,8 +1225,10 @@ def download_gutenberg(max_samples: int = 30000) -> None:
 
     try:
         gutenberg = load_dataset("sedthh/gutenberg_english", split="train")
+        provider = "sedthh/gutenberg_english"
     except Exception:
         gutenberg = load_dataset("pg19", split="train")
+        provider = "deepmind/pg19"
 
     records: list[dict[str, Any]] = []
     indices = list(range(len(gutenberg)))
@@ -1231,28 +1250,42 @@ def download_gutenberg(max_samples: int = 30000) -> None:
 
         # Extract title and author
         title = metadata.get("title", "") if isinstance(metadata, dict) else ""
-        author = metadata.get("author", "") if isinstance(metadata, dict) else ""
+        author = (
+            metadata.get("authors", metadata.get("author", ""))
+            if isinstance(metadata, dict)
+            else ""
+        )
         if not title:
-            title = item.get("title", f"Unknown Book #{i}")
+            title = item.get("short_book_title") or item.get("title", f"Unknown Book #{i}")
 
         if not text or len(text) < 1000:
             continue
+
+        identity = gutenberg_document_identity(
+            item, metadata if isinstance(metadata, dict) else {}, provider, text
+        )
 
         paragraphs = re.split(r"\n\s*\n", text)
         for para in paragraphs:
             para = para.strip()
             if is_clean_prose(para):
                 records.append(
-                    {"text": para, "title": title, "author": author, "type": "gutenberg"}
+                    {
+                        "text": para,
+                        "title": title,
+                        "author": author,
+                        "type": "gutenberg",
+                        **identity,
+                        "provider_split": "train",
+                    }
                 )
                 if len(records) >= max_samples:
                     break
 
-    random.shuffle(records)
-    n = len(records)
-    write_jsonl(records[: int(n * 0.9)], out_dir / "train.jsonl", "train")
-    write_jsonl(records[int(n * 0.9) : int(n * 0.95)], out_dir / "validation.jsonl", "val")
-    write_jsonl(records[int(n * 0.95) :], out_dir / "test.jsonl", "test")
+    partitions = split_source_records(records, seed=seed)
+    for split, grouped_records in partitions.items():
+        write_jsonl(grouped_records, out_dir / f"{split}.jsonl", split)
+    print("  Split by provider document; canonical work/edition isolation remains unresolved.")
 
 
 # ------------ MAIN ------------
@@ -1287,7 +1320,7 @@ def main() -> None:
     if args.task in ["all", "topic"]:
         download_topics(args.max_topics)
     if args.task in ["all", "gutenberg"]:
-        download_gutenberg(args.max_gutenberg)
+        download_gutenberg(args.max_gutenberg, seed=args.seed)
 
     print("\n" + "=" * 60)
     print("Download complete!")

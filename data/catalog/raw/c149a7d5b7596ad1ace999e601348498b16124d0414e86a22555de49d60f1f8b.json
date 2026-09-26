@@ -1,0 +1,168 @@
+{
+  "url": "https://openlibrary.org/works/OL41078W.json",
+  "retrievedAt": "2026-09-22T14:29:17.108166+00:00",
+  "sha256": "c45e3c7166b01abbfad01ccf30616348439a32437ec17827361685b3d33e8cb3",
+  "data": {
+    "title": "The Fall of the House of Usher",
+    "key": "/works/OL41078W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL28127A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "first_publish_date": "1965",
+    "covers": [
+      11838138,
+      11382841,
+      8753841,
+      8864510,
+      8914974,
+      9197461,
+      10295017,
+      10548683,
+      10548684,
+      10839499,
+      10945257,
+      12053873,
+      11947831,
+      12551568,
+      14892066,
+      12272072,
+      12361347,
+      14486346,
+      12885605,
+      13499470,
+      13965482,
+      13965483,
+      14249611,
+      14249612,
+      14249613,
+      14249614
+    ],
+    "subjects": [
+      "American fiction (fictional works by one author)",
+      "short stories (single author)",
+      "American Horror tales",
+      "burial vaults",
+      "catalepsy",
+      "dragons",
+      "Fiction",
+      "gothic fiction",
+      "hermitages",
+      "heroic romances",
+      "horror",
+      "horror tales",
+      "hysteria",
+      "knights",
+      "maces",
+      "psychogenic death",
+      "short stories",
+      "tarns",
+      "Fiction, horror",
+      "Roman type",
+      "Artists' books",
+      "Fiction, general"
+    ],
+    "links": [
+      {
+        "title": "The Fall of the House of Usher - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/The_Fall_of_the_House_of_Usher",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Fall of the House of Usher by Edgar ... - Poestories.com",
+        "url": "https://poestories.com/read/houseofusher",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "https://www.sparknotes.com/lit/poestories/section3/",
+        "url": "sparknotes.com/lit/poestories/section3/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Fall of the House of Usher - Britannica",
+        "url": "https://www.britannica.com/topic/The-Fall-of-the-House-of-Usher",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "https://www.edgarallanpoe.nl/the-fall-of-the-house-of-usher/",
+        "url": "edgarallanpoe.nl/the-fall-of-the-house-of-usher/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Fall of the House of Usher - American English",
+        "url": "https://americanenglish.state.gov/files/ae/resource_files/the_fall_of_the_house_of_usher.pdf",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "xroads.virginia.edu/~Hyper/POE/fall",
+        "url": "http://xroads.virginia.edu/~Hyper/POE/fall.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "eapoe.org/works/info/pt025",
+        "url": "https://www.eapoe.org/works/info/pt025.htm",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Fall of the House of Usher-Ebookzy",
+        "url": "https://ebookzy.com/the-fall-of-the-house-of-usher/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "excerpt": "DURING the whole of a dull, dark, and soundless day in the autumn of the year, when the clouds hung oppressively low in the heavens, I had been passing alone, on horseback, through a singularly dreary tract of country; and at length found myself, as the shades of the evening drew on, within view of the melancholy House of Usher.",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "subject_people": [
+      "Roderick Usher",
+      "Madeline Usher",
+      "Ethelred"
+    ],
+    "description": "\"The Fall of the House of Usher\" is a short story by American writer Edgar Allan Poe, first published in 1839 in Burton's Gentleman's Magazine, then included in the collection Tales of the Grotesque and Arabesque in 1840. The short story, a work of Gothic fiction, includes themes of madness, family, isolation, and metaphysical identities.",
+    "genres": [
+      "/tags/OL171T"
+    ],
+    "latest_revision": 38,
+    "revision": 38,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T08:15:47.909262"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-04T09:52:27.162273"
+    }
+  }
+}

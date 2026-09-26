@@ -1,0 +1,89 @@
+{
+  "url": "https://openlibrary.org/works/OL2577486W.json",
+  "retrievedAt": "2026-09-22T14:28:27.383390+00:00",
+  "sha256": "020003e8462f5400e83f60b9dcaab8126945d077f9921c1a0ad86a203cab77aa",
+  "data": {
+    "description": "Andrzej Sapkowski, arcymistrz światowej fantasy, zaprasza do swojego Neverlandu i przedstawia uwielbianą przez czytelników i wychwalaną przez krytykę wiedźmińską sagę!\r\n\r\n„Tako rzecze Ithlinne, elfia wieszczka i uzdrowicielka: Drżyjcie, albowiem nadchodzi Niszczyciel Narodów. Stratują waszą ziemię i sznurem ją podzielą. Miasta wasze zostaną zburzone i pozbawione mieszkańców. Nietoperz i kruk w domach waszych zamieszkają, drzewo straci liść, zgnije owoc i zgorzknieje ziarno. Zaprawdę powiadam wam, oto nadchodzi czas miecza i topora, wiek wilczej zamieci. Miasto płonie, wąskie uliczki zieją ogniem i żarem. Narasta wrzask, odgłosy zajadłej walki, murem wstrząsają głuche uderzenia taranu. Krzyk, strach. Obezwładniający, paraliżujący, duszący strach”.",
+    "title": "Krew elfów",
+    "covers": [
+      8457619,
+      4297990,
+      4297989,
+      -1,
+      8437372,
+      8624327,
+      8964373,
+      10868712,
+      13245125
+    ],
+    "first_publish_date": "1995",
+    "key": "/works/OL2577486W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL368638A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "dewey_number": [
+      "891.8/538"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Fantasy",
+      "Fiction",
+      "Fiction, fantasy, general",
+      "Science fiction, fantasy, horror",
+      "Assassins",
+      "Polish Fantasy fiction",
+      "Fiction, fantasy, epic",
+      "Vampires, fiction",
+      "nyt:trade-fiction-paperback=2022-01-09",
+      "New York Times bestseller",
+      "Fiction, fantasy, dragons & mythical creatures",
+      "Fiction, fantasy, paranormal"
+    ],
+    "subject_people": [
+      "Dandelion",
+      "Yennefer",
+      "Triss Merigold",
+      "Ciri (Cirilla Fiona Elen Riannon)",
+      "Geralt of Rivia",
+      "Rience",
+      "Emhyr var Emreis",
+      "Sigismund Dijkstra",
+      "Philippa Eilhart",
+      "Eskel",
+      "Vesemir",
+      "Vilgefortz",
+      "Shani"
+    ],
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL329475L"
+        },
+        "position": "1"
+      }
+    ],
+    "genres": [
+      "/tags/OL169T",
+      "/tags/OL171T"
+    ],
+    "latest_revision": 15,
+    "revision": 15,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T23:59:12.155266"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T10:22:39.902371"
+    }
+  }
+}

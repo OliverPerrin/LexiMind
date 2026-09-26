@@ -1,0 +1,137 @@
+{
+  "url": "https://openlibrary.org/works/OL69178W.json",
+  "retrievedAt": "2026-09-22T14:29:28.385808+00:00",
+  "sha256": "0e3dc36d5a1a5374bdc996d2129dd267e3586f429f8a48202ffb47e10b2a9f6d",
+  "data": {
+    "description": "This book is an autobiographical account by runaway slave Frederick Douglass that chronicles his experiences with his owners and overseers and discusses how slavery affected both slaves and slaveholders.",
+    "title": "Narrative of the life of Frederick Douglass",
+    "key": "/works/OL69178W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL23684A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      8247724,
+      2368023,
+      1260595,
+      1949316,
+      6942299,
+      8470187,
+      9179627,
+      10687032,
+      10687141,
+      10689535,
+      10790150,
+      10842093,
+      11794978,
+      1724178,
+      3787052,
+      13520202,
+      13822112,
+      12271795,
+      -1,
+      6580500,
+      12004621
+    ],
+    "subjects": [
+      "Douglass, frederick, 1818-1895",
+      "Biography",
+      "African American abolitionists",
+      "Abolitionists",
+      "Slaves",
+      "Slavery",
+      "History",
+      "African Americans",
+      "Slaves, united states",
+      "Biographies &amp; autobiographies",
+      "General",
+      "Personal narratives",
+      "African americans, biography",
+      "Dictionaries",
+      "English language",
+      "Historical",
+      "BIOGRAPHY & AUTOBIOGRAPHY",
+      "Korean",
+      "Antislavery movements, united states",
+      "United states, history, 19th century",
+      "Enslaved persons, united states",
+      "BIOGRAPHY & AUTOBIOGRAPHY / Cultural Heritage",
+      "HISTORY / United States / Civil War Period (1850-1877)",
+      "SOCIAL SCIENCE / Ethnic Studies / African American Studies",
+      "Douglass, frederick , 1818-1895",
+      "African american abolitionists--biography",
+      "Abolitionists--biography",
+      "Slaves--united states--biography",
+      "E449 .d749 2014",
+      "973.8/092 b",
+      "Bio002000 his036050 soc001000",
+      "Autobiography",
+      "United states, history",
+      "Fiction, historical, general",
+      "Slaves' writings",
+      "African American abolitionists -- Biography",
+      "Abolitionists -- United States -- Biography",
+      "Slaves -- United States -- Biography",
+      "Abolitionnistes noirs américains",
+      "Biographies",
+      "Abolitionnistes",
+      "Esclaves",
+      "Collectors and collecting",
+      "Social sciences",
+      "Language arts",
+      "Antislavery movements",
+      "Mouvements antiesclavagistes",
+      "Histoire",
+      "Long Now Manual for Civilization",
+      "Slavar",
+      "Biografi",
+      "Abolitionister",
+      "Slaveri",
+      "Historia",
+      "Women slaves",
+      "Social conditions",
+      "Mime"
+    ],
+    "subject_places": [
+      "United States",
+      "Maryland",
+      "États-Unis"
+    ],
+    "subject_people": [
+      "Frederick Douglass (1818-1895)",
+      "William Lloyd Garrison (1805-1879)"
+    ],
+    "first_publish_date": "August 2002",
+    "links": [
+      {
+        "title": "Narrative of the Life of Frederick Douglass, an American Slave-Ebookzy",
+        "url": "https://ebookzy.com/narrative-of-the-life-of-frederick-douglass-an-american-slave/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "genres": [
+      "/tags/OL170T"
+    ],
+    "latest_revision": 25,
+    "revision": 25,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-16T05:15:16.306558"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T16:20:58.705943"
+    }
+  }
+}

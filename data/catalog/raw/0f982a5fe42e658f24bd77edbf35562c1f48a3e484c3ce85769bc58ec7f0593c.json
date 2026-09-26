@@ -1,0 +1,187 @@
+{
+  "url": "https://openlibrary.org/works/OL18012166W.json",
+  "retrievedAt": "2026-09-22T14:28:58.217389+00:00",
+  "sha256": "d007a119a3689a2772eee0437a6a3e818d1c7ae8c71dc8349375307a835de72e",
+  "data": {
+    "description": "In the house of Helios, god of the sun and mightiest of the Titans, a daughter is born. But Circe is a strange child--not powerful, like her father, nor viciously alluring like her mother. Turning to the world of mortals for companionship, she discovers that she does possess power--the power of witchcraft, which can transform rivals into monsters and menace the gods themselves.\r\n\r\nThreatened, Zeus banishes her to a deserted island, where she hones her occult craft, tames wild beasts and crosses paths with many of the most famous figures in all of mythology, including the Minotaur, Daedalus and his doomed son Icarus, the murderous Medea, and, of course, wily Odysseus.\r\n\r\nBut there is danger, too, for a woman who stands alone, and Circe unwittingly draws the wrath of both men and gods, ultimately finding herself pitted against one of the most terrifying and vengeful of the Olympians. To protect what she loves most, Circe must summon all her strength and choose, once and for all, whether she belongs with the gods she is born from, or the mortals she has come to love.\r\n\r\nWith unforgettably vivid characters, mesmerizing language and page-turning suspense, Circe is a triumph of storytelling, an intoxicating epic of family rivalry, palace intrigue, love and loss, as well as a celebration of indomitable female strength in a man's world.\r\n([source][1])\r\n\r\n\r\n  [1]: http://madelinemiller.com/circe/",
+    "links": [
+      {
+        "title": "madelinemiller.com/circe/",
+        "url": "http://madelinemiller.com/circe/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Circe by Madeline Miller review – myth, magic and single motherhood",
+        "url": "https://www.theguardian.com/books/2018/apr/21/circe-by-madeline-miller-review",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Turning Circe Into a Good Witch",
+        "url": "https://www.nytimes.com/2018/05/28/books/review/circe-madeline-miller.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Madeline Miller laat zien dat we naar onszelf moeten kijken, en niet naar de goden",
+        "url": "https://www.trouw.nl/cultuur-media/madeline-miller-laat-zien-dat-we-naar-onszelf-moeten-kijken-en-niet-naar-de-goden~bc45764f/?referer=https%3A%2F%2Fwww.google.com%2F",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The original nasty woman is a goddess for our times",
+        "url": "https://www.washingtonpost.com/entertainment/books/the-original-nasty-woman-is-a-goddess-for-our-times/2018/04/09/742c54d0-3b88-11e8-974f-aacd97698cef_story.html?utm_term=.a1dfabd88097",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "Circe",
+    "covers": [
+      8739376,
+      8838757,
+      9216247,
+      10194494,
+      11556790,
+      10715958,
+      12370281,
+      12385194,
+      11192337,
+      13130426,
+      14051613
+    ],
+    "subjects": [
+      "Fantasy",
+      "Mythology",
+      "Historical Fiction",
+      "Retellings",
+      "Gods",
+      "Fiction",
+      "Paranormal fiction",
+      "Fiction, fantasy, historical",
+      "nyt:combined-print-and-e-book-fiction=2018-04-29",
+      "New York Times bestseller",
+      "New York Times reviewed",
+      "nyt:audio-fiction=2018-05-13",
+      "Witches",
+      "Magic",
+      "Greek Mythology",
+      "Historical",
+      "Ancient",
+      "General",
+      "Literary",
+      "Witchcraft",
+      "Circe",
+      "Witches--fiction",
+      "Magic--fiction",
+      "Mythology, greek",
+      "Mythology, greek--fiction",
+      "Fiction / historical / ancient",
+      "Fiction / historical / general",
+      "Fiction / literary",
+      "Witchcraft--fiction",
+      "Gods--fiction",
+      "Animals, mythical",
+      "Animals, mythical--fiction",
+      "Circe (greek mythology)",
+      "Circe (greek mythology)--fiction",
+      "Ps3613.i5445 c57 2018b",
+      "813/.6",
+      "Mythical Animals",
+      "Fiction, historical, ancient",
+      "Fiction, fairy tales, folk tales, legends & mythology",
+      "American literature"
+    ],
+    "subject_people": [
+      "Odysseus",
+      "Zeus",
+      "Circe",
+      "Medea of Colchis",
+      "Daedalus",
+      "Minotaur",
+      "Helius",
+      "Icarus",
+      "Aeëtes",
+      "Boreas",
+      "Calypso",
+      "Helios",
+      "Mnemosyne",
+      "Nereus",
+      "Pasiphae",
+      "Perse",
+      "Perses",
+      "Prometheus",
+      "Tethys",
+      "Apollo",
+      "Artemis",
+      "Athena",
+      "Dionysus",
+      "Eileithyia",
+      "Hermes",
+      "Achilles",
+      "Agamemnon",
+      "Ariadne",
+      "Elpenor",
+      "Eurycleia",
+      "Eurylochos",
+      "Glaucos",
+      "Hector",
+      "Heracles",
+      "Laertes",
+      "Medea",
+      "Minos",
+      "Patroclus",
+      "Penelope",
+      "Pyrrhus",
+      "Telegonus",
+      "Telemachus",
+      "Theseus"
+    ],
+    "key": "/works/OL18012166W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL1926056A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "excerpt": "WHEN I WAS BORN, the name for what I was did not exist.",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_times": [
+      "Ancient Times"
+    ],
+    "genres": [
+      "/tags/OL169T",
+      "/tags/OL176T",
+      "/tags/OL170T"
+    ],
+    "latest_revision": 23,
+    "revision": 23,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2018-11-29T13:43:16.958888"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T14:08:53.775620"
+    }
+  }
+}

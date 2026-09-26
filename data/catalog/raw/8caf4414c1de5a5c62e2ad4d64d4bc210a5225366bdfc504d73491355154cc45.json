@@ -1,0 +1,125 @@
+{
+  "url": "https://openlibrary.org/works/OL18139176W.json",
+  "retrievedAt": "2026-09-22T14:29:26.312113+00:00",
+  "sha256": "0642269892ef73db3e49b49fb09bdaab8f61edd0d1126319aa1fca2a47e89b6b",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "*Educated* is a 2018 memoir by the American author Tara Westover. Westover recounts overcoming her survivalist Mormon family in order to go to college, and emphasizes the importance of education in enlarging her world. She details her journey from her isolated life in the mountains of Idaho to completing a PhD program in history at Cambridge University. She started college at the age of 17 having had no formal education. She explores her struggle to reconcile her desire to learn with the world she inhabited with her father."
+    },
+    "links": [
+      {
+        "title": "tarawestover.com/book",
+        "url": "https://tarawestover.com/book",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Review: ‘Educated,’ by Tara Westover",
+        "url": "https://www.nytimes.com/2018/03/01/books/review/tara-westover-educated.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Educated is even better than you’ve heard",
+        "url": "https://www.gatesnotes.com/Books/Educated",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "What do you want to do?",
+        "url": "https://www.newyorker.com/recommends/read/educated-by-tara-westover",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Educated by Tara Westover review – escape from a Mormon fundamentalist family",
+        "url": "https://www.theguardian.com/books/2018/feb/14/educated-tara-westover-mormon-family-review",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Tara Westover Turns Her Isolated Childhood into the Gripping Memoir Educated",
+        "url": "https://www.vanityfair.com/style/2018/02/tara-westover-memoir-educated-interview",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "Educated",
+    "covers": [
+      8314077,
+      8815122,
+      10117930,
+      10129055,
+      11536985,
+      13573955,
+      13122792,
+      13673491,
+      14061124,
+      14061123
+    ],
+    "subject_places": [
+      "United States",
+      "Idaho"
+    ],
+    "subjects": [
+      "Subculture",
+      "Home schooling",
+      "Family",
+      "Anecdotes",
+      "Victims of family violence",
+      "Women college students",
+      "Christian biography",
+      "Rural conditions",
+      "Survivalism",
+      "Biography",
+      "Women",
+      "Ancedotes",
+      "Idaho",
+      "BIOGRAPHY & AUTOBIOGRAPHY / Personal Memoirs",
+      "BIOGRAPHY & AUTOBIOGRAPHY / Women",
+      "BIOGRAPHY & AUTOBIOGRAPHY / Religious",
+      "Women, united states, biography",
+      "Idaho, biography",
+      "Idaho, social conditions",
+      "Family violence",
+      "nyt:combined-print-and-e-book-nonfiction=2018-03-11",
+      "New York Times bestseller",
+      "New York Times reviewed"
+    ],
+    "subject_people": [
+      "Tara Westover"
+    ],
+    "key": "/works/OL18139176W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7421324A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subtitle": "A Memoir",
+    "latest_revision": 28,
+    "revision": 28,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2018-12-21T12:28:47.594359"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2025-09-04T22:15:43.223069"
+    }
+  }
+}

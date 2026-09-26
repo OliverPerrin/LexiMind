@@ -12,6 +12,7 @@ build/
 # Virtual environments
 venv/
 .venv/
+.venv-ci/
 env/
 ENV/
 
@@ -47,6 +48,19 @@ outputs/
 
 # Outputs
 results/
+!research/results/
+!research/results/**
+
+# Books website and local deployment state
+web/node_modules/
+web/.next/
+web/out/
+web/test-results/
+web/playwright-report/
+web/tsconfig.tsbuildinfo
+.vercel/
+web/.vercel/
+data/catalog/cache/
 
 # Jupyter
 .ipynb_checkpoints/

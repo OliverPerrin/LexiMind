@@ -1,0 +1,330 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Afantasy+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-22T14:28:19.784476+00:00",
+  "sha256": "544dfbb67618443bd67f1f24dc897ff161913a022124844a49cf83c785c4d9f2",
+  "data": {
+    "numFound": 100478,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 100478,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:fantasy language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL2801083A"
+        ],
+        "author_name": [
+          "Joe Abercrombie"
+        ],
+        "cover_i": 14543422,
+        "first_publish_year": 2001,
+        "key": "/works/OL8400950W",
+        "language": [
+          "eng"
+        ],
+        "title": "The Blade Itself",
+        "subject": [
+          "Fiction, fantasy, general",
+          "Fantasy fiction",
+          "Fantasy",
+          "Fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1394865A"
+        ],
+        "author_name": [
+          "Brandon Sanderson"
+        ],
+        "cover_i": 14658094,
+        "first_publish_year": 2008,
+        "key": "/works/OL5738154W",
+        "language": [
+          "spa",
+          "pol",
+          "eng"
+        ],
+        "title": "The Hero of Ages",
+        "subject": [
+          "Fiction",
+          "Fantasy",
+          "Epic Fantasy",
+          "Fantasy fiction",
+          "Fiction, fantasy, general",
+          "Children's fiction",
+          "Imaginary places",
+          "Magic"
+        ]
+      },
+      {
+        "author_key": [
+          "OL2787719A"
+        ],
+        "author_name": [
+          "Scott Lynch"
+        ],
+        "cover_i": 6307636,
+        "first_publish_year": 2001,
+        "key": "/works/OL8369445W",
+        "language": [
+          "spa",
+          "rus",
+          "eng"
+        ],
+        "title": "The Lies of Locke Lamora",
+        "subject": [
+          "Fiction, fantasy, general",
+          "Fantasy",
+          "Fiction",
+          "American Science Fiction And Fantasy",
+          "Fiction - Fantasy",
+          "Fantasy - Epic",
+          "Fiction / Fantasy / Epic",
+          "Juvenile fiction",
+          "Gangsters",
+          "Swindlers and swindling",
+          "Orphans",
+          "Adventure stories",
+          "Fantasy fiction",
+          "Robbers and outlaws",
+          "Fiction, fantasy, epic"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7115219A"
+        ],
+        "author_name": [
+          "Sarah J. Maas"
+        ],
+        "cover_i": 7794980,
+        "first_publish_year": 2014,
+        "key": "/works/OL17546674W",
+        "language": [
+          "ger",
+          "ita",
+          "pol",
+          "eng",
+          "spa",
+          "dut"
+        ],
+        "title": "The Assassin’s Blade",
+        "subject": [
+          "Fiction, fantasy, collections & anthologies",
+          "Female assassins in fiction",
+          "Young adult fiction, fantasy, dark fantasy",
+          "[series:Throne_of_Glass]",
+          "Fantasy",
+          "Assassins",
+          "Fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL242164A"
+        ],
+        "author_name": [
+          "Terry Goodkind"
+        ],
+        "cover_i": 1005963,
+        "first_publish_year": 1994,
+        "key": "/works/OL2010436W",
+        "language": [
+          "ger",
+          "fre",
+          "gre",
+          "eng"
+        ],
+        "title": "Wizard's First Rule",
+        "subject": [
+          "Fiction",
+          "Wizards",
+          "Wizards in fiction",
+          "Fiction, fantasy, general",
+          "Fiction, fantasy, epic",
+          "Amnell, kahlan (fictitious character), fiction",
+          "D'haran empire (imaginary place), fiction",
+          "Richard Rahl (Fictitious character)",
+          "Fantasy",
+          "Fantasy fiction",
+          "Magic",
+          "Epic Fantasy",
+          "High Fantasy",
+          "Adventure"
+        ]
+      },
+      {
+        "author_key": [
+          "OL233594A"
+        ],
+        "author_name": [
+          "Robert Jordan"
+        ],
+        "cover_i": 980232,
+        "first_publish_year": 1990,
+        "key": "/works/OL7924103W",
+        "language": [
+          "tur",
+          "chi",
+          "por",
+          "ger",
+          "fre",
+          "spa",
+          "eng"
+        ],
+        "title": "The Eye of the World",
+        "subject": [
+          "series:The Wheel of Time",
+          "Fantasy fiction",
+          "Rand al'Thor (Fictitious character)",
+          "Fiction",
+          "Reader recommended, 2001-02",
+          "Fantasy .",
+          "American Fantasy",
+          "al'Thor Rand (Fictitious character)",
+          "Good and evil",
+          "Monsters",
+          "Rand al'thor (fictitious character), fiction",
+          "Fiction, fantasy, epic",
+          "Science fiction",
+          "Children's fiction",
+          "Fiction, fantasy, general",
+          "Comics & graphic novels, fantasy",
+          "Comic books, strips",
+          "nyt:hardcover-graphic-books=2013-02-17",
+          "New York Times bestseller",
+          "Fantasy",
+          "Children's stories",
+          "American literature"
+        ]
+      },
+      {
+        "author_key": [
+          "OL368638A"
+        ],
+        "author_name": [
+          "Andrzej Sapkowski"
+        ],
+        "cover_i": 8457619,
+        "first_publish_year": 1994,
+        "key": "/works/OL2577486W",
+        "language": [
+          "ger",
+          "cze",
+          "pol",
+          "spa",
+          "eng"
+        ],
+        "title": "Krew elfów",
+        "subject": [
+          "Fantasy",
+          "Fiction",
+          "Fiction, fantasy, general",
+          "Science fiction, fantasy, horror",
+          "Assassins",
+          "Polish Fantasy fiction",
+          "Fiction, fantasy, epic",
+          "Vampires, fiction",
+          "nyt:trade-fiction-paperback=2022-01-09",
+          "New York Times bestseller",
+          "Fiction, fantasy, dragons & mythical creatures",
+          "Fiction, fantasy, paranormal"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7486601A"
+        ],
+        "author_name": [
+          "R. F. Kuang"
+        ],
+        "cover_i": 8463552,
+        "first_publish_year": 2018,
+        "key": "/works/OL19351054W",
+        "language": [
+          "eng",
+          "ita",
+          "por"
+        ],
+        "title": "The Poppy War",
+        "subject": [
+          "Fiction",
+          "Fantasy",
+          "Historical",
+          "Epic",
+          "Cultural Heritage",
+          "Goddesses",
+          "Imaginary wars and battles",
+          "Magic",
+          "Military education",
+          "Shamans",
+          "Fiction, fantasy, epic",
+          "Fiction, fantasy, paranormal",
+          "FICTION / Fantasy / Epic",
+          "FICTION / Fantasy / Paranormal"
+        ]
+      },
+      {
+        "author_key": [
+          "OL30421A"
+        ],
+        "author_name": [
+          "William Goldman"
+        ],
+        "cover_i": 9284881,
+        "first_publish_year": 1973,
+        "key": "/works/OL486967W",
+        "language": [
+          "eng"
+        ],
+        "title": "The Princess Bride",
+        "subject": [
+          "Castles",
+          "Fiction",
+          "Princesses",
+          "Good and evil",
+          "Princes",
+          "Fiction, action & adventure",
+          "Fiction, fantasy, general",
+          "Fiction, romance, fantasy",
+          "Romance fiction",
+          "Fantasy",
+          "Juvenile fiction",
+          "Fantasy fiction",
+          "Pirates"
+        ]
+      },
+      {
+        "author_key": [
+          "OL233594A"
+        ],
+        "author_name": [
+          "Robert Jordan"
+        ],
+        "cover_i": 182398,
+        "first_publish_year": 1994,
+        "key": "/works/OL7924208W",
+        "language": [
+          "spa",
+          "eng"
+        ],
+        "title": "Lord of Chaos",
+        "subject": [
+          "Fantasy fiction",
+          "Rand al'Thor (Fictitious character)",
+          "Fiction",
+          "Fantasy",
+          "Fiction, fantasy, epic",
+          "Rand al'thor (fictitious character), fiction",
+          "American Fantasy fiction",
+          "Dragons",
+          "Fiction, fantasy, general",
+          "American literature"
+        ]
+      }
+    ]
+  }
+}

@@ -196,14 +196,20 @@ class ScaledDotProductAttention(nn.Module):
             scores = torch.matmul(query, key.transpose(-2, -1)) * scale_factor
             if position_bias is not None:
                 scores = scores + position_bias
+            mask_bool = None
             if mask is not None:
                 mask_bool = mask.to(dtype=torch.bool, device=scores.device)
                 if mask_bool.dim() == 2:
                     mask_bool = mask_bool.unsqueeze(1).unsqueeze(2)
                 elif mask_bool.dim() == 3:
                     mask_bool = mask_bool.unsqueeze(1)
-                scores = scores.masked_fill(~mask_bool, -1e4)
+                scores = scores.masked_fill(~mask_bool, float("-inf"))
+                # A fully masked query has zero attention, not a uniform mean;
+                # avoid softmax(-inf,...) so its backward pass stays finite.
+                scores = torch.where(mask_bool.any(dim=-1, keepdim=True), scores, 0.0)
             p_attn = F.softmax(scores.float(), dim=-1).type_as(scores)
+            if mask_bool is not None:
+                p_attn = p_attn.masked_fill(~mask_bool, 0.0)
             p_attn = torch.nan_to_num(p_attn, nan=0.0, posinf=0.0, neginf=0.0)
             output = torch.matmul(p_attn, value)
             return output, p_attn
@@ -231,13 +237,12 @@ class ScaledDotProductAttention(nn.Module):
                 elif mask_bool.dim() == 3:
                     mask_bool = mask_bool.unsqueeze(1)
 
-                mask_float = torch.zeros(mask_bool.shape, dtype=query.dtype, device=query.device)
-                mask_float = mask_float.masked_fill(~mask_bool, -1e4)
-
                 if attn_mask is not None:
-                    attn_mask = attn_mask + mask_float
+                    attn_mask = attn_mask.masked_fill(~mask_bool, float("-inf"))
                 else:
-                    attn_mask = mask_float
+                    # SDPA accepts boolean keep masks directly; avoid materializing
+                    # an additional floating mask when there is no position bias.
+                    attn_mask = mask_bool
 
         # Use SDPA without custom scale (scale=None uses default 1/sqrt(d_k))
         # For T5 (scale_scores=False), we already didn't scale query above, so default scale is wrong

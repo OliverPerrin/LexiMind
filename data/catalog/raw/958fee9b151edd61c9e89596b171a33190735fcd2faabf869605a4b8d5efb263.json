@@ -1,0 +1,85 @@
+{
+  "url": "https://openlibrary.org/works/OL15400582W.json",
+  "retrievedAt": "2026-09-22T14:28:42.714269+00:00",
+  "sha256": "b1cb19cf895967183e910b41c5c6fafcb53aef531895dcd402535a9b278c55ab",
+  "data": {
+    "description": "Philip Marlowe, a private eye who operates in Los Angeles's seamy underside during the 1930s, takes on his first case, which involves a paralyzed California millionaire, two psychotic daughters, blackmail, and murder",
+    "title": "The Big Sleep",
+    "covers": [
+      7268475,
+      6993949,
+      878332
+    ],
+    "subject_places": [
+      "Los Angeles (Calif.)",
+      "California",
+      "Los Angeles"
+    ],
+    "subjects": [
+      "Fiction",
+      "Philip Marlowe (Fictitious character)",
+      "Private investigators",
+      "Detective and mystery stories",
+      "Women",
+      "General",
+      "Fiction, mystery & detective, hard-boiled",
+      "Marlowe, philip (fictitious character), fiction",
+      "California, fiction",
+      "Los angeles (calif.), fiction",
+      "Private investigators, fiction",
+      "Fiction, mystery & detective, general",
+      "Mystery and detective stories",
+      "English language, textbooks for foreign speakers",
+      "Mystery & detective"
+    ],
+    "key": "/works/OL15400582W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL2632008A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_people": [
+      "Philip Marlowe (Fictitious character)"
+    ],
+    "subject_times": [
+      "1930s"
+    ],
+    "genres": [
+      "/tags/OL175T"
+    ],
+    "lc_classifications": [
+      "PS3505.H3224"
+    ],
+    "dewey_number": [
+      "813/.52"
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "It was about eleven o'clock in the morning, mid October, with the sun not shining and a look of hard wet rain in the clearness of the foothills."
+    },
+    "first_publish_date": "1939",
+    "excerpts": [
+      {
+        "excerpt": "It was about eleven o'clock in the morning, mid October, with the sun not shining and a look of hard wet rain in the clearness of the foothills."
+      }
+    ],
+    "latest_revision": 27,
+    "revision": 27,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2010-10-11T22:17:03.700601"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-15T20:53:04.948172"
+    }
+  }
+}

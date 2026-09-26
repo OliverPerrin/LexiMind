@@ -1,0 +1,47 @@
+{
+  "url": "https://openlibrary.org/works/OL14958204W.json",
+  "retrievedAt": "2026-09-26T07:12:36.503928+00:00",
+  "sha256": "17d96d7e8d7e2777467d901e7bcd5427761d7636b4267332d4e44554ca5cbe9a",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Fifty five unforgettable essays by the finest American writers of the twentieth century."
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2020-08-13T20:36:17.942785"
+    },
+    "title": "The best American essays of the century",
+    "created": {
+      "type": "/type/datetime",
+      "value": "2010-03-15T21:13:33.126981"
+    },
+    "covers": [
+      6908758
+    ],
+    "subjects": [
+      "American essays",
+      "Essays",
+      "American essays, 20th century"
+    ],
+    "latest_revision": 6,
+    "key": "/works/OL14958204W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL32981A"
+        }
+      }
+    ],
+    "subject_times": [
+      "20th century"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "revision": 6
+  }
+}

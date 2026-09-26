@@ -1,0 +1,94 @@
+{
+  "url": "https://openlibrary.org/works/OL979517W.json",
+  "retrievedAt": "2026-09-22T14:29:58.737729+00:00",
+  "sha256": "4249746cf8d4d83be71cef87c31b31a04e60db8252c64bf081810b6937427457",
+  "data": {
+    "title": "Veinte poemas de amor y una canción desesperada",
+    "key": "/works/OL979517W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL89930A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      747596,
+      5229277,
+      1055708,
+      2295074,
+      4980743,
+      4910975,
+      3350248,
+      4902674,
+      2292732,
+      1048001,
+      1052195,
+      1047588,
+      139281,
+      5248481,
+      1046807,
+      4910974,
+      8064196,
+      6866952,
+      10510595,
+      10523963,
+      10523964,
+      11959618,
+      12331842,
+      5416839,
+      -1,
+      3353515,
+      13513756,
+      14163989,
+      7894773,
+      13500389,
+      11268894
+    ],
+    "subjects": [
+      "Chilean Love poetry",
+      "Poesía amorosa chilena",
+      "Poesía chilena",
+      "Chilean poetry",
+      "Spanish Love poetry",
+      "Translations into English",
+      "Poetry (poetic works by one author)",
+      "Spanish poetry",
+      "Criticism and interpretation",
+      "Romance literature",
+      "Literatura chilena",
+      "Spanish language books",
+      "Poetry",
+      "Poemas",
+      "POESIAS CHILENAS"
+    ],
+    "subject_times": [
+      "20th century",
+      "Siglo XX"
+    ],
+    "subject_people": [
+      "Pablo Neruda (1904-1973)"
+    ],
+    "first_publish_date": "1969",
+    "description": {
+      "type": "/type/text",
+      "value": "*Veinte poemas de amor y una canción desesperada* es una de las obras más célebres del poeta chileno Pablo Neruda. Publicado en junio de 1924, el poemario lanzó a su autor a la fama con apenas 19 años de edad, y es una de las obras literarias de mayor renombre del siglo XX en el idioma español. Audazmente metafórica y sensual, esta colección yuxtapone la pasión juvenil con la desolación del dolor. Extraídos de las conexiones más íntimas y personales del poeta, los poemas combinan el erotismo y el mundo natural con la influencia del expresionismo y el genio del poeta. El propio Neruda señaló que *Veinte poemas de amor y una canción desesperada* es el resultado consciente de sustituir la ambición poética y la gran elocuencia que trataba de abarcar los misterios del hombre y el universo por un nuevo modo. El vocabulario es en general sencillo, aunque pertenece al dominio de la lengua literaria convencional desde el romanticismo y el modernismo.\r\n\r\n\r\n----------\r\n\r\n\r\n*Twenty Love Poems and a Song of Despair* is one of Chilean poet Pablo Neruda's most celebrated works. Published in June 1924, the collection launched its author to fame at just 19 years of age and is one of the most renowned literary works of the 20th century in the Spanish language. Boldly metaphorical and sensual, this collection juxtaposes youthful passion with the desolation of grief. Drawn from the poet's most intimate and personal connections, the poems combine eroticism and the natural world with the influence of Expressionism and the poet's genius. Neruda himself noted that *Twenty Love Poems and a Song of Despair* is the conscious result of replacing poetic ambition and grand eloquence that sought to encompass the mysteries of man and the universe with a new mode. The vocabulary is generally simple, although it belongs to the domain of conventional literary language since Romanticism and Modernism."
+    },
+    "latest_revision": 10,
+    "revision": 10,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T18:20:48.447735"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-06-29T16:29:37.971480"
+    }
+  }
+}

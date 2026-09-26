@@ -1,0 +1,54 @@
+{
+  "url": "https://openlibrary.org/works/OL72282W.json",
+  "retrievedAt": "2026-09-22T14:29:15.878821+00:00",
+  "sha256": "2d63d861c6fcc4d7ba6a680ca9992b0c0bbabf08d4acc1ec3bb60cf15709387e",
+  "data": {
+    "title": "Haunted",
+    "key": "/works/OL72282W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL35524A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      4984834
+    ],
+    "subjects": [
+      "Ghost stories",
+      "Horror tales",
+      "collectionID:FearStreet",
+      "Horror stories",
+      "Children's fiction"
+    ],
+    "description": "A ghost  from the future is haunting Melissa and it's up to the two of them to prevent a young man's death from ever happening.",
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL337082L"
+        },
+        "position": "7"
+      }
+    ],
+    "genres": [
+      "/tags/OL171T"
+    ],
+    "latest_revision": 12,
+    "revision": 12,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-16T07:05:59.463429"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-28T19:46:19.137772"
+    }
+  }
+}

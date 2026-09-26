@@ -1,0 +1,24 @@
+{
+  "source_path": "outputs/multiseed_emnlp/seed_17/train.log",
+  "source_sha256": "f863e7a15596dff5df6dfc8347386492948c06bf3297d5fe7050e81d143a2e1b",
+  "source_bytes": 4216250,
+  "capture": "Selected exact lines from str.splitlines(), including carriage-return progress updates; numbered within that normalized line list. No execution.",
+  "observations": [
+    {
+      "line_number": 81,
+      "text": "  Summarization: 61,877 train, 3,000 val"
+    },
+    {
+      "line_number": 82,
+      "text": "  Emotion: 43,410 train, 2,713 val"
+    },
+    {
+      "line_number": 83,
+      "text": "  Topic: 3,402 train, 189 val"
+    },
+    {
+      "line_number": 126108,
+      "text": "Training: 100% 8/8 [10:47:21<00:00, 4855.13s/epoch, loss=5.554, time=4768s]"
+    }
+  ]
+}

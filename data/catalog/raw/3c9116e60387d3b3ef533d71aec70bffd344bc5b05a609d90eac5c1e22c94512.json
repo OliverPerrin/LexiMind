@@ -1,0 +1,101 @@
+{
+  "url": "https://openlibrary.org/works/OL472549W.json",
+  "retrievedAt": "2026-09-22T14:28:36.174306+00:00",
+  "sha256": "0dc6ef951f71e7a18d576faa2c6e8a41a3cddd7d4e74201d8a83ff1da249d0ad",
+  "data": {
+    "title": "The Man in the Brown Suit",
+    "key": "/works/OL472549W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL27695A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "Newly-orphaned Anne Beddingfeld is a nice English girl looking for a bit of adventure in London. But she stumbles upon more than she bargained for! Anne is on the platform at Hyde Park Corner tube station when a man falls onto the live track, dying instantly. A doctor examines the man, pronounces him dead, and leaves, dropping a note on his way. Anne picks up the note, which reads \"17.1 22 Kilmorden Castle\". The next day the newspapers report that a beautiful ballet dancer has been found dead there-- brutally strangled. A fabulous fortune in diamonds has vanished. And now, aboard the luxury liner Kilmorden Castle, mysterious strangers pillage her cabin and try to strangle her. What are they looking for? Why should they want her dead? Lovely Anne is the last person on earth suited to solve this mystery... and the only one who can! Anne's journey to unravel the mystery takes her as far afield as Africa and the tension mounts with every step... and Anne finds herself struggling to unmask a faceless killer known only as 'The Colonel'....",
+    "covers": [
+      11153508,
+      823278,
+      6979315,
+      10971,
+      4725428,
+      8742559,
+      2210827,
+      2158174,
+      983273,
+      5263627,
+      10560174,
+      10662008,
+      10662345,
+      10662859,
+      10663038,
+      10876724,
+      11227924,
+      11464331,
+      12008976,
+      12066849,
+      12621689,
+      12614321,
+      13012695,
+      13266430,
+      12302264
+    ],
+    "subject_places": [
+      "London"
+    ],
+    "subjects": [
+      "Fiction",
+      "Mystery",
+      "English literature",
+      "Fiction, mystery & detective, general",
+      "French fiction",
+      "English Detective and mystery stories",
+      "London (england), fiction",
+      "Fiction, mystery & detective, traditional",
+      "Fiction, mystery & detective, international crime & mystery",
+      "Fiction, mystery & detective, amateur sleuth",
+      "Fiction, mystery & detective, women sleuths",
+      "South Africa -- Fiction",
+      "Detective and mystery stories",
+      "London (England) -- Fiction",
+      "Murder -- Investigation -- Fiction",
+      "Women adventurers",
+      "Fiction, thrillers, general",
+      "Race, colonel johnny (fictitious character), fiction",
+      "Fiction, general"
+    ],
+    "subject_people": [
+      "Anne Beddingfeld",
+      "Colonel John Race"
+    ],
+    "links": [
+      {
+        "title": "Booksdata.org",
+        "url": "https://worldcat.booksdata.org/book/BD00055546/the-man-in-the-brown-suit-agatha-christie-9781957240206",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "genres": [
+      "/tags/OL175T",
+      "/tags/OL180T"
+    ],
+    "latest_revision": 19,
+    "revision": 19,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-08T02:57:56.524333"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-07T20:46:07.537268"
+    }
+  }
+}

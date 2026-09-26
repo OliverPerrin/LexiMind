@@ -1,0 +1,71 @@
+{
+  "url": "https://openlibrary.org/works/OL266158W.json",
+  "retrievedAt": "2026-09-22T14:29:51.257286+00:00",
+  "sha256": "62910413c4dc1f54cc628c93dcfdfbc75fbcf6cae3e95cdcba7d48fed351829d",
+  "data": {
+    "title": "The Wisdom of Insecurity",
+    "covers": [
+      254059,
+      6793177,
+      450722,
+      8355204,
+      8578469,
+      8696420,
+      9331082,
+      10105619,
+      12118665
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "BY ALL OUTWARD APPEARANCES OUR LIFE IS A SPARK of light between one eternal darkness and another."
+    },
+    "excerpts": [
+      {
+        "excerpt": "BY ALL OUTWARD APPEARANCES OUR LIFE IS A SPARK of light between one eternal darkness and another."
+      }
+    ],
+    "first_publish_date": "1951",
+    "key": "/works/OL266158W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL422625A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "dewey_number": [
+      "128 W"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Peur",
+      "Religion",
+      "Philosophie",
+      "Fear",
+      "Security (Psychology)",
+      "Philosophy and religion",
+      "Philosophy",
+      "Mental health",
+      "Religion, philosophy",
+      "Samospoznavanje",
+      "Long Now Manual for Civilization"
+    ],
+    "description": "amazing insight. helps westerners step back and look at their actions and how they relate to the world around them. the mere desire to \"be secure\" is what actually makes you insecure.  all about time and pain.  most influential book i've ever read, and i've read a lot, high iq, etc.  from my point of view, a must read.",
+    "subtitle": "A Message for an Age of Anxiety",
+    "latest_revision": 14,
+    "revision": 14,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-24T15:00:26.851325"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2025-03-22T02:23:30.879803"
+    }
+  }
+}

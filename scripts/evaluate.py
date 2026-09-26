@@ -78,7 +78,7 @@ def _tune_thresholds_on_val(
         f"({len(full) - len(data)} held back for model selection)..."
     )
 
-    all_emotions = sorted(pipeline.emotion_labels)
+    all_emotions = list(pipeline.emotion_labels)
     all_logits_list = []
     all_refs = []
 
@@ -98,14 +98,14 @@ def _tune_thresholds_on_val(
             all_logits_list.append(logits.cpu())
 
     all_logits = torch.cat(all_logits_list, dim=0)
-    ref_binary = torch.tensor(
-        [[1 if e in es else 0 for e in all_emotions] for es in all_refs]
-    )
+    ref_binary = torch.tensor([[1 if e in es else 0 for e in all_emotions] for es in all_refs])
 
     best_thresholds, val_macro_f1 = tune_per_class_thresholds(all_logits, ref_binary)
     print(f"  Val-tuned macro F1 (on val): {val_macro_f1:.4f}")
-    print(f"  Thresholds: min={min(best_thresholds):.2f}, max={max(best_thresholds):.2f}, "
-          f"mean={sum(best_thresholds)/len(best_thresholds):.2f}")
+    print(
+        f"  Thresholds: min={min(best_thresholds):.2f}, max={max(best_thresholds):.2f}, "
+        f"mean={sum(best_thresholds) / len(best_thresholds):.2f}"
+    )
     return best_thresholds
 
 
@@ -320,7 +320,7 @@ def evaluate_emotion(
                 all_logits_list.append(logits.cpu())
 
     # Calculate metrics
-    all_emotions = sorted(pipeline.emotion_labels)
+    all_emotions = list(pipeline.emotion_labels)
 
     def to_binary(emotion_sets, labels):
         return [[1 if e in es else 0 for e in labels] for es in emotion_sets]
@@ -395,7 +395,9 @@ def evaluate_emotion(
         per_sample_f1s = []
         for pred, ref in zip(all_preds, all_refs, strict=True):
             if len(pred) == 0 and len(ref) == 0:
-                per_sample_f1s.append(1.0)
+                # Match multilabel_f1's zero-division convention so the
+                # bootstrap and reported point estimate describe one metric.
+                per_sample_f1s.append(0.0)
             elif len(pred) == 0 or len(ref) == 0:
                 per_sample_f1s.append(0.0)
             else:

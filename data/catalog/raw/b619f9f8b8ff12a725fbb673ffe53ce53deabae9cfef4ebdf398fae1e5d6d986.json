@@ -1,0 +1,76 @@
+{
+  "url": "https://openlibrary.org/works/OL17546674W.json",
+  "retrievedAt": "2026-09-22T14:28:23.945719+00:00",
+  "sha256": "595873cf60b329b0e313e6720aee30a93678410d137ff6cb08cda08c328f9ed3",
+  "data": {
+    "description": "Celaena Sardothien owes her reputation to Arobynn Hamel. He gave her a home at the Assassins' Guild and taught her the skills she needed to survive.\r\n\r\nArobynn's enemies stretch far and wide - from Adarlan's rooftops and its filthy dens, to remote islands and hostile deserts. Celaena is duty-bound to hunt them down. But behind her assignments lies a dark truth that will seal her fate - and cut her heart in two forever...\r\n\r\nExplore the dark underworld of this kick-ass heroine and find out how the legend begins in the five page-turning prequel novellas to the Throne of Glass series.",
+    "title": "The Assassin’s Blade",
+    "covers": [
+      7794980,
+      8538702,
+      10580207,
+      13837489
+    ],
+    "subjects": [
+      "Fiction, fantasy, collections & anthologies",
+      "Female assassins in fiction",
+      "Young adult fiction, fantasy, dark fantasy",
+      "[series:Throne_of_Glass]",
+      "Fantasy",
+      "Assassins",
+      "Fiction"
+    ],
+    "key": "/works/OL17546674W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7115219A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_people": [
+      "Celaena Sardothien",
+      "Sam Cortland",
+      "Ansel of Briarcliff",
+      "Arobynn Hamel",
+      "Yrene Towers",
+      "Lysandra"
+    ],
+    "subject_places": [
+      "Erilea Rifthold",
+      "Adarlan Skull's Bay",
+      "Red Desert",
+      "Innish"
+    ],
+    "identifiers": {
+      "bookbrainz": [
+        "8f1615c2-47fa-4934-b69d-bb6690fe75c7"
+      ],
+      "wikidata": [
+        "Q104349790"
+      ],
+      "musicbrainz": [
+        "69a1dff0-94cb-4151-b669-f563def34802"
+      ]
+    },
+    "genres": [
+      "/tags/OL169T"
+    ],
+    "latest_revision": 21,
+    "revision": 21,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2016-10-14T19:52:15.558233"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-11T19:58:55.615635"
+    }
+  }
+}

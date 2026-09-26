@@ -1,0 +1,58 @@
+{
+  "url": "https://openlibrary.org/works/OL39160W.json",
+  "retrievedAt": "2026-09-22T14:28:32.816260+00:00",
+  "sha256": "caa1312ce59fa826650521f9935b27b1fb3237d217f14933ead0291d885601b6",
+  "data": {
+    "title": "The Hidden Staircase",
+    "covers": [
+      15150728,
+      2644064,
+      779414,
+      589258,
+      288908,
+      8372748,
+      14899722
+    ],
+    "key": "/works/OL39160W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL21218A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "Teenage detective Nancy Drew uses her courage and powers of deduction to solve the mysterious happenings in an old stone mansion.",
+    "subjects": [
+      "Detective and mystery stories",
+      "Fiction",
+      "Juvenile fiction",
+      "Mystery",
+      "Mystery and detective stories",
+      "Drew, nancy (fictitious character), fiction",
+      "Children's fiction",
+      "Adventure stories",
+      "Women detectives",
+      "CollectionID:NDMS"
+    ],
+    "genres": [
+      "/tags/OL175T",
+      "/tags/OL164T"
+    ],
+    "latest_revision": 15,
+    "revision": 15,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T08:10:41.157375"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-08T06:23:26.752454"
+    }
+  }
+}

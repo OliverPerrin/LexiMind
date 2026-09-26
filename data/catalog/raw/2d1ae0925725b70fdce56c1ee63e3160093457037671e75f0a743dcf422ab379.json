@@ -1,0 +1,239 @@
+{
+  "url": "https://openlibrary.org/works/OL262463W.json",
+  "retrievedAt": "2026-09-22T14:28:40.781945+00:00",
+  "sha256": "69b889c8120bb6939b93f5b13c024531af40a79e15c4f07c53fb9ea84b424c69",
+  "data": {
+    "description": "Contains:\r\n\r\n[Silver Blaze](https://openlibrary.org/works/OL1518358W/Silver_Blaze)\r\n[Adventure of the Yellow Face](https://openlibrary.org/works/OL20571966W/Adventure_of_the_Yellow_Face)\r\n[Stock-Broker's Clerk](https://openlibrary.org/works/OL20619319W/Adventure_of_the_Stockbroker's_Clerk)\r\n[Adventure of the Gloria Scott](https://openlibrary.org/works/OL20619337W/Adventure_of_the_Gloria_Scott)\r\n[Adventure of the Musgrave Ritual](https://openlibrary.org/works/OL20619374W/Adventure_of_the_Musgrave_Ritual)\r\nAdventure of the Reigate Squire\r\nCrooked Man\r\n[Adventure of the Resident Patient](https://openlibrary.org/works/OL16090759W)\r\nAdventure of the Greek interpreter\r\n[Naval Treaty](https://openlibrary.org/works/OL14930289W/The_Naval_Treaty)\r\nFinal Problem\r\n\r\n\r\n----------\r\nAlso contained in:\r\n\r\n - [Adventures and Memoirs of Sherlock Holmes](https://openlibrary.org/works/OL1518128W)\r\n - [Celebrated Cases of Sherlock Holmes](https://openlibrary.org/works/OL16076930W)\r\n - [Complete Sherlock Holmes: Volume I](https://openlibrary.org/works/OL18188824W)\r\n - [Complete Sherlock Holmes, Volume I](https://openlibrary.org/works/OL14929975W)\r\n - [Short Stories](https://openlibrary.org/works/OL14929977W)\r\n - [Works](https://openlibrary.org/works/OL16173818W)",
+    "links": [
+      {
+        "title": "VIAF ID: 7282151051794333530000 (Work)",
+        "url": "http://viaf.org/viaf/7282151051794333530000",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Memoirs of Sherlock Holmes - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/The_Memoirs_of_Sherlock_Holmes",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Memoirs of Sherlock Holmes | Sir Arthur Conan Doyle ...",
+        "url": "https://etc.usf.edu/lit2go/40/the-memoirs-of-sherlock-holmes/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Memoirs of Sherlock Holmes-Ebookzy",
+        "url": "https://ebookzy.com/the-memoirs-of-sherlock-holmes/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "Memoirs of Sherlock Holmes [11 stories]",
+    "covers": [
+      9246429,
+      -1,
+      12503926,
+      12503963,
+      11169760,
+      12134762,
+      13122496,
+      13499780,
+      13574844,
+      13721196,
+      13578748,
+      11936541,
+      13522261,
+      11270340,
+      10615146,
+      11333714,
+      11651372,
+      11953015,
+      12293138,
+      10618476,
+      12172489,
+      11946686
+    ],
+    "subject_places": [
+      "Brook Street",
+      "221B Baker Street",
+      "Portugal",
+      "Birmingham",
+      "Lombard Street",
+      "France",
+      "London",
+      "Paddington district",
+      "Working",
+      "Foreign and Commonwealth Office",
+      "Briarbrae",
+      "Sussex",
+      "England",
+      "Wessex",
+      "Dartmoor",
+      "King's Pyland",
+      "Norbury",
+      "America",
+      "Baker Street",
+      "Norfolk",
+      "Goldfields region of Victoria",
+      "Hampshire",
+      "Fordingbridge",
+      "Australia",
+      "Falmouth"
+    ],
+    "first_publish_date": "August 12, 1979",
+    "subject_people": [
+      "Sherlock Holmes",
+      "John H. Watson",
+      "Percy Trevelyan",
+      "Blessington",
+      "Hall Pycroft",
+      "Arthur Pinner",
+      "Harry Pinner",
+      "Percy Phelps",
+      "Charles Gorot",
+      "Annie Harrison",
+      "Reginald Musgrave",
+      "Rachel Howells",
+      "Richard Brunton",
+      "King Charles I",
+      "King Charles II",
+      "Victor Trevor",
+      "Mr. Trevor",
+      "Hudson",
+      "Beddoes",
+      "James Armitage",
+      "Jack Prendergast",
+      "Grant Munro",
+      "Effie Munro",
+      "John Hebron",
+      "Lucy Hebron",
+      "Fitzroy Simpson",
+      "Silver Blaze",
+      "Colonel Ross",
+      "John Straker",
+      "Ned Hunter",
+      "William Derbyshire",
+      "Silas Brown",
+      "Inspector Gregory"
+    ],
+    "key": "/works/OL262463W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL161167A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "excerpt": "I am afraid, Watson, that I shall have to go,” said Holmes, as we sat down together to our breakfast one morning.",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Crime & Mystery",
+      "catalepsy",
+      "amyl nitrate",
+      "suicide by hanging",
+      "broughams",
+      "ancestors",
+      "asphyxiation",
+      "blackmail",
+      "brandy",
+      "brokers",
+      "butlers",
+      "cavaliers",
+      "Children's stories",
+      "Classic Literature",
+      "clerks",
+      "coffee",
+      "Detective and mystery stories",
+      "Detective Fiction",
+      "elms",
+      "English",
+      "English children's stories",
+      "English Detective and mystery stories",
+      "English Short stories",
+      "fiction",
+      "gemstones",
+      "gold",
+      "horse racing",
+      "Justices of the Peace",
+      "maids",
+      "maps",
+      "meres",
+      "mixed race children",
+      "Mystery and detective stories",
+      "oaks",
+      "opium",
+      "police",
+      "Private investigators",
+      "Private investigators in fiction",
+      "race horses",
+      "redundancy",
+      "riddles",
+      "scalpels",
+      "scrips",
+      "Short Stories",
+      "stock market",
+      "tobacco pipes",
+      "treaties",
+      "yellow fever",
+      "Great britain, fiction",
+      "Fiction, mystery & detective, general",
+      "Private investigators, fiction",
+      "English literature",
+      "Fiction, mystery & detective, traditional",
+      "British and irish fiction (fictional works by one author)",
+      "Watson, john h. (fictitious character), fiction",
+      "Fiction, mystery & detective, short stories",
+      "England, fiction",
+      "John H. Watson (Fictitious character)",
+      "General",
+      "Mystery & Detective",
+      "Sherlock Holmes (Fictitious character)",
+      "Detective and Mystery Stories-Fiction",
+      "Novela policíaca inglesa",
+      "FICTION / Mystery & Detective / Traditional British",
+      "FICTION / Classics",
+      "Children's fiction",
+      "Fiction, action & adventure",
+      "Long Now Manual for Civilization",
+      "Holmes, Sherlock (Fictitious character) -- Fiction"
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "\"I AM afraid, Watson, that I shall have to go,\" said Holmes, as we sat down together to our breakfast one morning."
+    },
+    "genres": [
+      "/tags/OL174T",
+      "/tags/OL175T",
+      "/tags/OL164T"
+    ],
+    "latest_revision": 59,
+    "revision": 59,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-24T07:26:31.097043"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T11:09:34.586201"
+    }
+  }
+}

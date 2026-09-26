@@ -1,0 +1,72 @@
+{
+  "url": "https://openlibrary.org/works/OL19963111W.json",
+  "retrievedAt": "2026-09-22T14:28:44.936230+00:00",
+  "sha256": "67fa390f17e12acf4b5fe3bc93f5c0fd341c4ea8a8600007ee720e6c4662d5e2",
+  "data": {
+    "subjects": [
+      "Love",
+      "Ability",
+      "Dictatorship",
+      "Soldiers",
+      "Juvenile fiction",
+      "Fiction",
+      "Children's fiction",
+      "Science fiction",
+      "Love, fiction",
+      "Soldiers, fiction",
+      "Totalitarianism, fiction",
+      "Dictators",
+      "Love stories"
+    ],
+    "description": {
+      "type": "/type/text",
+      "value": "\"Juliette has escaped to Omega Point, the headquarters of the rebel resistance and a safe haven for people with abilities like hers. She is finally free from The Reestablishment and their plans to use her as a weapon, but Warner, her former captor, won't let her go without a fight.\"--\r\n\r\nJuliette escapes to a safe haven, where she is free from The Reestablishment and their plans to use her as a weapon, but Warner, her former captor, won't let go without a fight. The plot contains profanity and sexual violence. Book #2"
+    },
+    "key": "/works/OL19963111W",
+    "title": "Unravel me",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL6964763A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      12727567,
+      13783622,
+      13627973,
+      12819436,
+      14150299,
+      14150300,
+      10851391
+    ],
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL329905L"
+        },
+        "position": "2"
+      }
+    ],
+    "genres": [
+      "/tags/OL179T",
+      "/tags/OL177T"
+    ],
+    "latest_revision": 11,
+    "revision": 11,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2019-07-18T00:23:34.491686"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-04T18:11:50.639542"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "url": "https://openlibrary.org/works/OL46401W.json",
+  "retrievedAt": "2026-09-22T14:28:09.664624+00:00",
+  "sha256": "b636c5a44051c289e98e65257b0c21ec981bfb7aff993c47d6739e24b8712b43",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "In the future you will walk down the crowded streets of New York City not knowing if the bodies brushing past you are humans or androids. With tensions already mounting between humans and robots, the murder of a Spacer must be handled in a politically-correct fashion so Detective Elijah Baley is assigned a robot partner.\r\n\r\nBaley and R. Daneel Olivaw become like Sir Arthur Conan Doyle s Sherlock Holmes and Dr. Watson, Law & Order s Detectives Lennie Brisco and Ed Green, and Training Day s Detective Alonzo Harris and Officer Jake Hoyt disparate partners who must work together to solve a crime. The only problem is, Baley doesn't trust anyone not his boss, not his wife, and certainly not his robot partner."
+    },
+    "title": "The Caves of Steel",
+    "covers": [
+      13790511
+    ],
+    "subjects": [
+      "Robots",
+      "Fiction",
+      "Fiction, science fiction, hard science fiction",
+      "Fiction, mystery & detective, general",
+      "Interplanetary voyages",
+      "Murder",
+      "American literature",
+      "American Science fiction",
+      "Science fiction",
+      "Overpopulation"
+    ],
+    "subject_people": [
+      "Elijah Baley (Fictitious character)",
+      "R. Daneel Olivaw (Fictitious character)"
+    ],
+    "key": "/works/OL46401W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL34221A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subject_times": [
+      "5000+ CE"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL175T",
+      "/tags/OL179T"
+    ],
+    "latest_revision": 32,
+    "revision": 32,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T11:34:21.437031"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-07T08:22:53.044902"
+    }
+  }
+}

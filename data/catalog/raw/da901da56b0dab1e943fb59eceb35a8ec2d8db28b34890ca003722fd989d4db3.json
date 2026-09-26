@@ -1,0 +1,217 @@
+{
+  "url": "https://openlibrary.org/works/OL9973101W.json",
+  "retrievedAt": "2026-09-22T14:29:14.805295+00:00",
+  "sha256": "7b74ef913a018a8b60488c9dbe20290a80d6e1778fbeae21e76a53b753479667",
+  "data": {
+    "title": "The Long Walk",
+    "key": "/works/OL9973101W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL19981A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": {
+      "type": "/type/text",
+      "value": "The Long Walk is a dystopian horror novel by American writer Stephen King, published in 1979, under the pseudonym Richard Bachman. It was collected in 1985 in the hardcover omnibus The Bachman Books, and has seen several reprints since, as both paperback and hardback.\r\n\r\nSet in a future dystopian America, ruled by a totalitarian and militaristic dictator, the plot revolves around the contestants of a grueling, annual walking contest. In 2000, the American Library Association listed The Long Walk as one of the 100 best books for teenage readers published between 1966 and 2000.\r\n\r\n---\r\n\r\nAlso contained in:\r\n\r\n- [The Bachman Books](https://openlibrary.org/works/OL81591W/The_Bachman_Books_\\(Rage_The_Long_Walk_Roadwork_The_Running_Man\\))\r\n- [The Bachman Books](https://openlibrary.org/works/OL24796729W)"
+    },
+    "links": [
+      {
+        "title": "StephenKing.com - The Long WAlk",
+        "url": "https://stephenking.com/library/bachman_novel/long_walk_the.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Long Walk - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/The_Long_Walk",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Long Walk | Stephen King Wiki | FANDOM powered by Wikia",
+        "url": "https://stephenking.fandom.com/wiki/The_Long_Walk",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Stephen King's 'The Long Walk' Movie in the Works at New Line ...",
+        "url": "https://www.hollywoodreporter.com/heat-vision/stephen-kings-long-walk-works-at-new-line-1105541",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Stephen King's THE LONG WALK Inches Closer to the Big Screen",
+        "url": "https://bookriot.com/2018/04/26/stephen-kings-the-long-walk/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Stephen King's The Long Walk and the Art of Dystopian Simplicity | Tor ...",
+        "url": "https://www.tor.com/2018/04/16/stephen-kings-the-long-walk-and-the-art-of-dystopian-simplicity/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Rereading Stephen King: week seven – The Long Walk | Books | The ...",
+        "url": "https://www.theguardian.com/books/2012/aug/30/rereading-stephen-king-the-long-walk",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "covers": [
+      14653609,
+      14046288,
+      14046289,
+      14092139,
+      13770043
+    ],
+    "subject_places": [
+      "United States",
+      "Maine",
+      "Canada",
+      "Pownal",
+      "Androscoggin County",
+      "Massachusetts"
+    ],
+    "subjects": [
+      "Horror",
+      "Suspense",
+      "Fiction",
+      "dystopia",
+      "walking contests",
+      "totalitarianism",
+      "half-tracks",
+      "Horror tales",
+      "American literature",
+      "Fiction, general",
+      "Contests",
+      "Walking",
+      "Survival",
+      "Teenage boys",
+      "Teenage athletes",
+      "Fascism",
+      "Fiction, horror"
+    ],
+    "subject_people": [
+      "Randy",
+      "Sheila",
+      "Carolyn",
+      "Curley",
+      "Gwendoline",
+      "Hattie",
+      "Janice",
+      "Joe",
+      "Mike",
+      "Percy",
+      "Priscilla",
+      "Ralph",
+      "Hank Aaron",
+      "Aaronson",
+      "Abraham",
+      "Cannonball Adderley",
+      "Fred Astaire",
+      "Arthur Baker",
+      "James Baker",
+      "Gary Barkovitch",
+      "Ray Bradbury",
+      "Done Bredes",
+      "Dave Brubedk",
+      "John Carter",
+      "Wilkie Collins",
+      "Regie Cotter",
+      "George D'Allessio",
+      "Davidson",
+      "Amelia Dorgen",
+      "Mr. Elwell",
+      "Mrs. Elwell",
+      "Ewing",
+      "Fenter",
+      "Roger Fenum",
+      "Charlie Field",
+      "Georgie Fielder",
+      "W.C. Fields",
+      "Stephen Foster",
+      "Gallant",
+      "Jeff Garraty",
+      "Mrs. Garraty",
+      "Raymond Davis Garraty",
+      "Grange",
+      "Gribble",
+      "Harkness",
+      "Harlan",
+      "Bill Hough",
+      "Ron Howard",
+      "Shirley Jackson",
+      "Jensen",
+      "John Keats",
+      "James Kirkwood",
+      "Klingerman",
+      "Eddie Klipstein",
+      "John Knowles",
+      "Dom L'antio",
+      "Larson",
+      "Major",
+      "Katrina McVries",
+      "Peter McVries",
+      "Milligan",
+      "Robert Mitchum",
+      "Thelonius Monk",
+      "Marilyn Monroe",
+      "Frank Morgan",
+      "Henry Olson",
+      "Jimmy Owens",
+      "Collie Parker",
+      "Bruce Paster",
+      "Dr. Patterson",
+      "Pearson",
+      "Miss Petrie",
+      "Davey Popham",
+      "Harold Quince",
+      "Rank",
+      "Eleanor Roosevelt",
+      "J.D. Salinger",
+      "Scramm",
+      "Cathy Scramm",
+      "Bobbi Sledge",
+      "Stebbins",
+      "Swinburn",
+      "Toland",
+      "Travin",
+      "Tressler",
+      "Tubbins",
+      "Wayne",
+      "Marty Wyman",
+      "Yannick",
+      "Zuck"
+    ],
+    "genres": [
+      "/tags/OL171T",
+      "/tags/OL180T"
+    ],
+    "latest_revision": 16,
+    "revision": 16,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-11T01:52:46.267893"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-20T23:54:54.249574"
+    }
+  }
+}

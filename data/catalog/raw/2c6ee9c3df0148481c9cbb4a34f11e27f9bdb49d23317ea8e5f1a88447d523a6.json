@@ -1,0 +1,102 @@
+{
+  "url": "https://openlibrary.org/works/OL16509148W.json",
+  "retrievedAt": "2026-09-22T14:29:07.049129+00:00",
+  "sha256": "51494a4307ac971e82eed2373912a84823178fdff32d86384505377f2fde2c00",
+  "data": {
+    "description": "This is the story of the seige of Troy from the perspective of Achilles best-friend Patroclus.  Although Patroclus is outcast from his home for disappointing his father he manages to be the only mortal who can keep up with the half-God Archilles.  Even though many will know the facts behind the story the telling is fresh and engaging.",
+    "title": "The Song of Achilles",
+    "covers": [
+      7098465,
+      7886260,
+      9043508,
+      9106425,
+      10826919,
+      10826922,
+      10745771,
+      11192315,
+      12370285,
+      13455480,
+      13755137,
+      14051611
+    ],
+    "subject_places": [
+      "Troy",
+      "Phthia",
+      "Turkey",
+      "Troy (Extinct city)",
+      "Greece"
+    ],
+    "subjects": [
+      "Trojan War",
+      "Achilles (Greek mythology)",
+      "Male friendship",
+      "Fiction",
+      "Gay love",
+      "Thetis",
+      "Greeks",
+      "History",
+      "Trojan War. fast (OCoLC)fst01157294",
+      "Friendship, fiction",
+      "Fiction, historical",
+      "Fiction, war & military",
+      "LGBTQ historical fiction",
+      "Stonewall Book Awards",
+      "nyt:trade-fiction-paperback=2020-08-30",
+      "New York Times bestseller",
+      "New York Times reviewed",
+      "Fiction, historical, general",
+      "Amitié masculine",
+      "Romans, nouvelles",
+      "Guerre de Troie",
+      "Gay fiction",
+      "Long now manual for civilization",
+      "American literature"
+    ],
+    "subject_people": [
+      "Achilles",
+      "Patroclus",
+      "Chiron"
+    ],
+    "key": "/works/OL16509148W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL1926056A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subject_times": [
+      "Ancient Greece",
+      "To 146 B.C."
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "links": [
+      {
+        "title": "New York Times review",
+        "url": "https://www.nytimes.com/2012/04/29/books/review/the-song-of-achilles-by-madeline-miller.html",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "genres": [
+      "/tags/OL170T",
+      "/tags/OL173T"
+    ],
+    "latest_revision": 20,
+    "revision": 20,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2012-02-15T10:59:44.345510"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-07T16:33:11.046732"
+    }
+  }
+}

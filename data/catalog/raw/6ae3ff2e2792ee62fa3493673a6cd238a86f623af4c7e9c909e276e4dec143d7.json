@@ -1,0 +1,91 @@
+{
+  "url": "https://openlibrary.org/works/OL17715915W.json",
+  "retrievedAt": "2026-09-26T07:12:22.415372+00:00",
+  "sha256": "bc9a43e685b624dae35687e566adc0a72cc26a5e364c9db2ac8b7c5c6436bd2c",
+  "data": {
+    "title": "A Brief History of Everyone Who Ever Lived",
+    "key": "/works/OL17715915W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL1745464A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      },
+      {
+        "author": {
+          "key": "/authors/OL7396111A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      },
+      {
+        "author": {
+          "key": "/authors/OL9566592A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "In our unique genomes, every one of us carries the story of our species--births, deaths, disease, war, famine, migration, and a lot of sex. But those stories have always been locked away--until now. Who are our ancestors? Where did they come from? Geneticists have suddenly become historians, and the hard evidence in our DNA has blown the lid off what we thought we knew. Acclaimed science writer Adam Rutherford explains exactly how genomics is completely rewriting the human story--from 100,000 years ago to the present. A Brief History of Everyone Who Ever Lived will upend your thinking on Neanderthals, evolution, royalty, race, and even redheads. (For example, we now know that at least four human species once roamed the earth.) Plus, here is the remarkable, controversial story of how our genes made their way to the Americas--one that's still being written, as ever more of us have our DNA sequenced. Rutherford closes with \"A Short Introduction to the Future of Humankind,\" filled with provocative questions that we're on the cusp of answering: Are we still in the grasp of natural selection? Are we evolving for better or worse? And . . . where do we go from here?",
+    "covers": [
+      9155814,
+      10904055,
+      12215495,
+      13773099,
+      9334597
+    ],
+    "subjects": [
+      "Origin",
+      "Genomics",
+      "DNA",
+      "Evolution (Biology)",
+      "Human genome",
+      "Human evolution",
+      "Human beings",
+      "History",
+      "Human beings, origin",
+      "Human genetics",
+      "New York Times reviewed",
+      "Popular works",
+      "Humans",
+      "Genetics",
+      "Popular Science",
+      "Anthropologie",
+      "Evolution",
+      "Genom",
+      "Popular Science and Mathematics",
+      "Long Now Manual for Civilization",
+      "Biological Evolution",
+      "REFERENCE / Genealogy & Heraldry",
+      "SCIENCE / Life Sciences / Genetics & Genomics",
+      "SOCIAL SCIENCE / Anthropology / Cultural & Social"
+    ],
+    "links": [
+      {
+        "title": "New York Times review",
+        "url": "https://www.nytimes.com/2017/11/17/books/review/brief-history-everyone-who-ever-lived-adam-rutherford.html",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "latest_revision": 6,
+    "revision": 6,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2017-05-24T11:26:28.695833"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-12T09:26:31.399893"
+    }
+  }
+}
