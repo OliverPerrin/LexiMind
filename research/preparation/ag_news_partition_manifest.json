@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "status": "candidate_assignments_not_admitted",
+  "training_authorized": false,
+  "policy": "source-partitions-v1",
+  "salt": "leximind-source-partitions-v1",
+  "repo": "fancyzhx/ag_news",
+  "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+  "candidate_manifest": {
+    "path": "research/preparation/ag_news_candidate_manifest.json",
+    "sha256": "ebdbe66fa0afc36bb420dcfb66959d61f601f2a06ab47f50f50a09a0a0a78d7c",
+    "bytes": 7801
+  },
+  "implementation_sha256": "0d4fd90a268147256c55d0e8106cf8c4bdc437d65f6cb81890a19f5a064168f3",
+  "assignments": {
+    "path": "data/research_candidates/ag_news/eb185aade064a813bc0b7f42de02595523103ca4/partitions-v1/assignments.jsonl",
+    "bytes": 33386124,
+    "sha256": "19b36473d6f3e69ff08af1e5c22a7376cb0087a2d3b65f7fb564406b30ad3717"
+  },
+  "source_files": {
+    "train": {
+      "path": "prepared/train.jsonl",
+      "rows": 120000,
+      "source_split": "train",
+      "bytes": 52765105,
+      "sha256": "a88c7f9e91390c4b6dc97e4ae94e53a8a424b69e8f4ecb48ed55f58ffa9ebf3e"
+    },
+    "test": {
+      "path": "prepared/test.jsonl",
+      "rows": 7600,
+      "source_split": "test",
+      "bytes": 3306583,
+      "sha256": "3effa3212c3598b11f16bc1999095f248bc6607ca72f722c0546069bcd71118b"
+    }
+  },
+  "counts": {
+    "train": 107876,
+    "model_selection": 6151,
+    "calibration": 5973,
+    "test": 7600
+  },
+  "label_names": [
+    "World",
+    "Sports",
+    "Business",
+    "Sci/Tech"
+  ],
+  "label_counts": {
+    "train": {
+      "World": 26936,
+      "Sports": 26955,
+      "Business": 26979,
+      "Sci/Tech": 27006
+    },
+    "model_selection": {
+      "World": 1526,
+      "Sports": 1551,
+      "Business": 1543,
+      "Sci/Tech": 1531
+    },
+    "calibration": {
+      "World": 1538,
+      "Sports": 1494,
+      "Business": 1478,
+      "Sci/Tech": 1463
+    },
+    "test": {
+      "World": 1900,
+      "Sports": 1900,
+      "Business": 1900,
+      "Sci/Tech": 1900
+    }
+  },
+  "cross_partition_normalized_text_groups": 4,
+  "within_original_split_cross_partition_text_groups": 0,
+  "overlap_by_pair": [
+    {
+      "partitions": [
+        "train",
+        "model_selection"
+      ],
+      "text_groups": 0
+    },
+    {
+      "partitions": [
+        "train",
+        "calibration"
+      ],
+      "text_groups": 0
+    },
+    {
+      "partitions": [
+        "train",
+        "test"
+      ],
+      "text_groups": 4
+    },
+    {
+      "partitions": [
+        "model_selection",
+        "calibration"
+      ],
+      "text_groups": 0
+    },
+    {
+      "partitions": [
+        "model_selection",
+        "test"
+      ],
+      "text_groups": 0
+    },
+    {
+      "partitions": [
+        "calibration",
+        "test"
+      ],
+      "text_groups": 0
+    }
+  ],
+  "interpretation": [
+    "Original official test membership is unchanged; original candidates are never overwritten.",
+    "GoEmotions original validation groups split 50/50 into selection/calibration; original train stays train.",
+    "AG News original train groups split 90/5/5; fractions are hash thresholds, not exact row quotas.",
+    "Normalization is NFC plus whitespace collapse; case/punctuation remain significant.",
+    "Groups repeated across original official partitions remain visible, not deleted or reassigned.",
+    "No unseen-text or unseen-article claim; AG identities are pinned source rows, not article IDs.",
+    "No labels or test scores influence assignment. Rare-label coverage is reported, not optimized.",
+    "These are unadmitted source assignments, not evidence of source-use clearance or a frozen protocol."
+  ]
+}

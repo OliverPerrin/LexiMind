@@ -8,10 +8,8 @@ import math
 from pathlib import Path
 from typing import Any
 
-from scripts.audit_research_artifacts import check_file, safe_path
 from src.research.admission import validate_model_admission
-from src.research.annotations import read_json, validate_packet
-from src.research.book_admission import validate_book_admission
+from src.research.io import check_file, read_json, safe_path
 from src.research.ledger import validate_ledger
 from src.research.manifest import ARTIFACTS
 
@@ -217,22 +215,79 @@ def inspect_preparation(root: Path, manifest_path: Path, target: str) -> dict[st
                     != hashlib.sha256(files["repository_metadata"].read_bytes()).hexdigest()
                 ):
                     errors.append("Backbone review does not bind the supplied repository metadata")
-                candidate = _object(
-                    read_json(files["goemotions_candidate"]), "GoEmotions candidate"
-                )
-                if (
-                    candidate.get("preparation_script_sha256")
-                    != hashlib.sha256(files["goemotions_builder"].read_bytes()).hexdigest()
-                ):
-                    errors.append(
-                        "GoEmotions candidate was produced by a different preparation script"
+                for prefix in ("goemotions", "ag_news"):
+                    candidate = _object(
+                        read_json(files[prefix + "_candidate"]), prefix + " candidate"
                     )
+                    if (
+                        candidate.get("preparation_script_sha256")
+                        != hashlib.sha256(files[prefix + "_builder"].read_bytes()).hexdigest()
+                    ):
+                        errors.append(
+                            f"{prefix} candidate was produced by a different preparation script"
+                        )
+                    helpers = _object(
+                        candidate.get("preparation_helper_sha256"), "source helper hashes"
+                    )
+                    expected_helpers = {
+                        ARTIFACTS[key][1]: files[key]
+                        for key in ("candidate_io", "file_integrity_contract")
+                    }
+                    if set(helpers) != set(expected_helpers) or any(
+                        helpers.get(path) != hashlib.sha256(local.read_bytes()).hexdigest()
+                        for path, local in expected_helpers.items()
+                    ):
+                        errors.append(
+                            f"{prefix} candidate does not bind current preparation helpers"
+                        )
+                    partition = _object(
+                        read_json(files[prefix + "_partitions"]), prefix + " partitions"
+                    )
+                    expected_candidate_ref = {
+                        "path": ARTIFACTS[prefix + "_candidate"][1],
+                        "bytes": files[prefix + "_candidate"].stat().st_size,
+                        "sha256": hashlib.sha256(
+                            files[prefix + "_candidate"].read_bytes()
+                        ).hexdigest(),
+                    }
+                    if partition.get("candidate_manifest") != expected_candidate_ref or any(
+                        partition.get(key) != candidate.get(key) for key in ("repo", "revision")
+                    ):
+                        errors.append(f"{prefix} assignments refer to a different source candidate")
+                    errors.extend(check_file(root, partition["candidate_manifest"]))
+                    if partition.get("source_files") != candidate.get("prepared_files"):
+                        errors.append(
+                            f"{prefix} assignments do not bind current prepared source files"
+                        )
+                    if (
+                        partition.get("implementation_sha256")
+                        != hashlib.sha256(files["partition_contract"].read_bytes()).hexdigest()
+                    ):
+                        errors.append(
+                            f"{prefix} assignments used a different partition implementation"
+                        )
+                arxiv = _object(read_json(files["arxiv_source"]), "arXiv source report")
+                conversion = _object(arxiv.get("conversion"), "arXiv conversion")
+                if (
+                    conversion.get("script") != ARTIFACTS["arxiv_builder"][1]
+                    or conversion.get("script_sha256")
+                    != hashlib.sha256(files["arxiv_builder"].read_bytes()).hexdigest()
+                ):
+                    errors.append("arXiv source report used a different reconstruction script")
+                if conversion.get("helper_sha256") != {
+                    path: hashlib.sha256(local.read_bytes()).hexdigest()
+                    for path, local in expected_helpers.items()
+                }:
+                    errors.append("arXiv source report does not bind current preparation helpers")
                 validate_ledger(read_json(files["compute_ledger_template"]))
                 observations.append(
                     "Legacy corpus audit is historical preparation context; fresh dataset admission is checked separately"
                 )
                 blockers.extend(validate_model_admission(root, plan))
             else:
+                from src.research.annotations import validate_packet
+                from src.research.book_admission import validate_book_admission
+
                 packet = _object(read_json(files["annotation_packet"]), "annotation packet")
                 validate_packet(
                     packet,

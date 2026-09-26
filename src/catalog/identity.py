@@ -1,4 +1,4 @@
-"""Conservative identity matching for legacy Gutenberg/description joins.
+"""Conservative title/author grouping for catalogue duplicates and data audits.
 
 Titles alone are not identifiers. Preserve subtitles and reject records without
 author evidence; ambiguous descriptions must be reviewed rather than selected.
@@ -53,26 +53,6 @@ def author_names(record: dict[str, Any]) -> list[str]:
 
 def author_identity(record: dict[str, Any]) -> tuple[str, ...]:
     return tuple(sorted({normalize_author(a) for a in author_names(record)} - {""}))
-
-
-def match_description(
-    book: dict[str, Any], candidates: list[dict[str, Any]]
-) -> dict[str, Any] | None:
-    title = normalize_title(book["title"]) if isinstance(book.get("title"), str) else ""
-    authors = author_identity(book)
-    if not title or not authors:
-        return None
-    matches = [
-        row
-        for row in candidates
-        if isinstance(row, dict)
-        and isinstance(row.get("title"), str)
-        and normalize_title(row["title"]) == title
-        and author_identity(row) == authors
-    ]
-    # Repeated identical source records are harmless; conflicting blurbs are not.
-    unique = {json.dumps(row, sort_keys=True): row for row in matches}
-    return next(iter(unique.values())) if len(unique) == 1 else None
 
 
 def matched_work_id(book: dict[str, Any]) -> str:

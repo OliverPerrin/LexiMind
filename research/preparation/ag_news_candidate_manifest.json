@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "prepared_record_version": 1,
+  "status": "candidate_prepared_not_admitted",
+  "training_authorized": false,
+  "repo": "fancyzhx/ag_news",
+  "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+  "config": "default",
+  "local_candidate_directory": "data/research_candidates/ag_news/eb185aade064a813bc0b7f42de02595523103ca4",
+  "identity_scope": "provider_source_row",
+  "row_identity_field": "record_id",
+  "upstream_article_ids_available": false,
+  "row_provenance": "record_id encodes the immutable source-file SHA256 and one-based source_row. provider_split resolves acquisition.files; these are row references, not invented article/document IDs.",
+  "preparation_script_sha256": "84dad583363256b4b826de41dc33787fef6d4afad05164abbbcfcf01f066286e",
+  "preparation_helper_sha256": {
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
+  },
+  "acquisition_receipt_sha256": "70d20b088d31a6cf38208c041489f023935296022924739eea6c14d9ab46ee17",
+  "acquisition": {
+    "config": "default",
+    "files": {
+      "test": {
+        "bytes": 1234829,
+        "path": "data/test-00000-of-00001.parquet",
+        "rows": 7600,
+        "sha256": "71de87ec66bc5737752a2502204dfa6d7fe9856ade3ea444dc6317789a4f13fb",
+        "url": "https://huggingface.co/datasets/fancyzhx/ag_news/resolve/eb185aade064a813bc0b7f42de02595523103ca4/data/test-00000-of-00001.parquet"
+      },
+      "train": {
+        "bytes": 18585438,
+        "path": "data/train-00000-of-00001.parquet",
+        "rows": 120000,
+        "sha256": "fc508d6d9868594e3da960a8cfeb63ab5a4746598b93428c224397080c1f52ee",
+        "url": "https://huggingface.co/datasets/fancyzhx/ag_news/resolve/eb185aade064a813bc0b7f42de02595523103ca4/data/train-00000-of-00001.parquet"
+      }
+    },
+    "gated": false,
+    "label_names": [
+      "World",
+      "Sports",
+      "Business",
+      "Sci/Tech"
+    ],
+    "provider_license_declaration": [
+      "unknown"
+    ],
+    "provider_schema": {
+      "dataset_size": 31696777,
+      "download_size": 19820267,
+      "features": [
+        {
+          "dtype": "string",
+          "name": "text"
+        },
+        {
+          "dtype": {
+            "class_label": {
+              "names": {
+                "0": "World",
+                "1": "Sports",
+                "2": "Business",
+                "3": "Sci/Tech"
+              }
+            }
+          },
+          "name": "label"
+        }
+      ],
+      "splits": [
+        {
+          "name": "train",
+          "num_bytes": 29817303,
+          "num_examples": 120000
+        },
+        {
+          "name": "test",
+          "num_bytes": 1879474,
+          "num_examples": 7600
+        }
+      ]
+    },
+    "public": true,
+    "repo": "fancyzhx/ag_news",
+    "retrieved_at": "2026-09-26T16:17:28.107606+00:00",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "schema_version": 1,
+    "source_card": {
+      "bytes": 8070,
+      "git_blob_sha1": "fc01bffaf6b7ff9e9df5818a6fa2bd5cb4a27438",
+      "path": "README.md",
+      "sha256": "0ae9549054c5eca6a2284b1a6e8505b1ec92a39613aca402336429762b544a62",
+      "url": "https://huggingface.co/datasets/fancyzhx/ag_news/resolve/eb185aade064a813bc0b7f42de02595523103ca4/README.md"
+    }
+  },
+  "prepared_files": {
+    "train": {
+      "path": "prepared/train.jsonl",
+      "rows": 120000,
+      "source_split": "train",
+      "bytes": 52765105,
+      "sha256": "a88c7f9e91390c4b6dc97e4ae94e53a8a424b69e8f4ecb48ed55f58ffa9ebf3e"
+    },
+    "test": {
+      "path": "prepared/test.jsonl",
+      "rows": 7600,
+      "source_split": "test",
+      "bytes": 3306583,
+      "sha256": "3effa3212c3598b11f16bc1999095f248bc6607ca72f722c0546069bcd71118b"
+    }
+  },
+  "prepared_label_map": {
+    "path": "prepared/labels.json",
+    "bytes": 54,
+    "sha256": "f5977f7eb5cbaa39a126964629abf350af62103af5b75f24d025783dc2d94dba"
+  },
+  "label_names": [
+    "World",
+    "Sports",
+    "Business",
+    "Sci/Tech"
+  ],
+  "label_counts": {
+    "train": {
+      "Business": 30000,
+      "Sci/Tech": 30000,
+      "Sports": 30000,
+      "World": 30000
+    },
+    "test": {
+      "Business": 1900,
+      "Sci/Tech": 1900,
+      "Sports": 1900,
+      "World": 1900
+    }
+  },
+  "duplicate_review": {
+    "exact_text": {
+      "groups": 0,
+      "records_in_groups": 0,
+      "cross_split_groups": 0,
+      "different_label_groups": 0,
+      "bounded_samples": []
+    },
+    "normalized_text": {
+      "groups": 83,
+      "records_in_groups": 166,
+      "cross_split_groups": 4,
+      "different_label_groups": 15,
+      "bounded_samples": [
+        {
+          "text_sha256": "008aba47e54a0a459195f2dccbe377c8633bf0a25160192aea7f0071feabf9be",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 4951
+            }
+          ]
+        },
+        {
+          "text_sha256": "034b6c4ec8245cc435d6917b179747805aa6079104dc8d97a459ba3c5a6a2782",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 1746
+            }
+          ]
+        },
+        {
+          "text_sha256": "051190fb55d9b58a8ab254d832b3b39e81722f7b5c2f96143636950c3485fa66",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 3941
+            }
+          ]
+        },
+        {
+          "text_sha256": "069151ac5dc847a850d852180969be2fec3835adfd3a046287b06c59fe837e68",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 4943
+            }
+          ]
+        }
+      ]
+    },
+    "normalization": "Unicode NFC and whitespace collapse only; case, punctuation and diacritics preserved"
+  },
+  "legacy_comparison": {
+    "scope": "Exact decoded text only; no taxonomy conversion or article-identity inference",
+    "files": {
+      "test.jsonl": {
+        "rows": 189,
+        "sha256": "63f0291f274116aba4f5abc272a728fca6c815344188c2840e88f955430e30fb",
+        "exact_text_matches_to_candidate": 0
+      },
+      "train.jsonl": {
+        "rows": 3402,
+        "sha256": "faa645fe82f9c724dbdde43d6a1010277a50e6e421452c66a7bd3221255e1ba3",
+        "exact_text_matches_to_candidate": 0
+      },
+      "validation.jsonl": {
+        "rows": 189,
+        "sha256": "b807167b5c48a8df4c9efd78a0add8ce70259623a0a68399b5db1440c811e02a",
+        "exact_text_matches_to_candidate": 0
+      }
+    }
+  },
+  "provider_validation_split_available": false,
+  "tooling": {
+    "python_version": "3.14.5",
+    "pyarrow_version": "25.0.1",
+    "model_execution": false
+  },
+  "rights_review": {
+    "status": "unresolved",
+    "provider_license_declaration": "unknown",
+    "scope_evidence": "Pinned Hub card describes research and non-commercial purposes; this is not general reuse clearance",
+    "original_provider_url": "https://groups.di.unipi.it/~gulli/AG_corpus_of_news_articles.html",
+    "original_provider_direct_verification": "timed_out_during_source_review"
+  },
+  "not_admitted_reasons": [
+    "Original-source rights and intended-use review remains unresolved",
+    "Source-row identity does not establish article or syndicated-document identity",
+    "Duplicate policy and training/selection/calibration roles are not assigned by this reconstruction",
+    "No model or research execution authorization is implied"
+  ],
+  "privacy_boundary": "Only code, hashes, counts and source-row references are committed; source news text remains in ignored local candidate storage."
+}

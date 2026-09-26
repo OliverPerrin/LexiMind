@@ -161,3 +161,35 @@ def test_cli_distinguishes_consistent_from_ready():
     assert default.returncode == 0, default.stdout + default.stderr
     assert required.returncode == 2, required.stdout + required.stderr
     assert not json.loads(required.stdout)["execution_performed"]
+
+
+@pytest.mark.parametrize("mutation", ["manifest_reference", "repo", "revision"])
+def test_partition_report_must_bind_its_exact_candidate(packet_root, mutation):
+    path = packet_root / ARTIFACTS["ag_news_partitions"][1]
+    report = json.loads(path.read_text())
+    if mutation == "manifest_reference":
+        other = packet_root / ARTIFACTS["data_inventory"][1]
+        raw = other.read_bytes()
+        report["candidate_manifest"] = {
+            "path": ARTIFACTS["data_inventory"][1],
+            "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        }
+    else:
+        report[mutation] = "different/provider" if mutation == "repo" else "f" * 40
+    write_json(path, report)
+    write_json(packet_root / MANIFEST, build_manifest(packet_root))
+    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    assert not result["artifacts_valid"]
+    assert any("different source candidate" in error for error in result["errors"])
+
+
+def test_arxiv_report_cannot_outlive_its_converter_version(packet_root):
+    path = packet_root / ARTIFACTS["arxiv_source"][1]
+    report = json.loads(path.read_text())
+    report["conversion"]["script_sha256"] = "f" * 64
+    write_json(path, report)
+    write_json(packet_root / MANIFEST, build_manifest(packet_root))
+    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    assert not result["artifacts_valid"]
+    assert any("different reconstruction script" in error for error in result["errors"])

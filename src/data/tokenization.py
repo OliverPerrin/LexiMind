@@ -106,9 +106,9 @@ class Tokenizer:
         )
 
     def encode_batch(self, texts: Sequence[str]) -> List[List[int]]:
-        normalized = (text.lower() if self.config.lower else text for text in texts)
+        normalized = [text.lower() for text in texts] if self.config.lower else texts
         encoded = self._tokenizer.batch_encode_plus(
-            list(normalized),
+            normalized if isinstance(normalized, (list, tuple)) else list(normalized),
             max_length=self.config.max_length,
             padding=self.config.padding,
             truncation=self.config.truncation,
@@ -125,12 +125,12 @@ class Tokenizer:
         padding: str | None = None,
         pad_to_multiple_of: int | None = None,
     ) -> dict[str, torch.Tensor]:
-        normalized = [text.lower() if self.config.lower else text for text in texts]
+        normalized = [text.lower() for text in texts] if self.config.lower else texts
         encoded = self._tokenizer(
-            normalized,
+            normalized if isinstance(normalized, (list, tuple)) else list(normalized),
             padding=padding if padding is not None else self.config.padding,
             truncation=self.config.truncation,
-            max_length=max_length or self.config.max_length,
+            max_length=self.config.max_length if max_length is None else max_length,
             pad_to_multiple_of=pad_to_multiple_of,
             return_tensors="pt",
         )
@@ -146,10 +146,16 @@ class Tokenizer:
         }
 
     def decode(self, token_ids: Iterable[int]) -> str:
-        return cast(str, self._tokenizer.decode(list(token_ids), skip_special_tokens=True))
+        return cast(
+            str,
+            self._tokenizer.decode(
+                token_ids if isinstance(token_ids, (list, tuple)) else list(token_ids),
+                skip_special_tokens=True,
+            ),
+        )
 
     def decode_batch(self, sequences: Sequence[Sequence[int]]) -> List[str]:
-        prepared = [list(seq) for seq in sequences]
+        prepared = [seq if isinstance(seq, (list, tuple)) else list(seq) for seq in sequences]
         return cast(List[str], self._tokenizer.batch_decode(prepared, skip_special_tokens=True))
 
     def prepare_decoder_inputs(self, labels: torch.Tensor) -> torch.Tensor:

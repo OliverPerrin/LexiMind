@@ -1,0 +1,41 @@
+# Editable software defaults, not a frozen study recipe or measured GPU preset.
+# No dataset is selected automatically. Set explicit paths in data.processed.
+dataloader:
+  batch_size: 4
+  num_workers: 0
+
+optimizer:
+  lr: 3.0e-5
+  weight_decay: 0.01
+  eps: 1.0e-6
+  betas: [0.9, 0.999]
+
+scheduler:
+  name: cosine
+  warmup_steps: 0
+
+trainer:
+  tasks: [summarization, emotion, topic]
+  max_epochs: 1
+  gradient_clip_norm: 1.0
+  gradient_accumulation_steps: 1
+  validation_max_length: 128
+  label_smoothing: 0.0
+  task_weights:
+    summarization: 1.0
+    emotion: 1.0
+    topic: 1.0
+  max_train_samples: null
+  max_val_samples: null
+  early_stopping_patience: 3
+  task_sampling: round_robin
+  task_sampling_alpha: 0.5
+  gradient_conflict_frequency: 0
+  use_pcgrad: false
+
+compile_encoder: false
+compile_decoder: false
+tokenizer_max_length: 512
+gradient_checkpointing: false
+use_relative_position_bias: true
+freeze_encoder_layers: 0

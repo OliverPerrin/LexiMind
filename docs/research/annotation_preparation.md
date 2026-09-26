@@ -14,10 +14,8 @@ See [book_discovery_review.md](book_discovery_review.md) for the research ration
 relevance process, and [mood_annotation_guide.md](../mood_annotation_guide.md) for
 the distinction between passage emotion and whole-work reading atmosphere.
 
-The initial empty packet is retained in
-[`snapshots/annotation_packet_initial_2026-09-26.json`](../../research/preparation/snapshots/annotation_packet_initial_2026-09-26.json).
-The current empty packet was regenerated after clarifying the relevance rubric's
-fixed-catalogue query-generalization policy. Neither revision contains judgments.
+The current packet is empty and bound to the current source/rubric bytes. Earlier
+empty revisions are available in Git history; no collected judgments were replaced.
 
 ## Commands and write boundaries
 

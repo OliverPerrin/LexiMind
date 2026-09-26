@@ -3,7 +3,7 @@
 Status: **preparation only; collection has not started**. This document does not
 resume research, establish a taxonomy, or authorize model inference, teacher APIs,
 paid annotation, or training. The research pause in
-[research_plan_2026.md](research_plan_2026.md) and the draft
+[the current study decisions](research/study_decisions.md) and the draft
 [eval_protocol.md](eval_protocol.md) still applies. No book has received a gold mood
 label through this guide, and the website’s mood arrays remain empty.
 

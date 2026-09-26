@@ -4,10 +4,8 @@
 Tests for positional encoding.
 """
 
-import matplotlib
 import torch
 
-matplotlib.use("Agg")  # use non-interactive backend for test environments
 from src.models.positional_encoding import PositionalEncoding
 
 
