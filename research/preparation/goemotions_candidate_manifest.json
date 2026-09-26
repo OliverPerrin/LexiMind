@@ -1,0 +1,623 @@
+{
+  "schema_version": 1,
+  "status": "candidate_prepared_not_admitted",
+  "training_authorized": false,
+  "repo": "google-research-datasets/go_emotions",
+  "revision": "add492243ff905527e67aeb8b80c082af02207c3",
+  "config": "simplified",
+  "local_candidate_directory": "data/research_candidates/go_emotions/add492243ff905527e67aeb8b80c082af02207c3",
+  "preparation_script_sha256": "1f85ab55c72700a3ac709a2b86c5a4a9b1efd700579883904cf420ee60353753",
+  "acquisition_receipt_sha256": "f5b90efe31b0a26d072b2e1ad8dcb5cb30162c58ee2204c267b3dcbff0020b42",
+  "tooling": {
+    "python_version": "3.14.5",
+    "pyarrow_version": "25.0.1",
+    "model_or_datasets_imports": false
+  },
+  "acquisition": {
+    "config": "simplified",
+    "documents": [
+      {
+        "bytes": 9399,
+        "name": "README.md",
+        "sha256": "0a5a9f3a949cce822f6d7453b91433b9fac739187f51ecc665fc5b8a6ec291ba",
+        "url": "https://huggingface.co/datasets/google-research-datasets/go_emotions/resolve/add492243ff905527e67aeb8b80c082af02207c3/README.md"
+      },
+      {
+        "bytes": 7968,
+        "name": "google_readme.md",
+        "sha256": "c882c69be9f400129bce8535319606434481a085be9c20263930670890e171a7",
+        "url": "https://raw.githubusercontent.com/google-research/google-research/master/goemotions/README.md"
+      },
+      {
+        "bytes": 11358,
+        "name": "google_license.txt",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "url": "https://raw.githubusercontent.com/google-research/google-research/master/LICENSE"
+      }
+    ],
+    "files": {
+      "test": {
+        "bytes": 346630,
+        "path": "simplified/test-00000-of-00001.parquet",
+        "rows": 5427,
+        "sha256": "fd0953e535ba2569edc6a1daaa1133f8e4b9071691d540c9bab812fda132bc26",
+        "url": "https://huggingface.co/datasets/google-research-datasets/go_emotions/resolve/add492243ff905527e67aeb8b80c082af02207c3/simplified/test-00000-of-00001.parquet"
+      },
+      "train": {
+        "bytes": 2767678,
+        "path": "simplified/train-00000-of-00001.parquet",
+        "rows": 43410,
+        "sha256": "b7d74279616ae7c9b8374ab62ea9f9d6504d36a577bb17f745d720dc2b0d4e76",
+        "url": "https://huggingface.co/datasets/google-research-datasets/go_emotions/resolve/add492243ff905527e67aeb8b80c082af02207c3/simplified/train-00000-of-00001.parquet"
+      },
+      "validation": {
+        "bytes": 350063,
+        "path": "simplified/validation-00000-of-00001.parquet",
+        "rows": 5426,
+        "sha256": "d46ad5633c4fa41829d22d549743a7bf858d94129536a02af7280c281db5e63a",
+        "url": "https://huggingface.co/datasets/google-research-datasets/go_emotions/resolve/add492243ff905527e67aeb8b80c082af02207c3/simplified/validation-00000-of-00001.parquet"
+      }
+    },
+    "gated": false,
+    "label_names": [
+      "admiration",
+      "amusement",
+      "anger",
+      "annoyance",
+      "approval",
+      "caring",
+      "confusion",
+      "curiosity",
+      "desire",
+      "disappointment",
+      "disapproval",
+      "disgust",
+      "embarrassment",
+      "excitement",
+      "fear",
+      "gratitude",
+      "grief",
+      "joy",
+      "love",
+      "nervousness",
+      "optimism",
+      "pride",
+      "realization",
+      "relief",
+      "remorse",
+      "sadness",
+      "surprise",
+      "neutral"
+    ],
+    "provider_license_declaration": [
+      "apache-2.0"
+    ],
+    "provider_schema": {
+      "config_name": "simplified",
+      "dataset_size": 5275700,
+      "download_size": 3464371,
+      "features": [
+        {
+          "dtype": "string",
+          "name": "text"
+        },
+        {
+          "name": "labels",
+          "sequence": {
+            "class_label": {
+              "names": {
+                "0": "admiration",
+                "1": "amusement",
+                "10": "disapproval",
+                "11": "disgust",
+                "12": "embarrassment",
+                "13": "excitement",
+                "14": "fear",
+                "15": "gratitude",
+                "16": "grief",
+                "17": "joy",
+                "18": "love",
+                "19": "nervousness",
+                "2": "anger",
+                "20": "optimism",
+                "21": "pride",
+                "22": "realization",
+                "23": "relief",
+                "24": "remorse",
+                "25": "sadness",
+                "26": "surprise",
+                "27": "neutral",
+                "3": "annoyance",
+                "4": "approval",
+                "5": "caring",
+                "6": "confusion",
+                "7": "curiosity",
+                "8": "desire",
+                "9": "disappointment"
+              }
+            }
+          }
+        },
+        {
+          "dtype": "string",
+          "name": "id"
+        }
+      ],
+      "splits": [
+        {
+          "name": "train",
+          "num_bytes": 4224138,
+          "num_examples": 43410
+        },
+        {
+          "name": "validation",
+          "num_bytes": 527119,
+          "num_examples": 5426
+        },
+        {
+          "name": "test",
+          "num_bytes": 524443,
+          "num_examples": 5427
+        }
+      ]
+    },
+    "public": true,
+    "repo": "google-research-datasets/go_emotions",
+    "retrieved_at": "2026-09-26T08:49:58.389017+00:00",
+    "revision": "add492243ff905527e67aeb8b80c082af02207c3",
+    "schema_version": 1,
+    "scope": "Three simplified source files and small provenance documents only; no raw/full annotation release or model weights."
+  },
+  "prepared_files": {
+    "train": {
+      "path": "prepared/train.jsonl",
+      "rows": 43410,
+      "bytes": 36143983,
+      "sha256": "18f51b79d392014278ccbb1e5320ce2d75885a8fa2ba46ac8230691783bc43dd"
+    },
+    "validation": {
+      "path": "prepared/validation.jsonl",
+      "rows": 5426,
+      "bytes": 4593181,
+      "sha256": "8e8eb106ee2c311b3aed454ecab70e2b5cc8aa1c09c3d389605e0984f8a103fc"
+    },
+    "test": {
+      "path": "prepared/test.jsonl",
+      "rows": 5427,
+      "bytes": 4493439,
+      "sha256": "ca9c998fead51193c8052d6be490c955380ece38a9323f9b9d0edd43f789fc94"
+    }
+  },
+  "prepared_label_map": {
+    "path": "prepared/labels.json",
+    "bytes": 392,
+    "sha256": "521ed657033b12a10198f1d1f039ab060875056580991af0d0f1463b7468c766"
+  },
+  "label_names": [
+    "admiration",
+    "amusement",
+    "anger",
+    "annoyance",
+    "approval",
+    "caring",
+    "confusion",
+    "curiosity",
+    "desire",
+    "disappointment",
+    "disapproval",
+    "disgust",
+    "embarrassment",
+    "excitement",
+    "fear",
+    "gratitude",
+    "grief",
+    "joy",
+    "love",
+    "nervousness",
+    "optimism",
+    "pride",
+    "realization",
+    "relief",
+    "remorse",
+    "sadness",
+    "surprise",
+    "neutral"
+  ],
+  "label_counts": {
+    "train": {
+      "admiration": 4130,
+      "amusement": 2328,
+      "anger": 1567,
+      "annoyance": 2470,
+      "approval": 2939,
+      "caring": 1087,
+      "confusion": 1368,
+      "curiosity": 2191,
+      "desire": 641,
+      "disappointment": 1269,
+      "disapproval": 2022,
+      "disgust": 793,
+      "embarrassment": 303,
+      "excitement": 853,
+      "fear": 596,
+      "gratitude": 2662,
+      "grief": 77,
+      "joy": 1452,
+      "love": 2086,
+      "nervousness": 164,
+      "neutral": 14219,
+      "optimism": 1581,
+      "pride": 111,
+      "realization": 1110,
+      "relief": 153,
+      "remorse": 545,
+      "sadness": 1326,
+      "surprise": 1060
+    },
+    "validation": {
+      "admiration": 488,
+      "amusement": 303,
+      "anger": 195,
+      "annoyance": 303,
+      "approval": 397,
+      "caring": 153,
+      "confusion": 152,
+      "curiosity": 248,
+      "desire": 77,
+      "disappointment": 163,
+      "disapproval": 292,
+      "disgust": 97,
+      "embarrassment": 35,
+      "excitement": 96,
+      "fear": 90,
+      "gratitude": 358,
+      "grief": 13,
+      "joy": 172,
+      "love": 252,
+      "nervousness": 21,
+      "neutral": 1766,
+      "optimism": 209,
+      "pride": 15,
+      "realization": 127,
+      "relief": 18,
+      "remorse": 68,
+      "sadness": 143,
+      "surprise": 129
+    },
+    "test": {
+      "admiration": 504,
+      "amusement": 264,
+      "anger": 198,
+      "annoyance": 320,
+      "approval": 351,
+      "caring": 135,
+      "confusion": 153,
+      "curiosity": 284,
+      "desire": 83,
+      "disappointment": 151,
+      "disapproval": 267,
+      "disgust": 123,
+      "embarrassment": 37,
+      "excitement": 103,
+      "fear": 78,
+      "gratitude": 352,
+      "grief": 6,
+      "joy": 161,
+      "love": 238,
+      "nervousness": 23,
+      "neutral": 1787,
+      "optimism": 186,
+      "pride": 16,
+      "realization": 145,
+      "relief": 11,
+      "remorse": 56,
+      "sadness": 156,
+      "surprise": 141
+    }
+  },
+  "duplicate_review": {
+    "provider_comment_id": {
+      "groups": 0,
+      "records_in_groups": 0,
+      "cross_split_groups": 0,
+      "bounded_samples": []
+    },
+    "exact_text": {
+      "groups": 166,
+      "records_in_groups": 435,
+      "cross_split_groups": 71,
+      "bounded_samples": [
+        {
+          "group_sha256": "0028824d536d41c0335eac7169e108faa0e872ecbe772015074af5c4b2d1d014",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 24619,
+              "comment_id_sha256": "0e3697dcc8e57ca296c74a358fd1f69adbceab79d287805a81f6f19e3bc774aa"
+            },
+            {
+              "split": "train",
+              "source_row": 37696,
+              "comment_id_sha256": "cd41d19ce6be0411c523f12e2dcf82d1640e663a04e94b0c538c79a385e6a0e0"
+            }
+          ]
+        },
+        {
+          "group_sha256": "05d2f4ffd28bf9dcefc2f3c1248cdb85bf61e7f2e5860404130b5d84c1489bad",
+          "records": 3,
+          "cross_split": true,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 26706,
+              "comment_id_sha256": "fed56d305639172f6db1b016824ccb4bf6d5f2126d470c73a554b6b45da218e1"
+            },
+            {
+              "split": "train",
+              "source_row": 30149,
+              "comment_id_sha256": "4a3dcb1fb7c5958dbc84b7ae28adecb1b535dca174b98ccb9294bb6b48bf31e3"
+            },
+            {
+              "split": "validation",
+              "source_row": 2828,
+              "comment_id_sha256": "6e76dc95d93e914e125da8e8c130cd60dfd8a15ea34f4de2d49c07a0685cce96"
+            }
+          ]
+        },
+        {
+          "group_sha256": "05fc6cbfcc039337bc373aecb81c3b5d62172589611bf9c42ebcf81b64222b93",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 19629,
+              "comment_id_sha256": "7caae3c30d96d20cc161a0f7fc99956c736f0fefd8600473c11a83c5c645bc8c"
+            },
+            {
+              "split": "train",
+              "source_row": 34613,
+              "comment_id_sha256": "8cc3f51b69b5dd08c35317b37c4b5fa1c0abcbe84fdf2f8127dcf5b74e45b05f"
+            }
+          ]
+        },
+        {
+          "group_sha256": "089e359f1cb52aee2c0907fbc2c454612588eeac439c11063d86ae585b60aeea",
+          "records": 3,
+          "cross_split": true,
+          "references": [
+            {
+              "split": "test",
+              "source_row": 4938,
+              "comment_id_sha256": "c07878065ba91e4d6d114ee15801d235da7a4e719954f72fbaaa9d1c1085d741"
+            },
+            {
+              "split": "train",
+              "source_row": 9785,
+              "comment_id_sha256": "ada94fdb5d69533d2e4fdfc9d017cce0c364a1e175b67e8dd04b50dc9c0b2d28"
+            },
+            {
+              "split": "train",
+              "source_row": 17284,
+              "comment_id_sha256": "3bebbef6fdab9ac0e2eb824e03c405091fe22e5e88915121623d47bec04e465b"
+            }
+          ]
+        }
+      ]
+    },
+    "exact_text_and_ordered_labels": {
+      "groups": 121,
+      "records_in_groups": 300,
+      "cross_split_groups": 55,
+      "bounded_samples": [
+        {
+          "group_sha256": "00c45c4696211938392fb6b17655edad956542125ac255e7ccefafafb5e9b585",
+          "records": 2,
+          "cross_split": true,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 11441,
+              "comment_id_sha256": "8aeb97f7904ca21d141852b9d9c0c0713310e699c8f334c4aa12d8828a2fee24"
+            },
+            {
+              "split": "validation",
+              "source_row": 1768,
+              "comment_id_sha256": "786ab2662674994d23e453e0d52b81543080fb5f4796dc61dfba1b3586cc2b18"
+            }
+          ]
+        },
+        {
+          "group_sha256": "023619ebabd92554ce69daeb026f8a09a232d24e571f28a5ad58ce2126c788c4",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 9352,
+              "comment_id_sha256": "e6761dcd6f59a520d40f49314c2bc26ee25a9eba446cd5e38c8d8ca7d98b2c87"
+            },
+            {
+              "split": "train",
+              "source_row": 14555,
+              "comment_id_sha256": "a17c1371bed323d8a6a3a2a66ab16c5c43955980b5c88be01f88e6fce9ac53a4"
+            }
+          ]
+        },
+        {
+          "group_sha256": "02cfe847ebaa158fe97949d95e12cca97049036dd46ab46c8e716d77c8ac13c9",
+          "records": 2,
+          "cross_split": true,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 13899,
+              "comment_id_sha256": "efc011b914054afe7ad857eb323625138b9b0ee068e8ede20245f7112a968d5a"
+            },
+            {
+              "split": "validation",
+              "source_row": 1799,
+              "comment_id_sha256": "ee2e79f8a7bd274e2948eadb64b0d4c77d091a0059ff84a5495ad53be2620743"
+            }
+          ]
+        },
+        {
+          "group_sha256": "04b30198a7ca4fcc8fd1a3f1ccdb2436c9326aaba32e2fb27f5ac799f0df778b",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "split": "train",
+              "source_row": 16612,
+              "comment_id_sha256": "8a55afd0159011d494affc2d3695e069eb6a3d6e488e2798860a8c2b33ba3da9"
+            },
+            {
+              "split": "train",
+              "source_row": 20895,
+              "comment_id_sha256": "32ed1d130fa9272ac9e6b830f2e36d33a296b85c6d743ba610f8afe4cb186138"
+            }
+          ]
+        }
+      ]
+    },
+    "exact_text_groups_with_different_label_sets": 74,
+    "comment_ids_with_conflicting_records": 0,
+    "records_with_duplicate_label_ids": 0,
+    "policy": "All source records, duplicates, annotation differences and original partitions are retained unchanged."
+  },
+  "legacy_comparison": {
+    "comparison_rule": "Exact text plus labels in their recorded order; no text normalization, label sorting, fuzzy match, or split reassignment.",
+    "splits": {
+      "train": {
+        "status": "compared_without_modification",
+        "legacy_sha256": "0b2ea898e47b375c6fedee4540d3b8196ceaf46b3f067c163789ba8a07bbc853",
+        "counts": {
+          "all_splits_ambiguous_candidates": 230,
+          "all_splits_unique_exact_candidate": 43180,
+          "all_splits_unmatched": 0,
+          "matched_only_in_other_splits": 0,
+          "original_split_ambiguous_candidates": 191,
+          "original_split_unique_exact_candidate": 43219,
+          "original_split_unmatched": 0,
+          "rows": 43410
+        },
+        "bounded_ambiguous_or_unmatched_samples": [
+          {
+            "legacy_line": 284,
+            "legacy_record_sha256": "01476da7569414ac6a4ab593a6ae544cb12f208bdbf61c5f243da621de4ec758",
+            "match_key_sha256": "33f378ed76d8142f9747c17811bde2d6d6ae0184c6f921d547aa968099178797",
+            "candidate_rows_all_splits": 2
+          },
+          {
+            "legacy_line": 604,
+            "legacy_record_sha256": "b04f3981b3e1717c3131d21f1cc1b09df97240173b8876158f29bf590b2c44de",
+            "match_key_sha256": "1dd2636c43a4920196ae7ae44cdc4cd9c8de4889458e556de18c7419f254ccfa",
+            "candidate_rows_all_splits": 2
+          },
+          {
+            "legacy_line": 892,
+            "legacy_record_sha256": "006b4d744b22baf827243587a5001d048f33620311b5c1ff6b529cb1cf547a67",
+            "match_key_sha256": "264f766ae7bcac348480cb7b8d505433caec8d0c944e64d322f1fd4dba24f733",
+            "candidate_rows_all_splits": 2
+          },
+          {
+            "legacy_line": 986,
+            "legacy_record_sha256": "1384385a16e65eaf0390eb0c0ed5215b98752695834133f8d30383d231326c32",
+            "match_key_sha256": "592279d6287c1073456219e211c6bcc548910a4add31ea8f72b6730cf235ac2f",
+            "candidate_rows_all_splits": 2
+          }
+        ]
+      },
+      "validation": {
+        "status": "compared_without_modification",
+        "legacy_sha256": "8eb09b3e163674714cedbe81929235bdaf4b72976c0577d1c9333d51ec11727e",
+        "counts": {
+          "all_splits_ambiguous_candidates": 39,
+          "all_splits_unique_exact_candidate": 5387,
+          "all_splits_unmatched": 0,
+          "matched_only_in_other_splits": 0,
+          "original_split_ambiguous_candidates": 4,
+          "original_split_unique_exact_candidate": 5422,
+          "original_split_unmatched": 0,
+          "rows": 5426
+        },
+        "bounded_ambiguous_or_unmatched_samples": [
+          {
+            "legacy_line": 69,
+            "legacy_record_sha256": "452f512194bd1e8b20a9b721d79dc893f86341495d5234d753a7b8a69153f30f",
+            "match_key_sha256": "babab8d8d4313fca86420673a5342022f59903a107a8d855f9da2ee8b41dab33",
+            "candidate_rows_all_splits": 2
+          },
+          {
+            "legacy_line": 194,
+            "legacy_record_sha256": "6cdf849dd18369a97f5065c7b112fef3262246de6e1ecfec2645a77e3ae02e0c",
+            "match_key_sha256": "98f29359faea8b9c36020a9a7b178ea479ba344e3a981388217732d38016fabd",
+            "candidate_rows_all_splits": 11
+          },
+          {
+            "legacy_line": 393,
+            "legacy_record_sha256": "270ff1c291db690486031ef04d41a0ec7bc630eef088b0fb66902b2ae384a80d",
+            "match_key_sha256": "4dac8db95d97352b27580344d30399411fc5174f74d1c92f58dcb6b5ab8b1332",
+            "candidate_rows_all_splits": 2
+          },
+          {
+            "legacy_line": 575,
+            "legacy_record_sha256": "d983753d7b8bc66ab353cfea2f006f2857af07d6f9c02427b3b277250e8169a6",
+            "match_key_sha256": "9f5727c250cfe601da4b7e6eba7f914b997648926de605d8630a8be50b617cb0",
+            "candidate_rows_all_splits": 4
+          }
+        ]
+      },
+      "test": {
+        "status": "compared_without_modification",
+        "legacy_sha256": "34b54f88cb0425f7778e8593151cc80227039d2fab7a620b90712204f442ce2a",
+        "counts": {
+          "all_splits_ambiguous_candidates": 31,
+          "all_splits_unique_exact_candidate": 5396,
+          "all_splits_unmatched": 0,
+          "matched_only_in_other_splits": 0,
+          "original_split_ambiguous_candidates": 10,
+          "original_split_unique_exact_candidate": 5417,
+          "original_split_unmatched": 0,
+          "rows": 5427
+        },
+        "bounded_ambiguous_or_unmatched_samples": [
+          {
+            "legacy_line": 7,
+            "legacy_record_sha256": "4b6ff4be2a53fca1759fd362b25cfd0d57d0823ab9260fc45837cf582e10f69d",
+            "match_key_sha256": "485063b00290f286e9542874d793136f747d4cbe00d19eb5b2ce603110f5dac9",
+            "candidate_rows_all_splits": 2
+          },
+          {
+            "legacy_line": 356,
+            "legacy_record_sha256": "499ec763c16ed00e6e5659e5575755dcf6cb348d394b945b198407d42f44c2b2",
+            "match_key_sha256": "65df810b8dbac5b5f947a493a6da3d78e0264d0338273a60d781a6133f2aeded",
+            "candidate_rows_all_splits": 5
+          },
+          {
+            "legacy_line": 559,
+            "legacy_record_sha256": "14cc52d1f6d8a44810f6cae1107d9f77fa1e95fa48f535b97d51a7dd966531da",
+            "match_key_sha256": "27475cfd2a2cb43ab7c6468e9c69d9e0a890a792586cdc04c3d82bd21a9456f5",
+            "candidate_rows_all_splits": 15
+          },
+          {
+            "legacy_line": 692,
+            "legacy_record_sha256": "941ef002c52cfd8293a2623bdfbf871362ca4572e4a2d6bcd3de81cbfe8e71fd",
+            "match_key_sha256": "75767141d7c8e2909416fe70d41a88e7d0f31c80a1c51ae70b017408871449a0",
+            "candidate_rows_all_splits": 3
+          }
+        ]
+      }
+    },
+    "identity_limit": "Only unique exact source-record candidates are identified by this join. Ambiguous matches remain ambiguous; legacy rows are never rewritten with guessed comment IDs."
+  },
+  "not_admitted_reasons": [
+    "Duplicate-text and conflicting-annotation policy remains unapproved",
+    "Model-selection versus calibration grouping is not assigned or frozen",
+    "Provider rights/bias/source-policy review remains a separate admission gate",
+    "No user authorization for training or research evaluation is implied by preparation"
+  ],
+  "privacy_boundary": "Only code, provenance metadata, hashes, counts and bounded hashed references are committed. Raw and prepared Reddit text remain in ignored local candidate storage. No user profiles or Reddit endpoints are queried."
+}

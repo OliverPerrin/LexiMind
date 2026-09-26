@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "purpose": "Research preparation evidence, not execution authority",
+  "artifacts": [
+    {
+      "id": "study_design",
+      "scope": "common",
+      "path": "configs/research/study_design.json",
+      "bytes": 7504,
+      "sha256": "57c10bbcff84df99a85bee20963e07af5a04bb215b63b40fba10c5358ec712fc"
+    },
+    {
+      "id": "preparation_status",
+      "scope": "common",
+      "path": "configs/research/preparation.json",
+      "bytes": 4824,
+      "sha256": "a8a6930265fde58d16faa96c9d3267197e2be11fc48298b24e7efcd19b411b55"
+    },
+    {
+      "id": "research_index",
+      "scope": "common",
+      "path": "docs/research/README.md",
+      "bytes": 6307,
+      "sha256": "8b09623a762ff0096b3a4c5faf36b5d1c31eb182592a9e03c842d81389c58cf7"
+    },
+    {
+      "id": "study_decisions",
+      "scope": "common",
+      "path": "docs/research/study_decisions.md",
+      "bytes": 7656,
+      "sha256": "4613e7eabce2b407e3ced35cbeee48a7abb415133186c4cd965eefaf76b922c9"
+    },
+    {
+      "id": "evaluation_protocol",
+      "scope": "common",
+      "path": "docs/eval_protocol.md",
+      "bytes": 10966,
+      "sha256": "163e01249e0325fc67852c208dcfb774c2d849a4f6602dbc210d33a7aabefa7a"
+    },
+    {
+      "id": "preflight_contract",
+      "scope": "common",
+      "path": "src/research/preparation.py",
+      "bytes": 15068,
+      "sha256": "9bde280927e3b11e001a543ea7a097e582e13dc90e0977c9578f4d3dee0ecc86"
+    },
+    {
+      "id": "file_integrity_contract",
+      "scope": "common",
+      "path": "scripts/audit_research_artifacts.py",
+      "bytes": 6926,
+      "sha256": "8c0182a01a26eaaaec8737c891bc02ea951d023f8511728be29ead68fc245be8"
+    },
+    {
+      "id": "manifest_contract",
+      "scope": "common",
+      "path": "src/research/manifest.py",
+      "bytes": 3875,
+      "sha256": "a4e030bf41603e77a76bf5b40e61b90cecf5fb0b37a1acc15f22732542735edd"
+    },
+    {
+      "id": "model_literature",
+      "scope": "model_study",
+      "path": "research/preparation/model_literature.json",
+      "bytes": 20866,
+      "sha256": "a3d255d875a0ac3e49da856719d7280311f6b4f7714d51f4ee32ecd2869eb3d9"
+    },
+    {
+      "id": "model_methods_review",
+      "scope": "model_study",
+      "path": "docs/research/model_recipe_review.md",
+      "bytes": 14847,
+      "sha256": "ad045bf28977263526f71ab0cd944d7b9677669315cf0ce27ba7db81f1f2bd80"
+    },
+    {
+      "id": "backbone_candidates",
+      "scope": "model_study",
+      "path": "research/preparation/backbone_candidates.json",
+      "bytes": 18784,
+      "sha256": "f1bf116a1c9b988383e29bf7421a6e70e4639f78b057687bdedadf1a75340c9b"
+    },
+    {
+      "id": "backbone_review",
+      "scope": "model_study",
+      "path": "docs/research/backbone_interface_review.md",
+      "bytes": 12315,
+      "sha256": "0733ee9b24180fe01661a3ea87622113d684163f26f11863e018b806fffbcc99"
+    },
+    {
+      "id": "repository_metadata",
+      "scope": "model_study",
+      "path": "research/preparation/repository_metadata.json",
+      "bytes": 18122,
+      "sha256": "4de507dbdb29032287ddbce7f9553ded4fd76b668211ca9a705da96c57668a5e"
+    },
+    {
+      "id": "data_inventory",
+      "scope": "model_study",
+      "path": "research/preparation/data_inventory.json",
+      "bytes": 28598,
+      "sha256": "533976c7994750c2910398faa0e1ca547132679369b4eb484d4e85116d0e86f4"
+    },
+    {
+      "id": "data_audit",
+      "scope": "model_study",
+      "path": "research/preparation/data_audit.json",
+      "bytes": 26844,
+      "sha256": "76e65e87784ce96324b49131eab3d3de8b66e3c2c053c2cd851ce858fd97be44"
+    },
+    {
+      "id": "data_auditor",
+      "scope": "model_study",
+      "path": "scripts/audit_research_data.py",
+      "bytes": 29714,
+      "sha256": "d76602a2a8efbf8c5d5943576023e92216ce0df26c2e3dbe5eedff297cc702c8"
+    },
+    {
+      "id": "data_readiness",
+      "scope": "model_study",
+      "path": "docs/research/data_readiness.md",
+      "bytes": 8525,
+      "sha256": "13f026ae9a8f6c35f75b3835adabaa7da24a828f9f04e7f36496066e75124e98"
+    },
+    {
+      "id": "dataset_decisions",
+      "scope": "model_study",
+      "path": "docs/research/dataset_decisions.md",
+      "bytes": 5033,
+      "sha256": "067bfae1dc6ee1907b6262462aec72a43436fe9116f58d85b07ccf34c3ddcf14"
+    },
+    {
+      "id": "goemotions_candidate",
+      "scope": "model_study",
+      "path": "research/preparation/goemotions_candidate_manifest.json",
+      "bytes": 21259,
+      "sha256": "f69c5b0849c7ce697b271219d9f3b2da0b2d4eebf6be6258ce28af2da77f2e84"
+    },
+    {
+      "id": "goemotions_builder",
+      "scope": "model_study",
+      "path": "scripts/prepare_goemotions_candidate.py",
+      "bytes": 26263,
+      "sha256": "1f85ab55c72700a3ac709a2b86c5a4a9b1efd700579883904cf420ee60353753"
+    },
+    {
+      "id": "goemotions_reconstruction",
+      "scope": "model_study",
+      "path": "docs/research/goemotions_reconstruction.md",
+      "bytes": 6960,
+      "sha256": "992b0fb8e20488b75332ce31091838cb6de9e9f767ed125a62cc640180d4fd8f"
+    },
+    {
+      "id": "compute_ledger_template",
+      "scope": "model_study",
+      "path": "research/preparation/compute_ledger_template.json",
+      "bytes": 108,
+      "sha256": "963e268382b0b08afb27da5a795835a1d6a9e64beb45a40b0f138e0027bf19fe"
+    },
+    {
+      "id": "compute_contract",
+      "scope": "model_study",
+      "path": "src/research/ledger.py",
+      "bytes": 12768,
+      "sha256": "13ff36c354d888b7a9b2f90303ad11c28725d6ddfd987122cf8253b43269333c"
+    },
+    {
+      "id": "compute_accounting",
+      "scope": "model_study",
+      "path": "docs/research/compute_accounting.md",
+      "bytes": 8366,
+      "sha256": "6dd79a35087ab12e4229745ac96b6d025230985ec8956c47d1ad0c7a63e9563e"
+    },
+    {
+      "id": "model_admission_contract",
+      "scope": "model_study",
+      "path": "src/research/admission.py",
+      "bytes": 32872,
+      "sha256": "3639866686c24a69a7e4748f3bdfeda19a6d47bfef2d88f55eba3a80f4d88aad"
+    },
+    {
+      "id": "model_admission_guide",
+      "scope": "model_study",
+      "path": "docs/research/admission_contracts.md",
+      "bytes": 11206,
+      "sha256": "4cf30f483546fab8808530c1024ae791c366ebc472707e31ef0bb6fc8c81f5f4"
+    },
+    {
+      "id": "book_literature",
+      "scope": "book_study",
+      "path": "research/preparation/book_literature.json",
+      "bytes": 22462,
+      "sha256": "887c1714c97b73aa685e03aaf7760726ad5438f4839ef97ac70b1cc009029085"
+    },
+    {
+      "id": "book_methods_review",
+      "scope": "book_study",
+      "path": "docs/research/book_discovery_review.md",
+      "bytes": 21201,
+      "sha256": "0686d85a75035b1e6e8daf95a2895355da0043797cc76dbfb281e0fb8afb0b71"
+    },
+    {
+      "id": "annotation_packet",
+      "scope": "book_study",
+      "path": "research/preparation/annotation_packet.json",
+      "bytes": 35963,
+      "sha256": "44ece8a05d9b02528d0a3093c9b0c1b83e0468cd4f453a2c099e1ecafe46d2d5"
+    },
+    {
+      "id": "annotation_contract",
+      "scope": "common",
+      "path": "src/research/annotations.py",
+      "bytes": 20551,
+      "sha256": "2e662001c999424ef214afebb0c6daedff1164af2093965516e1a639eb125e21"
+    },
+    {
+      "id": "annotation_guide",
+      "scope": "book_study",
+      "path": "docs/research/annotation_preparation.md",
+      "bytes": 9756,
+      "sha256": "f590454bc0d31e72321a30748d9d0268dce1946c7045935614190e25ed34eb69"
+    },
+    {
+      "id": "mood_rubric",
+      "scope": "book_study",
+      "path": "docs/mood_annotation_guide.md",
+      "bytes": 7181,
+      "sha256": "7056334aadff007b0cd9649389e43f79fcef36369339e7706c87d7f4cca2660d"
+    },
+    {
+      "id": "relevance_rubric",
+      "scope": "book_study",
+      "path": "docs/recommendation_judgments.md",
+      "bytes": 9284,
+      "sha256": "85a0eaff44b403fc7e95c1f4c718eb91f3f0af751c662eebdfca0137c061ec26"
+    },
+    {
+      "id": "book_admission_contract",
+      "scope": "book_study",
+      "path": "src/research/book_admission.py",
+      "bytes": 15916,
+      "sha256": "b9289f70bab36fe4560301b15217595bacdf39ad2f88474429b79093e90d81ea"
+    },
+    {
+      "id": "book_admission_guide",
+      "scope": "book_study",
+      "path": "docs/research/book_admission_contract.md",
+      "bytes": 9803,
+      "sha256": "d201f8b471824abf5c69f68a473387a187c9d26cb96a34952c86d70c9036f69b"
+    }
+  ]
+}

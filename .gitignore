@@ -25,6 +25,7 @@ ENV/
 # Data
 data/raw/
 data/processed/
+data/research_candidates/
 data/cache/
 *.csv
 *.txt
