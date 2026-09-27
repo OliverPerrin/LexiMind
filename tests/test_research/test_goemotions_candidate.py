@@ -12,16 +12,23 @@ from scripts import prepare_goemotions_candidate as prep
 
 def test_converter_preserves_text_label_order_comment_identity_and_original_split():
     source = {"id": "opaque-comment-fixture", "text": "  Fixture text.\n", "labels": [25, 17]}
-    output = prep.convert_record(source, "validation", 7, "a" * 64)
+    output = prep.convert_record(source, "validation", 7)
     assert output["text"] == source["text"]
     assert output["label_ids"] == [25, 17]
     assert output["emotions"] == ["sadness", "joy"]
     assert output["provider_comment_id"] == source["id"]
-    assert output["provider_split"] == output["split"] == "validation"
-    assert output["provider_revision"] == prep.REVISION
+    assert output["provider_split"] == "validation"
     assert output["document_id"].endswith(":comment:opaque-comment-fixture")
-    assert output["source_provenance"] == {"file_sha256": "a" * 64, "row": 7}
-    assert output["candidate_status"] == "not_admitted"
+    assert output["source_row"] == 7
+    assert set(output) == {
+        "text",
+        "emotions",
+        "label_ids",
+        "document_id",
+        "provider_comment_id",
+        "provider_split",
+        "source_row",
+    }
     assert source == {
         "id": "opaque-comment-fixture",
         "text": "  Fixture text.\n",
@@ -42,9 +49,7 @@ def test_converter_preserves_text_label_order_comment_identity_and_original_spli
 )
 def test_invalid_source_shapes_fail_before_admission(patch):
     with pytest.raises(ValueError, match="Invalid simplified"):
-        prep.convert_record(
-            {"id": "fixture", "text": "text", "labels": [17], **patch}, "train", 1, "a" * 64
-        )
+        prep.convert_record({"id": "fixture", "text": "text", "labels": [17], **patch}, "train", 1)
 
 
 def test_exact_matching_does_not_normalize_text_or_reorder_labels():
@@ -97,7 +102,13 @@ def test_candidate_retains_duplicates_and_annotation_differences_without_touchin
         prep, "iter_parquet_rows", lambda path: iter(sources[path.name.split("-")[0]])
     )
     monkeypatch.setattr(prep, "version", lambda package: "fixture-decoder")
+    (candidate / "prepared").mkdir()
+    old_v1 = candidate / "prepared/train.jsonl"
+    old_v1.write_bytes(b"synthetic preserved v1 fixture\n")
     report = prep.prepare_candidate(candidate, receipt, legacy)
+    assert old_v1.read_bytes() == b"synthetic preserved v1 fixture\n"
+    assert report["prepared_record_version"] == 2
+    assert report["preserved_v1_files"]["train"]["sha256"] == prep.file_hash(old_v1)
     assert all(path.read_bytes() == content for path, content in before.items())
     assert report["status"] == "candidate_prepared_not_admitted"
     assert report["training_authorized"] is False
@@ -114,7 +125,7 @@ def test_candidate_retains_duplicates_and_annotation_differences_without_touchin
     for split, rows in sources.items():
         actual = [
             json.loads(line)
-            for line in (candidate / "prepared" / f"{split}.jsonl").read_text().splitlines()
+            for line in (candidate / "prepared_v2" / f"{split}.jsonl").read_text().splitlines()
         ]
         assert len(actual) == len(rows)
         assert [row["text"] for row in actual] == [row["text"] for row in rows]

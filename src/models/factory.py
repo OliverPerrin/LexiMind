@@ -472,17 +472,17 @@ def build_multitask_model(
 
     Args:
         tokenizer: Tokenizer for vocabulary size and pad token
-        num_emotions: Number of emotion classes
-        num_topics: Number of topic classes
+        num_emotions: Number of emotion classes; zero omits this inactive head
+        num_topics: Number of topic classes; zero omits this inactive head
         config: Model architecture configuration
         load_pretrained: Override config.use_pretrained (for inference to skip loading)
     """
 
     cfg = config or ModelConfig()
-    if not isinstance(num_emotions, int) or num_emotions <= 0:
-        raise ValueError("num_emotions must be a positive integer")
-    if not isinstance(num_topics, int) or num_topics <= 0:
-        raise ValueError("num_topics must be a positive integer")
+    if isinstance(num_emotions, bool) or not isinstance(num_emotions, int) or num_emotions < 0:
+        raise ValueError("num_emotions must be a nonnegative integer")
+    if isinstance(num_topics, bool) or not isinstance(num_topics, int) or num_topics < 0:
+        raise ValueError("num_topics must be a nonnegative integer")
 
     # Get max_length from tokenizer (handle both custom and HF tokenizers)
     if hasattr(tokenizer, "config") and hasattr(tokenizer.config, "max_length"):
@@ -556,23 +556,24 @@ def build_multitask_model(
         "summarization",
         LMHead(d_model=cfg.d_model, vocab_size=vocab_size, tie_embedding=decoder.embedding),
     )
-    # Emotion head with attention pooling + 2-layer MLP for better multi-label capacity (28 classes)
-    # Attention pooling is superior to mean pooling for encoder-decoder models where
-    # hidden states are optimized for cross-attention rather than simple averaging.
-    model.add_head(
-        "emotion",
-        ClassificationHead(
-            d_model=cfg.d_model,
-            num_labels=num_emotions,
-            pooler="attention",
-            dropout=cfg.dropout,
-            hidden_dim=cfg.d_model // 2,  # 384-dim hidden layer
-        ),
-    )
-    model.add_head(
-        "topic",
-        ClassificationHead(
-            d_model=cfg.d_model, num_labels=num_topics, pooler="mean", dropout=cfg.dropout
-        ),
-    )
+    # Preserve existing modules/names for active heads; absent labels never create
+    # a random fallback classification head in single-task checkpoints.
+    if num_emotions:
+        model.add_head(
+            "emotion",
+            ClassificationHead(
+                d_model=cfg.d_model,
+                num_labels=num_emotions,
+                pooler="attention",
+                dropout=cfg.dropout,
+                hidden_dim=cfg.d_model // 2,  # 384-dim hidden layer
+            ),
+        )
+    if num_topics:
+        model.add_head(
+            "topic",
+            ClassificationHead(
+                d_model=cfg.d_model, num_labels=num_topics, pooler="mean", dropout=cfg.dropout
+            ),
+        )
     return model

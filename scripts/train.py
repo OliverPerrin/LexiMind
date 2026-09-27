@@ -1,14 +1,12 @@
 """
 Training script for LexiMind.
 
-Simple, clean training with multi-task learning across:
-- Summarization (BookSum + arXiv papers)
-- Emotion classification (GoEmotions, 28 labels)
-- Topic classification (Books + Papers, 7 labels: Arts, Business, Fiction, History, Philosophy, Science, Technology)
+Train the retained custom transformer on explicitly supplied, reviewed task
+splits. No dataset is selected by default. Research execution remains a separate
+authorization step; this entry point does not perform study admission.
 
-Usage:
-    python scripts/train.py training=medium
-    python scripts/train.py training=full
+Usage (after separate authorization):
+    python scripts/train.py training=default 'training.trainer.tasks=[topic]' data.processed.topic=/path/to/splits
 
 Author: Oliver Perrin
 Date: December 2025
@@ -33,25 +31,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.data.dataloader import (
-    build_emotion_dataloader,
-    build_summarization_dataloader,
-    build_topic_dataloader,
-)
-from src.data.dataset import (
-    EmotionDataset,
-    SummarizationDataset,
-    TopicDataset,
-    load_emotion_jsonl,
-    load_summarization_jsonl,
-    load_topic_jsonl,
-    split_emotion_val,
-)
+from src.data.dataloader import build_task_dataloaders
+from src.data.dataset import load_splits as load_splits
+from src.data.dataset import load_training_datasets
 from src.data.tokenization import Tokenizer, TokenizerConfig
 from src.models.factory import ModelConfig, build_multitask_model
 from src.training.trainer import Trainer, TrainerConfig
 from src.utils.io import load_state, save_state
-from src.utils.labels import LabelMetadata, save_label_metadata
+from src.utils.labels import LabelMetadata, load_label_metadata, save_label_metadata
 
 
 def set_seed(seed: int) -> None:
@@ -64,21 +51,6 @@ def set_seed(seed: int) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
-
-
-def load_splits(data_dir: Path, loader_fn, *, include_test: bool = False) -> Dict[str, list]:
-    """Load training/model-selection inputs; test data is opt-in and never needed for fit."""
-    splits = {}
-    names = [("train", ["train"]), ("val", ["val", "validation"])]
-    if include_test:
-        names.append(("test", ["test"]))
-    for name, aliases in names:
-        for alias in aliases:
-            path = data_dir / f"{alias}.jsonl"
-            if path.exists():
-                splits[name] = loader_fn(str(path))
-                break
-    return splits
 
 
 def resume_start_epoch(checkpoint: Path) -> int:
@@ -99,6 +71,22 @@ def resume_start_epoch(checkpoint: Path) -> int:
     return int(match.group(1)) + 1 if match else 1
 
 
+def validate_resume_labels(cfg: DictConfig, *, emotion: list[str], topic: list[str]) -> None:
+    """Bind existing classification columns before a weights-only continuation."""
+    if not cfg.get("resume_from"):
+        return
+    labels_path = cfg.get("resume_labels")
+    if not isinstance(labels_path, str) or not labels_path.strip():
+        raise ValueError(
+            "resume_from requires explicit resume_labels=/path/to/checkpoint-labels.json; matching head dimensions do not establish label order"
+        )
+    saved = load_label_metadata(labels_path)
+    if saved.emotion != emotion or saved.topic != topic:
+        raise ValueError(
+            "Resume label vocabularies/order differ from current datasets; supply the checkpoint's exact ordered labels and compatible dataset labels.json files"
+        )
+
+
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
     """Main training entry point."""
@@ -112,9 +100,31 @@ def main(cfg: DictConfig) -> None:
     set_seed(cfg.seed)
     device = torch.device(cfg.device)
 
+    # --------------- Load Data ---------------
+
+    print("\nLoading datasets...")
+    data_cfg = cfg.data
+    trainer_cfg = cfg.training.get("trainer", {})
+
+    enabled_tasks = list(trainer_cfg.get("tasks", ["summarization", "emotion", "topic"]))
+    train_datasets, val_datasets = load_training_datasets(
+        data_cfg.processed,
+        enabled_tasks,
+        max_train_samples=trainer_cfg.get("max_train_samples"),
+        max_val_samples=trainer_cfg.get("max_val_samples"),
+    )
+    for task in enabled_tasks:
+        print(
+            f"  {task}: {len(train_datasets[task]):,} train, {len(val_datasets.get(task, [])):,} val"
+        )
+    print(f"  Enabled tasks: {enabled_tasks}")
+    emotion_classes = getattr(train_datasets.get("emotion"), "emotion_classes", [])
+    topic_classes = getattr(train_datasets.get("topic"), "topic_classes", [])
+    validate_resume_labels(cfg, emotion=emotion_classes, topic=topic_classes)
+
     # GPU optimizations for Ampere+
     if device.type == "cuda":
-        # Enable cudnn benchmark for fixed-size inputs (10-20% speedup)
+        # Optional CUDA backend settings retained from the training recipe.
         torch.backends.cudnn.benchmark = True
 
         if torch.cuda.get_device_capability()[0] >= 8:
@@ -124,51 +134,6 @@ def main(cfg: DictConfig) -> None:
             print("  TF32 + cudnn.benchmark enabled (Ampere GPU)")
         else:
             print("  cudnn.benchmark enabled")
-
-    # --------------- Load Data ---------------
-
-    print("\nLoading datasets...")
-    data_cfg = cfg.data
-    trainer_cfg = cfg.training.get("trainer", {})
-
-    # Load splits
-    summ_splits = load_splits(Path(data_cfg.processed.summarization), load_summarization_jsonl)
-    emot_splits = load_splits(Path(data_cfg.processed.emotion), load_emotion_jsonl)
-    topic_splits = load_splits(Path(data_cfg.processed.topic), load_topic_jsonl)
-
-    # Reserve half of the emotion val split for per-class threshold calibration at
-    # evaluation time. Early stopping only sees the model-selection half, so the
-    # threshold sweep in scripts/evaluate.py operates on samples that never drove
-    # checkpoint selection. The split is seeded and matches the one applied in
-    # evaluate.py so the two sides agree on which samples are which.
-    if "val" in emot_splits and emot_splits["val"]:
-        emot_model_sel, emot_calib = split_emotion_val(emot_splits["val"])
-        emot_splits["val"] = emot_model_sel
-        print(
-            f"  Emotion val split: {len(emot_model_sel)} model-selection / "
-            f"{len(emot_calib)} held out for threshold calibration"
-        )
-
-    # Apply sample limits for dev runs
-    max_train = trainer_cfg.get("max_train_samples")
-    max_val = trainer_cfg.get("max_val_samples")
-    if max_train:
-        for splits in [summ_splits, emot_splits, topic_splits]:
-            splits["train"] = splits["train"][:max_train]
-    if max_val:
-        for splits in [summ_splits, emot_splits, topic_splits]:
-            if "val" in splits:
-                splits["val"] = splits["val"][:max_val]
-
-    print(
-        f"  Summarization: {len(summ_splits['train']):,} train, {len(summ_splits.get('val', [])):,} val"
-    )
-    print(
-        f"  Emotion: {len(emot_splits['train']):,} train, {len(emot_splits.get('val', [])):,} val"
-    )
-    print(
-        f"  Topic: {len(topic_splits['train']):,} train, {len(topic_splits.get('val', [])):,} val"
-    )
 
     # --------------- Tokenizer ---------------
 
@@ -183,98 +148,20 @@ def main(cfg: DictConfig) -> None:
     )
     print(f"  Tokenizer: {tokenizer.vocab_size:,} vocab, max_len={max_len}")
 
-    # --------------- Datasets ---------------
-
-    summ_train = SummarizationDataset(summ_splits["train"])
-    summ_val = SummarizationDataset(summ_splits.get("val", []))
-    emot_train = EmotionDataset(emot_splits["train"])
-    emot_val = EmotionDataset(emot_splits.get("val", []), binarizer=emot_train.binarizer)
-    topic_train = TopicDataset(topic_splits["train"])
-    topic_val = TopicDataset(topic_splits.get("val", []), encoder=topic_train.encoder)
-
-    print(f"  Emotions: {len(emot_train.emotion_classes)} classes")
-    print(
-        f"  Topics: {len(topic_train.topic_classes)} classes → {list(map(str, topic_train.topic_classes))}"
-    )
-
     # --------------- DataLoaders ---------------
 
     dl_cfg = cfg.training.get("dataloader", {})
-    batch_size = int(dl_cfg.get("batch_size", 8))
-    num_workers = int(dl_cfg.get("num_workers", 4))
-
-    # Classification tasks don't need full 512 tokens - 256 is sufficient
-    # This speeds up emotion/topic forward passes significantly
-    classification_max_len = min(256, max_len)
-
-    # Tasks to train (filter for single-task baselines).
-    enabled_tasks = list(trainer_cfg.get("tasks", ["summarization", "emotion", "topic"]))
-    print(f"  Enabled tasks: {enabled_tasks}")
-
-    train_loaders = {
-        "summarization": build_summarization_dataloader(
-            summ_train,
-            tokenizer,
-            shuffle=True,
-            max_source_length=max_len,
-            max_target_length=max_len,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            pin_memory=True,
-        ),
-        "emotion": build_emotion_dataloader(
-            emot_train,
-            tokenizer,
-            shuffle=True,
-            max_length=classification_max_len,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            pin_memory=True,
-        ),
-        "topic": build_topic_dataloader(
-            topic_train,
-            tokenizer,
-            shuffle=True,
-            max_length=classification_max_len,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            pin_memory=True,
-        ),
-    }
-    train_loaders = {k: v for k, v in train_loaders.items() if k in enabled_tasks}
-
-    val_loaders = {}
-    if summ_val and "summarization" in enabled_tasks:
-        val_loaders["summarization"] = build_summarization_dataloader(
-            summ_val,
-            tokenizer,
-            shuffle=False,
-            max_source_length=max_len,
-            max_target_length=max_len,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            pin_memory=True,
-        )
-    if emot_val and "emotion" in enabled_tasks:
-        val_loaders["emotion"] = build_emotion_dataloader(
-            emot_val,
-            tokenizer,
-            shuffle=False,
-            max_length=classification_max_len,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            pin_memory=True,
-        )
-    if topic_val and "topic" in enabled_tasks:
-        val_loaders["topic"] = build_topic_dataloader(
-            topic_val,
-            tokenizer,
-            shuffle=False,
-            max_length=classification_max_len,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            pin_memory=True,
-        )
+    loader_options = dict(
+        batch_size=int(dl_cfg.get("batch_size", 8)),
+        num_workers=int(dl_cfg.get("num_workers", 0)),
+        pin_memory=device.type == "cuda",
+        max_length=max_len,
+        classification_max_length=min(256, max_len),
+    )
+    train_loaders = build_task_dataloaders(
+        train_datasets, tokenizer, shuffle=True, **loader_options
+    )
+    val_loaders = build_task_dataloaders(val_datasets, tokenizer, shuffle=False, **loader_options)
 
     # --------------- Model ---------------
 
@@ -310,8 +197,8 @@ def main(cfg: DictConfig) -> None:
 
     model = build_multitask_model(
         tokenizer,
-        num_emotions=len(emot_train.emotion_classes),
-        num_topics=len(topic_train.topic_classes),
+        num_emotions=len(emotion_classes),
+        num_topics=len(topic_classes),
         config=model_cfg,
     ).to(device)
 
@@ -388,6 +275,8 @@ def main(cfg: DictConfig) -> None:
         model.parameters(),
         lr=float(opt_cfg.get("lr", 3e-5)),
         weight_decay=float(opt_cfg.get("weight_decay", 0.01)),
+        eps=float(opt_cfg.get("eps", 1e-8)),
+        betas=tuple(float(value) for value in opt_cfg.get("betas", (0.9, 0.999))),
         fused=use_fused,
     )
     if use_fused:
@@ -401,6 +290,7 @@ def main(cfg: DictConfig) -> None:
             gradient_clip_norm=float(trainer_cfg.get("gradient_clip_norm", 1.0)),
             task_weights=trainer_cfg.get("task_weights"),
             label_smoothing=float(trainer_cfg.get("label_smoothing", 0.1)),
+            validation_max_length=int(trainer_cfg.get("validation_max_length", 128)),
             gradient_accumulation_steps=int(trainer_cfg.get("gradient_accumulation_steps", 1)),
             scheduler_type=str(sched_cfg.get("name", "cosine")),
             warmup_steps=int(sched_cfg.get("warmup_steps", 500)),
@@ -448,7 +338,7 @@ def main(cfg: DictConfig) -> None:
     # Labels
     labels_path = Path(cfg.labels_out)
     save_label_metadata(
-        LabelMetadata(emotion=emot_train.emotion_classes, topic=topic_train.topic_classes),
+        LabelMetadata(emotion=emotion_classes, topic=topic_classes),
         labels_path,
     )
     print(f"  Labels: {labels_path}")

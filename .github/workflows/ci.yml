@@ -2,48 +2,60 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [main, master]
   pull_request:
-    branches: [ "main", "master" ]
 
 concurrency:
-  group: python-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  lint:
-    runs-on: ubuntu-24.04
+  website:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
     steps:
-    - uses: actions/checkout@v5
-    
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: "3.10"
-        
-    - name: Install linting tools
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements-quality.txt
-        
-    - name: Lint with Ruff
-      run: |
-        ruff check .
-        ruff format --check .
-        
-    - name: Type check with Mypy
-      run: |
-        mypy src/ --ignore-missing-imports
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:unit
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-test-results
+          path: web/test-results/
 
-  test:
+  data-and-provenance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements-quality.txt
+      - run: python -m ruff check .
+      - run: python -m ruff format --check .
+      - run: python -m mypy src/ --ignore-missing-imports
+      - run: python -m pytest tests/test_catalog tests/test_research -q
+
+  model:
     runs-on: ubuntu-24.04
     env:
       HF_HUB_OFFLINE: '1'
       TRANSFORMERS_OFFLINE: '1'
-      MPLBACKEND: Agg
     steps:
     - uses: actions/checkout@v5
-    
+
     - name: Set up Python
       uses: actions/setup-python@v6
       id: python
@@ -59,7 +71,7 @@ jobs:
       with:
         path: .venv-ci
         key: ubuntu24-${{ runner.arch }}-py${{ steps.python.outputs.python-version }}-cpu-torch214-v1-${{ hashFiles('requirements-test.txt', 'requirements-quality.txt') }}
-        
+
     - name: Install dependencies
       if: steps.environment.outputs.cache-hit != 'true'
       run: |
@@ -67,7 +79,7 @@ jobs:
         .venv-ci/bin/python -m pip install --upgrade pip
         .venv-ci/bin/python -m pip install torch==2.14.0+cpu --index-url https://download.pytorch.org/whl/cpu
         .venv-ci/bin/python -m pip install -r requirements-test.txt
-        
+
     - name: Run tests
       run: |
-        .venv-ci/bin/python -m pytest tests/ -x -q --tb=short
+        .venv-ci/bin/python -m pytest tests/test_models tests/test_data tests/test_training tests/test_inference tests/test_utils -x -q --tb=short

@@ -2,7 +2,7 @@
 
 Status: **preparation only; no relevance collection or research evaluation has
 started**. This guide is subordinate to the research pause in
-[research_plan_2026.md](research_plan_2026.md) and to the unresolved gates in
+[the current study decisions](research/study_decisions.md) and to the unresolved gates in
 [eval_protocol.md](eval_protocol.md). Software regression tests and synthetic runtime
 benchmarks do not constitute recommendation-quality evidence.
 

@@ -1,135 +1,239 @@
-"""
-Dataset definitions for the LexiMind multitask training pipeline.
+"""Task examples, bounded JSONL reads and split preparation.
 
-Defines PyTorch Dataset classes and data loading utilities for summarization,
-emotion classification, and topic classification tasks. Supports both JSON
-array and JSONL file formats.
-
-Author: Oliver Perrin
-Date: December 2025
+JSONL may be indexed without retaining document text in memory. Legacy JSON
+arrays still load eagerly; convert them to JSONL for bounded text storage.
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
+import operator
+from array import array
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Dict, Iterable, List, Sequence, Set, TypeVar
+from typing import Any, Generic, TypeVar, cast, overload
 
+import numpy as np
 from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
 from torch.utils.data import Dataset
 
+T = TypeVar("T")
+TASK_NAMES = ("summarization", "emotion", "topic")
 
-@dataclass
+
+@dataclass(slots=True)
 class SummarizationExample:
-    """Container for abstractive summarization samples."""
-
     source: str
     summary: str
+    domain: str = "unknown"
 
 
-@dataclass
+@dataclass(slots=True)
 class EmotionExample:
-    """Container for multi-label emotion classification samples."""
-
     text: str
     emotions: Sequence[str]
 
 
-@dataclass
+@dataclass(slots=True)
 class TopicExample:
-    """Container for topic clustering / classification samples."""
-
     text: str
     topic: str
 
 
-class SummarizationDataset(Dataset[SummarizationExample]):
-    """Dataset yielding encoder-decoder training pairs."""
-
-    def __init__(self, examples: Iterable[SummarizationExample]) -> None:
-        self._examples = list(examples)
-
-    def __len__(self) -> int:
-        return len(self._examples)
-
-    def __getitem__(self, index: int) -> SummarizationExample:
-        return self._examples[index]
+def _validate_limit(limit: int | None) -> None:
+    if limit is not None and (isinstance(limit, bool) or not isinstance(limit, int) or limit < 0):
+        raise ValueError("Sample limit must be a nonnegative integer or None")
 
 
-class EmotionDataset(Dataset[EmotionExample]):
-    """Dataset that owns a scikit-learn MultiLabelBinarizer for emissions."""
+def _snapshot(path: Path) -> tuple[int, int, int, int]:
+    stat = path.stat()
+    return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns
+
+
+def _parse_record(raw: bytes | str, path: Path, line: int, required: Sequence[str]) -> dict:
+    try:
+        payload = json.loads(raw)
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise ValueError(f"Failed to parse JSON in '{path}' at line {line}: {exc}") from exc
+    _validate_record(payload, path, f"line {line}", required)
+    return cast(dict, payload)
+
+
+def _validate_record(payload: object, path: Path, location: str, required: Sequence[str]) -> None:
+    if not isinstance(payload, dict):
+        raise ValueError(f"Expected JSON object at {location} of '{path}'")
+    missing = [key for key in required if key not in payload]
+    if missing:
+        raise KeyError(
+            f"Missing required keys ({', '.join(sorted(missing))}) at {location} of '{path}'"
+        )
+
+
+class IndexedJsonl(Sequence[T], Generic[T]):
+    """Read-only row index with O(rows) offsets and O(batch text) decoded memory.
+
+    Row decoding/validation is deferred until access. No token or document cache
+    is retained. Each batch opens its own handle, so fork/spawn workers never
+    share seek state or serialize corpus text. A changed source must be reloaded.
+    This file-stat guard detects ordinary edits, not adversarial tampering; the
+    separate admission manifest is responsible for content hashes/provenance.
+    """
 
     def __init__(
         self,
-        examples: Iterable[EmotionExample],
+        path: Path,
+        constructor: Callable[[dict], T],
+        required: Sequence[str],
         *,
-        binarizer: MultiLabelBinarizer | None = None,
-    ) -> None:
-        self._examples = list(examples)
-        all_labels = [example.emotions for example in self._examples]
-        if binarizer is None:
-            self._binarizer = MultiLabelBinarizer()
-            self._binarizer.fit(all_labels)
-        else:
-            self._binarizer = binarizer
-            if not hasattr(self._binarizer, "classes_"):
-                raise ValueError(
-                    "Provided MultiLabelBinarizer must be pre-fitted with 'classes_' attribute."
+        limit: int | None = None,
+    ):
+        _validate_limit(limit)
+        self.path = path.resolve()
+        self.constructor = constructor
+        self.required = tuple(required)
+        self._snapshot = _snapshot(self.path)
+        self._offsets = array("Q")
+        self._lines = array("Q")
+        with self.path.open("rb") as handle:
+            line_number = 0
+            while limit is None or len(self._offsets) < limit:
+                offset = handle.tell()
+                raw = handle.readline()
+                if not raw:
+                    break
+                line_number += 1
+                if raw.strip():
+                    self._offsets.append(offset)
+                    self._lines.append(line_number)
+        self._check_source()
+
+    def _check_source(self) -> None:
+        if _snapshot(self.path) != self._snapshot:
+            raise RuntimeError(f"Dataset changed after indexing: '{self.path}'; reload its index")
+
+    def __len__(self) -> int:
+        return len(self._offsets)
+
+    def _index(self, index: int) -> int:
+        index = operator.index(index)
+        if index < 0:
+            index += len(self)
+        if index < 0 or index >= len(self):
+            raise IndexError("Dataset index out of range")
+        return index
+
+    def read_many(self, indices: Iterable[int]) -> list[T]:
+        self._check_source()
+        with self.path.open("rb") as handle:
+            result = []
+            for requested in indices:
+                index = self._index(requested)
+                handle.seek(self._offsets[index])
+                payload = _parse_record(
+                    handle.readline(), self.path, self._lines[index], self.required
                 )
+                result.append(self.constructor(payload))
+        self._check_source()
+        return result
+
+    @overload
+    def __getitem__(self, index: int) -> T: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> list[T]: ...
+
+    def __getitem__(self, index: int | slice) -> T | list[T]:
+        if isinstance(index, slice):
+            return self.read_many(range(*index.indices(len(self))))
+        return self.read_many([index])[0]
+
+    def __iter__(self) -> Iterator[T]:
+        self._check_source()
+        remaining = len(self)
+        with self.path.open("rb") as handle:
+            line = 0
+            while remaining:
+                raw = handle.readline()
+                if not raw:
+                    break
+                line += 1
+                if raw.strip():
+                    yield self.constructor(_parse_record(raw, self.path, line, self.required))
+                    remaining -= 1
+        self._check_source()
+
+
+class _ExampleDataset(Dataset[T], Generic[T]):
+    def __init__(self, examples: Iterable[T]) -> None:
+        # Keep immutable file-backed storage; preserve the old list snapshot API.
+        self._examples = examples if isinstance(examples, IndexedJsonl) else list(examples)
 
     def __len__(self) -> int:
         return len(self._examples)
 
-    def __getitem__(self, index: int) -> EmotionExample:
+    def __getitem__(self, index: int) -> T:
         return self._examples[index]
+
+    def __getitems__(self, indices: list[int]) -> list[T]:
+        # PyTorch's map-style batch fetch opens a single handle per minibatch.
+        if isinstance(self._examples, IndexedJsonl):
+            return self._examples.read_many(indices)
+        return [self._examples[index] for index in indices]
+
+
+class SummarizationDataset(_ExampleDataset[SummarizationExample]):
+    """Encoder-decoder samples, with tokenization deferred to the collator."""
+
+
+class EmotionDataset(_ExampleDataset[EmotionExample]):
+    def __init__(
+        self, examples: Iterable[EmotionExample], *, binarizer: MultiLabelBinarizer | None = None
+    ) -> None:
+        super().__init__(examples)
+        if binarizer is None:
+            self._binarizer = MultiLabelBinarizer().fit(
+                example.emotions for example in self._examples
+            )
+        else:
+            if not hasattr(binarizer, "classes_"):
+                raise ValueError(
+                    "Provided MultiLabelBinarizer must be pre-fitted with 'classes_' attribute."
+                )
+            self._binarizer = binarizer
 
     @property
     def binarizer(self) -> MultiLabelBinarizer:
         return self._binarizer
 
     @property
-    def emotion_classes(self) -> List[str]:
+    def emotion_classes(self) -> list[str]:
         return list(self._binarizer.classes_)
 
 
-class TopicDataset(Dataset[TopicExample]):
-    """Dataset that owns a LabelEncoder for topic ids."""
-
+class TopicDataset(_ExampleDataset[TopicExample]):
     def __init__(
-        self,
-        examples: Iterable[TopicExample],
-        *,
-        encoder: LabelEncoder | None = None,
+        self, examples: Iterable[TopicExample], *, encoder: LabelEncoder | None = None
     ) -> None:
-        self._examples = list(examples)
-        topics = [example.topic for example in self._examples]
+        super().__init__(examples)
         if encoder is None:
-            self._encoder = LabelEncoder().fit(topics)
+            self._encoder = LabelEncoder().fit(
+                sorted({example.topic for example in self._examples})
+            )
         else:
-            self._encoder = encoder
-            if not hasattr(self._encoder, "classes_"):
+            if not hasattr(encoder, "classes_"):
                 raise ValueError(
                     "Provided LabelEncoder must be pre-fitted with 'classes_' attribute."
                 )
-
-    def __len__(self) -> int:
-        return len(self._examples)
-
-    def __getitem__(self, index: int) -> TopicExample:
-        return self._examples[index]
+            self._encoder = encoder
 
     @property
     def encoder(self) -> LabelEncoder:
         return self._encoder
 
     @property
-    def topic_classes(self) -> List[str]:
+    def topic_classes(self) -> list[str]:
         return list(self._encoder.classes_)
-
-
-T = TypeVar("T")
 
 
 # --------------- Calibration Split ---------------
@@ -148,11 +252,11 @@ EMOTION_CALIBRATION_SPLIT_SEED = 20260416
 
 
 def split_emotion_val(
-    examples: List[EmotionExample],
+    examples: Sequence[EmotionExample],
     *,
     seed: int = EMOTION_CALIBRATION_SPLIT_SEED,
     calibration_fraction: float = 0.5,
-) -> tuple[List[EmotionExample], List[EmotionExample]]:
+) -> tuple[list[EmotionExample], list[EmotionExample]]:
     """Deterministically split val examples into (model_selection, calibration).
 
     Both training (early stopping) and evaluation (threshold tuning) must
@@ -175,8 +279,8 @@ def split_emotion_val(
     rng.shuffle(indices)
     n_calib = int(round(len(examples) * calibration_fraction))
     calib_idx = set(indices[:n_calib])
-    model_sel: List[EmotionExample] = []
-    calib: List[EmotionExample] = []
+    model_sel: list[EmotionExample] = []
+    calib: list[EmotionExample] = []
     for i, ex in enumerate(examples):
         if i in calib_idx:
             calib.append(ex)
@@ -185,190 +289,264 @@ def split_emotion_val(
     return model_sel, calib
 
 
-def _safe_json_load(handle, path: Path) -> object:
-    try:
-        return json.load(handle)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"Failed to parse JSON in '{path}': {exc}") from exc
-
-
-def _safe_json_loads(data: str, path: Path, line_number: int) -> object:
-    try:
-        return json.loads(data)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"Failed to parse JSON in '{path}' at line {line_number}: {exc}") from exc
-
-
-def _validate_keys(
-    payload: dict,
-    required_keys: Sequence[str],
-    position: int,
-    *,
-    path: Path,
-    is_array: bool = False,
-) -> None:
-    missing = [key for key in required_keys if key not in payload]
-    if missing:
-        keys = ", ".join(sorted(missing))
-        location = "index" if is_array else "line"
-        raise KeyError(f"Missing required keys ({keys}) at {location} {position} of '{path}'")
-
-
 def _load_jsonl_generic(
-    path: str,
+    path: str | Path,
     constructor: Callable[[dict], T],
     required_keys: Sequence[str],
-) -> List[T]:
+    *,
+    limit: int | None = None,
+    lazy: bool = False,
+) -> Sequence[T]:
+    _validate_limit(limit)
     data_path = Path(path)
     if not data_path.exists():
         raise FileNotFoundError(f"Dataset file '{data_path}' does not exist")
     if not data_path.is_file():
         raise ValueError(f"Dataset path '{data_path}' is not a file")
-
-    items: List[T] = []
-    with data_path.open("r", encoding="utf-8") as handle:
-        first_non_ws = ""
-        while True:
-            pos = handle.tell()
+    if limit == 0:
+        return []
+    with data_path.open("rb") as handle:
+        # Detect legacy arrays without decoding or retaining corpus text.
+        first = b""
+        while not first:
             char = handle.read(1)
             if not char:
-                break
+                raise ValueError(f"Dataset file '{data_path}' is empty or contains only whitespace")
             if not char.isspace():
-                first_non_ws = char
-                handle.seek(pos)
-                break
-        if not first_non_ws:
-            raise ValueError(f"Dataset file '{data_path}' is empty or contains only whitespace")
-
-        if first_non_ws == "[":
-            payloads = _safe_json_load(handle, data_path)
-            if not isinstance(payloads, list):
-                raise ValueError(
-                    f"Expected a JSON array in '{data_path}' but found {type(payloads).__name__}"
-                )
-            for idx, payload in enumerate(payloads):
-                if not isinstance(payload, dict):
-                    raise ValueError(
-                        f"Expected objects in array for '{data_path}', found {type(payload).__name__} at index {idx}"
-                    )
-                _validate_keys(payload, required_keys, idx, path=data_path, is_array=True)
+                first = char
+        handle.seek(0)
+        if first == b"[":
+            try:
+                payloads = json.load(handle)
+            except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+                raise ValueError(f"Failed to parse JSON in '{data_path}': {exc}") from exc
+            items = []
+            for idx, payload in enumerate(payloads[:limit] if limit is not None else payloads):
+                _validate_record(payload, data_path, f"index {idx}", required_keys)
                 items.append(constructor(payload))
-        else:
-            handle.seek(0)
-            line_number = 0
-            for line in handle:
-                line_number += 1
-                if not line.strip():
-                    continue
-                payload = _safe_json_loads(line, data_path, line_number)
-                if not isinstance(payload, dict):
-                    raise ValueError(
-                        f"Expected JSON object per line in '{data_path}', found {type(payload).__name__} at line {line_number}"
-                    )
-                _validate_keys(payload, required_keys, line_number, path=data_path)
-                items.append(constructor(payload))
-
-    return items
+            return items
+        if not lazy:
+            items = []
+            for line, raw in enumerate(handle, start=1):
+                if raw.strip():
+                    items.append(constructor(_parse_record(raw, data_path, line, required_keys)))
+                    if limit is not None and len(items) == limit:
+                        break
+            return items
+    return IndexedJsonl(data_path, constructor, required_keys, limit=limit)
 
 
-def load_summarization_jsonl(path: str) -> List[SummarizationExample]:
-    return _load_jsonl_generic(
-        path,
-        lambda payload: SummarizationExample(source=payload["source"], summary=payload["summary"]),
-        required_keys=("source", "summary"),
+def _summary(payload: dict) -> SummarizationExample:
+    return SummarizationExample(
+        payload["source"], payload["summary"], payload.get("type", payload.get("domain", "unknown"))
     )
 
 
-def load_emotion_jsonl(path: str) -> List[EmotionExample]:
-    return _load_jsonl_generic(
-        path,
-        lambda payload: EmotionExample(text=payload["text"], emotions=payload.get("emotions", [])),
-        required_keys=("text",),
+def _emotion(payload: dict) -> EmotionExample:
+    return EmotionExample(payload["text"], payload.get("emotions", []))
+
+
+def _topic(payload: dict) -> TopicExample:
+    return TopicExample(payload["text"], payload["topic"])
+
+
+def load_summarization_jsonl(
+    path: str | Path, *, limit: int | None = None, lazy: bool = False
+) -> Sequence[SummarizationExample]:
+    return _load_jsonl_generic(path, _summary, ("source", "summary"), limit=limit, lazy=lazy)
+
+
+def load_emotion_jsonl(
+    path: str | Path, *, limit: int | None = None, lazy: bool = False
+) -> Sequence[EmotionExample]:
+    return _load_jsonl_generic(path, _emotion, ("text",), limit=limit, lazy=lazy)
+
+
+def load_topic_jsonl(
+    path: str | Path, *, limit: int | None = None, lazy: bool = False
+) -> Sequence[TopicExample]:
+    return _load_jsonl_generic(path, _topic, ("text", "topic"), limit=limit, lazy=lazy)
+
+
+def resolve_split_path(directory: Path, split: str) -> Path | None:
+    aliases = ("val", "validation") if split in {"val", "validation"} else (split,)
+    return next(
+        (
+            directory / f"{alias}.jsonl"
+            for alias in aliases
+            if (directory / f"{alias}.jsonl").is_file()
+        ),
+        None,
     )
 
 
-def load_topic_jsonl(path: str) -> List[TopicExample]:
-    return _load_jsonl_generic(
-        path,
-        lambda payload: TopicExample(text=payload["text"], topic=payload["topic"]),
-        required_keys=("text", "topic"),
-    )
+def validate_task_directories(
+    processed: Mapping, tasks: Sequence[str], *, split: str = "train"
+) -> dict[str, Path]:
+    """Require explicit paths only for active tasks, before any model/tokenizer load."""
+    if not tasks or len(set(tasks)) != len(tasks) or any(task not in TASK_NAMES for task in tasks):
+        raise ValueError(f"Choose a nonempty, unique subset of tasks: {', '.join(TASK_NAMES)}")
+    directories = {}
+    for task in tasks:
+        value = processed.get(task)
+        if not isinstance(value, (str, Path)) or not str(value).strip():
+            raise ValueError(
+                f"Set an explicit reviewed directory for '{task}' (data.processed.{task}=/path/to/splits); no corpus is selected by default"
+            )
+        directory = Path(value)
+        if not directory.is_dir() or resolve_split_path(directory, split) is None:
+            raise ValueError(
+                f"Dataset directory for '{task}' must contain {split}.jsonl (val/validation aliases supported): {directory}"
+            )
+        directories[task] = directory
+    return directories
 
 
-# --------------- Cross-Task Deduplication ---------------
+def load_splits(
+    data_dir: Path,
+    loader_fn: Callable,
+    *,
+    include_test: bool = False,
+    include_validation: bool = True,
+    limits: Mapping[str, int | None] | None = None,
+    lazy: bool = False,
+) -> dict[str, Sequence]:
+    """Read requested splits only; test is opt-in, limits apply while reading JSONL."""
+    names = ["train"] + (["val"] if include_validation else []) + (["test"] if include_test else [])
+    splits = {}
+    for name in names:
+        path = resolve_split_path(data_dir, name)
+        if path is not None:
+            kwargs: dict[str, Any] = {}
+            if limits is not None:
+                kwargs["limit"] = limits.get(name)
+            if lazy:
+                kwargs["lazy"] = True
+            splits[name] = loader_fn(str(path), **kwargs)
+    return splits
 
 
-def _text_fingerprint(text: str, n_chars: int = 200) -> str:
-    """Create a stable fingerprint from the first N characters of text.
+def validate_known_labels(labels: Sequence[str], known: set[str], task: str) -> None:
+    """Reject malformed/unknown labels before encoding; sklearn may silently drop them."""
+    if (
+        isinstance(labels, (str, bytes))
+        or not isinstance(labels, Sequence)
+        or any(not isinstance(label, str) or not label.strip() for label in labels)
+    ):
+        raise ValueError(f"{task} labels must be a sequence of nonblank strings")
+    unknown = sorted(set(labels) - known)
+    if unknown:
+        raise ValueError(f"Unknown {task} labels outside the training vocabulary: {unknown}")
 
-    Uses a hash of the normalized (lowered, whitespace-collapsed) prefix
-    to detect document-level overlap across tasks.
+
+def _training_vocabulary(directory: Path, task: str, full_training: Iterable | None) -> list[str]:
+    """Prefer an ordered sidecar; otherwise discover labels only from complete training.
+
+    Sidecars are nonempty JSON arrays of unique nonblank strings. They declare
+    model-column order, so checkpoint continuation must match that order exactly.
+    No validation/test labels enter vocabulary discovery. Unknown labels in any
+    consumed batch are separately rejected by the collators.
     """
-    normalized = " ".join(text.lower().split())[:n_chars]
-    return hashlib.md5(normalized.encode("utf-8")).hexdigest()
+    sidecar = directory / "labels.json"
+    if sidecar.exists():
+        with sidecar.open(encoding="utf-8") as handle:
+            labels = json.load(handle)
+        if (
+            not isinstance(labels, list)
+            or not labels
+            or any(not isinstance(label, str) or not label.strip() for label in labels)
+            or len(set(labels)) != len(labels)
+        ):
+            raise ValueError(
+                f"{sidecar} must be a nonempty JSON array of unique nonblank label strings"
+            )
+        return labels
+    if full_training is None:
+        loader = load_emotion_jsonl if task == "emotion" else load_topic_jsonl
+        full_training = loader(directory / "train.jsonl", lazy=True)
+    found: set[str] = set()
+    for example in full_training:
+        labels = (
+            cast(EmotionExample, example).emotions
+            if task == "emotion"
+            else [cast(TopicExample, example).topic]
+        )
+        # Validate types without treating a newly discovered label as unknown.
+        if (
+            isinstance(labels, (str, bytes))
+            or not isinstance(labels, Sequence)
+            or any(not isinstance(label, str) or not label.strip() for label in labels)
+        ):
+            raise ValueError(f"{task} training labels must be nonblank strings")
+        found.update(labels)
+    if not found:
+        raise ValueError(f"Enabled {task} task requires at least one training label")
+    return sorted(found)
 
 
-def deduplicate_across_tasks(
-    summ_examples: List[SummarizationExample],
-    topic_examples: List[TopicExample],
-    emotion_examples: List[EmotionExample] | None = None,
-) -> Dict[str, int]:
-    """Detect and report cross-task document overlap.
+def load_training_datasets(
+    processed: Mapping,
+    tasks: Sequence[str],
+    *,
+    max_train_samples: int | None = None,
+    max_val_samples: int | None = None,
+    include_validation: bool = True,
+) -> tuple[dict[str, Dataset], dict[str, Dataset]]:
+    """Prepare active task datasets once, retaining lazy training/validation text.
 
-    Checks whether texts appearing in the summarization dataset also appear
-    in the topic or emotion datasets, which could create data leakage in MTL.
-
-    Returns:
-        Dict with overlap counts between task pairs.
+    The emotion validation partition is formed from the complete split before a
+    model-selection cap, keeping calibration membership independent of run size.
+    Classification vocabularies use ordered labels.json sidecars when present;
+    otherwise a streaming pass discovers the full training vocabulary before caps.
     """
-    summ_fps: Set[str] = {_text_fingerprint(ex.source) for ex in summ_examples}
-    topic_fps: Set[str] = {_text_fingerprint(ex.text) for ex in topic_examples}
-
-    overlap: Dict[str, int] = {
-        "summ_topic_overlap": len(summ_fps & topic_fps),
-        "summ_total": len(summ_fps),
-        "topic_total": len(topic_fps),
+    _validate_limit(max_train_samples)
+    _validate_limit(max_val_samples)
+    directories = validate_task_directories(processed, tasks)
+    loaders = {
+        "summarization": load_summarization_jsonl,
+        "emotion": load_emotion_jsonl,
+        "topic": load_topic_jsonl,
     }
-
-    if emotion_examples:
-        emot_fps: Set[str] = {_text_fingerprint(ex.text) for ex in emotion_examples}
-        overlap["summ_emotion_overlap"] = len(summ_fps & emot_fps)
-        overlap["topic_emotion_overlap"] = len(topic_fps & emot_fps)
-        overlap["emotion_total"] = len(emot_fps)
-
-    return overlap
-
-
-def remove_overlapping_examples(
-    primary_examples: List[TopicExample],
-    reference_examples: List[SummarizationExample],
-    split: str = "val",
-) -> tuple[List[TopicExample], int]:
-    """Remove topic examples whose texts overlap with summarization data.
-
-    This prevents cross-task data leakage where a document seen during
-    summarization training could boost topic classification on validation/test.
-
-    Args:
-        primary_examples: Topic examples to filter
-        reference_examples: Summarization examples to check against
-        split: Name of split being processed (for logging)
-
-    Returns:
-        Tuple of (filtered_examples, num_removed)
-    """
-    ref_fps = {_text_fingerprint(ex.source) for ex in reference_examples}
-
-    filtered = []
-    removed = 0
-    for ex in primary_examples:
-        fp = _text_fingerprint(ex.text)
-        if fp in ref_fps:
-            removed += 1
+    train: dict[str, Dataset] = {}
+    validation: dict[str, Dataset] = {}
+    for task, directory in directories.items():
+        splits = load_splits(
+            directory,
+            loaders[task],
+            include_validation=include_validation,
+            limits={
+                "train": max_train_samples,
+                "val": None if task == "emotion" else max_val_samples,
+            },
+            lazy=True,
+        )
+        if not splits["train"]:
+            raise ValueError(
+                f"Training split for '{task}' is empty; choose a nonempty reviewed split and positive sample limit"
+            )
+        val = splits.get("val", [])
+        vocabulary: list[str] = []
+        if task != "summarization":
+            vocabulary = _training_vocabulary(
+                directory, task, splits["train"] if max_train_samples is None else None
+            )
+        if task == "emotion":
+            val, _ = split_emotion_val(val)
+            if max_val_samples is not None:
+                val = val[:max_val_samples]
+            binarizer = MultiLabelBinarizer(classes=vocabulary).fit([])
+            emotion_train = EmotionDataset(splits["train"], binarizer=binarizer)
+            train[task] = emotion_train
+            validation[task] = EmotionDataset(val, binarizer=emotion_train.binarizer)
+        elif task == "topic":
+            encoder = LabelEncoder()
+            # String labels use a mapping in LabelEncoder.transform; preserve the
+            # declared model-column order rather than fit()'s automatic sorting.
+            encoder.classes_ = np.asarray(vocabulary, dtype=object)
+            topic_train = TopicDataset(splits["train"], encoder=encoder)
+            train[task] = topic_train
+            validation[task] = TopicDataset(val, encoder=topic_train.encoder)
         else:
-            filtered.append(ex)
-
-    if removed > 0:
-        print(f"  Dedup: removed {removed} overlapping examples from topic {split}")
-
-    return filtered, removed
+            train[task] = SummarizationDataset(splits["train"])
+            validation[task] = SummarizationDataset(val)
+    return train, {task: dataset for task, dataset in validation.items() if len(dataset)}

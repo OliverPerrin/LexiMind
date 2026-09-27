@@ -98,13 +98,11 @@ now hashed.
 | Emotion | Restore original comment IDs and source split provenance; define a duplicate/annotation policy; specify separate model-selection and calibration groups | Whether the comment task is retained for research; it is not validated evidence of book mood |
 | Topic | Preserve source labels/IDs, freeze the seven-label mapping or define a separately versioned replacement | Whether mixed newsgroup/Gutenberg domains and the label taxonomy answer the intended research question |
 
-The repaired future converters already support **provider-document grouping**:
-Gutenberg retains `text_id` or a PG-19 ebook identifier, and BookSum retains its
-parent `bid`. Missing Gutenberg identifiers can be replaced with an explicitly
-local full-document hash solely for grouping that document's paragraphs. Those
-namespaces are not cross-source canonical work authority. Provider-document IDs
-can reduce paragraph/chapter leakage while edition and work reconciliation remains
-unresolved. See [catalogue identity boundaries](../../data/catalog/README.md).
+The old mixed-source downloader and title/description joins have been removed.
+Current reconstructions preserve original provider splits and explicit record
+identities in separately versioned candidates. See [dataset decisions](dataset_decisions.md).
+Provider record identity does not by itself establish cross-source work/edition
+identity or an unseen-text generalization claim.
 
 A future source-preparation change should write a new version, retain its raw
 source/revision receipts, document inclusion/exclusion rules, freeze an immutable

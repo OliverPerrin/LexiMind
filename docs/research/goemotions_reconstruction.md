@@ -52,15 +52,28 @@ data/research_candidates/go_emotions/add492243ff905527e67aeb8b80c082af02207c3/
   raw/acquisition.json
   raw/simplified/{train,validation,test}-00000-of-00001.parquet
   raw/documents/
-  prepared/{train,validation,test}.jsonl
-  prepared/labels.json
+  prepared/{train,validation,test}.jsonl  # preserved v1 files
+  prepared/labels.json                   # preserved v1 label map
+  prepared_v2/{train,validation,test}.jsonl
+  prepared_v2/labels.json
 ```
 
-The three prepared JSONL files total 45,230,603 bytes because each row retains its
-source revision, split, file hash, and row reference. Each row preserves the exact
-text, original label-ID order, corresponding label names, provider comment ID,
-and original partition. The document ID is namespaced to this provider's comment
-identifier; it is not a book/work identity or a recovered thread identifier.
+The current manifest selects **record version 2**, under `prepared_v2/`. Its
+JSONL files total **14,745,654 bytes**, down from the preserved v1 files' 45,230,603
+bytes: **67.4% less serialized data**, with no text, label, comment-ID, or partition
+loss. Version 1 remains unchanged locally and its hashes are retained in the
+manifest.
+
+Version 2 rows contain exactly `text`, `emotions`, `label_ids`, `document_id`,
+`provider_comment_id`, `provider_split`, and `source_row`. Common provider/config/
+revision/status information stays in the manifest. The original split selects
+`acquisition.files[provider_split]`; the one-based source row resolves that exact
+Parquet file and its pinned hash. Thus provenance is preserved without copying
+long source URLs and invariant metadata into every row.
+
+The document ID still denotes the same provider comment as v1; it is not a book
+identity or recovered thread identifier. Both representations retain exact text
+and original label ordering.
 
 The release has **54,263 distinct provider comment IDs**. There are no repeated
 comment IDs or conflicting records under one comment ID in this snapshot. This
@@ -122,7 +135,9 @@ python3 -m pytest tests/test_research/test_goemotions_candidate.py -q
 receipts fail rather than triggering a download. Once cached, source bytes and
 receipts are checked again and existing prepared files must match exactly; the
 script refuses to replace a differing candidate at the same location. The code
-never writes to legacy data.
+never writes to legacy data. Shared hashing, immutable publication and batched
+Parquet reading live in `src/research/candidate_io.py`; both helper and preparer
+hashes are pinned in the manifest.
 
 Acquisition uses the existing Hugging Face Hub client; Parquet decoding needs only
 PyArrow, with no `datasets` library or ML stack. This preparation used an isolated

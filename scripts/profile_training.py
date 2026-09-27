@@ -13,7 +13,7 @@ Outputs:
 
 Usage:
     python scripts/profile_training.py                   # default: 20 steps
-    python scripts/profile_training.py training=full      # use full config
+    python scripts/profile_training.py training=default      # explicit reviewed paths required
     PROFILE_STEPS=40 python scripts/profile_training.py   # custom step count
 
 Author: Oliver Perrin
@@ -33,32 +33,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.data.dataloader import (
-    build_emotion_dataloader,
-    build_summarization_dataloader,
-    build_topic_dataloader,
-)
-from src.data.dataset import (
-    EmotionDataset,
-    SummarizationDataset,
-    TopicDataset,
-    load_emotion_jsonl,
-    load_summarization_jsonl,
-    load_topic_jsonl,
-)
+from src.data.dataloader import build_task_dataloaders
+from src.data.dataset import load_training_datasets, validate_task_directories
 from src.data.tokenization import Tokenizer, TokenizerConfig
 from src.models.factory import ModelConfig, build_multitask_model
-
-
-def load_splits(data_dir: Path, loader_fn):
-    splits = {}
-    for name, aliases in [("train", ["train"]), ("val", ["val", "validation"])]:
-        for alias in aliases:
-            path = data_dir / f"{alias}.jsonl"
-            if path.exists():
-                splits[name] = loader_fn(str(path))
-                break
-    return splits
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
@@ -66,6 +44,11 @@ def main(cfg: DictConfig) -> None:
     profile_steps = int(os.environ.get("PROFILE_STEPS", 20))
     warmup_steps = 3  # let CUDA graphs / torch.compile settle
     active_steps = profile_steps - warmup_steps
+
+    data_cfg = cfg.data
+    trainer_cfg = cfg.training.get("trainer", {})
+    enabled_tasks = list(trainer_cfg.get("tasks", ["summarization", "emotion", "topic"]))
+    validate_task_directories(data_cfg.processed, enabled_tasks)
 
     device = torch.device(cfg.device)
     if device.type != "cuda":
@@ -83,16 +66,13 @@ def main(cfg: DictConfig) -> None:
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.allow_tf32 = True
 
-    data_cfg = cfg.data
-    trainer_cfg = cfg.training.get("trainer", {})
-
-    # Load small subsets -- profiling doesn't need the full dataset
+    # Index only the required prefix; profiling does not read validation/test.
     max_samples = max(200, profile_steps * 10 * 3)
-    summ_splits = load_splits(Path(data_cfg.processed.summarization), load_summarization_jsonl)
-    emot_splits = load_splits(Path(data_cfg.processed.emotion), load_emotion_jsonl)
-    topic_splits = load_splits(Path(data_cfg.processed.topic), load_topic_jsonl)
-    for splits in [summ_splits, emot_splits, topic_splits]:
-        splits["train"] = splits["train"][:max_samples]
+    train_datasets, _ = load_training_datasets(
+        data_cfg.processed, enabled_tasks, max_train_samples=max_samples, include_validation=False
+    )
+    emotion_classes = getattr(train_datasets.get("emotion"), "emotion_classes", [])
+    topic_classes = getattr(train_datasets.get("topic"), "topic_classes", [])
 
     tok_cfg = data_cfg.get("tokenizer", {})
     max_len = int(cfg.training.get("tokenizer_max_length") or tok_cfg.get("max_length", 512))
@@ -103,45 +83,17 @@ def main(cfg: DictConfig) -> None:
         )
     )
 
-    summ_train = SummarizationDataset(summ_splits["train"])
-    emot_train = EmotionDataset(emot_splits["train"])
-    topic_train = TopicDataset(topic_splits["train"])
-
     dl_cfg = cfg.training.get("dataloader", {})
-    batch_size = int(dl_cfg.get("batch_size", 8))
-    num_workers = int(dl_cfg.get("num_workers", 4))
-    classification_max_len = min(256, max_len)
-
-    train_loaders = {
-        "summarization": build_summarization_dataloader(
-            summ_train,
-            tokenizer,
-            shuffle=True,
-            max_source_length=max_len,
-            max_target_length=max_len,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            pin_memory=True,
-        ),
-        "emotion": build_emotion_dataloader(
-            emot_train,
-            tokenizer,
-            shuffle=True,
-            max_length=classification_max_len,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            pin_memory=True,
-        ),
-        "topic": build_topic_dataloader(
-            topic_train,
-            tokenizer,
-            shuffle=True,
-            max_length=classification_max_len,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            pin_memory=True,
-        ),
-    }
+    train_loaders = build_task_dataloaders(
+        train_datasets,
+        tokenizer,
+        shuffle=True,
+        batch_size=int(dl_cfg.get("batch_size", 8)),
+        num_workers=int(dl_cfg.get("num_workers", 0)),
+        pin_memory=True,
+        max_length=max_len,
+        classification_max_length=min(256, max_len),
+    )
 
     # Build model
     grad_ckpt = cfg.training.get(
@@ -168,8 +120,8 @@ def main(cfg: DictConfig) -> None:
 
     model = build_multitask_model(
         tokenizer,
-        num_emotions=len(emot_train.emotion_classes),
-        num_topics=len(topic_train.topic_classes),
+        num_emotions=len(emotion_classes),
+        num_topics=len(topic_classes),
         config=model_cfg,
     ).to(device)
 

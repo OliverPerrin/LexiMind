@@ -14,12 +14,12 @@
   "rubrics": {
     "mood": {
       "path": "docs/mood_annotation_guide.md",
-      "sha256": "7056334aadff007b0cd9649389e43f79fcef36369339e7706c87d7f4cca2660d",
+      "sha256": "88003ffec0bb52d93633edbd25ad0cd9b4f263f7c4127e98d6958a2e71663c35",
       "status": "draft"
     },
     "recommendation": {
       "path": "docs/recommendation_judgments.md",
-      "sha256": "85a0eaff44b403fc7e95c1f4c718eb91f3f0af751c662eebdfca0137c061ec26",
+      "sha256": "2baca073f9b7f5dbecf91bfc2a66f678ad64a581b0a25a1fe56c1510ac18ad6f",
       "status": "draft"
     }
   },

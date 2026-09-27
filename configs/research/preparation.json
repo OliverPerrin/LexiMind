@@ -55,7 +55,7 @@
       "note": "Comparison interfaces, cost boundary and applied metric choices are proposed; protocol not frozen."
     },
     "dataset_manifest": {
-      "status": "audited_candidates_pending_admission",
+      "status": "source_candidates_reconstructed_pending_admission",
       "evidence": [
         {
           "path": "research/preparation/data_inventory.json",
@@ -64,22 +64,42 @@
         },
         {
           "path": "research/preparation/goemotions_candidate_manifest.json",
-          "bytes": 21259,
-          "sha256": "f69c5b0849c7ce697b271219d9f3b2da0b2d4eebf6be6258ce28af2da77f2e84"
+          "bytes": 22555,
+          "sha256": "cb9a8ab762c293d4e386ac5df28a88abbd03bbb37165befdf753a16ff98be324"
+        },
+        {
+          "path": "research/preparation/ag_news_candidate_manifest.json",
+          "bytes": 7801,
+          "sha256": "ebdbe66fa0afc36bb420dcfb66959d61f601f2a06ab47f50f50a09a0a0a78d7c"
+        },
+        {
+          "path": "research/preparation/arxiv_source_manifest.json",
+          "bytes": 9469,
+          "sha256": "e66fc3b21ca61caee89a89a1bc3df66ba00fe1f054434d6081075b60a8958064"
         }
       ],
-      "note": "Current files audited; pinned GoEmotions candidate reconstructed separately. Source-use, duplicate/calibration policy and final dataset admission remain open."
+      "note": "GoEmotions, AG News and the author arXiv archive are reconstructed separately. Original data remain unchanged; source-use and final training admission remain unresolved."
     },
     "group_split_audit": {
-      "status": "blocked_identity_and_overlap",
+      "status": "source_overlap_audited_partition_assignments_proposed",
       "evidence": [
         {
           "path": "research/preparation/data_audit.json",
           "bytes": 26844,
           "sha256": "76e65e87784ce96324b49131eab3d3de8b66e3c2c053c2cd851ce858fd97be44"
+        },
+        {
+          "path": "research/preparation/goemotions_partition_manifest.json",
+          "bytes": 6309,
+          "sha256": "5fee305b1d2b368cc111e3384cf68d155abf658ec96cd10dba85d9ca6839f068"
+        },
+        {
+          "path": "research/preparation/ag_news_partition_manifest.json",
+          "bytes": 3584,
+          "sha256": "e51eeb42bf9f8d4f56c2039c31f5f7eed78612422592cc8f566d22a8b2308ced"
         }
       ],
-      "note": "Existing parent identities are absent and cross-split duplicate signals need review."
+      "note": "GoEmotions/AG News have deterministic candidate selection/calibration assignments that preserve official tests. Official text overlap remains visible. arXiv IDs, text overlaps and anomalies are indexed without exclusion or resplitting."
     },
     "backbone_revision": {
       "status": "metadata_reviewed_unselected",
@@ -114,7 +134,7 @@
         {
           "path": "research/preparation/annotation_packet.json",
           "bytes": 35963,
-          "sha256": "44ece8a05d9b02528d0a3093c9b0c1b83e0468cd4f453a2c099e1ecafe46d2d5"
+          "sha256": "bc5bc85d5590cb3b539dc6aefea09566492514ab036cf1b93c4d657ed7920bd5"
         }
       ],
       "note": "102 source-linked work references; no query/judgment collection, gold labels or held-out assignment."

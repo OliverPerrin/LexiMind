@@ -6,13 +6,13 @@ consent, research execution authorization, or an evaluation result.
 
 from __future__ import annotations
 
-import json
 import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from .annotations import query_content_sha256, sha256, validate_future_records, validate_packet
+from .io import parse_json, safe_path
 
 _RECEIPTS = {
     "collection_manifest": "book_collection",
@@ -53,26 +53,7 @@ def _ids(value: Any, name: str) -> set[str]:
 
 
 def _path(root: Path, value: Any) -> Path:
-    relative = Path(_text(value, "artifact path"))
-    if relative.is_absolute() or ".." in relative.parts:
-        raise ValueError("Artifacts must use repository-relative paths")
-    result = (root / relative).resolve()
-    if not result.is_relative_to(root.resolve()):
-        raise ValueError("Artifact symlink escapes repository")
-    return result
-
-
-def _pairs(rows: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
-    for key, value in rows:
-        if key in result:
-            raise ValueError(f"Duplicate JSON key: {key}")
-        result[key] = value
-    return result
-
-
-def _constant(value: str) -> None:
-    raise ValueError(f"Non-finite JSON value: {value}")
+    return safe_path(root, _text(value, "artifact path"))
 
 
 def _read_ref(root: Path, reference: Any, kind: str) -> dict[str, Any]:
@@ -89,7 +70,7 @@ def _read_ref(root: Path, reference: Any, kind: str) -> dict[str, Any]:
     raw = _path(root, ref["path"]).read_bytes()
     if len(raw) != ref["bytes"] or sha256(raw) != ref["sha256"]:
         raise ValueError(f"Artifact bytes/hash changed: {ref['path']}")
-    result = json.loads(raw, object_pairs_hook=_pairs, parse_constant=_constant)
+    result = parse_json(raw)
     if not isinstance(result, dict):
         raise ValueError("Receipt must be a JSON object")
     return result

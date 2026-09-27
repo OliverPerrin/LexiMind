@@ -1,12 +1,42 @@
 {
   "schema_version": 1,
+  "prepared_record_version": 2,
+  "row_provenance": "provider_split selects acquisition.files[split]; source_row is one-based in that immutable Parquet file. Common provider/config/revision/status metadata belongs to this manifest.",
+  "identity_scope": "provider_document_with_official_comment_id",
+  "row_identity_field": "document_id",
+  "preserved_v1_files": {
+    "train": {
+      "path": "prepared/train.jsonl",
+      "bytes": 36143983,
+      "sha256": "18f51b79d392014278ccbb1e5320ce2d75885a8fa2ba46ac8230691783bc43dd"
+    },
+    "validation": {
+      "path": "prepared/validation.jsonl",
+      "bytes": 4593181,
+      "sha256": "8e8eb106ee2c311b3aed454ecab70e2b5cc8aa1c09c3d389605e0984f8a103fc"
+    },
+    "test": {
+      "path": "prepared/test.jsonl",
+      "bytes": 4493439,
+      "sha256": "ca9c998fead51193c8052d6be490c955380ece38a9323f9b9d0edd43f789fc94"
+    }
+  },
+  "preserved_v1_label_map": {
+    "path": "prepared/labels.json",
+    "bytes": 392,
+    "sha256": "521ed657033b12a10198f1d1f039ab060875056580991af0d0f1463b7468c766"
+  },
   "status": "candidate_prepared_not_admitted",
   "training_authorized": false,
   "repo": "google-research-datasets/go_emotions",
   "revision": "add492243ff905527e67aeb8b80c082af02207c3",
   "config": "simplified",
   "local_candidate_directory": "data/research_candidates/go_emotions/add492243ff905527e67aeb8b80c082af02207c3",
-  "preparation_script_sha256": "1f85ab55c72700a3ac709a2b86c5a4a9b1efd700579883904cf420ee60353753",
+  "preparation_script_sha256": "239e97a3b745d0f14a9dbb4d20ad16cc05ab5a7f098444292a11e06d88710a60",
+  "preparation_helper_sha256": {
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
+  },
   "acquisition_receipt_sha256": "f5b90efe31b0a26d072b2e1ad8dcb5cb30162c58ee2204c267b3dcbff0020b42",
   "tooling": {
     "python_version": "3.14.5",
@@ -170,26 +200,26 @@
   },
   "prepared_files": {
     "train": {
-      "path": "prepared/train.jsonl",
+      "path": "prepared_v2/train.jsonl",
       "rows": 43410,
-      "bytes": 36143983,
-      "sha256": "18f51b79d392014278ccbb1e5320ce2d75885a8fa2ba46ac8230691783bc43dd"
+      "bytes": 11790973,
+      "sha256": "1ea6d2278b56dccfc68f446618e4ef201254af10dd2f2b75576de866d58338b6"
     },
     "validation": {
-      "path": "prepared/validation.jsonl",
+      "path": "prepared_v2/validation.jsonl",
       "rows": 5426,
-      "bytes": 4593181,
-      "sha256": "8e8eb106ee2c311b3aed454ecab70e2b5cc8aa1c09c3d389605e0984f8a103fc"
+      "bytes": 1494935,
+      "sha256": "714dafc307fff58119b7da82fef21e565a57813296e5278ecf2aaada927b8d65"
     },
     "test": {
-      "path": "prepared/test.jsonl",
+      "path": "prepared_v2/test.jsonl",
       "rows": 5427,
-      "bytes": 4493439,
-      "sha256": "ca9c998fead51193c8052d6be490c955380ece38a9323f9b9d0edd43f789fc94"
+      "bytes": 1459746,
+      "sha256": "5f61200da5cbbc04b58ebfef28981d661b98144d94eabee652bc2ffd1c11efc9"
     }
   },
   "prepared_label_map": {
-    "path": "prepared/labels.json",
+    "path": "prepared_v2/labels.json",
     "bytes": 392,
     "sha256": "521ed657033b12a10198f1d1f039ab060875056580991af0d0f1463b7468c766"
   },

@@ -23,8 +23,8 @@ Updated production: **https://leximind-five.vercel.app**
 - No research training, real-checkpoint inference, evaluation campaigns, paid
   teacher calls, or Hugging Face redeployment occurred.
 
-Review: [software findings and timings](code_review_2026-09-26.md),
-[model-stack boundary](model_stack_audit_2026-09-26.md),
+Review: [current model architecture](architecture.md),
+[research preparation boundary](research/README.md),
 [pull request 2](https://github.com/OliverPerrin/LexiMind/pull/2).
 
 ## Initial release — 22 September 2026

@@ -1,10 +1,10 @@
-# Dataset paths for LexiMind
-# Data is downloaded via: python scripts/download_data.py
-
+# Explicit directories for the tasks selected by training.trainer.tasks.
+# Candidates are prepared by scripts/prepare_*_candidate.py. They remain unadmitted.
+# Supply reviewed split directories when running a separately authorized experiment.
 processed:
-  summarization: data/processed/summarization  # Goodreads descriptions (literary) + arXiv abstracts (academic)
-  emotion: data/processed/emotion              # GoEmotions (28 labels)
-  topic: data/processed/topic                  # Hand-curated Gutenberg + arXiv (7 labels)
+  summarization: null
+  emotion: null
+  topic: null
 
 tokenizer:
   pretrained_model_name: google/flan-t5-base

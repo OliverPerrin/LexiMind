@@ -7,11 +7,11 @@ Evaluates all three tasks with full metrics:
 - Topic: Accuracy, Macro F1, Per-class metrics, bootstrap confidence intervals
 
 Usage:
-    python scripts/evaluate.py
-    python scripts/evaluate.py --checkpoint checkpoints/best.pt
-    python scripts/evaluate.py --include-bertscore  # Include BERTScore (slow)
-    python scripts/evaluate.py --tune-thresholds    # Tune per-class emotion thresholds
-    python scripts/evaluate.py --bootstrap           # Compute confidence intervals
+    python scripts/evaluate.py --data-dir /path/to/reviewed/tasks
+    python scripts/evaluate.py --data-dir /path/to/reviewed/tasks --checkpoint checkpoints/best.pt
+    python scripts/evaluate.py --data-dir /path/to/reviewed/tasks --include-bertscore  # Include BERTScore (slow)
+    python scripts/evaluate.py --data-dir /path/to/reviewed/tasks --tune-thresholds    # Tune per-class emotion thresholds
+    python scripts/evaluate.py --data-dir /path/to/reviewed/tasks --bootstrap           # Compute confidence intervals
 
 Author: Oliver Perrin
 Date: January 2026
@@ -38,7 +38,9 @@ from src.data.dataset import (
     load_emotion_jsonl,
     load_summarization_jsonl,
     load_topic_jsonl,
+    resolve_split_path,
     split_emotion_val,
+    validate_task_directories,
 )
 from src.inference.factory import create_inference_pipeline
 from src.training.metrics import (
@@ -69,7 +71,7 @@ def _tune_thresholds_on_val(
     to the held-out test set for unbiased evaluation, so no samples that
     drove checkpoint selection are reused for threshold tuning.
     """
-    full = load_emotion_jsonl(str(val_path))
+    full = load_emotion_jsonl(val_path, lazy=True)
     _, data = split_emotion_val(full)
     if max_samples:
         data = data[:max_samples]
@@ -122,17 +124,7 @@ def evaluate_summarization(
     print("SUMMARIZATION EVALUATION")
     print("=" * 60)
 
-    # Load data - try to get domain info from the raw JSONL
-    raw_data = []
-    with open(data_path) as f:
-        for line in f:
-            if line.strip():
-                raw_data.append(json.loads(line))
-
-    data = load_summarization_jsonl(str(data_path))
-    if max_samples:
-        data = data[:max_samples]
-        raw_data = raw_data[:max_samples]
+    data = load_summarization_jsonl(data_path, limit=max_samples, lazy=True)
     print(f"Evaluating on {len(data)} samples...")
 
     # Generate summaries
@@ -149,14 +141,7 @@ def evaluate_summarization(
         predictions.extend(preds)
         references.extend(refs)
 
-        # Track domain if available
-        for j in range(len(batch)):
-            idx = i + j
-            if idx < len(raw_data):
-                domain = raw_data[idx].get("type", raw_data[idx].get("domain", "unknown"))
-                domains.append(domain)
-            else:
-                domains.append("unknown")
+        domains.extend(ex.domain for ex in batch)
 
     # Calculate overall metrics
     print("\nCalculating ROUGE scores...")
@@ -286,9 +271,7 @@ def evaluate_emotion(
     print("=" * 60)
 
     # Load data (returns EmotionExample dataclass objects)
-    data = load_emotion_jsonl(str(data_path))
-    if max_samples:
-        data = data[:max_samples]
+    data = load_emotion_jsonl(data_path, limit=max_samples, lazy=True)
     print(f"Evaluating on {len(data)} samples...")
 
     # Get predictions - collect raw logits for threshold tuning or frozen threshold application
@@ -457,9 +440,7 @@ def evaluate_topic(
     print("=" * 60)
 
     # Load data (returns TopicExample dataclass objects)
-    data = load_topic_jsonl(str(data_path))
-    if max_samples:
-        data = data[:max_samples]
+    data = load_topic_jsonl(data_path, limit=max_samples, lazy=True)
     print(f"Evaluating on {len(data)} samples...")
 
     # Get predictions
@@ -519,7 +500,12 @@ def main():
     parser = argparse.ArgumentParser(description="Evaluate LexiMind model")
     parser.add_argument("--checkpoint", type=Path, default=Path("checkpoints/best.pt"))
     parser.add_argument("--labels", type=Path, default=Path("artifacts/labels.json"))
-    parser.add_argument("--data-dir", type=Path, default=Path("data/processed"))
+    parser.add_argument(
+        "--data-dir",
+        type=Path,
+        required=True,
+        help="Explicit reviewed directory containing one subdirectory per selected task",
+    )
     parser.add_argument("--output", type=Path, default=Path("outputs/evaluation_report.json"))
     parser.add_argument("--max-samples", type=int, default=None, help="Limit samples per task")
     parser.add_argument(
@@ -550,6 +536,25 @@ def main():
 
     start_time = time.perf_counter()
 
+    # Resolve all selected input paths before tokenizer/checkpoint construction.
+    eval_all = not (args.summarization_only or args.emotion_only or args.topic_only)
+    tasks = [
+        task
+        for task in ("summarization", "emotion", "topic")
+        if eval_all or getattr(args, f"{task}_only")
+    ]
+    if args.max_samples is not None and args.max_samples < 1:
+        parser.error("--max-samples must be positive")
+    split_name = "test" if args.split == "test" else "validation"
+    directories = validate_task_directories(
+        {task: args.data_dir / task for task in tasks}, tasks, split=split_name
+    )
+    if "emotion" in tasks and args.tune_thresholds and args.split == "test":
+        validate_task_directories(directories, ["emotion"], split="validation")
+
+    def resolve_path(task: str, split: str) -> Path | None:
+        return resolve_split_path(directories[task], split)
+
     # Load model
     print(f"\nLoading model from {args.checkpoint}...")
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -563,22 +568,6 @@ def main():
     print(f"  Emotions: {len(labels.emotion)} classes")
 
     results = {}
-
-    # Determine split file names
-    split_name = "test" if args.split == "test" else "validation"
-
-    def resolve_path(task: str, split: str) -> Path | None:
-        p = args.data_dir / task / f"{split}.jsonl"
-        if p.exists():
-            return p
-        if split == "validation":
-            p2 = args.data_dir / task / "val.jsonl"
-            if p2.exists():
-                return p2
-        return None
-
-    # Determine which tasks to evaluate
-    eval_all = not (args.summarization_only or args.emotion_only or args.topic_only)
 
     # Evaluate summarization
     if eval_all or args.summarization_only:
