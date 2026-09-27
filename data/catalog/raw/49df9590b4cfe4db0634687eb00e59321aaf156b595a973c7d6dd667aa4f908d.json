@@ -1,0 +1,250 @@
+{
+  "url": "https://openlibrary.org/works/OL81586W.json",
+  "retrievedAt": "2026-09-27T09:06:55.121253+00:00",
+  "sha256": "6cbb977366468ea9d51a08ea2f13e21597ef4994080aac4f09de9587816fb4b6",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Una novela sobre una fascinación enfermiza y peligrosa. Una novela de verdadero terror. Pensilvania, 1979. Llega un extraño a una gasolinera para repostar. Conduce un Buick modelo 1954 pero en perfecto estado. El conductor va al baño y nunca reaparece. La policía se hace cargo del coche, que ahora no funciona, y lo guarda en una nave detrás de la comisaría. Y aquí empieza una historia escalofriante, la historia de un coche con su propia vida, perversa y maliciosa. Los agentes siguen su trabajo, pero el coche de vez en cuando interviene: a veces sus radios y teléfonos no funcionan. A veces el coche empieza a moverse, a producir relámpagos y el maletero se abre para escupir objetos indescriptibles. Hasta parece que es responsable de varias muertes, entre ellas la del agente Wilcox. En el otoño de 2001 el hijo del fallecido agente empieza a trabajar en la comisaría y decide que ha de saber la verdad del Buick 8."
+    },
+    "links": [
+      {
+        "title": "StephenKing.com - From a Buick 8",
+        "url": "https://stephenking.com/library/novel/from_a_buick_8.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "From a Buick 8 - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/From_a_Buick_8",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "From a Buick 8",
+    "covers": [
+      6502777,
+      -1
+    ],
+    "subject_places": [
+      "Pennsylvania",
+      "Shed B"
+    ],
+    "subjects": [
+      "Pennsylvania State Police",
+      "ghost story",
+      "drunk driving",
+      "angel dust",
+      "horror fiction",
+      "Teenage boys",
+      "Police",
+      "Open Library Staff Picks",
+      "Fiction",
+      "Abandonment of automobiles",
+      "Buick automobile",
+      "Abandonment of automobiles -- Fiction",
+      "Police -- Pennsylvania -- Fiction",
+      "Buick automobile -- Fiction",
+      "Teenage boys -- Fiction",
+      "Pennsylvania -- Fiction",
+      "Fiction, horror",
+      "Pennsylvania, fiction",
+      "Fiction, suspense",
+      "Fiction, thrillers, general",
+      "Horror stories",
+      "Large print books",
+      "Spanish language, conversation and phrase books",
+      "FICTION / Horror",
+      "FICTION / Science Fiction / Alien Contact",
+      "FICTION / Small Town & Rural",
+      "Pennsylvania",
+      "Horror - General",
+      "Fiction - Horror",
+      "Fiction / General",
+      "General",
+      "Spanish: Adult Fiction",
+      "Fiction - Espionage / Thriller",
+      "Suspense",
+      "Thrillers",
+      "Fiction / Thrillers",
+      "Amerikai angol irodalom",
+      "Amerikai angol regény",
+      "Amerikai angol szerző",
+      "Horror",
+      "Thriller",
+      "Amerikai regény"
+    ],
+    "subject_people": [
+      "Ned Wilcox",
+      "Troop D",
+      "Curtis Wilcox",
+      "Sander Freemont Dearborn",
+      "Ennis Rafferty",
+      "Brian Lippy",
+      "Buick Driver",
+      "AC/DC",
+      "Blondie",
+      "Bo Donaldson & The Heywoods",
+      "Brandy",
+      "Bullwinkle",
+      "Chauncey",
+      "God",
+      "Jack",
+      "Jesus",
+      "Jill",
+      "Jimmy",
+      "Judas Priest",
+      "Mister Dillon",
+      "Natasha",
+      "Rocky",
+      "Monster",
+      "Roslyn",
+      "Satan",
+      "Tribbles",
+      "Johnny Ace",
+      "Arky Arkanian",
+      "James Arness",
+      "Herb Avery",
+      "Matt Babicki",
+      "Mrs. Babicki",
+      "Boris Badinov",
+      "Joan Baez",
+      "P.T. Barnum",
+      "Lizzie Borden",
+      "Hubert Bossey",
+      "Sid Brownell",
+      "Carl Brundage",
+      "Mrs. Brundage",
+      "Phil Candleton",
+      "Floyd B. Clouse",
+      "Brian Cole",
+      "Andy Colucci",
+      "Stephanie Colucci",
+      "Columbo",
+      "Marie Curie",
+      "Jeff Cutler",
+      "Dadier brothers",
+      "Mr. Dearborn",
+      "Mrs. Dearborn",
+      "Cecil B. DeMille",
+      "Steve Devoe",
+      "Diment",
+      "James Dockerty",
+      "Bob Dylan",
+      "Dicky-Duck Eliot",
+      "Flanders",
+      "Buck Flanders",
+      "William Kirk Frady",
+      "Miss Frances",
+      "Joe Friday",
+      "Mrs. Garrett",
+      "Orville Garrett",
+      "Cynthia Garris",
+      "Mr. Greenville",
+      "Adolf Hitler (1889-1945)",
+      "Sherlock Holmes",
+      "George Hull",
+      "Edith Hyams",
+      "Mr. Hyams",
+      "Justin Islington",
+      "Eddie Jacubois",
+      "Mr. Jones",
+      "Kalin Twins",
+      "John Lennon",
+      "Paul Loving",
+      "Bela Lugosi",
+      "Jacob Marley",
+      "John H. Maturin",
+      "Esther Mayhew",
+      "Tom McClannahan",
+      "Sandra McCracken",
+      "George Morgan",
+      "Rosellen Nevers",
+      "Tracy O'Day",
+      "Travis O'Day",
+      "Jackie O'Hara",
+      "Homer Oosler",
+      "Robert Oppenheimer",
+      "Johnny Parker",
+      "Shirley Pasternak",
+      "Brady Paul",
+      "Peter Quinland",
+      "Edit Rafferty",
+      "Robbie Rennert",
+      "Nelson Riddle",
+      "Albert Rizzo",
+      "Bradley Roach",
+      "Norman Rockwell",
+      "Bibi Roth",
+      "Hudson Royer",
+      "Richard T. Rumsfeld",
+      "Mark Rushing",
+      "Mike Sanders",
+      "Randy Santerre",
+      "Tony Schoondist",
+      "Frank Sinatra",
+      "Christian Soder",
+      "Frank Soderburg",
+      "Samuel Stamson",
+      "George Stankowski",
+      "The Surfaris",
+      "Teague",
+      "Darth Vader",
+      "John H. Watson",
+      "Lawrence Welk",
+      "Tony Joe White",
+      "Janet Wilcox",
+      "Joan Wilcox",
+      "Michelle Wilcox",
+      "Orville Wright",
+      "Wilbur Wright"
+    ],
+    "key": "/works/OL81586W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL19981A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "excerpt": "Curt Wilcox's boy came around the barracks a lot the year after his father died, I mean a lot, but nobody ever told him get out the way or asked him what in hail he was doing there again.",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_times": [
+      "1979",
+      "2001"
+    ],
+    "first_publish_date": "December 2002",
+    "cover_edition": {
+      "key": "/books/OL9846261M"
+    },
+    "genres": [
+      "/tags/OL171T",
+      "/tags/OL180T"
+    ],
+    "latest_revision": 50,
+    "revision": 50,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-17T04:57:55.334864"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T15:21:00.736206"
+    }
+  }
+}

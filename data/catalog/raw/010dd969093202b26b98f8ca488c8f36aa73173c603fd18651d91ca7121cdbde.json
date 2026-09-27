@@ -1,0 +1,123 @@
+{
+  "url": "https://openlibrary.org/works/OL679358W.json",
+  "retrievedAt": "2026-09-27T09:06:49.676989+00:00",
+  "sha256": "3573ea452e46369ab04a461865d28986ba23b60bfc58428ca9d66284baff7743",
+  "data": {
+    "description": "When Coraline steps through a door to find another house strangely similar to her own (only better), things seem marvelous.\r\n\r\nBut there's another mother there, and another father, and they want her to stay and be their little girl. They want to change her and never let her go.\r\n\r\nCoraline will have to fight with all her wit and courage if she is to save herself and return to her ordinary life.",
+    "title": "Coraline",
+    "covers": [
+      14171421,
+      8322646,
+      6621557,
+      30401,
+      6410423,
+      46373,
+      6765692,
+      8783222,
+      46372,
+      541060,
+      274900,
+      6747033,
+      4913602,
+      8387806,
+      8496451,
+      8533665,
+      8596805,
+      8769443,
+      8772669,
+      8784139,
+      8784224,
+      8784255,
+      8785650,
+      8788643,
+      9076488,
+      9388388,
+      9383288,
+      10510835,
+      10942078,
+      10959995,
+      11438348,
+      11274948,
+      12634691,
+      12372389,
+      10849805,
+      12306039,
+      14216850,
+      14216852,
+      14216851,
+      13532781,
+      13118321,
+      14171422,
+      14171423,
+      14016344,
+      14016345
+    ],
+    "subject_places": [
+      "London",
+      "London (England)"
+    ],
+    "subjects": [
+      "Fantasy",
+      "Paranormal fiction",
+      "Juvenile fiction",
+      "Graphic novels",
+      "Children's literature",
+      "Fiction",
+      "Hugo Award Winner",
+      "Supernatural",
+      "award:hugo_award=novella",
+      "Horror stories",
+      "award:hugo_award=2003",
+      "Comic books, strips",
+      "Horror tales",
+      "Supernatural -- Juvenile fiction",
+      "Young adult fiction",
+      "Blind",
+      "Books and reading",
+      "Young adult literature",
+      "Fantasy fiction",
+      "Horror fiction",
+      "Children's fiction",
+      "Supernatural, fiction",
+      "Large type books",
+      "Children's stories",
+      "Littérature fantastique américaine",
+      "Comics & graphic novels, horror",
+      "Tweens",
+      "Children's Books/Ages 9-12 Fiction",
+      "collection:Name"
+    ],
+    "key": "/works/OL679358W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL53305A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "location": "/works/OL679358W",
+    "subject_people": [
+      "Coraline"
+    ],
+    "genres": [
+      "/tags/OL169T",
+      "/tags/OL171T"
+    ],
+    "latest_revision": 63,
+    "revision": 63,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T01:11:34.644230"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-04T12:20:41.786287"
+    }
+  }
+}

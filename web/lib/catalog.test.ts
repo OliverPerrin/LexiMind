@@ -25,7 +25,7 @@ test("malformed identifiers, dates, scalar fields and cover URLs fail closed", (
   for (const patch of [
     { identifiers: { openLibraryWork: 123, isbns: [] } },
     { source: { ...books[0].source, retrievedAt: 0 } },
-    { firstPublished: true }, { coverUrl: false },
+    { firstPublished: true }, { firstPublished: 0 }, { firstPublished: -1 }, { coverUrl: false },
     { coverUrl: "https://covers.openlibrary.org.evil.example/b/id/1-L.jpg" },
     { authors: [" "] }, { genres: ["Fiction", "Fiction"] },
   ]) assert.throws(() => validateCatalog([{ ...books[0], ...patch }]));
@@ -53,4 +53,21 @@ test("source times require a valid calendar date and an explicit timezone", () =
   for (const retrievedAt of ["2024-02-29T00:00:00Z", "2026-09-26T12:00:00.123456+02:00"]) {
     assert.equal(validateCatalog([{ ...books[0], source: { ...books[0].source, retrievedAt } }]).length, 1);
   }
+});
+
+
+test("reviewed publication history is retained with its own safe source", () => {
+  const source = { name: "Publisher", url: "https://publisher.example/book/history" };
+  const [book] = validateCatalog([{ ...books[0], firstPublished: 2018, firstPublishedSource: source }]);
+  assert.deepEqual(book.firstPublishedSource, source);
+  for (const value of [null, { ...source, name: " " }, { ...source, url: "javascript:alert(1)" },
+    { ...source, url: "https://user:password@publisher.example/book" }, { ...source, url: "https://" },
+    { ...source, url: " https://publisher.example/book" },
+    { ...source, url: "https://publisher.example/\\book" },
+    { ...source, url: "https:publisher.example/book" },
+    { ...source, url: "https://publisher%2eexample/book" },
+    { ...source, url: "https://@publisher.example/book" }]) {
+    assert.throws(() => validateCatalog([{ ...books[0], firstPublished: 2018, firstPublishedSource: value }]), /publication evidence/);
+  }
+  assert.throws(() => validateCatalog([{ ...books[0], firstPublished: null, firstPublishedSource: source }]), /publication evidence/);
 });

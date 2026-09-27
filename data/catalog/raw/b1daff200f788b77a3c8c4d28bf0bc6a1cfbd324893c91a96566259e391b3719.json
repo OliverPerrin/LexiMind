@@ -1,0 +1,63 @@
+{
+  "url": "https://openlibrary.org/works/OL28954802W.json",
+  "retrievedAt": "2026-09-27T09:06:44.265565+00:00",
+  "sha256": "9d350547e5ff36f6ae4db370c52f1090f7058f40f258c9df88c02587ecb770a1",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "The Locked Door",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL8384995A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL28954802W",
+    "covers": [
+      13156268
+    ],
+    "subjects": [
+      "Thriller",
+      "Mystery",
+      "Mystery Thriller",
+      "Fiction",
+      "Suspense",
+      "Crime",
+      "Psychological Thriller",
+      "Horror"
+    ],
+    "identifiers": {
+      "librarything": [
+        "26623846"
+      ]
+    },
+    "description": {
+      "type": "/type/text",
+      "value": "**Some doors are locked for a reason…**\r\n\r\nWhile eleven-year-old Nora Davis was up in her bedroom doing homework, she had no idea her father was killing women in the basement.\r\n\r\nUntil the day the police arrived at their front door.\r\n\r\nDecades later, Nora’s father is spending his life behind bars, and Nora is a successful surgeon with a quiet, solitary existence. Nobody knows her father was a notorious serial killer. And she intends to keep it that way.\r\n\r\nThen Nora discovers one of her young female patients has been murdered. In the same unique and horrific manner that her father used to kill his victims."
+    },
+    "subject_people": [
+      "Nora Davis"
+    ],
+    "genres": [
+      "/tags/OL180T",
+      "/tags/OL175T",
+      "/tags/OL166T",
+      "/tags/OL171T"
+    ],
+    "latest_revision": 9,
+    "revision": 9,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2022-10-05T12:42:36.751870"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T10:39:00.079687"
+    }
+  }
+}

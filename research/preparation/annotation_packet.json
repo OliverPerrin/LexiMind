@@ -6,9 +6,9 @@
   "human_review_required": true,
   "catalog": {
     "path": "web/data/books.json",
-    "sha256": "702cf3e16c091daafe1d293248dfed1955fe0545e4ca5c3089de3467f1ad4c6f",
-    "bytes": 204648,
-    "record_count": 102,
+    "sha256": "2adb8d4bdeb13cf367b76ea1fcbd8a4cccacad72699eb356b168974db221d777",
+    "bytes": 246566,
+    "record_count": 120,
     "record_hash_format": "sha256:json-sort-keys-utf8-ensure-ascii-false-compact-v1"
   },
   "rubrics": {
@@ -97,6 +97,16 @@
       "source_content_sha256": "2de0764388a1f91089b76164c10f17471c2a94cbdcbe0032f4ccdcf3ca395620"
     },
     {
+      "work_id": "OL15358691W",
+      "record_sha256": "a7fb94af46ba320ac5a097cd0431c436de6b14c6c3a2bff7fb025584189ad51e",
+      "source_urls": [
+        "https://openlibrary.org/works/OL15358691W",
+        "https://www.brandonsanderson.com/blogs/blog/the-way-of-kings-tour-details"
+      ],
+      "source_revision": 32,
+      "source_content_sha256": "51ac51b1b80329db8aaeae244ab3312eb5e9f70766ce5168b17f03b659b0c679"
+    },
+    {
       "work_id": "OL15400582W",
       "record_sha256": "7a9d48b0b55a9d876674a36cf54ecc37fa7a8bf2ed7052a84d3b4b7da29e8243",
       "source_urls": [
@@ -142,6 +152,16 @@
       "source_content_sha256": "742e56f887c33d3194976598a84fe87d6a0990bde52da258d51860649f518a76"
     },
     {
+      "work_id": "OL16239762W",
+      "record_sha256": "ca2db6e1a492738888ac52c74f109b792526c58fdaba3c18e634d2a80ec73c95",
+      "source_urls": [
+        "https://openlibrary.org/works/OL16239762W",
+        "https://penguinrandomhouselibrary.com/book/?isbn=9780307588364"
+      ],
+      "source_revision": 25,
+      "source_content_sha256": "2b2e93e7ce97a58023c78f13e0f8d9ce1162f45700b28d915442283d4e844af1"
+    },
+    {
       "work_id": "OL16314245W",
       "record_sha256": "fd5af8c791847bcf3d023241db90763160371f70e25e9fe8bcb6ee67953cfda2",
       "source_urls": [
@@ -158,6 +178,16 @@
       ],
       "source_revision": 20,
       "source_content_sha256": "51494a4307ac971e82eed2373912a84823178fdff32d86384505377f2fde2c00"
+    },
+    {
+      "work_id": "OL16806877W",
+      "record_sha256": "50f6dc5fd37e0135098d59060bd45d5bd82c01e031e7cb0d61750611ae0a66d3",
+      "source_urls": [
+        "https://openlibrary.org/works/OL16806877W",
+        "https://stephenking.com/works/novel/doctor-sleep.html"
+      ],
+      "source_revision": 44,
+      "source_content_sha256": "bd88f2b7afd8c3bc6d39fe9f91b057c0c1693e273fb00ef269909ec3e57c62ed"
     },
     {
       "work_id": "OL17546674W",
@@ -194,6 +224,16 @@
       ],
       "source_revision": 23,
       "source_content_sha256": "99864b2ca4187c1ed0f8e7f3d16f2a151b67f37721e8de4658401947a208e6e4"
+    },
+    {
+      "work_id": "OL17716925W",
+      "record_sha256": "9f425ddaf5368e9314a0636da7c65af0d66254191c86b8052f8d443356be6638",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17716925W",
+        "https://www.otherscribbles.com/thelongway"
+      ],
+      "source_revision": 21,
+      "source_content_sha256": "43c61b168759d54a9d41b76f3fbb14d130f1310f17ad6a46220f2ba0a63dbc71"
     },
     {
       "work_id": "OL17795349W",
@@ -241,6 +281,16 @@
       "source_content_sha256": "84adb8e270b62cab4e8b2ce32b64b8d1f80877813189c9c0d4b99e0d9e444778"
     },
     {
+      "work_id": "OL17837968W",
+      "record_sha256": "df941dfa290d694cfe9f9fc0bdda67db61cef41ad97c012b7fac518e17131162",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17837968W",
+        "https://www.penguinrandomhouse.com/books/250305/artemis-by-andy-weir/9780553448139/"
+      ],
+      "source_revision": 12,
+      "source_content_sha256": "ed77d0fd7a73c5dbfe318380d976f50d455282e8fac4d05ede441f3730381a5a"
+    },
+    {
       "work_id": "OL18012166W",
       "record_sha256": "718091b7ae5ebc623477a37aae883b5849453d1838262271dad112043ce2e8a4",
       "source_urls": [
@@ -284,6 +334,16 @@
       ],
       "source_revision": 12,
       "source_content_sha256": "6d75322bff835485b3ace33308bbb650112a8383fb9c755d3f9f9b6d00ff20e5"
+    },
+    {
+      "work_id": "OL19552275W",
+      "record_sha256": "293c52e86c34d0f6bab40c4a28bb73926410694360c4f6d83f55ca1916fec58b",
+      "source_urls": [
+        "https://openlibrary.org/works/OL19552275W",
+        "https://www.hawking.org.uk/in-print/books/brief-answers-to-the-big-questions-9d0dc52f-6a77-43e2-8b18-ea17303f07d6?position=2"
+      ],
+      "source_revision": 5,
+      "source_content_sha256": "f5b7202b83b6de3a32bf5f0faa109a0dbde528baf6e9e792571b99d52f07a504"
     },
     {
       "work_id": "OL1963251W",
@@ -349,6 +409,16 @@
       "source_content_sha256": "ae7730bd31a98da42947b94a31a660d65ff4ff8b2bf58cba7621724bb2c6bb2f"
     },
     {
+      "work_id": "OL20760650W",
+      "record_sha256": "9b5b54935df53e351a0ff6e9510c03e0adeb7215f2e1b1a855a28f6e9ee933d8",
+      "source_urls": [
+        "https://openlibrary.org/works/OL20760650W",
+        "https://www.audible.com/ep/best-of-the-year-audiobooks-2019-narrators-2"
+      ],
+      "source_revision": 9,
+      "source_content_sha256": "a1660f963f2f3dfdf2e694bcf9ee73b1d2c06f28c11057581c7aa08c5f780322"
+    },
+    {
       "work_id": "OL20796936W",
       "record_sha256": "3d00f49c53c523700744a264f99301c5ae04e33aa36aba09f1a9c4aca8773db8",
       "source_urls": [
@@ -374,6 +444,16 @@
       ],
       "source_revision": 43,
       "source_content_sha256": "a55415132d8664ecee9c028532fda7ecc11d681b8a8f764f05c87e6f310bd8ae"
+    },
+    {
+      "work_id": "OL21745884W",
+      "record_sha256": "00c3b13d6dbe56c54705c74e9f5b350923998f4fc8f065007f7a9925093c9b22",
+      "source_urls": [
+        "https://global.penguinrandomhouse.com/announcements/new-andy-weir-novel-project-hail-mary-to-be-published-in-may-2021/",
+        "https://openlibrary.org/works/OL21745884W"
+      ],
+      "source_revision": 31,
+      "source_content_sha256": "63235c9596beddc66336ecc624391570c9d7c09d8f950e2f028020dccffba4e3"
     },
     {
       "work_id": "OL2577486W",
@@ -475,6 +555,36 @@
       "source_content_sha256": "1b79385db4eb165d53306204c921fc4458985e2bdb37ea141d12699a4393d5a6"
     },
     {
+      "work_id": "OL27729743W",
+      "record_sha256": "84f17ae278445e8bc9a422e4a0a00cf70f239939b8d3ee47ec5da42f029610fb",
+      "source_urls": [
+        "https://openlibrary.org/works/OL27729743W",
+        "https://www.freidamcfadden.com/books/the-housemaid-series/the-housemaid/"
+      ],
+      "source_revision": 11,
+      "source_content_sha256": "b1e283b0be6e9fa0e733901074e8f48daf71fc5bbb8e8d02156f61df074bb125"
+    },
+    {
+      "work_id": "OL28953746W",
+      "record_sha256": "c85be6926a9a70c6c98e045b8e13a7b821a8c15a5bdfe5703087d84a1ab469ca",
+      "source_urls": [
+        "https://openlibrary.org/works/OL28953746W",
+        "https://www.freidamcfadden.com/books/standalone-thrillers/brain-damage/"
+      ],
+      "source_revision": 7,
+      "source_content_sha256": "24934f9e9a55453d6ed822e469b6764d412d90eb4e045f8292701d19fb8d2843"
+    },
+    {
+      "work_id": "OL28954802W",
+      "record_sha256": "6a32538debcae34a69587e837f09dbd3eec41e446b81f4517709aad920e07beb",
+      "source_urls": [
+        "https://openlibrary.org/works/OL28954802W",
+        "https://www.freidamcfadden.com/books/standalone-thrillers/the-locked-door/"
+      ],
+      "source_revision": 9,
+      "source_content_sha256": "9d350547e5ff36f6ae4db370c52f1090f7058f40f258c9df88c02587ecb770a1"
+    },
+    {
       "work_id": "OL2943594W",
       "record_sha256": "3c6c2a4f12706edbc5772d7010797a033677c0dbf0d1d5c8ce97853d8670d227",
       "source_urls": [
@@ -482,6 +592,26 @@
       ],
       "source_revision": 9,
       "source_content_sha256": "05967d07ee4a7624006b62e2f02a762745248c3936242febbf9a4bf62da3e2ae"
+    },
+    {
+      "work_id": "OL29914687W",
+      "record_sha256": "25ed2b38dfc963425452ba22828ca6e84e6883fd06cd4ff033a9c3f33ade01f9",
+      "source_urls": [
+        "https://openlibrary.org/works/OL29914687W",
+        "https://www.richardkmorgan.com/2018/01/fragments-of-a-jet-lagged-dream/"
+      ],
+      "source_revision": 6,
+      "source_content_sha256": "a20d13a08df95b57b4622420d83696e9e5580968943f1871123861de3865778c"
+    },
+    {
+      "work_id": "OL31191485W",
+      "record_sha256": "c1f57d1ed163cdaa0d8782415cceb10af86ef73eb8b2fb2df6853ccd88e25da9",
+      "source_urls": [
+        "https://openlibrary.org/works/OL31191485W",
+        "https://www.freidamcfadden.com/books/standalone-thrillers/the-inmate/"
+      ],
+      "source_revision": 7,
+      "source_content_sha256": "d9f6a24b7a6e92a1222e59c680a53237c3ed3f5fa6f57d927d1452ddecd2cef4"
     },
     {
       "work_id": "OL318900W",
@@ -509,6 +639,16 @@
       ],
       "source_revision": 12,
       "source_content_sha256": "892b3ebccb68b90b5f5e7457c3abf645352541befac8978b60736f8520cb17cd"
+    },
+    {
+      "work_id": "OL34224558W",
+      "record_sha256": "92d84ff7f73cc8ef712470e9050a093b3122939bf007fefcc27d9aed4a1eca75",
+      "source_urls": [
+        "https://openlibrary.org/works/OL34224558W",
+        "https://www.freidamcfadden.com/books/standalone-thrillers/never-lie/"
+      ],
+      "source_revision": 6,
+      "source_content_sha256": "9593ed4247d1a9c67815fcb70f74d5b12cd7aa59bf0a2fe640f9adebab1dd097"
     },
     {
       "work_id": "OL3457792W",
@@ -773,7 +913,7 @@
     },
     {
       "work_id": "OL52266W",
-      "record_sha256": "f2cd352301770a57a4c6ce63bdf71450a47c0486a7fbcbbb2df3e550fc68f4f1",
+      "record_sha256": "eb669d739b1624156c03a4581a48ef1ee5c8689a906da461ef292764069de1da",
       "source_urls": [
         "https://openlibrary.org/works/OL52266W"
       ],
@@ -790,6 +930,16 @@
       "source_content_sha256": "46516e20998a7fd5ef47b7ed20998598153e6ebcf4c06f2de9fd9016eccdeab6"
     },
     {
+      "work_id": "OL5731542W",
+      "record_sha256": "629d3c0da3320937fee42dda245e13f821799675e977ee0f0d795d52cbcff71e",
+      "source_urls": [
+        "https://openlibrary.org/works/OL5731542W",
+        "https://www.chimamanda.com/half-of-a-yellow-sun/"
+      ],
+      "source_revision": 57,
+      "source_content_sha256": "d7f09aef0dba6949d5c04155cd54b82389bfdbe85154c0b200e6af2f2687d5b5"
+    },
+    {
       "work_id": "OL5738154W",
       "record_sha256": "0b93d700a0553b100e5d7162d04eb29e8a09f0663c61e08b05720cf2fd66cacf",
       "source_urls": [
@@ -797,6 +947,16 @@
       ],
       "source_revision": 27,
       "source_content_sha256": "7c8f6dc623e0109c7b23b38f03776ed1b33db67ef3469d40d8623cb90ddc2f91"
+    },
+    {
+      "work_id": "OL679358W",
+      "record_sha256": "304fce175d45c7d0785be7fbd9d6c73570160c3d74174ab294308b8cc52ba125",
+      "source_urls": [
+        "https://journal.neilgaiman.com/2002/05/couple-of-people-want-to-know-why.asp",
+        "https://openlibrary.org/works/OL679358W"
+      ],
+      "source_revision": 63,
+      "source_content_sha256": "3573ea452e46369ab04a461865d28986ba23b60bfc58428ca9d66284baff7743"
     },
     {
       "work_id": "OL69178W",
@@ -869,6 +1029,26 @@
       ],
       "source_revision": 22,
       "source_content_sha256": "bb41e8609b013a7b960c1225313d05deb23ac002a73b7fac9e355c6261f6c07e"
+    },
+    {
+      "work_id": "OL81586W",
+      "record_sha256": "4e889250828bee8578cd4e9f306d96323775b4442ca3624d1a5fb6ed3b7e4cb0",
+      "source_urls": [
+        "https://openlibrary.org/works/OL81586W",
+        "https://stephenking.com/works/novel/from-a-buick-8.html"
+      ],
+      "source_revision": 50,
+      "source_content_sha256": "6cbb977366468ea9d51a08ea2f13e21597ef4994080aac4f09de9587816fb4b6"
+    },
+    {
+      "work_id": "OL81597W",
+      "record_sha256": "e2dc072deb6a591606cae39eeb86dd2aeec2dda57bb11c2ed1a80465e93a6cf7",
+      "source_urls": [
+        "https://openlibrary.org/works/OL81597W",
+        "https://stephenking.com/works/novel/cell.html"
+      ],
+      "source_revision": 57,
+      "source_content_sha256": "2336465cc70d31d20b32c45a4af29037f32228e3bd9069a6c13cbaaffc4b74c3"
     },
     {
       "work_id": "OL81606W",

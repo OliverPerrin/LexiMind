@@ -1,0 +1,71 @@
+{
+  "url": "https://openlibrary.org/works/OL17837968W.json",
+  "retrievedAt": "2026-09-27T09:07:04.242914+00:00",
+  "sha256": "ed77d0fd7a73c5dbfe318380d976f50d455282e8fac4d05ede441f3730381a5a",
+  "data": {
+    "description": "**JASMINE BASHARA** never signed up to be a hero. She just wanted to get rich.\r\n\r\nNot crazy, eccentric-billionaire rich, like many of the visitors to her hometown of Artemis, humanity's first and only lunar colony. Just rich enough to move out of her coffin-sized apartment and eat something better than flavored algae. Rich enough to pay off a debt she's owed for a long time.\r\n\r\nSo when a chance at a huge score finally comes her way, Jazz can't say no. Sure, it requires her to graduate from small-time smuggler to full-on criminal mastermind. And it calls for a particular combination of cunning, technical skills, and large explosions--not to mention sheer brazen swagger. But Jazz has never run into a challenge her intellect can't handle, and she figures she's got the \"swagger\" part down.\r\n\r\nThe trouble is, engineering the perfect crime is just the start of Jazz's problems. Because her little heist is about to land her in the middle of a conspiracy for control of Artemis itself.\r\n\r\nTrapped between competing forces, pursued by a killer and the law alike, even Jazz has to admit she's in way over her head. She'll have to hatch a truly spectacular scheme to have a chance at staying alive and saving her city.\r\n\r\nJazz is no hero, but she is a very good criminal.\r\n\r\nThat'll have to do.\r\n\r\nPropelled by its heroine's wisecracking voice, set in a city that's at once stunningly imagined and intimately familiar, and brimming over with clever problem solving and heisty fun, *Artemis* is another irresistible brew of science, suspense, and humor from #1 bestselling author Andy Weir.\r\n\r\nThis description comes from the publisher.",
+    "subjects": [
+      "Fiction",
+      "Science fiction",
+      "Smuggling",
+      "Conspiracies",
+      "Fiction, science fiction, hard science fiction",
+      "Fiction, science fiction, action & adventure",
+      "Conspiraciones",
+      "Contrabando",
+      "Luna",
+      "Ficción",
+      "Spanish language materials",
+      "nyt:combined-print-and-e-book-fiction=2017-12-03",
+      "New York Times bestseller",
+      "Suspense fiction",
+      "Moon",
+      "Hard Science Fiction"
+    ],
+    "key": "/works/OL17837968W",
+    "title": "Artemis",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7234434A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      8235551,
+      10164454,
+      8783052,
+      8783841,
+      10848991,
+      11530154,
+      12328857,
+      13122271
+    ],
+    "subject_places": [
+      "Moon"
+    ],
+    "subject_people": [
+      "Jazz Bashara"
+    ],
+    "genres": [
+      "/tags/OL179T",
+      "/tags/OL180T"
+    ],
+    "latest_revision": 12,
+    "revision": 12,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2018-02-08T03:57:06.676048"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-31T09:39:01.345051"
+    }
+  }
+}

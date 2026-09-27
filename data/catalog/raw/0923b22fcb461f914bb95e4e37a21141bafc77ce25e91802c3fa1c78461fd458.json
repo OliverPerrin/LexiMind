@@ -1,0 +1,257 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3A%22science+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-27T09:06:56.950189+00:00",
+  "sha256": "122d80637054d91ddce09bad3b76ffa4b43627d8fa5f6629e2b7cae8d2798a54",
+  "data": {
+    "numFound": 51171,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 51171,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:\"science fiction\" language:eng first_publish_year:[2000 TO 2025]",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL7044246A"
+        ],
+        "author_name": [
+          "刘慈欣"
+        ],
+        "cover_i": 7893958,
+        "first_publish_year": 2010,
+        "key": "/works/OL17610507W",
+        "language": [
+          "ger",
+          "fre",
+          "eng",
+          "chi",
+          "spa"
+        ],
+        "title": "Death's End (The Three-Body Problem Series Book 3)",
+        "subject": [
+          "Fiction",
+          "Science Fiction",
+          "Fiction, science fiction, general",
+          "Human-alien encounters",
+          "Imaginary wars and battles",
+          "Fiction, science fiction, action & adventure",
+          "Chinese Science fiction",
+          "Survival",
+          "Extraterrestrial beings",
+          "Hard Science Fiction",
+          "Alien Contact",
+          "FICTION / Science Fiction / Hard Science Fiction",
+          "FICTION / Science Fiction / Alien Contact",
+          "Chinese fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7044246A"
+        ],
+        "author_name": [
+          "刘慈欣"
+        ],
+        "cover_i": 10526598,
+        "first_publish_year": 2008,
+        "key": "/works/OL16314245W",
+        "language": [
+          "pol",
+          "spa",
+          "tur",
+          "eng",
+          "fre",
+          "ita",
+          "chi",
+          "ger",
+          "por"
+        ],
+        "title": "The Dark Forest (The Three-Body Problem Series Book 2)",
+        "subject": [
+          "Chinese Science fiction",
+          "Fiction",
+          "Science Fiction",
+          "Fiction, science fiction, general",
+          "Human-alien encounters",
+          "Imaginary wars and battles",
+          "FICTION / Science Fiction / General",
+          "General"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7234434A"
+        ],
+        "author_name": [
+          "Andy Weir"
+        ],
+        "cover_i": 11200092,
+        "first_publish_year": 2021,
+        "key": "/works/OL21745884W",
+        "language": [
+          "fre",
+          "spa",
+          "fin",
+          "tur",
+          "dut",
+          "kor",
+          "ger",
+          "eng",
+          "por"
+        ],
+        "title": "Project Hail Mary",
+        "subject": [
+          "hard science-fiction",
+          "science-fiction",
+          "sci-fi",
+          "hard sci-fi",
+          "nyt:hardcover-fiction=2021-05-23",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "Fiction, science fiction, action & adventure",
+          "Fiction, science fiction, hard science fiction",
+          "End of the world",
+          "Fiction",
+          "Astronauts",
+          "Space flight",
+          "Memory disorders",
+          "Survival",
+          "Fin du monde",
+          "Romans, nouvelles",
+          "Astronautes",
+          "Vol spatial",
+          "Habiletés de survie",
+          "FICTION / Science Fiction / Action & Adventure",
+          "FICTION / Science Fiction / Hard Science Fiction",
+          "FICTION / Thrillers / Suspense",
+          "Survival after airplane accidents, shipwrecks",
+          "nyt:trade-fiction-paperback=2022-11-13"
+        ]
+      },
+      {
+        "author_key": [
+          "OL2692915A"
+        ],
+        "author_name": [
+          "Richard K. Morgan"
+        ],
+        "cover_i": 13223488,
+        "first_publish_year": 2002,
+        "key": "/works/OL29914687W",
+        "language": [
+          "fre",
+          "spa",
+          "pol",
+          "ita",
+          "ger",
+          "gre",
+          "eng",
+          "por"
+        ],
+        "title": "Altered Carbon",
+        "subject": [
+          "Science Fiction",
+          "Cyberpunk",
+          "Thriller",
+          "Life on other planets",
+          "Fiction",
+          "Fiction, science fiction, hard science fiction",
+          "Fiction, science fiction, general",
+          "Long Now Manual for Civilization",
+          "Science Fiction And Fantasy",
+          "Fiction - Science Fiction",
+          "Science Fiction - High Tech",
+          "Fiction / Science Fiction / High Tech",
+          "Conspiracy",
+          "Murder",
+          "Private investigators",
+          "Soldiers of fortune",
+          "Rich people",
+          "Investigation",
+          "Interstellar travel",
+          "Nanotechnology",
+          "Genetic engineering",
+          "Immortalism",
+          "General",
+          "Dystopias",
+          "Hard Science Fiction",
+          "Action & Adventure",
+          "Media Tie-In",
+          "Fiction, science fiction, steampunk"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7234434A"
+        ],
+        "author_name": [
+          "Andy Weir"
+        ],
+        "cover_i": 8235551,
+        "first_publish_year": 2017,
+        "key": "/works/OL17837968W",
+        "language": [
+          "spa",
+          "ita",
+          "ger",
+          "eng",
+          "por"
+        ],
+        "title": "Artemis",
+        "subject": [
+          "Fiction",
+          "Science fiction",
+          "Smuggling",
+          "Conspiracies",
+          "Fiction, science fiction, hard science fiction",
+          "Fiction, science fiction, action & adventure",
+          "Conspiraciones",
+          "Contrabando",
+          "Luna",
+          "Ficción",
+          "Spanish language materials",
+          "nyt:combined-print-and-e-book-fiction=2017-12-03",
+          "New York Times bestseller",
+          "Suspense fiction",
+          "Moon",
+          "Hard Science Fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7387940A"
+        ],
+        "author_name": [
+          "Becky Chambers"
+        ],
+        "cover_i": 8902659,
+        "first_publish_year": 2014,
+        "key": "/works/OL17716925W",
+        "language": [
+          "tur",
+          "chi",
+          "por",
+          "ger",
+          "fre",
+          "spa",
+          "eng"
+        ],
+        "title": "The Long Way to a Small, Angry Planet",
+        "subject": [
+          "Fiction",
+          "Science fiction",
+          "Extraterrestrial beings",
+          "Interplanetary voyages",
+          "Fiction, science fiction, general",
+          "LGBTQ science fiction & fantasy",
+          "Space warfare",
+          "Action & Adventure",
+          "Romance",
+          "LGBT",
+          "Space Opera"
+        ]
+      }
+    ]
+  }
+}

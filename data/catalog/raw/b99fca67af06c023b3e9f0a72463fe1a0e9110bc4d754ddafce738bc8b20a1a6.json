@@ -1,0 +1,88 @@
+{
+  "url": "https://openlibrary.org/works/OL19552275W.json",
+  "retrievedAt": "2026-09-27T09:07:27.814649+00:00",
+  "sha256": "f5b7202b83b6de3a32bf5f0faa109a0dbde528baf6e9e792571b99d52f07a504",
+  "data": {
+    "title": "Brief Answers to the Big Questions",
+    "key": "/works/OL19552275W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL2675573A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Science",
+      "Miscellanea",
+      "Science, miscellanea",
+      "nyt:combined-print-and-e-book-nonfiction=2018-11-04",
+      "New York Times bestseller",
+      "Science, philosophy",
+      "Philosophy and science",
+      "Religion and science",
+      "Philosophy",
+      "Inquiry (Theory of knowledge)",
+      "SCIENCE / Cosmology",
+      "SCIENCE / Physics / Astrophysics",
+      "BIOGRAPHY & AUTOBIOGRAPHY / Personal Memoirs",
+      "Astronomy",
+      "Theoretical physics",
+      "Nonfiction",
+      "Space and time",
+      "Essays",
+      "History",
+      "Popular science"
+    ],
+    "description": {
+      "type": "/type/text",
+      "value": "Stephen Hawking was recognized as one of the greatest minds of our time and a figure of inspiration after defying his ALS diagnosis at age twenty-one. He is known for both his breakthroughs in theoretical physics as well as his ability to make complex concepts accessible for all, and was beloved for his mischievous sense of humor. At the time of his death, Hawking was working on a final project: a book compiling his answers to the \"big\" questions that he was so often posed--questions that ranged beyond his academic field. Within these pages, he provides his personal views on our biggest challenges as a human race, and where we, as a planet, are heading next. Each section will be introduced by a leading thinker offering his or her own insight into Professor Hawking's contribution to our understanding. The book will also feature a foreword from Academy Award winning actor Eddie Redmayne, who portrayed Hawking in the film The Theory of Everything, and an afterword by Hawking's daughter, Lucy Hawking, as well as personal photographs and additional archival material."
+    },
+    "covers": [
+      8815165,
+      9353019,
+      12327240,
+      13189253,
+      13495647,
+      12208198
+    ],
+    "excerpts": [
+      {
+        "pages": "120",
+        "excerpt": "7. Sobreviveremos na Terra?\r\n\r\nA Terra sofre ameaças em tantas frentes que é difícil permanecer otimista. Os perigos são grandes e numerosos demais. Primeiro, o planeta está ficando pequeno para nós. Nossos recursos físicos estão se esgotando a uma velocidade alarmante. A mudança climática foi uma trágica dádiva humana ao planeta. Temperaturas cada vez mais elevadas, redução da calota polar, desmatamento, superpopulação, doenças, guerras, fome, escassez de água e extermínio de espécies; todos esses problemas poderiam ser resolvidos, mas até hoje não foram.",
+        "comment": "Esse é meu parágrafo favorito.",
+        "author": {
+          "key": "/people/john_caio"
+        }
+      }
+    ],
+    "subject_people": [
+      "Stephen Hawking (1942-2018)"
+    ],
+    "links": [
+      {
+        "title": "Brief Answers to the Big Questions by Stephen Hawking review – God, space, AI, Brexit",
+        "url": "https://www.theguardian.com/books/2018/oct/19/brief-answers-to-the-big-questions-stephen-hawking-review",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "latest_revision": 5,
+    "revision": 5,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2019-04-08T18:08:18.180371"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2024-03-17T14:03:48.889174"
+    }
+  }
+}

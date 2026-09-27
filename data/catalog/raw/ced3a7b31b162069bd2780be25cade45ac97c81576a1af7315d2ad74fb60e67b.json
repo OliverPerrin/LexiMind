@@ -1,0 +1,81 @@
+{
+  "url": "https://openlibrary.org/works/OL27729743W.json",
+  "retrievedAt": "2026-09-27T09:06:47.421970+00:00",
+  "sha256": "b1e283b0be6e9fa0e733901074e8f48daf71fc5bbb8e8d02156f61df074bb125",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "The Housemaid",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL8384995A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL27729743W",
+    "subjects": [
+      "nyt:trade-fiction-paperback=2023-05-14",
+      "New York Times bestseller",
+      "Thriller",
+      "Mystery",
+      "Fiction",
+      "Mystery Thriller",
+      "Suspense",
+      "Crime",
+      "Psychological Thriller",
+      "Series:The-Housemaid",
+      "Contemporary",
+      "Romance",
+      "Fiction, thrillers, domestic",
+      "Fiction, thrillers, psychological",
+      "Fiction, thrillers, suspense"
+    ],
+    "description": {
+      "type": "/type/text",
+      "value": "Every day I clean the Winchesters' beautiful house top to bottom. I collect their daughter from school. And I cook a delicious meal for the whole family before heading up to eat alone in my tiny room on the top floor.\r\n\r\nI try to ignore how Nina makes a mess just to watch me clean it up. How she tells strange lies about her own daughter. And how her husband Andrew seems more broken every day. But as I look into Andrew's handsome brown eyes, so full of pain, it's hard not to imagine what it would be like to live Nina's life. The walk-in closet, the fancy car, the perfect husband.\r\n\r\nI only try on one of Nina's pristine white dresses once. Just to see what it's like. But she soon finds out... and by the time I realize my attic bedroom door only locks from the outside, it's far too late.\r\n\r\nBut I reassure myself: the Winchesters don't know who I really am.\r\n\r\nThey don't know what I'm capable of . . ."
+    },
+    "subject_times": [
+      "Todays era"
+    ],
+    "covers": [
+      15105883
+    ],
+    "identifiers": {
+      "librarything": [
+        "27994779"
+      ],
+      "wikidata": [
+        "Q121304605"
+      ]
+    },
+    "subject_people": [
+      "Nina Winchester",
+      "Andrew Winchester",
+      "Wilhelmina \"Millie\" Calloway",
+      "Cecilia",
+      "Enzo Accardi",
+      "Millie Calloway"
+    ],
+    "genres": [
+      "/tags/OL180T",
+      "/tags/OL175T",
+      "/tags/OL166T",
+      "/tags/OL177T"
+    ],
+    "latest_revision": 11,
+    "revision": 11,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2022-04-27T04:03:32.652026"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-04T12:11:28.227283"
+    }
+  }
+}

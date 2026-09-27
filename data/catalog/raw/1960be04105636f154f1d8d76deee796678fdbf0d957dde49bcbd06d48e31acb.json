@@ -1,0 +1,198 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3A%22fantasy%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-27T09:07:06.928662+00:00",
+  "sha256": "15d4f4e9887b822ac036cc2d34416999857afc2817c63adfc23949ede03fc130",
+  "data": {
+    "numFound": 84219,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 84219,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:\"fantasy\" language:eng first_publish_year:[2000 TO 2025]",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL2801083A"
+        ],
+        "author_name": [
+          "Joe Abercrombie"
+        ],
+        "cover_i": 14543422,
+        "first_publish_year": 2001,
+        "key": "/works/OL8400950W",
+        "language": [
+          "eng"
+        ],
+        "title": "The Blade Itself",
+        "subject": [
+          "Fiction, fantasy, general",
+          "Fantasy fiction",
+          "Fantasy",
+          "Fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1394865A"
+        ],
+        "author_name": [
+          "Brandon Sanderson"
+        ],
+        "cover_i": 14658094,
+        "first_publish_year": 2008,
+        "key": "/works/OL5738154W",
+        "language": [
+          "spa",
+          "pol",
+          "eng"
+        ],
+        "title": "The Hero of Ages",
+        "subject": [
+          "Fiction",
+          "Fantasy",
+          "Epic Fantasy",
+          "Fantasy fiction",
+          "Fiction, fantasy, general",
+          "Children's fiction",
+          "Imaginary places",
+          "Magic"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7115219A"
+        ],
+        "author_name": [
+          "Sarah J. Maas"
+        ],
+        "cover_i": 7794980,
+        "first_publish_year": 2014,
+        "key": "/works/OL17546674W",
+        "language": [
+          "ger",
+          "ita",
+          "pol",
+          "eng",
+          "spa",
+          "dut"
+        ],
+        "title": "The Assassin’s Blade",
+        "subject": [
+          "Fiction, fantasy, collections & anthologies",
+          "Female assassins in fiction",
+          "Young adult fiction, fantasy, dark fantasy",
+          "[series:Throne_of_Glass]",
+          "Fantasy",
+          "Assassins",
+          "Fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL2787719A"
+        ],
+        "author_name": [
+          "Scott Lynch"
+        ],
+        "cover_i": 6307636,
+        "first_publish_year": 2001,
+        "key": "/works/OL8369445W",
+        "language": [
+          "spa",
+          "rus",
+          "eng"
+        ],
+        "title": "The Lies of Locke Lamora",
+        "subject": [
+          "Fiction, fantasy, general",
+          "Fantasy",
+          "Fiction",
+          "American Science Fiction And Fantasy",
+          "Fiction - Fantasy",
+          "Fantasy - Epic",
+          "Fiction / Fantasy / Epic",
+          "Juvenile fiction",
+          "Gangsters",
+          "Swindlers and swindling",
+          "Orphans",
+          "Adventure stories",
+          "Fantasy fiction",
+          "Robbers and outlaws",
+          "Fiction, fantasy, epic"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1394865A"
+        ],
+        "author_name": [
+          "Brandon Sanderson"
+        ],
+        "cover_i": 14658316,
+        "first_publish_year": 2010,
+        "key": "/works/OL15358691W",
+        "language": [
+          "pol",
+          "por",
+          "ger",
+          "eng",
+          "spa",
+          "heb"
+        ],
+        "title": "The Way of Kings",
+        "subject": [
+          "New York Times Bestseller",
+          "Fantasy",
+          "Epic Fantasy",
+          "Imaginary places",
+          "Kings and rulers",
+          "Magic",
+          "Imaginary wars and battles",
+          "Manuscripts",
+          "Slavery",
+          "Fiction",
+          "Fiction, fantasy, epic",
+          "high fantasy",
+          "nyt:hardcover-fiction=2010-09-19",
+          "Fiction, fantasy, general",
+          "American literature",
+          "series:Stormlight Archive"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7486601A"
+        ],
+        "author_name": [
+          "R. F. Kuang"
+        ],
+        "cover_i": 8463552,
+        "first_publish_year": 2018,
+        "key": "/works/OL19351054W",
+        "language": [
+          "eng",
+          "ita",
+          "por"
+        ],
+        "title": "The Poppy War",
+        "subject": [
+          "Fiction",
+          "Fantasy",
+          "Historical",
+          "Epic",
+          "Cultural Heritage",
+          "Goddesses",
+          "Imaginary wars and battles",
+          "Magic",
+          "Military education",
+          "Shamans",
+          "Fiction, fantasy, epic",
+          "Fiction, fantasy, paranormal",
+          "FICTION / Fantasy / Epic",
+          "FICTION / Fantasy / Paranormal"
+        ]
+      }
+    ]
+  }
+}

@@ -8,12 +8,12 @@
     "extraQueryLimit": 6
   },
   "selection": "Bounded English-language subject search results; not a representative or exhaustive catalogue.",
-  "count": 102,
-  "withDescription": 96,
-  "withCover": 102,
+  "count": 120,
+  "withDescription": 113,
+  "withCover": 120,
   "validatedMoods": 0,
-  "catalogueSha256": "1dbb04f8a9ae433f0077603520258e9206fb105572949d775802373799ee5ef7",
-  "catalogueFileSha256": "702cf3e16c091daafe1d293248dfed1955fe0545e4ca5c3089de3467f1ad4c6f",
+  "catalogueSha256": "108bfb5ae3be9510b7669a36968261aa5a037f3f2119d6dc5e5fce1982bf2eb3",
+  "catalogueFileSha256": "2adb8d4bdeb13cf367b76ea1fcbd8a4cccacad72699eb356b168974db221d777",
   "selectionReviewSha256": "35f563e7f3c0c2495feeeccc5a047567a584785a72eda303339e442392548a58",
   "queries": [
     {
@@ -97,9 +97,88 @@
   ],
   "provenance": {
     "title_description_subjects": "Open Library work record (search subjects only if work subjects absent)",
-    "authors_firstPublished": "Open Library search document for the same verified work and author IDs",
+    "authors": "Open Library search document for the same verified work and author IDs",
+    "firstPublished": "Open Library search year (nonpositive values become null); modern additions use explicitly reviewed primary publication evidence and firstPublishedSource",
     "genres": "Deterministic exact-subject mapping in src/catalog/openlibrary.py",
     "moods": "Empty: no validated editorial mood source",
     "isbns": "Empty: edition-level ISBNs are intentionally not flattened into a work identifier"
+  },
+  "modernSelection": {
+    "reviewSha256": "7fc59883404a0140cff3f46d2d45a2d366af528f7367afd1b93ebfa68bf9bd3f",
+    "addedWorkIds": [
+      "OL15358691W",
+      "OL16239762W",
+      "OL16806877W",
+      "OL17716925W",
+      "OL17837968W",
+      "OL19552275W",
+      "OL20760650W",
+      "OL21745884W",
+      "OL27729743W",
+      "OL28953746W",
+      "OL28954802W",
+      "OL29914687W",
+      "OL31191485W",
+      "OL34224558W",
+      "OL5731542W",
+      "OL679358W",
+      "OL81586W",
+      "OL81597W"
+    ],
+    "excludedWorkIds": [
+      "OL16820059W",
+      "OL17715915W",
+      "OL17762235W",
+      "OL407498W"
+    ],
+    "queries": [
+      {
+        "subject": "mystery",
+        "url": "https://openlibrary.org/search.json?q=subject%3A%22mystery%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+        "sha256": "597c55fe21439716f723ee53d322dc62f06b3ebd9059b195db0b94718c11803e",
+        "retrievedAt": "2026-09-27T09:06:41.030149+00:00",
+        "cacheFileSha256": "7e4a18cb1c3f8260fc56e3f4ed5b54f5c63a96d8ef4baf5adba248ceac1fe642"
+      },
+      {
+        "subject": "horror",
+        "url": "https://openlibrary.org/search.json?q=subject%3A%22horror%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+        "sha256": "8093f5487036f0d9f9e33ba0574ac6a82ddde64c8b6ebaa31cbcb0e672cf96ee",
+        "retrievedAt": "2026-09-27T09:06:48.719268+00:00",
+        "cacheFileSha256": "518db1bae4e1e6f1a1d11835b7f357beadacf957f0a37bf7bb59b182158cb2df"
+      },
+      {
+        "subject": "science fiction",
+        "url": "https://openlibrary.org/search.json?q=subject%3A%22science+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+        "sha256": "122d80637054d91ddce09bad3b76ffa4b43627d8fa5f6629e2b7cae8d2798a54",
+        "retrievedAt": "2026-09-27T09:06:56.950189+00:00",
+        "cacheFileSha256": "9bf40de5cdf716e9026ad42a3a97638ddb6e8418dc43e4d257acafe554535697"
+      },
+      {
+        "subject": "fantasy",
+        "url": "https://openlibrary.org/search.json?q=subject%3A%22fantasy%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+        "sha256": "15d4f4e9887b822ac036cc2d34416999857afc2817c63adfc23949ede03fc130",
+        "retrievedAt": "2026-09-27T09:07:06.928662+00:00",
+        "cacheFileSha256": "5a89ad2fbfda5e12e4d9710221e89595c6aa4cd3f514bce174da466ed6145892"
+      },
+      {
+        "subject": "literary fiction",
+        "url": "https://openlibrary.org/search.json?q=subject%3A%22literary+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+        "sha256": "d4186cc929815ee26c95c7e3f0e463895c4c1540a06e1269c57a9996a849b37e",
+        "retrievedAt": "2026-09-27T09:07:14.610554+00:00",
+        "cacheFileSha256": "cbad7ccba5a152ee2cd1181f78f425d70c883138a6873a2751a4c1669f297270"
+      },
+      {
+        "subject": "popular science",
+        "url": "https://openlibrary.org/search.json?q=subject%3A%22popular+science%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+        "sha256": "8d2946d398bd0af78e378735a8cec23a4a238a8bda1ddce545ed690aa9fce4f0",
+        "retrievedAt": "2026-09-27T09:07:23.985675+00:00",
+        "cacheFileSha256": "e7679f8afc5f832a5f119380dedb3ecdde275450169cbfd6964f51a666cd062b"
+      }
+    ],
+    "yearRange": [
+      2000,
+      2025
+    ],
+    "preservedCount": 102
   }
 }

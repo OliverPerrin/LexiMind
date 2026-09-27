@@ -1,0 +1,198 @@
+{
+  "url": "https://openlibrary.org/works/OL16239762W.json",
+  "retrievedAt": "2026-09-27T09:06:42.999638+00:00",
+  "sha256": "2b2e93e7ce97a58023c78f13e0f8d9ce1162f45700b28d915442283d4e844af1",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Gone Girl is a 2012 crime thriller novel by American writer Gillian Flynn. It was published by Crown Publishing Group in June 2012. The novel became popular and made the New York Times Best Seller list. The sense of suspense in the novel comes from whether or not Nick Dunne is involved in the disappearance of his wife Amy.\r\n\r\n\r\n----------\r\nAlso contained in:\r\n[Les apparences suvi de la novella Nous allons mourir ce soir](https://openlibrary.org/works/OL24801746W)"
+    },
+    "covers": [
+      8368314,
+      8295315,
+      10138773,
+      9030428,
+      9332239,
+      10360199,
+      11174410,
+      10318962,
+      10452381,
+      9146715,
+      10129579,
+      -1
+    ],
+    "key": "/works/OL16239762W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL1433006A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "Gone Girl",
+    "subjects": [
+      "FICTION / Mystery & Detective / General",
+      "Married people",
+      "Crimes against",
+      "Wives",
+      "Husbands",
+      "FICTION / Thrillers",
+      "FICTION / Suspense",
+      "Fiction",
+      "Roman",
+      "Amerikanisches Englisch",
+      "mystery fiction",
+      "suspense fiction",
+      "Detective and mystery fiction",
+      "American detective and mystery stories",
+      "thrillers",
+      "suspense",
+      "diaries",
+      "secrets",
+      "victims of crimes",
+      "Mystery & Detective fiction",
+      "Large type books",
+      "Disappeared persons",
+      "Desaparecidos",
+      "Ficción",
+      "NEW LIST 20120630",
+      "Mystery & Detective",
+      "General",
+      "Fiction, suspense",
+      "Fiction, mystery & detective, general",
+      "Married people, fiction",
+      "nyt:combined-print-and-e-book-fiction=2012-06-24",
+      "New York Times bestseller",
+      "New York Times reviewed",
+      "Missing persons",
+      "Marriage",
+      "Chang pian xiao shuo",
+      "Fiction, thrillers, suspense",
+      "FICTION",
+      "Suspense",
+      "Thrillers",
+      "Esposos",
+      "Novela",
+      "Personas casadas",
+      "Esposas maltratadas"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "links": [
+      {
+        "title": "gillian-flynn.com/books/gone-girl-mm",
+        "url": "http://gillian-flynn.com/books/gone-girl-mm",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Gone Girl (novel) - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Gone_Girl_(novel)",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Lies That Buoy, Then Break a Marriage",
+        "url": "https://www.nytimes.com/2012/05/30/books/gone-girl-by-gillian-flynn.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Gone Girl by Gillian Flynn – review",
+        "url": "https://www.theguardian.com/books/2012/may/20/gillian-flynn-gone-girl-review",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Gone Girl by Gillian Flynn – review",
+        "url": "https://www.theguardian.com/childrens-books-site/2015/sep/25/gone-girl-gillian-flynn-review",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "What “Gone Girl” Is Really About",
+        "url": "https://www.newyorker.com/books/joshua-rothman/gone-girl-really",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "New York Times review",
+        "url": "http://www.nytimes.com/2012/05/30/books/gone-girl-by-gillian-flynn.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "http://www.nytimes.com/2012/06/17/books/review/gillian-flynns-gone-girl-and-more.html",
+        "title": "New York Times review",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "https://thegreatestbooks.org/items/2011",
+        "title": "thegreatestbooks.org/items/2011",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "subject_places": [
+      "North Carthage",
+      "Missouri",
+      "Mississippi River",
+      "Margo",
+      "New York City",
+      "mei guo"
+    ],
+    "subject_people": [
+      "Nick Dunne",
+      "Amy Dunne",
+      "Punch",
+      "Judy",
+      "Jim Gilpin",
+      "Rhonda Boney",
+      "Tanner Bolt",
+      "Andie Hardy",
+      "Margo Dunne",
+      "Desi Collings",
+      "Secret"
+    ],
+    "excerpts": [
+      {
+        "author": {
+          "key": "/people/seabelis"
+        },
+        "excerpt": "When I think of my wife, I always think of her head.",
+        "comment": "first sentence"
+      }
+    ],
+    "subject_times": [
+      "xian dai"
+    ],
+    "genres": [
+      "/tags/OL175T",
+      "/tags/OL180T"
+    ],
+    "latest_revision": 25,
+    "revision": 25,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2011-11-04T09:18:29.582726"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T02:52:58.186293"
+    }
+  }
+}

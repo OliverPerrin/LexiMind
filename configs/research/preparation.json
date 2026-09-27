@@ -35,8 +35,8 @@
         },
         {
           "path": "research/preparation/book_field_sources.json",
-          "bytes": 10304,
-          "sha256": "60cab3259ee24392d66ad81a94d2730da213a7542f2313418b7184fdef838abf"
+          "bytes": 13822,
+          "sha256": "11c377e7d6a592b8de4be837cc92de77503fd672ea4d9e89c504dc1e58874f7a"
         }
       ],
       "draft_path": "docs/research/README.md",
@@ -60,15 +60,20 @@
       "note": "Comparison interfaces, cost boundary and applied metric choices are proposed; protocol not frozen."
     },
     "dataset_manifest": {
-      "status": "book_domain_sources_prioritized_pending_preparation",
+      "status": "bgc_source_audited_book_mapping_pending",
       "evidence": [
         {
           "path": "research/preparation/book_field_sources.json",
-          "bytes": 10304,
-          "sha256": "60cab3259ee24392d66ad81a94d2730da213a7542f2313418b7184fdef838abf"
+          "bytes": 13822,
+          "sha256": "11c377e7d6a592b8de4be837cc92de77503fd672ea4d9e89c504dc1e58874f7a"
+        },
+        {
+          "path": "research/preparation/bgc_candidate_manifest.json",
+          "bytes": 18995,
+          "sha256": "da087d041a319c18f5b1fcdfaf97dcdbb65cc8feb6808928926a7fb82d53835d"
         }
       ],
-      "note": "BGC and catalogue headings prioritized for genre/topic; CR4 raw character-emotion labels for literary auxiliary. Metadata/schema review is complete; no new annotation tables acquired or source admitted."
+      "note": "BGC archive acquired and audited; work/edition grouping and field-label mapping remain open. Other modern text sources have title-level terms; training stays paused."
     },
     "group_split_audit": {
       "status": "book_work_groups_pending_optional_controls_audited",
@@ -123,11 +128,11 @@
       "evidence": [
         {
           "path": "research/preparation/annotation_packet.json",
-          "bytes": 35963,
-          "sha256": "50ccfcbc93c722a81682456bd58a7c0e1544cb8668d151f761bc9f7305496063"
+          "bytes": 43674,
+          "sha256": "563d29dfb8e9cd7fca83993476a4130dd9a5225b187550bbc6e097a67471c0a5"
         }
       ],
-      "note": "102 source-linked work references; no query/judgment collection, gold labels or held-out assignment."
+      "note": "120 source-linked work references; packet remains empty with no queries, human judgments or gold."
     }
   },
   "study_design": "configs/research/study_design.json",

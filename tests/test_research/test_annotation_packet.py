@@ -52,6 +52,30 @@ class AnnotationPreparationTests(unittest.TestCase):
             path.write_text(f"Draft synthetic {kind} rubric.\n", encoding="utf-8")
         self.packet = build_annotation_packet(self.catalog, self.rubrics, root=self.root)
 
+    def test_publication_history_is_retained_as_a_separate_source_reference(self):
+        self.records[0]["firstPublished"] = 2018
+        self.records[0]["firstPublishedSource"] = {
+            "name": "Fixture publisher",
+            "url": "https://publisher.example/first-edition",
+        }
+        self.catalog.write_text(json.dumps(self.records), encoding="utf-8")
+        packet = build_annotation_packet(self.catalog, self.rubrics, root=self.root)
+        item = next(row for row in packet["items"] if row["work_id"] == self.records[0]["id"])
+        self.assertIn("https://publisher.example/first-edition", item["source_urls"])
+        for source, year in (
+            (None, 2018),
+            ({"name": "Publisher", "url": "https://publisher.example"}, None),
+            ({"name": "Publisher", "url": "https://publisher.example:garbage"}, 2018),
+            ({"name": "Publisher", "url": r"https://publisher.example\bad"}, 2018),
+            ({"name": "Publisher", "url": "javascript:alert(1)"}, 2018),
+        ):
+            with self.subTest(source=source, year=year):
+                self.records[0]["firstPublishedSource"] = source
+                self.records[0]["firstPublished"] = year
+                self.catalog.write_text(json.dumps(self.records), encoding="utf-8")
+                with self.assertRaises(ValueError):
+                    build_annotation_packet(self.catalog, self.rubrics, root=self.root)
+
     def query(self) -> dict:
         item = self.packet["items"][0]
         return {

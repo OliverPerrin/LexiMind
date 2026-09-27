@@ -1,0 +1,52 @@
+{
+  "url": "https://openlibrary.org/works/OL407498W.json",
+  "retrievedAt": "2026-09-27T09:06:54.123699+00:00",
+  "sha256": "645eeb96f1129ee00f87c856a319e1e6dde2ad0cf20be25312c23a78bf9adac6",
+  "data": {
+    "title": "The Power of Darkness",
+    "covers": [
+      882715,
+      8912384,
+      8659875
+    ],
+    "key": "/works/OL407498W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL18053A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "English Ghost stories",
+      "English Horror tales",
+      "Fiction",
+      "Fiction, horror",
+      "Fiction, ghost"
+    ],
+    "subject_places": [
+      "Paris",
+      "England"
+    ],
+    "description": "The book \"Power of Darkness\" is an edition of twenty dark, mysterious stories. Each has its significance, perhaps in love, often in human terror and solitary endurance. From the love a man bears his dead wife and the misunderstanding that hinders his sight, to the strange country superstition that comes true, the writer displays the strange imagination that comes to deep human minds",
+    "genres": [
+      "/tags/OL171T"
+    ],
+    "latest_revision": 11,
+    "revision": 11,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-28T00:40:15.156469"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T13:30:30.291590"
+    }
+  }
+}

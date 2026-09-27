@@ -1,0 +1,117 @@
+{
+  "url": "https://openlibrary.org/works/OL16806877W.json",
+  "retrievedAt": "2026-09-27T09:06:52.941697+00:00",
+  "sha256": "bd88f2b7afd8c3bc6d39fe9f91b057c0c1693e273fb00ef269909ec3e57c62ed",
+  "data": {
+    "description": "The now middle-aged Dan Torrance (the boy protagonist of The Shining) must save a very special twelve-year-old girl from a tribe of murderous paranormals. \r\n\r\nOn highways across America, a tribe of people called The True Knot travel in search of sustenance. They look harmless; mostly old, lots of polyester, and married to their RVs. But as Dan Torrance knows, and spunky twelve-year-old Abra Stone learns, The True Knot are quasi-immortal, living off the \"steam\" that children with the \"shining\" produce when they are slowly tortured to death. \r\n\r\nHaunted by the inhabitants of the Overlook Hotel where he spent one horrific childhood year, Dan has been drifting for decades, desperate to shed his father's legacy of despair, alcoholism, and violence. Finally, he settles in a New Hampshire town, an AA community that sustains him, and a job at a nursing home where his remnant \"shining\" power provides the crucial final comfort to the dying. Aided by a prescient cat, he becomes \"Doctor Sleep.\" Then Dan meets the evanescent Abra Stone, and it is her spectacular gift, the brightest shining ever seen, that reignites Dan's own demons and summons him to a battle for Abra's soul and survival.",
+    "covers": [
+      14652972,
+      12302549,
+      12325360,
+      12330448,
+      12501226,
+      13701944,
+      14060898,
+      14060899
+    ],
+    "key": "/works/OL16806877W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL19981A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "Doctor Sleep",
+    "subjects": [
+      "Horror",
+      "Alcoholism",
+      "Paranormal",
+      "Occultism",
+      "Psychics",
+      "Shining",
+      "The Overlook Hotel",
+      "RedruM",
+      "Murdered Children"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL171T",
+      "/tags/OL180T"
+    ],
+    "subject_people": [
+      "Wendy Torrance",
+      "Danny Torrance",
+      "Dick Halloran",
+      "Abra Stone",
+      "Jack Torrance",
+      "Rose the Hat"
+    ],
+    "subject_places": [
+      "Colorado (United States)",
+      "New Hampshire (United States)"
+    ],
+    "links": [
+      {
+        "title": "Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Doctor_Sleep_(novel)",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Full book online (read)",
+        "url": "https://ia600508.us.archive.org/15/items/calibre_library_98.219.176.33/Doctor%20Sleep%20-%20Stephen%20King_250.pdf",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Doctor Sleep AU by Laurilover (fan-fiction)",
+        "url": "https://archiveofourown.org/works/47994064/chapters/121010698",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Rose & The Hat by w_i_c_k_e_d (fan-fiction)",
+        "url": "https://archiveofourown.org/works/52729843/chapters/133370140",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Amazon",
+        "url": "https://www.amazon.com/gp/product/1444761188?ie=UTF8&tag=x_gr_bb_amazon-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=1444761188&SubscriptionId=1MGPYB6YW3HWK55XCGG2",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "pages": "3",
+        "excerpt": "On the second day of December in a year when a Georgia peanut farmer was doing business in the White House, one of Colorado's great resort hotels burned to the ground. The Overlook was declared a total loss.",
+        "comment": "First sentences.",
+        "author": {
+          "key": "/people/krizaj"
+        }
+      }
+    ],
+    "latest_revision": 44,
+    "revision": 44,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2013-09-13T07:28:14.463649"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-17T01:31:58.376016"
+    }
+  }
+}

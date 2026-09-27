@@ -4,8 +4,8 @@ Status: continuation reviewed, 26 September 2026. Research training and experime
 are paused at the owner's request. Software tests and catalogue verification remain
 part of development.
 
-Live website: https://leximind-five.vercel.app. The current catalogue contains 102 works
-and 96 sourced descriptions; the original 89-work snapshot is preserved. See
+Live website: https://leximind-five.vercel.app. The current catalogue contains 120 works
+and 113 sourced descriptions; the original 89-work snapshot is preserved. See
 `docs/deployment.md` for release verification and limitations.
 
 ## Purpose

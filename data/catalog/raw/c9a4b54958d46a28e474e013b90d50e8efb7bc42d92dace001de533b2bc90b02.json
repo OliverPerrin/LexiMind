@@ -1,0 +1,318 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3A%22horror%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-27T09:06:48.719268+00:00",
+  "sha256": "8093f5487036f0d9f9e33ba0574ac6a82ddde64c8b6ebaa31cbcb0e672cf96ee",
+  "data": {
+    "numFound": 21965,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 21965,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:\"horror\" language:eng first_publish_year:[2000 TO 2025]",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL53305A"
+        ],
+        "author_name": [
+          "Neil Gaiman"
+        ],
+        "cover_i": 14171421,
+        "first_publish_year": 2001,
+        "key": "/works/OL679358W",
+        "language": [
+          "ita",
+          "eng",
+          "baq",
+          "fre",
+          "pol",
+          "spa",
+          "por",
+          "ger"
+        ],
+        "title": "Coraline",
+        "subject": [
+          "Fantasy",
+          "Paranormal fiction",
+          "Juvenile fiction",
+          "Graphic novels",
+          "Children's literature",
+          "Fiction",
+          "Hugo Award Winner",
+          "Supernatural",
+          "award:hugo_award=novella",
+          "Horror stories",
+          "award:hugo_award=2003",
+          "Comic books, strips",
+          "Horror tales",
+          "Supernatural -- Juvenile fiction",
+          "Young adult fiction",
+          "Blind",
+          "Books and reading",
+          "Young adult literature",
+          "Fantasy fiction",
+          "Horror fiction",
+          "Children's fiction",
+          "Supernatural, fiction",
+          "Large type books",
+          "Children's stories",
+          "Littérature fantastique américaine",
+          "Comics & graphic novels, horror",
+          "Tweens",
+          "Children's Books/Ages 9-12 Fiction",
+          "collection:Name"
+        ]
+      },
+      {
+        "author_key": [
+          "OL19981A"
+        ],
+        "author_name": [
+          "Stephen King"
+        ],
+        "cover_i": 14654054,
+        "first_publish_year": 2006,
+        "key": "/works/OL81597W",
+        "language": [
+          "ita",
+          "tur",
+          "chi",
+          "por",
+          "ger",
+          "fre",
+          "rus",
+          "spa",
+          "eng"
+        ],
+        "title": "Cell",
+        "subject": [
+          "computer worms",
+          "hive minds",
+          "zombies",
+          "horror fiction",
+          "cell phones",
+          "fiction",
+          "murderers",
+          "Psychological fiction",
+          "Cell phones in fiction",
+          "Asesinos",
+          "Novela psicológica",
+          "Cellular telephones in fiction",
+          "Murderers in fiction",
+          "Cellular telephones",
+          "Ficción",
+          "Teléfonos cellulares",
+          "Cuentos de terror",
+          "Horror tales",
+          "Fiction, horror",
+          "Fiction, psychological",
+          "Littérature américaine",
+          "Traductions françaises",
+          "Science-fiction américaine",
+          "Large type books",
+          "nyt:mass-market-monthly=2022-05-08",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "Hücresel telefon",
+          "Roman",
+          "Seri katiller",
+          "Meurtriers",
+          "Romans, nouvelles",
+          "American literature",
+          "Science fiction, fantasy, horror",
+          "King, Stephen - Prose & Criticism",
+          "Fiction - Horror",
+          "Horror",
+          "Horror - General",
+          "Fiction / General",
+          "Fictional Works"
+        ]
+      },
+      {
+        "author_key": [
+          "OL19981A",
+          "OL15292106A",
+          "OL15535726A"
+        ],
+        "author_name": [
+          "Stephen King",
+          "Stephen king",
+          "Ingah Mikhaʼeli"
+        ],
+        "cover_i": 14653120,
+        "first_publish_year": 2013,
+        "key": "/works/OL16820059W",
+        "language": [
+          "heb",
+          "ita",
+          "kor",
+          "pol",
+          "rus",
+          "fre",
+          "eng",
+          "chi",
+          "spa"
+        ],
+        "title": "Mr. Mercedes",
+        "subject": [
+          "horror",
+          "mystery",
+          "crime",
+          "FICTION / Horror",
+          "FICTION / General",
+          "FICTION / Suspense",
+          "Serial murderers",
+          "Mercedes automobiles",
+          "Fiction",
+          "Horror stories",
+          "Serial murders, fiction",
+          "Fiction, horror",
+          "Fiction, thrillers",
+          "Fiction, thrillers, general",
+          "Murder",
+          "Criminal investigation",
+          "Large type books",
+          "Automobiles",
+          "Mental Depression",
+          "Alcoholics",
+          "General",
+          "Suspense",
+          "Thriller",
+          "Amerikanisches Englisch",
+          "Serial killers",
+          "Horror fiction",
+          "Adventure fiction",
+          "nyt:hardcover-fiction=2014-06-22",
+          "New York Times bestseller",
+          "Mercedes (Automobiles)",
+          "Romans, nouvelles",
+          "Tueurs en série",
+          "Fiction, thrillers, suspense"
+        ]
+      },
+      {
+        "author_key": [
+          "OL19981A"
+        ],
+        "author_name": [
+          "Stephen King"
+        ],
+        "cover_i": 14652972,
+        "first_publish_year": 2013,
+        "key": "/works/OL16806877W",
+        "language": [
+          "spa",
+          "pol",
+          "fre",
+          "por",
+          "rus",
+          "heb",
+          "chi",
+          "eng"
+        ],
+        "title": "Doctor Sleep",
+        "subject": [
+          "Horror",
+          "Alcoholism",
+          "Paranormal",
+          "Occultism",
+          "Psychics",
+          "Shining",
+          "The Overlook Hotel",
+          "RedruM",
+          "Murdered Children"
+        ]
+      },
+      {
+        "author_key": [
+          "OL18053A"
+        ],
+        "author_name": [
+          "Edith Nesbit"
+        ],
+        "cover_i": 882715,
+        "first_publish_year": 2006,
+        "key": "/works/OL407498W",
+        "language": [
+          "eng"
+        ],
+        "title": "The Power of Darkness",
+        "subject": [
+          "English Ghost stories",
+          "English Horror tales",
+          "Fiction",
+          "Fiction, horror",
+          "Fiction, ghost"
+        ]
+      },
+      {
+        "author_key": [
+          "OL19981A"
+        ],
+        "author_name": [
+          "Stephen King"
+        ],
+        "cover_i": 6502777,
+        "first_publish_year": 2002,
+        "key": "/works/OL81586W",
+        "language": [
+          "dut",
+          "tur",
+          "por",
+          "ger",
+          "fre",
+          "rus",
+          "pol",
+          "spa",
+          "eng"
+        ],
+        "title": "From a Buick 8",
+        "subject": [
+          "Pennsylvania State Police",
+          "ghost story",
+          "drunk driving",
+          "angel dust",
+          "horror fiction",
+          "Teenage boys",
+          "Police",
+          "Open Library Staff Picks",
+          "Fiction",
+          "Abandonment of automobiles",
+          "Buick automobile",
+          "Abandonment of automobiles -- Fiction",
+          "Police -- Pennsylvania -- Fiction",
+          "Buick automobile -- Fiction",
+          "Teenage boys -- Fiction",
+          "Pennsylvania -- Fiction",
+          "Fiction, horror",
+          "Pennsylvania, fiction",
+          "Fiction, suspense",
+          "Fiction, thrillers, general",
+          "Horror stories",
+          "Large print books",
+          "Spanish language, conversation and phrase books",
+          "FICTION / Horror",
+          "FICTION / Science Fiction / Alien Contact",
+          "FICTION / Small Town & Rural",
+          "Pennsylvania",
+          "Horror - General",
+          "Fiction - Horror",
+          "Fiction / General",
+          "General",
+          "Spanish: Adult Fiction",
+          "Fiction - Espionage / Thriller",
+          "Suspense",
+          "Thrillers",
+          "Fiction / Thrillers",
+          "Amerikai angol irodalom",
+          "Amerikai angol regény",
+          "Amerikai angol szerző",
+          "Horror",
+          "Thriller",
+          "Amerikai regény"
+        ]
+      }
+    ]
+  }
+}

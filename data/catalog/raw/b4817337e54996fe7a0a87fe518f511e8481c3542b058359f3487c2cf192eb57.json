@@ -1,0 +1,310 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3A%22popular+science%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-27T09:07:23.985675+00:00",
+  "sha256": "8d2946d398bd0af78e378735a8cec23a4a238a8bda1ddce545ed690aa9fce4f0",
+  "data": {
+    "numFound": 548,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 548,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:\"popular science\" language:eng first_publish_year:[2000 TO 2025]",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL21718A"
+        ],
+        "author_name": [
+          "Bill Bryson"
+        ],
+        "cover_i": 12725620,
+        "first_publish_year": 2003,
+        "key": "/works/OL74128W",
+        "language": [
+          "dut",
+          "ita",
+          "srp",
+          "por",
+          "ger",
+          "fre",
+          "rus",
+          "spa",
+          "eng"
+        ],
+        "title": "A short history of nearly everything",
+        "subject": [
+          "Science",
+          "Popular works",
+          "Ciencia",
+          "Obras populares",
+          "Science, popular works",
+          "Obras de divulgacio n.",
+          "Natuurwetenschappen",
+          "Sciences",
+          "Ouvrages de vulgarisation",
+          "Wetenschapsbeoefening",
+          "Origin",
+          "Life",
+          "Humor",
+          "Travel",
+          "Philosophy",
+          "Culture",
+          "Nonfiction",
+          "Open Library Staff Picks",
+          "Human beings",
+          "popular science",
+          "Long Now Manual for Civilization",
+          "Reading Level-Grade 11",
+          "Reading Level-Grade 12",
+          "30.01 history of the exact sciences",
+          "Einführung",
+          "Naturwissenschaften",
+          "Wetenschapsfilosofie",
+          "Natuurlijke historie",
+          "Einfu hrung",
+          "Large type books",
+          "Allgemeinwissen",
+          "Cosmology",
+          "Geology. Earth sciences",
+          "Science--popular works",
+          "Q162 .b88 2003",
+          "Q162 b916s 2003",
+          "500",
+          "Science - general & miscellaneous",
+          "History & philosophy of science",
+          "Civilization - history"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7021331A",
+          "OL7482110A"
+        ],
+        "author_name": [
+          "Leonard Susskind",
+          "George Hrabovsky"
+        ],
+        "cover_i": 10156509,
+        "first_publish_year": 2013,
+        "key": "/works/OL17800180W",
+        "language": [
+          "ger",
+          "tur",
+          "eng",
+          "ita"
+        ],
+        "title": "Classical Mechanics (Physics)",
+        "subject": [
+          "Physics",
+          "Problems, exercises",
+          "Popular works",
+          "nyt:hardcover-nonfiction=2013-02-24",
+          "New York Times bestseller",
+          "Mechanics",
+          "Mécanique",
+          "Ouvrages de vulgarisation",
+          "Popular Science",
+          "Theoretische Mechanik",
+          "Popular Science and Mathematics"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7396111A",
+          "OL2750954A"
+        ],
+        "author_name": [
+          "Siddhartha Mukherjee",
+          "Dennis Boutsikaris"
+        ],
+        "cover_i": 11320163,
+        "first_publish_year": 2016,
+        "key": "/works/OL17762235W",
+        "language": [
+          "spa",
+          "pol",
+          "eng",
+          "cat"
+        ],
+        "title": "The Gene",
+        "subject": [
+          "genetics",
+          "history",
+          "heredity",
+          "genes",
+          "family",
+          "medical ethics",
+          "health",
+          "abortion",
+          "prenatal tests",
+          "AIDS",
+          "acquired immunodeficiency syndrome",
+          "ADA deficiency",
+          "ADA gene mutations",
+          "ADCY5",
+          "addiction",
+          "adenine",
+          "adenosine metabolism",
+          "adenovirus",
+          "adoption",
+          "Advisory Committee on Uranium",
+          "aging",
+          "Aktion T4 program",
+          "alcoholism",
+          "alleles",
+          "alpha interferon",
+          "Genetic disorders",
+          "Herencia (Bilogía)",
+          "Genética médica",
+          "Medical genetics",
+          "Human genetics",
+          "nyt:combined-print-and-e-book-nonfiction=2016-06-05",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "Large type books",
+          "MEDICAL",
+          "Genetik",
+          "Heredity",
+          "Genes",
+          "Family",
+          "Health",
+          "Genetics",
+          "History",
+          "Medical ethics",
+          "Human genetics -- History -- Popular works",
+          "Human genome -- Popular works",
+          "Human genome",
+          "Genetics -- history",
+          "Popular Science",
+          "Popular Science and Mathematics",
+          "Popular works",
+          "Long Now Manual for Civilization"
+        ]
+      },
+      {
+        "author_key": [
+          "OL2675573A"
+        ],
+        "author_name": [
+          "Stephen Hawking"
+        ],
+        "cover_i": 8815165,
+        "first_publish_year": 2014,
+        "key": "/works/OL19552275W",
+        "language": [
+          "spa",
+          "ger",
+          "por",
+          "eng",
+          "dut",
+          "cat",
+          "pol",
+          "tur"
+        ],
+        "title": "Brief Answers to the Big Questions",
+        "subject": [
+          "Science",
+          "Miscellanea",
+          "Science, miscellanea",
+          "nyt:combined-print-and-e-book-nonfiction=2018-11-04",
+          "New York Times bestseller",
+          "Science, philosophy",
+          "Philosophy and science",
+          "Religion and science",
+          "Philosophy",
+          "Inquiry (Theory of knowledge)",
+          "SCIENCE / Cosmology",
+          "SCIENCE / Physics / Astrophysics",
+          "BIOGRAPHY & AUTOBIOGRAPHY / Personal Memoirs",
+          "Astronomy",
+          "Theoretical physics",
+          "Nonfiction",
+          "Space and time",
+          "Essays",
+          "History",
+          "Popular science"
+        ]
+      },
+      {
+        "author_key": [
+          "OL8111164A"
+        ],
+        "author_name": [
+          "Katie Mack"
+        ],
+        "cover_i": 10342810,
+        "first_publish_year": 2020,
+        "key": "/works/OL21181790W",
+        "language": [
+          "ger",
+          "eng"
+        ],
+        "title": "The End of Everything (Astrophysically Speaking)",
+        "subject": [
+          "Science",
+          "Nonfiction",
+          "Physics",
+          "Astronomy",
+          "Space",
+          "Philosophy",
+          "Popular Science",
+          "Education",
+          "End of the world (astronomy)",
+          "Astrophysics",
+          "End of the universe",
+          "SCIENCE / Physics / Astrophysics",
+          "SCIENCE / Cosmology",
+          "SCIENCE / Astronomy",
+          "Cosmology"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1745464A",
+          "OL7396111A",
+          "OL9566592A"
+        ],
+        "author_name": [
+          "Adam Rutherford",
+          "Siddhartha Mukherjee",
+          "Elizabeth Garay"
+        ],
+        "cover_i": 9155814,
+        "first_publish_year": 2016,
+        "key": "/works/OL17715915W",
+        "language": [
+          "spa",
+          "eng"
+        ],
+        "title": "A Brief History of Everyone Who Ever Lived",
+        "subject": [
+          "Origin",
+          "Genomics",
+          "DNA",
+          "Evolution (Biology)",
+          "Human genome",
+          "Human evolution",
+          "Human beings",
+          "History",
+          "Human beings, origin",
+          "Human genetics",
+          "New York Times reviewed",
+          "Popular works",
+          "Humans",
+          "Genetics",
+          "Popular Science",
+          "Anthropologie",
+          "Evolution",
+          "Genom",
+          "Popular Science and Mathematics",
+          "Long Now Manual for Civilization",
+          "Biological Evolution",
+          "REFERENCE / Genealogy & Heraldry",
+          "SCIENCE / Life Sciences / Genetics & Genomics",
+          "SOCIAL SCIENCE / Anthropology / Cultural & Social"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,223 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3A%22mystery%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-27T09:06:41.030149+00:00",
+  "sha256": "597c55fe21439716f723ee53d322dc62f06b3ebd9059b195db0b94718c11803e",
+  "data": {
+    "numFound": 74993,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 74993,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:\"mystery\" language:eng first_publish_year:[2000 TO 2025]",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL8384995A"
+        ],
+        "author_name": [
+          "Freida McFadden"
+        ],
+        "cover_i": 13198561,
+        "first_publish_year": 2022,
+        "key": "/works/OL34224558W",
+        "language": [
+          "ger",
+          "fre",
+          "por",
+          "eng"
+        ],
+        "title": "Never Lie",
+        "subject": [
+          "Thriller",
+          "Mystery",
+          "Mystery Thriller",
+          "Fiction",
+          "Suspense",
+          "Crime",
+          "Psychological Thriller",
+          "Contemporary"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1433006A"
+        ],
+        "author_name": [
+          "Gillian Flynn"
+        ],
+        "cover_i": 8368314,
+        "first_publish_year": 2011,
+        "key": "/works/OL16239762W",
+        "language": [
+          "dut",
+          "chi",
+          "fre",
+          "rus",
+          "spa",
+          "eng"
+        ],
+        "title": "Gone Girl",
+        "subject": [
+          "FICTION / Mystery & Detective / General",
+          "Married people",
+          "Crimes against",
+          "Wives",
+          "Husbands",
+          "FICTION / Thrillers",
+          "FICTION / Suspense",
+          "Fiction",
+          "Roman",
+          "Amerikanisches Englisch",
+          "mystery fiction",
+          "suspense fiction",
+          "Detective and mystery fiction",
+          "American detective and mystery stories",
+          "thrillers",
+          "suspense",
+          "diaries",
+          "secrets",
+          "victims of crimes",
+          "Mystery & Detective fiction",
+          "Large type books",
+          "Disappeared persons",
+          "Desaparecidos",
+          "Ficción",
+          "NEW LIST 20120630",
+          "Mystery & Detective",
+          "General",
+          "Fiction, suspense",
+          "Fiction, mystery & detective, general",
+          "Married people, fiction",
+          "nyt:combined-print-and-e-book-fiction=2012-06-24",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "Missing persons",
+          "Marriage",
+          "Chang pian xiao shuo",
+          "Fiction, thrillers, suspense",
+          "FICTION",
+          "Suspense",
+          "Thrillers",
+          "Esposos",
+          "Novela",
+          "Personas casadas",
+          "Esposas maltratadas"
+        ]
+      },
+      {
+        "author_key": [
+          "OL8384995A"
+        ],
+        "author_name": [
+          "Freida McFadden"
+        ],
+        "cover_i": 13156268,
+        "first_publish_year": 2021,
+        "key": "/works/OL28954802W",
+        "language": [
+          "spa",
+          "eng"
+        ],
+        "title": "The Locked Door",
+        "subject": [
+          "Thriller",
+          "Mystery",
+          "Mystery Thriller",
+          "Fiction",
+          "Suspense",
+          "Crime",
+          "Psychological Thriller",
+          "Horror"
+        ]
+      },
+      {
+        "author_key": [
+          "OL8384995A"
+        ],
+        "author_name": [
+          "Freida McFadden"
+        ],
+        "cover_i": 15125020,
+        "first_publish_year": 2022,
+        "key": "/works/OL31191485W",
+        "language": [
+          "spa",
+          "eng"
+        ],
+        "title": "The Inmate",
+        "subject": [
+          "Thriller",
+          "Mystery",
+          "Mystery Thriller",
+          "Fiction",
+          "Suspense",
+          "Psychological Thriller",
+          "Crime"
+        ]
+      },
+      {
+        "author_key": [
+          "OL8384995A"
+        ],
+        "author_name": [
+          "Freida McFadden"
+        ],
+        "cover_i": 15132892,
+        "first_publish_year": 2016,
+        "key": "/works/OL28953746W",
+        "language": [
+          "eng"
+        ],
+        "title": "Brain Damage",
+        "subject": [
+          "American literature",
+          "Thriller",
+          "Mystery",
+          "Fiction",
+          "Mystery Thriller",
+          "Psychological Thriller",
+          "Suspense",
+          "Crime"
+        ]
+      },
+      {
+        "author_key": [
+          "OL8384995A"
+        ],
+        "author_name": [
+          "Freida McFadden"
+        ],
+        "cover_i": 15105883,
+        "first_publish_year": 2022,
+        "key": "/works/OL27729743W",
+        "language": [
+          "pol",
+          "por",
+          "eng",
+          "ger",
+          "spa",
+          "dut"
+        ],
+        "title": "The Housemaid",
+        "subject": [
+          "nyt:trade-fiction-paperback=2023-05-14",
+          "New York Times bestseller",
+          "Thriller",
+          "Mystery",
+          "Fiction",
+          "Mystery Thriller",
+          "Suspense",
+          "Crime",
+          "Psychological Thriller",
+          "Series:The-Housemaid",
+          "Contemporary",
+          "Romance",
+          "Fiction, thrillers, domestic",
+          "Fiction, thrillers, psychological",
+          "Fiction, thrillers, suspense"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,627 @@
+{
+  "schema_version": 1,
+  "status": "source_audited_not_admitted",
+  "training_authorized": false,
+  "source_url": "https://fiona.uni-hamburg.de/ca89b3cf/blurbgenrecollectionen.zip",
+  "provider_page": "https://www.inf.uni-hamburg.de/en/inst/ab/lt/resources/data/blurb-genre-collection.html",
+  "source_declared_license": "CC BY-NC 4.0; README retains Penguin Random House/content-provider attribution",
+  "archive": {
+    "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+    "bytes": 48690771,
+    "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+  },
+  "preparation_script_sha256": "06200e23523ea5c6a7f73cdf0895855e2fd7d4c546ebb5bbbad89ba1e1ead4f0",
+  "preparation_helper_sha256": {
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
+  },
+  "provider_advertised_records": 91892,
+  "observed": {
+    "splits": {
+      "train": {
+        "rows": 58715,
+        "unique_labels": 146,
+        "empty_fields": {
+          "author": 1514
+        },
+        "records_with_repeated_depth_label_pairs": 0,
+        "records_missing_declared_parent_labels": 0,
+        "edition_dates": {
+          "parsed": 58715,
+          "missing": 0,
+          "unparsed": 0,
+          "minimum": "1929-05-01",
+          "maximum": "2019-04-02",
+          "decades": {
+            "1920s": 1,
+            "1930s": 19,
+            "1940s": 17,
+            "1950s": 52,
+            "1960s": 93,
+            "1970s": 222,
+            "1980s": 1287,
+            "1990s": 5503,
+            "2000s": 18661,
+            "2010s": 32860
+          }
+        }
+      },
+      "dev": {
+        "rows": 14785,
+        "unique_labels": 146,
+        "empty_fields": {
+          "author": 388
+        },
+        "records_with_repeated_depth_label_pairs": 0,
+        "records_missing_declared_parent_labels": 0,
+        "edition_dates": {
+          "parsed": 14785,
+          "missing": 0,
+          "unparsed": 0,
+          "minimum": "1935-06-01",
+          "maximum": "2019-01-22",
+          "decades": {
+            "1930s": 3,
+            "1940s": 6,
+            "1950s": 11,
+            "1960s": 28,
+            "1970s": 69,
+            "1980s": 353,
+            "1990s": 1375,
+            "2000s": 4695,
+            "2010s": 8245
+          }
+        }
+      },
+      "test": {
+        "rows": 18394,
+        "unique_labels": 146,
+        "empty_fields": {
+          "author": 462
+        },
+        "records_with_repeated_depth_label_pairs": 0,
+        "records_missing_declared_parent_labels": 0,
+        "edition_dates": {
+          "parsed": 18394,
+          "missing": 0,
+          "unparsed": 0,
+          "minimum": "1930-05-01",
+          "maximum": "2019-02-19",
+          "decades": {
+            "1930s": 5,
+            "1940s": 4,
+            "1950s": 17,
+            "1960s": 29,
+            "1970s": 53,
+            "1980s": 394,
+            "1990s": 1683,
+            "2000s": 5875,
+            "2010s": 10334
+          }
+        }
+      }
+    },
+    "total_records": 91894,
+    "unique_label_names": 146,
+    "label_record_counts": {
+      "1950 – Present Military History": 270,
+      "19th Century U.S. History": 151,
+      "20th Century U.S. History": 495,
+      "21st Century U.S. History": 125,
+      "African World History": 59,
+      "Alternative Therapies": 1071,
+      "Ancient World History": 123,
+      "Art": 1536,
+      "Arts & Entertainment": 3622,
+      "Arts & Entertainment Biographies & Memoirs": 1449,
+      "Asian World History": 241,
+      "Baking & Desserts": 304,
+      "Beauty": 74,
+      "Bibles": 5,
+      "Biography & Memoir": 5993,
+      "Business": 881,
+      "Children’s Books": 19792,
+      "Children’s Middle Grade Action & Adventure Books": 1317,
+      "Children’s Middle Grade Books": 7728,
+      "Children’s Middle Grade Fantasy & Magical Books": 214,
+      "Children’s Middle Grade Historical Books": 639,
+      "Children’s Middle Grade Mystery & Detective Books": 582,
+      "Children’s Middle Grade Sports Books": 238,
+      "Civil War Period": 143,
+      "Classics": 3877,
+      "Colonial/Revolutionary Period": 192,
+      "Contemporary Fantasy": 436,
+      "Contemporary Romance": 3003,
+      "Cooking": 3193,
+      "Cooking Methods": 1320,
+      "Cozy Mysteries": 1258,
+      "Crafts & Hobbies": 920,
+      "Crafts, Home & Garden": 1348,
+      "Crime Mysteries": 2629,
+      "Cyber Punk": 65,
+      "Design": 321,
+      "Diet & Nutrition": 1293,
+      "Domestic Politics": 1374,
+      "Economics": 298,
+      "Epic Fantasy": 1101,
+      "Erotica": 43,
+      "Espionage Mysteries": 422,
+      "European World History": 890,
+      "Exercise": 549,
+      "Fairy Tales": 275,
+      "Fantasy": 3204,
+      "Fiction": 32812,
+      "Fiction Classics": 1665,
+      "Film": 353,
+      "Food Memoir & Travel": 285,
+      "Games": 399,
+      "Gothic & Horror": 592,
+      "Graphic Novels & Manga": 4428,
+      "Health & Fitness": 3431,
+      "Health & Reference": 190,
+      "Historical Fiction": 3956,
+      "Historical Figure Biographies & Memoirs": 366,
+      "Historical Romance": 1244,
+      "History": 4698,
+      "Home & Garden": 416,
+      "Humor": 1459,
+      "Inspiration & Motivation": 911,
+      "Language": 354,
+      "Latin American World History": 85,
+      "Literary Collections": 1147,
+      "Literary Criticism": 768,
+      "Literary Fiction": 7378,
+      "Literary Figure Biographies & Memoirs": 603,
+      "Management": 776,
+      "Marketing": 117,
+      "Middle Eastern World History": 172,
+      "Military Fiction": 743,
+      "Military History": 1037,
+      "Military Science Fiction": 220,
+      "Music": 452,
+      "Mystery & Suspense": 8856,
+      "Native American History": 47,
+      "New Adult Romance": 164,
+      "Noir Mysteries": 575,
+      "Nonfiction": 34270,
+      "Nonfiction Classics": 453,
+      "North American World History": 88,
+      "Paranormal Fiction": 1676,
+      "Paranormal Romance": 1089,
+      "Parenting": 1287,
+      "Performing Arts": 627,
+      "Personal Finance": 294,
+      "Personal Growth": 3387,
+      "Pets": 263,
+      "Philosophy": 3681,
+      "Photography": 555,
+      "Poetry": 1256,
+      "Political Figure Biographies & Memoirs": 285,
+      "Politics": 2585,
+      "Popular Science": 2453,
+      "Psychology": 1930,
+      "Reference": 2145,
+      "Regency Romance": 523,
+      "Regional & Ethnic Cooking": 841,
+      "Religion": 4541,
+      "Religion & Philosophy": 7145,
+      "Romance": 6429,
+      "Science": 1966,
+      "Science Fiction": 1900,
+      "Self-Improvement": 3754,
+      "Space Opera": 643,
+      "Specialty Travel": 128,
+      "Spiritual Fiction": 632,
+      "Sports": 1306,
+      "Step Into Reading": 621,
+      "Suspense & Thriller": 5463,
+      "Suspense Romance": 1181,
+      "Technology": 569,
+      "Teen & Young Adult": 3754,
+      "Teen & Young Adult Action & Adventure": 559,
+      "Teen & Young Adult Fantasy Fiction": 790,
+      "Teen & Young Adult Fiction": 3434,
+      "Teen & Young Adult Historical Fiction": 409,
+      "Teen & Young Adult Mystery & Suspense": 530,
+      "Teen & Young Adult Nonfiction": 283,
+      "Teen & Young Adult Romance": 904,
+      "Teen & Young Adult Science Fiction": 322,
+      "Teen & Young Adult Social Issues": 1804,
+      "Test Preparation": 365,
+      "Travel": 835,
+      "Travel Writing": 248,
+      "Travel: Africa": 14,
+      "Travel: Asia": 101,
+      "Travel: Australia & Oceania": 5,
+      "Travel: Caribbean & Mexico": 14,
+      "Travel: Central & South America": 17,
+      "Travel: Europe": 332,
+      "Travel: Middle East": 17,
+      "Travel: USA & Canada": 201,
+      "U.S. History": 1552,
+      "Urban Fantasy": 506,
+      "Weddings": 49,
+      "Western Fiction": 1333,
+      "Western Romance": 188,
+      "Wine & Beverage": 184,
+      "Women’s Fiction": 3415,
+      "World History": 1773,
+      "World Politics": 328,
+      "World War I Military History": 28,
+      "World War II Military History": 376,
+      "Writing": 147
+    },
+    "labels_by_depth": {
+      "0": 7,
+      "1": 46,
+      "2": 77,
+      "3": 16
+    },
+    "hierarchy": {
+      "edges": 145,
+      "unique_edges": 145,
+      "nodes": 152,
+      "standalone_roots": [
+        "Humor",
+        "Poetry"
+      ],
+      "observed_labels_missing_from_hierarchy": [],
+      "hierarchy_labels_absent_from_records": [
+        "Childrens Media Tie-In Books",
+        "Children’s Activity & Novelty Books",
+        "Children’s Board Books",
+        "Children’s Boxed Sets",
+        "Children’s Chapter Books",
+        "Children’s Picture Books"
+      ]
+    },
+    "members": {
+      "README.txt": {
+        "bytes": 2749,
+        "sha256": "a7650cf436cd082ac40caeafa572c6c658a8fbaf2bcf59387056c719a21e5bed"
+      },
+      "hierarchy.txt": {
+        "bytes": 4907,
+        "sha256": "9b8c86fb012084cf75c2c3f270629fb74158d61bcff345ab3fcb09ba4b8329c2"
+      },
+      "BlurbGenreCollection_EN_train.txt": {
+        "bytes": 87208107,
+        "sha256": "980a714464387cb391206dd8d1b0a1a1cc8fa8ea3dc637f60a5c9cc209c03d52",
+        "rows": 58715
+      },
+      "BlurbGenreCollection_EN_dev.txt": {
+        "bytes": 21904378,
+        "sha256": "944f3ff5308d7340b25f9a44fd493b2e157c12e621d2b68ae645e392de5f0d7c",
+        "rows": 14785
+      },
+      "BlurbGenreCollection_EN_test.txt": {
+        "bytes": 27289940,
+        "sha256": "6fd36e87adb943d3b8ad13a23db7d4424bcbc370c5afa59f229095797ca72b68",
+        "rows": 18394
+      }
+    },
+    "identity": {
+      "valid_isbn13": 91894,
+      "provider_book_id_present": 91894
+    },
+    "duplicates": {
+      "isbn13": {
+        "unique_values": 91892,
+        "duplicate_groups": 2,
+        "records_in_duplicate_groups": 4,
+        "cross_split_groups": 2,
+        "different_label_set_groups": 2,
+        "bounded_examples": [
+          {
+            "value": "9780385499187",
+            "records": 2,
+            "references": [
+              {
+                "split": "test",
+                "source_row": 14009
+              },
+              {
+                "split": "train",
+                "source_row": 7507
+              }
+            ]
+          },
+          {
+            "value": "9780452006478",
+            "records": 2,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 4451
+              },
+              {
+                "split": "train",
+                "source_row": 11630
+              }
+            ]
+          }
+        ]
+      },
+      "provider_book_id": {
+        "unique_values": 91892,
+        "duplicate_groups": 2,
+        "records_in_duplicate_groups": 4,
+        "cross_split_groups": 2,
+        "different_label_set_groups": 2,
+        "bounded_examples": [
+          {
+            "value": "326977",
+            "records": 2,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 4451
+              },
+              {
+                "split": "train",
+                "source_row": 11630
+              }
+            ]
+          },
+          {
+            "value": "88210",
+            "records": 2,
+            "references": [
+              {
+                "split": "test",
+                "source_row": 14009
+              },
+              {
+                "split": "train",
+                "source_row": 7507
+              }
+            ]
+          }
+        ]
+      },
+      "exact_blurb": {
+        "unique_values": 91243,
+        "duplicate_groups": 460,
+        "records_in_duplicate_groups": 1111,
+        "cross_split_groups": 274,
+        "different_label_set_groups": 106,
+        "bounded_examples": [
+          {
+            "value": "e13334360bc8a916895be0261d433c555d2b57abbf3226831bf74211b1868591",
+            "records": 25,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 4416
+              },
+              {
+                "split": "dev",
+                "source_row": 7623
+              },
+              {
+                "split": "dev",
+                "source_row": 8814
+              },
+              {
+                "split": "dev",
+                "source_row": 14720
+              }
+            ]
+          },
+          {
+            "value": "586c110475dcbcae5e0e347f9db86ad7a630a9a176cd5caf45e8ac2fbb7b5e83",
+            "records": 17,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 5257
+              },
+              {
+                "split": "dev",
+                "source_row": 6389
+              },
+              {
+                "split": "dev",
+                "source_row": 8576
+              },
+              {
+                "split": "test",
+                "source_row": 3322
+              }
+            ]
+          },
+          {
+            "value": "79330eb15d8ae5c56436939451b4dc601fd49fb47d8a07756a083506f9ee9ef2",
+            "records": 12,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 1639
+              },
+              {
+                "split": "test",
+                "source_row": 3728
+              },
+              {
+                "split": "test",
+                "source_row": 8199
+              },
+              {
+                "split": "test",
+                "source_row": 8527
+              }
+            ]
+          }
+        ]
+      },
+      "normalized_blurb": {
+        "unique_values": 91168,
+        "duplicate_groups": 528,
+        "records_in_duplicate_groups": 1254,
+        "cross_split_groups": 312,
+        "different_label_set_groups": 124,
+        "bounded_examples": [
+          {
+            "value": "abc94277a9563ae2957f3c59d4183ad3c41ef9163ba6c52b7be1c6ec0ac171d3",
+            "records": 25,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 4416
+              },
+              {
+                "split": "dev",
+                "source_row": 7623
+              },
+              {
+                "split": "dev",
+                "source_row": 8814
+              },
+              {
+                "split": "dev",
+                "source_row": 14720
+              }
+            ]
+          },
+          {
+            "value": "586c110475dcbcae5e0e347f9db86ad7a630a9a176cd5caf45e8ac2fbb7b5e83",
+            "records": 17,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 5257
+              },
+              {
+                "split": "dev",
+                "source_row": 6389
+              },
+              {
+                "split": "dev",
+                "source_row": 8576
+              },
+              {
+                "split": "test",
+                "source_row": 3322
+              }
+            ]
+          },
+          {
+            "value": "79330eb15d8ae5c56436939451b4dc601fd49fb47d8a07756a083506f9ee9ef2",
+            "records": 12,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 1639
+              },
+              {
+                "split": "test",
+                "source_row": 3728
+              },
+              {
+                "split": "test",
+                "source_row": 8199
+              },
+              {
+                "split": "test",
+                "source_row": 8527
+              }
+            ]
+          }
+        ]
+      },
+      "normalized_title_author_candidate": {
+        "unique_values": 90337,
+        "duplicate_groups": 1209,
+        "records_in_duplicate_groups": 2766,
+        "cross_split_groups": 706,
+        "different_label_set_groups": 640,
+        "bounded_examples": [
+          {
+            "value": "5c7b388f1664e4f271032be19490e6579c86144c6115d9b460acb327ae4787ed",
+            "records": 13,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 3407
+              },
+              {
+                "split": "test",
+                "source_row": 9049
+              },
+              {
+                "split": "test",
+                "source_row": 9146
+              },
+              {
+                "split": "train",
+                "source_row": 3126
+              }
+            ]
+          },
+          {
+            "value": "5a838b14f9deaf10d218dfb5f249ab37e6c1630b6796acbda8847c4c984f8c52",
+            "records": 10,
+            "references": [
+              {
+                "split": "test",
+                "source_row": 139
+              },
+              {
+                "split": "test",
+                "source_row": 5078
+              },
+              {
+                "split": "test",
+                "source_row": 14203
+              },
+              {
+                "split": "train",
+                "source_row": 19445
+              }
+            ]
+          },
+          {
+            "value": "9212c84514fe6eff09957fa868206334c0200d3a52a7cc5850aa1f509d3f6edb",
+            "records": 9,
+            "references": [
+              {
+                "split": "dev",
+                "source_row": 5067
+              },
+              {
+                "split": "dev",
+                "source_row": 13889
+              },
+              {
+                "split": "test",
+                "source_row": 3612
+              },
+              {
+                "split": "test",
+                "source_row": 8127
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "provider_record_dates": {
+      "2018-08-18": 91889,
+      "2018-09-26": 5
+    },
+    "languages": {
+      "en": 91894
+    }
+  },
+  "interpretation": [
+    "Original archive, split membership, field text and source label names are preserved; no training export is created.",
+    "Counts describe source records, ISBN editions and publisher URL identifiers, not reconciled literary works.",
+    "ISBN checks cover prefix/format/checksum, not registration or metadata correctness; publisher IDs are parsed only from the supplied URLs.",
+    "The published field is an edition publication date, possibly prospective at collection time, not an original-work date or proof of modern writing.",
+    "Exact-blurb hashes use literal UTF-8 field content; normalized hashes use NFC and whitespace collapse only, preserving case/punctuation.",
+    "Title-author hashes are review candidates, not work identities; blank authors and matching titles can conflate works.",
+    "Source genre categories and hierarchy are silver metadata; missing labels are unknown, not negative or adjudicated gold.",
+    "No duplicate is removed, relabeled or reassigned; cross-split identities/text require an explicit work-group policy before admission.",
+    "No model, scoring, website redistribution or publisher-page scraping occurred; archive payload stays ignored locally."
+  ]
+}

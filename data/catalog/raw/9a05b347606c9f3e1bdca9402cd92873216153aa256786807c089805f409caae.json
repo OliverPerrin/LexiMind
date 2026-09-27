@@ -1,0 +1,141 @@
+{
+  "url": "https://openlibrary.org/works/OL21745884W.json",
+  "retrievedAt": "2026-09-27T09:07:01.777423+00:00",
+  "sha256": "63235c9596beddc66336ecc624391570c9d7c09d8f950e2f028020dccffba4e3",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Ryland Grace is the sole survivor on a desperate, last-chance mission–and if he fails, humanity and the earth itself will perish. Except that right now, he doesn’t know that. He can’t even remember his own name, let alone the nature of his assignment or how to complete it. All he knows is that he’s been asleep for a very, very long time. And he’s just been awakened to find himself millions of miles from home, with nothing but two corpses for company.\r\n\r\nHis crewmates dead, his memories fuzzily returning, he realizes that an impossible task now confronts him. Alone on this tiny ship that’s been cobbled together by every government and space agency on the planet and hurled into the depths of space, it’s up to him to conquer an extinction-level threat to our species.\r\n\r\nAnd thanks to an unexpected ally, he just might have a chance.\r\n\r\nPart scientific mystery, part dazzling interstellar journey, *Project Hail Mary* is a tale of discovery, speculation, and survival to rival *The Martian*–while taking us to places it never dreamed of going."
+    },
+    "title": "Project Hail Mary",
+    "key": "/works/OL21745884W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7234434A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "hard science-fiction",
+      "science-fiction",
+      "sci-fi",
+      "hard sci-fi",
+      "nyt:hardcover-fiction=2021-05-23",
+      "New York Times bestseller",
+      "New York Times reviewed",
+      "Fiction, science fiction, action & adventure",
+      "Fiction, science fiction, hard science fiction",
+      "End of the world",
+      "Fiction",
+      "Astronauts",
+      "Space flight",
+      "Memory disorders",
+      "Survival",
+      "Fin du monde",
+      "Romans, nouvelles",
+      "Astronautes",
+      "Vol spatial",
+      "Habiletés de survie",
+      "FICTION / Science Fiction / Action & Adventure",
+      "FICTION / Science Fiction / Hard Science Fiction",
+      "FICTION / Thrillers / Suspense",
+      "Survival after airplane accidents, shipwrecks",
+      "nyt:trade-fiction-paperback=2022-11-13"
+    ],
+    "links": [
+      {
+        "title": "Book page on author's web site",
+        "url": "https://www.andyweirauthor.com/books/project-hail-mary",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "New York Times review",
+        "url": "https://www.nytimes.com/2021/05/04/books/review/andy-weir-project-hail-mary.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Starmap of the locations mentioned in Project Hail Mary",
+        "url": "https://valhovey.github.io/gaia-mary/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "covers": [
+      11200092,
+      11212360,
+      11482074,
+      -1,
+      12257067,
+      13199102,
+      14626267,
+      14248233,
+      13488956
+    ],
+    "subject_places": [
+      "Epsilon Eridani",
+      "Earth",
+      "Tau Ceti",
+      "San Francisco (Calif.)",
+      "Pasadena (Calif.)",
+      "Antarctica",
+      "40 Eridani",
+      "Baikonur (Kazakhstan)",
+      "South China Sea region",
+      "Sahara Desert (Africa)"
+    ],
+    "subject_people": [
+      "Dr Ryland Grace",
+      "Rocky",
+      "Eva Stratt"
+    ],
+    "identifiers": {
+      "bookbrainz": [
+        "2303972b-c218-40f1-8f75-9fa27190020f"
+      ],
+      "wikidata": [
+        "Q106852836"
+      ],
+      "musicbrainz": [
+        "2c38627b-f091-4b27-a33b-4f08bf3c1b58"
+      ],
+      "isfdb": [
+        "2848254",
+        "3170784",
+        "2921045",
+        "2945257",
+        "2907382",
+        "2872322",
+        "3418977",
+        "3418979"
+      ],
+      "librarything": [
+        "25215827"
+      ],
+      "goodreads": [
+        "79106958"
+      ]
+    },
+    "latest_revision": 31,
+    "revision": 31,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2020-08-28T19:49:24.483076"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-25T23:09:27.357457"
+    }
+  }
+}

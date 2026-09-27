@@ -125,6 +125,19 @@ export default async function BookPage({ params }: Props) {
                   timeZone: "UTC",
                 }).format(new Date(book.source.retrievedAt))}
                 .
+                {book.firstPublishedSource && (
+                  <>
+                    {" "}
+                    <a
+                      href={book.firstPublishedSource.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Publication history: {book.firstPublishedSource.name}
+                    </a>
+                    .
+                  </>
+                )}
                 {book.descriptionSource &&
                 book.descriptionSource !== book.source.url &&
                 /^https:\/\//.test(book.descriptionSource) ? (

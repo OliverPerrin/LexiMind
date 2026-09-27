@@ -1,0 +1,102 @@
+{
+  "url": "https://openlibrary.org/works/OL16820059W.json",
+  "retrievedAt": "2026-09-27T09:06:51.869453+00:00",
+  "sha256": "d9f836d89eb5c00933028d2b7f3054d04e91770406f676b3226e6d7b0e11e0f2",
+  "data": {
+    "description": "In the frigid pre-dawn hours, in a distressed Midwestern city, hundreds of desperate unemployed folks are lined up for a spot at a job fair. Without warning, a lone driver plows through the crowd in a stolen Mercedes, running over the innocent, backing up, and charging again. Eight people are killed; fifteen are wounded. The killer escapes.\r\n\r\nIn another part of town, months later, a retired cop named Bill Hodges is still haunted by the unsolved crime. When he gets a crazed letter from someone who self-identifies as the \"perk\" and threatens an even more diabolical attack, Hodges wakes up from his depressed and vacant retirement, hell-bent on preventing another tragedy.\r\n\r\nBrady Hartfield lives with his alcoholic mother in the house where he was born. He loved the feel of death under the wheels of the Mercedes, and he wants that rush again.\r\n\r\nOnly Bill Hodges, with a couple of highly unlikely allies, can apprehend the killer before he strikes again. And they have no time to lose, because Brady’s next mission, if it succeeds, will kill or maim thousands.\r\n\r\nMr. Mercedes is a war between good and evil, from the master of suspense whose insight into the mind of this obsessed, insane killer is chilling and unforgettable.",
+    "title": "Mr. Mercedes",
+    "covers": [
+      14653120,
+      -1,
+      13124374
+    ],
+    "subjects": [
+      "horror",
+      "mystery",
+      "crime",
+      "FICTION / Horror",
+      "FICTION / General",
+      "FICTION / Suspense",
+      "Serial murderers",
+      "Mercedes automobiles",
+      "Fiction",
+      "Horror stories",
+      "Serial murders, fiction",
+      "Fiction, horror",
+      "Fiction, thrillers",
+      "Fiction, thrillers, general",
+      "Murder",
+      "Criminal investigation",
+      "Large type books",
+      "Automobiles",
+      "Mental Depression",
+      "Alcoholics",
+      "General",
+      "Suspense",
+      "Thriller",
+      "Amerikanisches Englisch",
+      "Serial killers",
+      "Horror fiction",
+      "Adventure fiction",
+      "nyt:hardcover-fiction=2014-06-22",
+      "New York Times bestseller",
+      "Mercedes (Automobiles)",
+      "Romans, nouvelles",
+      "Tueurs en série",
+      "Fiction, thrillers, suspense"
+    ],
+    "subject_people": [
+      "Bill Hodges"
+    ],
+    "key": "/works/OL16820059W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL19981A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      },
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL15292106A"
+        }
+      },
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL15535726A"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_places": [
+      "Middle West"
+    ],
+    "genres": [
+      "/tags/OL171T",
+      "/tags/OL175T",
+      "/tags/OL166T",
+      "/tags/OL180T",
+      "/tags/OL164T"
+    ],
+    "latest_revision": 36,
+    "revision": 36,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2014-06-26T14:19:26.803839"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-31T09:37:58.017135"
+    }
+  }
+}
