@@ -50,7 +50,10 @@ Gutenberg or Goodreads are allowed. Unverifiable legacy pairs remain historical
 artifacts and are excluded from the new catalogue. There are no generated book
 descriptions in this release.
 
-Genres map explicit source subjects to display labels. Mood labels are empty until
+The current `genres` are broad display filters derived from source subjects; they
+mix genre, topic, form and audience and are not a clean training taxonomy. See
+`docs/research/dataset_decisions.md` for future field boundaries. Genres map explicit
+source subjects to display labels. Mood labels are empty until
 independently supported; the website hides that filter when no eligible labels exist.
 The legacy emotion head was trained on Reddit text and does not establish a book's
 mood. Randomly sampled tones must never enter the catalogue or ranking features.
@@ -74,8 +77,8 @@ committed package lock establish the web dependencies.
 3. Review the draft `docs/mood_annotation_guide.md` before collecting any labels or
    enabling mood filtering. A genre, a character's expressed emotion, and a reader's
    experience are different targets. No gold labels have been collected.
-4. Review `docs/recommendation_judgments.md` before preparing a held-out-by-work set
-   of queries and human relevance judgments. Its collection remains empty while
+4. Review `docs/recommendation_judgments.md` before preparing query-family/seed-work
+   partitions and human relevance judgments over the fixed catalogue. Its collection remains empty while
    research is paused; implementation tests do not determine recommendation quality.
 5. Once research is resumed, compare a pretrained embedding retrieval baseline with
    MTL-derived features. Keep judgement/evaluation data out of training and model

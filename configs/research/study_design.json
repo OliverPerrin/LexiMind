@@ -5,27 +5,29 @@
   "training_authorized": false,
   "novelty_claim": "none; controlled replication and application study",
   "model_study": {
-    "question": "Given the same total student-training allowance and common task interfaces, how do joint adaptation, task specialists and merged specialist encoders trade task retention against additional selection and deployment cost?",
+    "question": "On book-domain field tasks with identical per-task input evidence and total student-training allowance, how do joint adaptation, specialists and merged specialist encoders trade held-out accuracy, coverage and selection/deployment cost?",
     "access_regime": "all_task_training_data_available",
     "claims_excluded": [
       "first heterogeneous-output merging study",
       "causal effect of output type from one dataset per type",
       "book mood validity from Reddit emotion scores",
-      "model quality from software tests"
+      "model quality from software tests",
+      "character emotion establishes reader experience",
+      "source taxonomy labels are complete negatives",
+      "literature recommendations demonstrate accuracy gains on LexiMind"
     ],
     "adaptation_family": "lora",
     "backbone": {
       "selected_repo": null,
       "selected_revision": null,
-      "implementation": "upstream_transformers_candidate",
+      "implementation": "custom_transformer_preserved_runtime_not_frozen",
       "selection_status": "metadata_review_only",
       "selected_runtime": null
     },
     "shared_scope": "encoder_attention_effective_deltas",
     "private_scope": {
-      "emotion": "pooler_and_classifier",
       "topic": "pooler_and_classifier",
-      "summarization": "decoder_attention_adapters"
+      "emotion": "pooler_and_classifier"
     },
     "embedding_and_layernorm_updates": false,
     "head_initialization": "identical task-specific initialization within each matched training seed",
@@ -33,28 +35,71 @@
     "materialization": "into_same_base_weights_without_rank_recompression",
     "merge_private_policy": "retain_corresponding_specialist_private_modules_without_updates",
     "post_merge_training": false,
-    "task_suite_status": "candidates_only_not_frozen",
+    "task_suite_status": "book_domain_candidates_under_review",
     "selected_dataset_manifest": null,
     "adapter_module_manifest": null,
     "tasks": [
       {
-        "task_id": "emotion",
-        "candidate_dataset": "google-research-datasets/go_emotions",
-        "target": "comment-level multilabel emotion",
-        "primary_metric": "macro_f1_frozen_calibration_thresholds"
-      },
-      {
         "task_id": "topic",
-        "candidate_dataset": "fancyzhx/ag_news",
-        "target": "single-label news topic",
-        "primary_metric": "macro_f1"
+        "target": "Book genre and topical-subject fields, kept as separate label families",
+        "candidate_sources": [
+          "bgc",
+          "catalogue_subjects"
+        ],
+        "auxiliary_sources": [
+          "cmu",
+          "doab"
+        ],
+        "input_fields": [
+          "title",
+          "description"
+        ],
+        "label_fields_excluded_from_input": [
+          "source_genres",
+          "source_subjects",
+          "target_hierarchy_labels"
+        ],
+        "output_type": "multi_label",
+        "label_states": [
+          "positive",
+          "negative",
+          "unknown"
+        ],
+        "missing_labels": "unknown",
+        "primary_metric": "macro_f1_on_complete_reviewed_labels",
+        "secondary_metrics": [
+          "micro_f1",
+          "per_field_precision_coverage",
+          "hierarchy_violations"
+        ],
+        "integration_status": "requires_field_vocabulary_and_partial_label_loss; current topic runtime is single-label"
       },
       {
-        "task_id": "summarization",
-        "candidate_dataset": "ccdv/arxiv-summarization",
-        "target": "article-to-abstract generation",
-        "primary_metric": "rougeL",
-        "admission": "extension_only_after_identity_rights_and_length_audit"
+        "task_id": "emotion",
+        "target": "Highlighted-character emotion in a literary passage; auxiliary to future reader-mood work",
+        "candidate_sources": [
+          "cr4_narremote"
+        ],
+        "input_fields": [
+          "passage",
+          "highlighted_character"
+        ],
+        "human_target": "original annotator responses and disagreement",
+        "derived_fields_not_human_gold": [
+          "NRC_*",
+          "NRCBERT_*",
+          "EMO_*"
+        ],
+        "primary_metric": "to_freeze_after_annotation_and_mapping_audit",
+        "integration_status": "requires_character-conditioned input and reviewed label mapping; no whole-book mood output",
+        "separate_diagnostics": [
+          {
+            "source": "dens",
+            "target": "dominant passage affect",
+            "pool_as_character_labels": false
+          }
+        ],
+        "annotation_policy": "Review t0 character validity and t1 response semantics. Blank/uncertain responses remain unknown, not neutral or all-negative; retain annotator disagreement."
       }
     ],
     "arms": [
@@ -117,17 +162,45 @@
       ]
     },
     "unresolved": [
-      "final task suite and rights",
-      "fresh immutable data/labels and work reconciliation",
-      "backbone implementation and adapter allowlist",
-      "hardware feasibility and B",
-      "task sampling and specialist allocation",
-      "merge coefficients and equal selection opportunity",
-      "noninferiority tolerances or superiority claim",
-      "protocol review and explicit experiment resumption"
+      "BGC snapshot/terms and work-group audit",
+      "catalogue facet mapping and reviewed positive/negative labels",
+      "CR4 schema, character context, source terms and human/derived label separation",
+      "partial-label loss and output-contract integration",
+      "backbone adapter allowlist and runtime",
+      "hardware feasibility, B, sampling and equal selection allowance",
+      "held-out book evaluation and protocol freeze",
+      "explicit experiment resumption"
     ],
     "pretrained_base_updates": false,
-    "unadapted_reference": "Excluded for private classifiers: random new heads are not a meaningful unadapted baseline. A frozen-encoder trained-head control would require its own declared budget."
+    "unadapted_reference": "Excluded for private classifiers: random new heads are not a meaningful unadapted baseline. A frozen-encoder trained-head control would require its own declared budget.",
+    "source_decisions": "research/preparation/book_field_sources.json",
+    "supervision_policy": {
+      "known_metadata": "copy sourced bibliographic/explicit catalogue values; learn missing fields separately",
+      "publisher_and_catalogue_labels": "source-specific silver supervision, not complete truth",
+      "unknown_targets": "mask unknown labels; do not manufacture negatives",
+      "negative_evidence": "reviewed negative or complete-label seed set required; positive-only masked BCE is not sufficient",
+      "hierarchy": "only reviewed implications; preserve source taxonomy before field mapping",
+      "split_unit": "work/edition/series reconciliation across all tasks and sources before partitioning",
+      "input_parity": "all recipe arms use the same allowed evidence for each task",
+      "evidence": "store source references and spans; span presence does not certify model reasoning",
+      "prediction_policy": "calibrate per-field thresholds on held-out works and report precision/coverage; allow abstention",
+      "runtime_status": "proposal_only_not_implemented_or_evaluated"
+    },
+    "optional_controls": [
+      {
+        "dataset": "fancyzhx/ag_news",
+        "role": "optional out-of-domain topic control, not primary book supervision"
+      },
+      {
+        "dataset": "google-research-datasets/go_emotions",
+        "role": "optional comment-emotion control, not literary or reader mood gold"
+      },
+      {
+        "dataset": "author_arxiv_archive",
+        "role": "optional generation control, not mandatory for book field accuracy"
+      }
+    ],
+    "optional_domain_adaptation": "Later teacher-free denoising on permitted training-book text only; one identical adapted initialization across recipe arms, with cost recorded. Not started."
   },
   "applied_study": {
     "question": "Which source-backed representations improve graded query-to-work relevance within an explicitly eligible catalogue?",
@@ -191,7 +264,21 @@
     "collection_manifest": null,
     "partition_manifest": null,
     "eligibility_manifest": null,
-    "rubric_review": null
+    "rubric_review": null,
+    "field_priority": [
+      "sourced metadata first",
+      "book genres and topics",
+      "reader mood only after independent book-domain evidence"
+    ],
+    "reader_affect_candidates": [
+      "emobank reader.csv",
+      "idest",
+      "independent reader-experience collection informed by acrec"
+    ],
+    "claims_excluded": [
+      "target-book review-derived requests are prospective human requests",
+      "character/passage emotion directly labels whole-book reader mood"
+    ]
   },
   "deferred": [
     "distillation",

@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-09-27",
+  "scope": "Primary methods/provider/schema review; no new corpus, model or teacher run",
+  "sources": [
+    {
+      "id": "bgc",
+      "urls": [
+        "https://www.inf.uni-hamburg.de/en/inst/ab/lt/resources/data/blurb-genre-collection.html",
+        "https://aclanthology.org/P19-2045/"
+      ],
+      "unit": "publisher blurb with hierarchical multi-label categories",
+      "reported_samples": 91892,
+      "reported_labels": 146,
+      "count_basis": "provider and paper; archive not acquired",
+      "terms": "CC BY-NC 4.0; publisher retains blurb rights",
+      "role": "first genre research candidate",
+      "limit": "audit editions/work groups; map publisher categories into separate field facets; no automatic commercial-use clearance",
+      "hierarchy_count_note": "Paper Table 1 reports levels 7/46/77/16; provider page gives an inconsistent final-level count. Count actual archive before freezing labels.",
+      "archive_access_observation": {
+        "url": "https://fiona.uni-hamburg.de/ca89b3cf/blurbgenrecollectionen.zip",
+        "method": "HEAD",
+        "status": 200,
+        "bytes_declared": 48690771,
+        "last_modified": "Mon, 17 Dec 2018 14:33:13 GMT",
+        "body_downloaded": false
+      }
+    },
+    {
+      "id": "catalogue_subjects",
+      "urls": [
+        "https://openlibrary.org/developers/licensing",
+        "https://www.loc.gov/marc/bibliographic/bd650.html",
+        "https://www.loc.gov/marc/bibliographic/bd655.html",
+        "https://www.oclc.org/research/areas/data-science/fast/download.html"
+      ],
+      "unit": "identified catalogue work/edition and sourced headings",
+      "role": "primary topic evidence and weak supervision",
+      "limit": "650 is topical; 655 is genre/form. Raw subjects and current display genres mix facets. Missing labels are unknown; a vocabulary is not a labeled corpus."
+    },
+    {
+      "id": "cr4_narremote",
+      "urls": [
+        "https://aclanthology.org/2025.emnlp-main.493/",
+        "https://doi.org/10.5683/SP3/XN4ZYZ"
+      ],
+      "unit": "human response about a highlighted character in a passage",
+      "paper_passages": 43713,
+      "paper_annotations": 207721,
+      "role": "preferred narrative-affect auxiliary",
+      "limit": "character emotion, affect-enriched sampling and excluded dialogue; not reader or whole-book mood. Keep raw t1 human labels separate from computational mappings."
+    },
+    {
+      "id": "cmu",
+      "urls": [
+        "https://www.cs.cmu.edu/~dbamman/booksummaries.html"
+      ],
+      "reported_samples": 16559,
+      "unit": "Wikipedia plot summary plus Freebase-linked metadata",
+      "terms": "CC BY-SA 3.0 US",
+      "role": "secondary genre data or cross-style diagnostic",
+      "limit": "spoilers, incomplete and mixed genre labels; plot summaries differ from deployment blurbs"
+    },
+    {
+      "id": "doab",
+      "urls": [
+        "https://www.doabooks.org/en/publishers/guidance",
+        "https://www.doabooks.org/en/researchers/full-faq",
+        "https://ns.editeur.org/thema/en"
+      ],
+      "unit": "scholarly open-access book metadata and publisher-assigned Thema",
+      "role": "optional nonfiction topic extension",
+      "terms": "provider states metadata CC0; book licenses separate; Thema has its own use conditions",
+      "limit": "audit abstracts, language, edition/chapter units; do not apply BGC ancestor rules blindly. FAQ read through index; recheck at acquisition."
+    },
+    {
+      "id": "dens",
+      "urls": [
+        "https://aclanthology.org/D19-1656/"
+      ],
+      "unit": "dominant emotion in narrative passage",
+      "role": "separate passage-affect diagnostic; do not pool as highlighted-character labels",
+      "terms": "paper offers access by request for noncommercial research",
+      "limit": "not whole-work reader mood; source-work identifiers and current delivery require verification"
+    },
+    {
+      "id": "emobank",
+      "urls": [
+        "https://github.com/JULIELab/EmoBank",
+        "https://github.com/JULIELab/EmoBank/blob/master/corpus/README.md"
+      ],
+      "unit": "sentence valence/arousal/dominance from reader or writer perspective",
+      "terms": "repository declares CC BY-SA 4.0",
+      "role": "reader-perspective bridge",
+      "limit": "use reader.csv, not blended emobank.csv; mixed domains and sentence scope"
+    },
+    {
+      "id": "idest",
+      "urls": [
+        "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0274480"
+      ],
+      "unit": "reader-induced valence/arousal for 250 short stories",
+      "role": "small target-validity reference",
+      "terms": "paper describes academic research availability",
+      "limit": "small and not book-length; no full-book mood claim"
+    },
+    {
+      "id": "acrec",
+      "urls": [
+        "https://aclanthology.org/2025.emnlp-main.1668/",
+        "https://github.com/Ton-moy/ACRec"
+      ],
+      "unit": "GPT-4o-derived affective/cognitive statements from Goodreads reviews",
+      "role": "reader-experience task design and optional weak labels, not evaluation gold",
+      "limit": "requests are derived from the same user review of the target book; prospective requests need separate collection. Provider reuse terms unresolved."
+    },
+    {
+      "id": "weak_affect",
+      "urls": [
+        "https://github.com/lrei/emolit_train",
+        "https://zenodo.org/records/7883954",
+        "https://aclanthology.org/2024.latechclfl-1.7/"
+      ],
+      "role": "EmoLit/EmotionArcs as later weak-label or feature candidates",
+      "limit": "entailment/pseudo-label or lexicon-derived signals, not independent human book-mood gold; code license does not settle text rights"
+    }
+  ],
+  "methods": [
+    {
+      "id": "partial_labels",
+      "urls": [
+        "https://arxiv.org/abs/1902.09720",
+        "https://arxiv.org/abs/2106.09708"
+      ],
+      "decision": "Use positive/negative/unknown labels with masked supervision plus reviewed negatives or a separately justified positive-unlabeled method. Positive-only masked BCE can collapse to all-positive predictions."
+    },
+    {
+      "id": "hierarchy",
+      "url": "https://proceedings.neurips.cc/paper/2020/hash/6dd4e10e3296fa63738371ec0d5df818-Abstract.html",
+      "decision": "Apply only reviewed parent-child implications; source taxonomies have different rules."
+    },
+    {
+      "id": "evidence",
+      "url": "https://aclanthology.org/2020.acl-main.408/",
+      "decision": "Store evidence spans/offsets and source hashes; plausible supporting spans do not prove faithful model reasoning."
+    },
+    {
+      "id": "selective_prediction",
+      "url": "https://aclanthology.org/2020.acl-main.503/",
+      "decision": "Calibrate field thresholds on held-out books; report precision/coverage and abstain when source evidence is absent. Softmax confidence alone is inadequate under domain shift."
+    },
+    {
+      "id": "domain_adaptation",
+      "url": "https://aclanthology.org/2020.acl-main.740/",
+      "decision": "Optional later denoising on permitted training-book text. If used, all recipe arms share the same adapted base and its cost. Reported RoBERTa gains do not establish custom T5 gains."
+    }
+  ],
+  "cr4_release_observation": {
+    "api_url": "https://borealisdata.ca/api/datasets/:persistentId/?persistentId=doi:10.5683/SP3/XN4ZYZ",
+    "version": "1.0",
+    "released": "2025-08-28T19:02:45Z",
+    "license": {
+      "name": "CC0 1.0",
+      "uri": "http://creativecommons.org/publicdomain/zero/1.0",
+      "iconUri": "https://licensebuttons.net/p/zero/1.0/88x31.png",
+      "rightsIdentifier": "CC0-1.0",
+      "rightsIdentifierScheme": "SPDX",
+      "schemeUri": "https://spdx.org/licenses/",
+      "languageCode": "en"
+    },
+    "metadata_sha256": "91973824af906cfc49010e908badf9dab5867b61b241ebc204bd8e62d46c0796",
+    "readme_url": "https://borealisdata.ca/api/access/datafile/980977",
+    "readme_sha256": "a1f04cfa096a1d6bac9cef9a9d0c991981260145c38eb69cae607d76752cf541",
+    "schema_url": "https://borealisdata.ca/api/access/datafile/980979/metadata",
+    "schema_sha256": "44ecadd2319d22e669123aaa921c0b75ab9481ffa85b087ac835540afe383d9a",
+    "schema_reported_rows": 207721,
+    "all_columns": [
+      "file_id",
+      "classification_id",
+      "user_id",
+      "workflow_name",
+      "created_at",
+      "subject_ids",
+      "passage",
+      "highlighted_char",
+      "Category",
+      "Genre",
+      "Code",
+      "PUBL_DATE",
+      "t0",
+      "t1"
+    ],
+    "files": [
+      {
+        "id": 980979,
+        "filename": "CR4NarrEmote_All.tab",
+        "bytes": 57282528,
+        "restricted": false,
+        "checksum": {
+          "type": "MD5",
+          "value": "c18956b7a98251f9a10837b025a5b34d"
+        }
+      },
+      {
+        "id": 980977,
+        "filename": "CR4NarrEmote_ReadMe.txt",
+        "bytes": 2064,
+        "restricted": false,
+        "checksum": {
+          "type": "MD5",
+          "value": "1ff86daef3bf561df1e682e6ce00bbac"
+        }
+      },
+      {
+        "id": 926802,
+        "filename": "CR4NarrEmote_Screenshots.pdf",
+        "bytes": 2276575,
+        "restricted": false,
+        "checksum": {
+          "type": "MD5",
+          "value": "f3c5103419acd25a9e77212c74a87a18"
+        }
+      },
+      {
+        "id": 980978,
+        "filename": "CR4NarrEmote_t1Yes.tab",
+        "bytes": 65263520,
+        "restricted": false,
+        "checksum": {
+          "type": "MD5",
+          "value": "dd0995db011b32697cfaa71071f3425d"
+        }
+      }
+    ],
+    "scope": "Provider metadata, README and DDI schema only. No annotation table downloaded. Dataset-level license is a provider declaration, not per-excerpt rights verification."
+  },
+  "not_selected": [
+    {
+      "source": "Book Blurb Tone / Codabench 6675",
+      "url": "https://www.codabench.org/competitions/6675/",
+      "reason": "Accessible description has seven tones, but annotation provenance, work grouping and reuse terms were not verified."
+    },
+    {
+      "source": "IMAGINE / HiGeMine",
+      "urls": [
+        "https://arxiv.org/html/2505.03839v1",
+        "https://arxiv.org/html/2512.21076v1"
+      ],
+      "reason": "Inspected papers describe Goodreads/Gemini-derived processing; no reusable released corpus verified."
+    }
+  ]
+}

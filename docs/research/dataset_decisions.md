@@ -1,56 +1,60 @@
-# Dataset decisions before training
+# Book-field supervision: decision, 27 September 2026
 
-Status: source candidates and assignment plans, still unadmitted. The original
-processed files remain unchanged. [GoEmotions](goemotions_reconstruction.md) and
-[AG News](ag_news_reconstruction.md) have pinned local reconstructions and
-[deterministic development/calibration assignments](partitions.md). The arXiv
-extension has a separate [author-source reconstruction](arxiv_reconstruction.md).
+**Use book-domain labels as the main path.** AG News, GoEmotions and arXiv remain
+optional controls; their reconstruction does not make them the right product targets.
+Better alignment is a reason to test this direction, not a measured accuracy gain.
 
-| Resource | Proposed role | Admission work still needed |
+| Target | First choice | Why / boundary |
 | --- | --- | --- |
-| GoEmotions simplified | M1 multilabel comment-emotion task | Provider comment IDs, original label order and official partitions are restored. Review repeated inputs/annotation disagreements and the proposed selection/calibration assignments. Repository card declares Apache-2.0, which is a recorded declaration rather than a blanket source-rights opinion. |
-| AG News | M1 single-label topic candidate replacing the small seven-class legacy mix | Review original provider/source terms; the inspected Hub card says license unknown. Pinned source-row identities are reconstructed; original article IDs are not supplied. Review the proposed partitions and duplicate/generalization policy. |
-| arXiv summarization | M1 generation extension candidate | Recover paper IDs/revisions, source-use basis, article/abstract pairing and lengths. The inspected Hub card has no license value; no blanket permission is inferred. Academic abstract generation does not validate literary blurbs. |
-| Current 102-work catalogue | B1 product population and unlabelled annotation preparation | Choose query/eligible-work scope and evidence languages; verify identities; collect independent judgments later. It is curated, small and not population-representative. |
-| BookSum | Possible later document/chapter generation study | Preserve provider parent bid and official partitions, reconcile cross-source works, separate paragraphs/chapters/full books, inspect original summary rights. A code license does not license every text. |
-| CMU book summaries | Possible genre/text research candidate | Review CC BY-SA 3.0 US source terms and work identity; it contains plots/genre metadata, not reader-preference or whole-work mood gold. |
-| Goodreads UCSD | Conditional offline interaction benchmark | Provider statements restrict use to academic work and prohibit redistribution/commercial use. Keep eligibility review and data access separate from the public website. Ratings/interactions are not query relevance or atmosphere labels. |
-| DENS | Conditional passage-emotion research | Provider access/usage conditions apply. Short-passage dominant emotion is a different target from sustained book atmosphere. |
+| Genres | [BlurbGenreCollection](https://www.inf.uni-hamburg.de/en/inst/ab/lt/resources/data/blurb-genre-collection.html): reported 91,892 blurbs, 146 hierarchical categories | Matches description inputs. CC BY-NC 4.0; audit editions/work groups and map publisher categories into field facets. Product reuse is a separate decision. |
+| Topics | Sourced catalogue headings, distinguishing [topical subjects](https://www.loc.gov/marc/bibliographic/bd650.html) from [genre/form](https://www.loc.gov/marc/bibliographic/bd655.html) | Strong immediate source evidence and possible weak labels. Missing headings are unknown, not negatives. Raw Open Library subjects are not a clean topic vocabulary. |
+| Narrative affect | [CR4-NarrEmote](https://aclanthology.org/2025.emnlp-main.493/), preferred literary auxiliary | Human character-emotion responses with passage/document IDs. Provider V1 metadata declares CC0 and open files. This is not reader or whole-book mood. |
+| Reader mood | Independently reviewed reading-experience labels; [EmoBank reader annotations](https://github.com/JULIELab/EmoBank) and [IDEST](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0274480) as bridges | Sentence/short-story scope, not full-book gold. EmoBank's blended file mixes reader/writer perspectives; use `reader.csv` for that specific target. |
 
-Provider URLs, precise scope and unresolved rights statements are in the
-[book-data review](book_discovery_review.md) and its structured evidence register.
-Missing license metadata does not by itself establish either permission or prohibition.
+Secondary options: [CMU summaries](https://www.cs.cmu.edu/~dbamman/booksummaries.html)
+for a separate plot-summary genre domain; [DOAB](https://www.doabooks.org/en/publishers/guidance)
+for scholarly nonfiction topics; DENS as a separate passage-affect diagnostic,
+not pooled highlighted-character labels.
+ACRec is a useful reader-preference design, but its GPT-derived requests come from
+reviews of the target book. Do not use those as independent prospective evaluation
+queries. Newer Goodreads/Gemini-derived genre corpora and unverified tone challenges
+are watchlist items, not automatic upgrades. Details and source terms are in the
+[compact source register](../../research/preparation/book_field_sources.json).
 
-## Current processed files
+## Training approach
 
-The [local audit](data_readiness.md) makes all four current corpora ineligible for a
-fresh controlled study until reconstruction/review. Files remain unchanged. In
-particular, the 18,753 literary source/summary pairs must not be revived by accepting
-title-only joins or by assigning the same blurb to arbitrary excerpts.
+1. **Separate fields.** Genres describe content conventions; topics describe
+   aboutness; moods describe a scoped reader experience. Form and audience remain
+   separate metadata. The site's current `genres` mix these facets and must not be
+   copied directly into a training vocabulary.
+2. **Match available input.** Start from title/description for metadata fields.
+   Copy trusted source values when present. Exclude target genre/subject fields
+   from classifier inputs; richer passages are a separate evidence condition.
+3. **Use partial multi-label supervision.** Preserve positive/negative/unknown
+   states and valid source-specific hierarchy links. Add reviewed negatives or a
+   complete-label seed set: masking unknowns with positives alone can learn an
+   all-positive predictor. Keep weak/model-derived labels out of human gold.
+4. **Preserve evidence and disagreement.** CR4's raw `t1` responses are human;
+   NRC, NRCBERT and EMO mappings are derived. Keep highlighted-character context,
+   passage/work IDs and individual responses. Audit `t0` validity; blank/uncertain
+   `t1` stays unknown, not neutral or all-negative. Supporting text spans are references,
+   not proof that a prediction or its explanation is correct.
+5. **Test on held-out works.** Reconcile editions/series and cross-source copies;
+   calibrate per-field thresholds separately. Report accuracy with coverage and
+   abstentions. Optional later book-text denoising uses the same adapted base and
+   recorded cost for every comparison arm.
 
-Repeated strings are review units, not automatic deletion instructions. For comment
-classification, identical text may occur in distinct source comments. For source
-descriptions repeated across excerpts, the parent work may be the same, but the
-current files cannot establish that. Rehydrate provider IDs before deciding whether
-to preserve official benchmark splits, group duplicates in a new version, or report
-a separate contamination-sensitive analysis. Changing published splits must be named
-as a new dataset/protocol rather than silently retaining the old benchmark label.
+## Next work, in order
 
-Source provenance may live in a pinned dataset-level manifest plus stable row IDs;
-it need not duplicate a full URL in every row. The current audit records absent
-row-level provenance fields and absent parent IDs, while the historical source
-revision also remains unresolved. New manifests must explicitly connect the two.
+- Audit the original BGC release and CR4 schemas/identities; define one small
+  field vocabulary and a positive/negative/unknown mapping.
+- Prepare a reviewed field-label seed set and work-group split; then implement
+  masked multi-label loss and the character-conditioned input contract.
+- Resume model feasibility/training only when the existing pause is lifted.
 
-## Admission boundary
-
-Before any download/rebuild is admitted, write a manifest containing provider URL,
-immutable revision, source terms reviewed, config/subset, original record and parent
-IDs, label order, preprocessing revision, source-to-canonical mappings and unresolved
-cases. Output files need hashes, counts, exclusion reasons and an audit of train,
-selection, calibration and final-test boundaries. Preserve raw versus normalized
-duplicate decisions separately. Parent-document grouping alone does not prove
-canonical work/edition separation across datasets.
-
-Keep the reconstructed source candidates and their reports separate from admitted training data. Do not overwrite
-`data/processed`, publish restricted datasets, manufacture human labels, or interpret
-the existing website's software tests as a relevance evaluation.
+The custom transformer, four recipe arms and independent book-relevance study
+remain. Only provider metadata, schemas and archive availability were checked. No new
+training corpus was acquired; model-quality evaluation remains paused.
+The existing `topic` runtime is single-label, so this proposal needs an explicit
+loss/output integration before training. Source checks are scoped to the data being
+used; optional datasets and later mood work need not block the genre/topic track.
