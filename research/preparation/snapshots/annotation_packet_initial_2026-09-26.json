@@ -1,0 +1,948 @@
+{
+  "schema_version": 1,
+  "status": "unlabelled_preparation",
+  "collection_authorized": false,
+  "gold_verified": false,
+  "human_review_required": true,
+  "catalog": {
+    "path": "web/data/books.json",
+    "sha256": "702cf3e16c091daafe1d293248dfed1955fe0545e4ca5c3089de3467f1ad4c6f",
+    "bytes": 204648,
+    "record_count": 102,
+    "record_hash_format": "sha256:json-sort-keys-utf8-ensure-ascii-false-compact-v1"
+  },
+  "rubrics": {
+    "mood": {
+      "path": "docs/mood_annotation_guide.md",
+      "sha256": "7056334aadff007b0cd9649389e43f79fcef36369339e7706c87d7f4cca2660d",
+      "status": "draft"
+    },
+    "recommendation": {
+      "path": "docs/recommendation_judgments.md",
+      "sha256": "0037920050df15af25d2c936399943005606cac132f61d3df7575acb7219b849",
+      "status": "draft"
+    }
+  },
+  "items": [
+    {
+      "work_id": "OL102483W",
+      "record_sha256": "6d650ff4c0e10ec86473463012a9394222c2c1974e5a53ac20362ad0e953eaeb",
+      "source_urls": [
+        "https://openlibrary.org/works/OL102483W"
+      ],
+      "source_revision": 11,
+      "source_content_sha256": "f47dfe2ccf7e45c1d1ec73ba01724da4883f00fc5f971afd48d9e6fbd9c249e7"
+    },
+    {
+      "work_id": "OL1037811W",
+      "record_sha256": "9b10fbfbcf1865f5e75e7bf274807ec31945b37596839051c8f76194c1186a5b",
+      "source_urls": [
+        "https://openlibrary.org/works/OL1037811W"
+      ],
+      "source_revision": 10,
+      "source_content_sha256": "4c9a376846894a273d3d6e1fa659d264cc1e761185c6cba54ca14f6583c51f0a"
+    },
+    {
+      "work_id": "OL11327982W",
+      "record_sha256": "a45e5808ad16f399bab89b2e62b6a54f9efd36d9102ea29a7e3bb058412c1b22",
+      "source_urls": [
+        "https://openlibrary.org/works/OL11327982W"
+      ],
+      "source_revision": 17,
+      "source_content_sha256": "8ba8a94d7d03a7bfeeadee3d4a6a1e8eaef607a0208c236bcef9dd144427d918"
+    },
+    {
+      "work_id": "OL1230601W",
+      "record_sha256": "5f8bf6edeaa4726521a65bc4a49c80127f2502a5aad71a94002f97016a0383b5",
+      "source_urls": [
+        "https://openlibrary.org/works/OL1230601W"
+      ],
+      "source_revision": 19,
+      "source_content_sha256": "5aff3e19f0ea70fa5afe011b6ed718c06f28b014c64e55d2caf3bd72f7fd45db"
+    },
+    {
+      "work_id": "OL1230690W",
+      "record_sha256": "ac9e92edd8676a68fc0293586a38ed7fd3c5446ee797680508fb36d7f3b35c53",
+      "source_urls": [
+        "https://openlibrary.org/works/OL1230690W"
+      ],
+      "source_revision": 12,
+      "source_content_sha256": "05b555f655a1f37e5a99c1bdcd0a0774a1c3152fef184d12a9e214991b4c0c13"
+    },
+    {
+      "work_id": "OL1317211W",
+      "record_sha256": "542ffd6aa60aa2c2523be4e212049c0601c731611a9c682535ebe03aee0778d7",
+      "source_urls": [
+        "https://openlibrary.org/works/OL1317211W"
+      ],
+      "source_revision": 46,
+      "source_content_sha256": "5ea1ea5e81c04caadd5c2e48d5da71a9fb6819326006c68a6041c24862946d84"
+    },
+    {
+      "work_id": "OL14958204W",
+      "record_sha256": "1c470b8969c25faf987d898be307ad15a6aaf44ed393b8dd6174cb24e937f420",
+      "source_urls": [
+        "https://openlibrary.org/works/OL14958204W"
+      ],
+      "source_revision": 6,
+      "source_content_sha256": "17d96d7e8d7e2777467d901e7bcd5427761d7636b4267332d4e44554ca5cbe9a"
+    },
+    {
+      "work_id": "OL15094430W",
+      "record_sha256": "16fa2f8e35e8b9509cff9f4315e7eac1b572c27ac267e269b19403806b6b9f18",
+      "source_urls": [
+        "https://openlibrary.org/works/OL15094430W"
+      ],
+      "source_revision": 12,
+      "source_content_sha256": "2de0764388a1f91089b76164c10f17471c2a94cbdcbe0032f4ccdcf3ca395620"
+    },
+    {
+      "work_id": "OL15400582W",
+      "record_sha256": "7a9d48b0b55a9d876674a36cf54ecc37fa7a8bf2ed7052a84d3b4b7da29e8243",
+      "source_urls": [
+        "https://openlibrary.org/works/OL15400582W"
+      ],
+      "source_revision": 27,
+      "source_content_sha256": "b1cb19cf895967183e910b41c5c6fafcb53aef531895dcd402535a9b278c55ab"
+    },
+    {
+      "work_id": "OL15556315W",
+      "record_sha256": "5f95c2afe5aa5e04490336e4164213d00b89f35211d2965aa8f1632d67445f02",
+      "source_urls": [
+        "https://openlibrary.org/works/OL15556315W"
+      ],
+      "source_revision": 7,
+      "source_content_sha256": "130e0d35de9d80e6e870b86ae5785c46476e59231fff67af567ca4d3d67546d1"
+    },
+    {
+      "work_id": "OL158041W",
+      "record_sha256": "9e44698cf7c91ab7e27c7a00dc76ec634cf119d0e0f9e99da8735d4ad184e6fb",
+      "source_urls": [
+        "https://openlibrary.org/works/OL158041W"
+      ],
+      "source_revision": 11,
+      "source_content_sha256": "7f1e45417e7385f31ab12eb08b7f77315cde287c893908675daf0fa09d7a51af"
+    },
+    {
+      "work_id": "OL16014245W",
+      "record_sha256": "4a8758b59096c6d985062d2b3d567c0e85f4252475860c9812b0e0f9feb366d6",
+      "source_urls": [
+        "https://openlibrary.org/works/OL16014245W"
+      ],
+      "source_revision": 25,
+      "source_content_sha256": "4f4e24931f1b6e68a3301045a347599ea96ea68201f762f0fcb693019d062342"
+    },
+    {
+      "work_id": "OL16031718W",
+      "record_sha256": "959a5dbb0ed1ecbde757fc5a10edc8702e1e3a70bd7b15c940676abe6f92501b",
+      "source_urls": [
+        "https://openlibrary.org/works/OL16031718W"
+      ],
+      "source_revision": 8,
+      "source_content_sha256": "742e56f887c33d3194976598a84fe87d6a0990bde52da258d51860649f518a76"
+    },
+    {
+      "work_id": "OL16314245W",
+      "record_sha256": "fd5af8c791847bcf3d023241db90763160371f70e25e9fe8bcb6ee67953cfda2",
+      "source_urls": [
+        "https://openlibrary.org/works/OL16314245W"
+      ],
+      "source_revision": 14,
+      "source_content_sha256": "df3ea202f6b6fe86e9228a323120b34f4ec81ebc5a49fda3d81802934634cedd"
+    },
+    {
+      "work_id": "OL16509148W",
+      "record_sha256": "a32ac2ad8177089d1e2909da0cc5f19ab374dbb54571ea2d9f107f3ca82ee2ae",
+      "source_urls": [
+        "https://openlibrary.org/works/OL16509148W"
+      ],
+      "source_revision": 20,
+      "source_content_sha256": "51494a4307ac971e82eed2373912a84823178fdff32d86384505377f2fde2c00"
+    },
+    {
+      "work_id": "OL17546674W",
+      "record_sha256": "630f9b502d24ed8a33d36d124545c3d865e0c98fef5634fa37cc0a7bc1e1b9d6",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17546674W"
+      ],
+      "source_revision": 21,
+      "source_content_sha256": "595873cf60b329b0e313e6720aee30a93678410d137ff6cb08cda08c328f9ed3"
+    },
+    {
+      "work_id": "OL17606111W",
+      "record_sha256": "1ff94b755e6d8ca88bfe4606f4ad5349bdedcb5bc8dc888a65d51ac64cdd1325",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17606111W"
+      ],
+      "source_revision": 20,
+      "source_content_sha256": "7387b00f1b6476e4a0ffc502d7d328564ff5f35a6b3416d575d73b1b941a6c38"
+    },
+    {
+      "work_id": "OL17610507W",
+      "record_sha256": "806b854325ed1303879513a589425bbeeb8b9ad1c2fac22029e581cccf35ea58",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17610507W"
+      ],
+      "source_revision": 21,
+      "source_content_sha256": "efae0cc0a2a635a28b44e486a3bee834a3d719ba16c628a37655eb6058095519"
+    },
+    {
+      "work_id": "OL17619932W",
+      "record_sha256": "5458ec3fa893eb4921f421dc6f674836be841c511eb6cbb39ea56c7a979b7154",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17619932W"
+      ],
+      "source_revision": 23,
+      "source_content_sha256": "99864b2ca4187c1ed0f8e7f3d16f2a151b67f37721e8de4658401947a208e6e4"
+    },
+    {
+      "work_id": "OL17795349W",
+      "record_sha256": "635a00147481ecb363015eb37d5f0d5e8dcfac9258c1820e6bdc95cee9053581",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17795349W"
+      ],
+      "source_revision": 48,
+      "source_content_sha256": "ad241200a4e443de25d68eab98d0c2910e22d16bae4c8d699c690e0534fc035c"
+    },
+    {
+      "work_id": "OL17797130W",
+      "record_sha256": "426933b9587c3dc6d80e6bab58fc652f813c839f64c35d078ad0297fcb052a39",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17797130W"
+      ],
+      "source_revision": 20,
+      "source_content_sha256": "4b4ca0ab20df9b08e3db410c40a19144a552b38160a9475e89c897dd45273e3a"
+    },
+    {
+      "work_id": "OL17800180W",
+      "record_sha256": "0f47ba973449320877d2df067a7e6883b08c6477e52ae7cfa033f5e2a0b34588",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17800180W"
+      ],
+      "source_revision": 9,
+      "source_content_sha256": "69708f3aca5e1caac683d1b4b47e2cbf2f5615e4a0f39a46f6cf0cd57a4dfd3c"
+    },
+    {
+      "work_id": "OL17800586W",
+      "record_sha256": "005690723ec20ada76436d09e95a096e5950b5559cb4468429cae4dc928d9db6",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17800586W"
+      ],
+      "source_revision": 11,
+      "source_content_sha256": "4ca4ad7dd41e53ed171eb9319740f23d5061fbf717f7caa35b801db17d1ee422"
+    },
+    {
+      "work_id": "OL17807435W",
+      "record_sha256": "e00ad6a200f7615ec043623b58205895a40de21d016895707d61dbd1fa8fc96b",
+      "source_urls": [
+        "https://openlibrary.org/works/OL17807435W"
+      ],
+      "source_revision": 5,
+      "source_content_sha256": "84adb8e270b62cab4e8b2ce32b64b8d1f80877813189c9c0d4b99e0d9e444778"
+    },
+    {
+      "work_id": "OL18012166W",
+      "record_sha256": "718091b7ae5ebc623477a37aae883b5849453d1838262271dad112043ce2e8a4",
+      "source_urls": [
+        "https://openlibrary.org/works/OL18012166W"
+      ],
+      "source_revision": 23,
+      "source_content_sha256": "d007a119a3689a2772eee0437a6a3e818d1c7ae8c71dc8349375307a835de72e"
+    },
+    {
+      "work_id": "OL1810842W",
+      "record_sha256": "3bab0438b95ba5bb080ebf63a0bcd86328090d24eb830ce9298f864421c1c432",
+      "source_urls": [
+        "https://openlibrary.org/works/OL1810842W"
+      ],
+      "source_revision": 13,
+      "source_content_sha256": "a235dc6884adfbefd8bdadfb4452f620c27c81c3518a9ee696e47d37f4c9fa35"
+    },
+    {
+      "work_id": "OL18139176W",
+      "record_sha256": "8d22b980b8f213c0e6a374af4517790db14240b14373dc9ac4d1bdbccaa63c2b",
+      "source_urls": [
+        "https://openlibrary.org/works/OL18139176W"
+      ],
+      "source_revision": 28,
+      "source_content_sha256": "0642269892ef73db3e49b49fb09bdaab8f61edd0d1126319aa1fca2a47e89b6b"
+    },
+    {
+      "work_id": "OL1847023W",
+      "record_sha256": "cab4f4df2283818af6e03a5c914efb36678c0f9ef0c10e606ca489cf3512d701",
+      "source_urls": [
+        "https://openlibrary.org/works/OL1847023W"
+      ],
+      "source_revision": 11,
+      "source_content_sha256": "daf32bda88dfe435498638afdd6e7c8d35a50cc975b29ac5cbf1f6b33d4ffb2b"
+    },
+    {
+      "work_id": "OL19351054W",
+      "record_sha256": "28b6df531663fc59dbdf4653a64e59164e8bd994f35c04527b01b90f916b7dec",
+      "source_urls": [
+        "https://openlibrary.org/works/OL19351054W"
+      ],
+      "source_revision": 12,
+      "source_content_sha256": "6d75322bff835485b3ace33308bbb650112a8383fb9c755d3f9f9b6d00ff20e5"
+    },
+    {
+      "work_id": "OL1963251W",
+      "record_sha256": "55702204872380b8cb250b6c309d0c68c330c01c870ddfbe42576a5f87bf2283",
+      "source_urls": [
+        "https://openlibrary.org/works/OL1963251W"
+      ],
+      "source_revision": 12,
+      "source_content_sha256": "9020539e66d150dbea9db2ef1ee27fb3bbdd06f35e027f353a36ad81afdf83c3"
+    },
+    {
+      "work_id": "OL1966501W",
+      "record_sha256": "5a57538e9bc39c7230b44ebcebb0fb7b1ec227ae80747b566bfbfc17dd6f3cee",
+      "source_urls": [
+        "https://openlibrary.org/works/OL1966501W"
+      ],
+      "source_revision": 8,
+      "source_content_sha256": "1e023574c976164d17c4ccdd95104cef3b2855788d2ed65afd154d7687234d54"
+    },
+    {
+      "work_id": "OL19667762W",
+      "record_sha256": "df2d5bb6951ffe55b59ce3499e598f84193aade3e90e165be38c20a2b233cf1c",
+      "source_urls": [
+        "https://openlibrary.org/works/OL19667762W"
+      ],
+      "source_revision": 10,
+      "source_content_sha256": "36a3fc0da9a6f22efa239d49b045a486b00022cd8c199cc8ce4a03295a4e1334"
+    },
+    {
+      "work_id": "OL1983087W",
+      "record_sha256": "2f1b2ed97ba8c9077cf55cb8ed2b09ff8182b0c47302c44b20be4e8ec47d390f",
+      "source_urls": [
+        "https://openlibrary.org/works/OL1983087W"
+      ],
+      "source_revision": 29,
+      "source_content_sha256": "2bdd052cedb44e43ee2a3a92a8cecbe2114c68df3e2d6c29fb2888c50a7ec416"
+    },
+    {
+      "work_id": "OL19963111W",
+      "record_sha256": "667218e49e6f71a36cf95bda667649e9c8e8f4a8dc2e54e0470fe1dad6125ed0",
+      "source_urls": [
+        "https://openlibrary.org/works/OL19963111W"
+      ],
+      "source_revision": 11,
+      "source_content_sha256": "67fa390f17e12acf4b5fe3bc93f5c0fd341c4ea8a8600007ee720e6c4662d5e2"
+    },
+    {
+      "work_id": "OL2010436W",
+      "record_sha256": "b95fc640429b577ad3e287305dcbd85fa61a1447e51357f68dbaf99826b8ab89",
+      "source_urls": [
+        "https://openlibrary.org/works/OL2010436W"
+      ],
+      "source_revision": 17,
+      "source_content_sha256": "6cd7203b3ede9f238cdac72e08353a9149108b4b6d8f79c30ff00e7bb72d51e6"
+    },
+    {
+      "work_id": "OL20715162W",
+      "record_sha256": "e293eeb64a3e67718741f846b72d774e90fe54733df8540338b43fd7065c169d",
+      "source_urls": [
+        "https://openlibrary.org/works/OL20715162W"
+      ],
+      "source_revision": 18,
+      "source_content_sha256": "ae7730bd31a98da42947b94a31a660d65ff4ff8b2bf58cba7621724bb2c6bb2f"
+    },
+    {
+      "work_id": "OL20796936W",
+      "record_sha256": "3d00f49c53c523700744a264f99301c5ae04e33aa36aba09f1a9c4aca8773db8",
+      "source_urls": [
+        "https://openlibrary.org/works/OL20796936W"
+      ],
+      "source_revision": 16,
+      "source_content_sha256": "4c709f398fc77838eba2af41bd3c30f8e5e32d0bfc74da1da6dfb64bc9864247"
+    },
+    {
+      "work_id": "OL21181790W",
+      "record_sha256": "47c7e842e3f89d4bf448447756dd4c4654e1bda27034799007cb956ccde8929d",
+      "source_urls": [
+        "https://openlibrary.org/works/OL21181790W"
+      ],
+      "source_revision": 5,
+      "source_content_sha256": "8b297d892575f140ab790da4571129dccb195d53eb4692611997d4b5b03d0915"
+    },
+    {
+      "work_id": "OL21435W",
+      "record_sha256": "647e9b0696e1764de309b51c6e9eab79a5576d6ce6104bfb6e8382ac51bfec69",
+      "source_urls": [
+        "https://openlibrary.org/works/OL21435W"
+      ],
+      "source_revision": 43,
+      "source_content_sha256": "a55415132d8664ecee9c028532fda7ecc11d681b8a8f764f05c87e6f310bd8ae"
+    },
+    {
+      "work_id": "OL2577486W",
+      "record_sha256": "e26769616efb3dac161706a0ddef4847e4a70dd907bdc87e8b4157149a7b8958",
+      "source_urls": [
+        "https://openlibrary.org/works/OL2577486W"
+      ],
+      "source_revision": 15,
+      "source_content_sha256": "020003e8462f5400e83f60b9dcaab8126945d077f9921c1a0ad86a203cab77aa"
+    },
+    {
+      "work_id": "OL257788W",
+      "record_sha256": "ef2528cd1e5af2b174b1c87122b321bcaada4e56b2a3ffd963c0e20244975c1e",
+      "source_urls": [
+        "https://openlibrary.org/works/OL257788W"
+      ],
+      "source_revision": 14,
+      "source_content_sha256": "963f6b9eb162618555f76bee66f5cbf09a08c59186c8041af0b5283cbdba5d91"
+    },
+    {
+      "work_id": "OL262463W",
+      "record_sha256": "37ac3f8dd2ebe75eafdeb0a366fa7bfec8eac6eb98248007cd605a44cf9dc59c",
+      "source_urls": [
+        "https://openlibrary.org/works/OL262463W"
+      ],
+      "source_revision": 59,
+      "source_content_sha256": "69b889c8120bb6939b93f5b13c024531af40a79e15c4f07c53fb9ea84b424c69"
+    },
+    {
+      "work_id": "OL262496W",
+      "record_sha256": "fc3dd0ddbeb0608b4648d325d7cccf16cc064435634d6785577e13fa3d86c8f8",
+      "source_urls": [
+        "https://openlibrary.org/works/OL262496W"
+      ],
+      "source_revision": 48,
+      "source_content_sha256": "429d17457932502e945019da2662287fa5203fbf04257e89157d73abeb6bb2ab"
+    },
+    {
+      "work_id": "OL2625422W",
+      "record_sha256": "b4e0e3c407d69d1ce3b6c9a51ee16a9ae6f8c46e4a94cc449e34abb54f1fd133",
+      "source_urls": [
+        "https://openlibrary.org/works/OL2625422W"
+      ],
+      "source_revision": 22,
+      "source_content_sha256": "b3d73c5e559c5b7e3c90a9730562c2fe12160bfb1eab1c11c132cf08727827db"
+    },
+    {
+      "work_id": "OL26446888W",
+      "record_sha256": "0ced861859f47d78bed4d30ada63f6e2388792ae000682afb73b1e2baef1e676",
+      "source_urls": [
+        "https://openlibrary.org/works/OL26446888W"
+      ],
+      "source_revision": 6,
+      "source_content_sha256": "a9690cacb2c3368cdf0ac2bc657ded1c43c09cc0521de938b34428c8190c72a9"
+    },
+    {
+      "work_id": "OL266158W",
+      "record_sha256": "e9a1bb9b214560e8d407b1134abd4be2a4df727926ac812af5186a947f4cdac3",
+      "source_urls": [
+        "https://openlibrary.org/works/OL266158W"
+      ],
+      "source_revision": 14,
+      "source_content_sha256": "62910413c4dc1f54cc628c93dcfdfbc75fbcf6cae3e95cdcba7d48fed351829d"
+    },
+    {
+      "work_id": "OL2693077W",
+      "record_sha256": "465a6398abf564773f9c62e0dc5e60ff7ff962343006febeaf5bb46c207a3073",
+      "source_urls": [
+        "https://openlibrary.org/works/OL2693077W"
+      ],
+      "source_revision": 15,
+      "source_content_sha256": "f79d17bba1b11d53d26c3c4d8e62906b4b4ce17208f17410f68b310b18d59881"
+    },
+    {
+      "work_id": "OL27294413W",
+      "record_sha256": "37b633e2bd20c1730c9fa9b68212439078bd6882cd0e2e855b8a0241269bf21f",
+      "source_urls": [
+        "https://openlibrary.org/works/OL27294413W"
+      ],
+      "source_revision": 6,
+      "source_content_sha256": "d8d960f27c7c72efe5a7e4f5f19738e388f3581270938cafc7aa72384399a00b"
+    },
+    {
+      "work_id": "OL27420W",
+      "record_sha256": "6ef649ef620c8310dd936d14dfcee2e7879444034517c4ba9796af284bb2a9b1",
+      "source_urls": [
+        "https://openlibrary.org/works/OL27420W"
+      ],
+      "source_revision": 25,
+      "source_content_sha256": "169566891c46b19192eb07986397634d475ce8ea631f419d1da931bb536a60e9"
+    },
+    {
+      "work_id": "OL2746369W",
+      "record_sha256": "0f9438682df80ddab0accdf38514dc7e22d16d0762fbbffdb410ab3e4043838d",
+      "source_urls": [
+        "https://openlibrary.org/works/OL2746369W"
+      ],
+      "source_revision": 29,
+      "source_content_sha256": "1b79385db4eb165d53306204c921fc4458985e2bdb37ea141d12699a4393d5a6"
+    },
+    {
+      "work_id": "OL2943594W",
+      "record_sha256": "3c6c2a4f12706edbc5772d7010797a033677c0dbf0d1d5c8ce97853d8670d227",
+      "source_urls": [
+        "https://openlibrary.org/works/OL2943594W"
+      ],
+      "source_revision": 9,
+      "source_content_sha256": "05967d07ee4a7624006b62e2f02a762745248c3936242febbf9a4bf62da3e2ae"
+    },
+    {
+      "work_id": "OL318900W",
+      "record_sha256": "06f5bdab9937de95f3b8660aa1ab893bbd6ba514aa50026ca12aece58e87b6c5",
+      "source_urls": [
+        "https://openlibrary.org/works/OL318900W"
+      ],
+      "source_revision": 38,
+      "source_content_sha256": "10e71c1e0e93e1cd60cc096f7dd43e5471b34476864f53d47913746791f761ac"
+    },
+    {
+      "work_id": "OL32195W",
+      "record_sha256": "7015dd8ef446a0c7cb4e751596339630f6b891d44c3ebd1e65c51c02cc538549",
+      "source_urls": [
+        "https://openlibrary.org/works/OL32195W"
+      ],
+      "source_revision": 7,
+      "source_content_sha256": "a62a5f028fe751e0a2fac52c995a408b8df260b9793f83bef7ae30fb60361239"
+    },
+    {
+      "work_id": "OL3388961W",
+      "record_sha256": "a4623f142f2b9ae554e14ee1d98e3aaa8ed74ae12c92f4bd9d77e4aba7237825",
+      "source_urls": [
+        "https://openlibrary.org/works/OL3388961W"
+      ],
+      "source_revision": 12,
+      "source_content_sha256": "892b3ebccb68b90b5f5e7457c3abf645352541befac8978b60736f8520cb17cd"
+    },
+    {
+      "work_id": "OL3457792W",
+      "record_sha256": "d734aa27cfb8b808d708bf99daf3bae612c0fa2160841012e7c93de4748b984f",
+      "source_urls": [
+        "https://openlibrary.org/works/OL3457792W"
+      ],
+      "source_revision": 10,
+      "source_content_sha256": "1b3d32ce6d6b3bccf2375e4820532978e20f7cb8ceac858395aa98bcf4c96fac"
+    },
+    {
+      "work_id": "OL3518640W",
+      "record_sha256": "0f230a9a518b37cc81f0b28f5882326bbed19286ed6bd7c141c41eda89c69904",
+      "source_urls": [
+        "https://openlibrary.org/works/OL3518640W"
+      ],
+      "source_revision": 7,
+      "source_content_sha256": "3038fb012151a9c5329063c0698fe09f1c0c4bec595d6cf437580012527069ee"
+    },
+    {
+      "work_id": "OL37949460W",
+      "record_sha256": "f6f5492b4dc67282ff0686ef8b8f4893889dfd3ee2ca5e157ed5abf6863423b3",
+      "source_urls": [
+        "https://openlibrary.org/works/OL37949460W"
+      ],
+      "source_revision": 4,
+      "source_content_sha256": "f0205e8acf11664cad971bf1af5dd1c24afa82646ae7359df287f17f4e1f06ab"
+    },
+    {
+      "work_id": "OL38382569W",
+      "record_sha256": "6c06b02fd12d49ade7d664ea45397a2795c5a3f373b1e11b3b157d8e2c543b52",
+      "source_urls": [
+        "https://openlibrary.org/works/OL38382569W"
+      ],
+      "source_revision": 3,
+      "source_content_sha256": "ba28e30485d4bccd207cf71ff206ae1ec11ebe5138c82f9073624fd1011c26a5"
+    },
+    {
+      "work_id": "OL38495W",
+      "record_sha256": "2c91123059f87d8a5b9b78f1b2ff4774e1c293e9288e9e8b920739b261cf32dd",
+      "source_urls": [
+        "https://openlibrary.org/works/OL38495W"
+      ],
+      "source_revision": 44,
+      "source_content_sha256": "8eec53023775a403d153aaff1193e21c64b765f4e5f71d4ffd38108793eff572"
+    },
+    {
+      "work_id": "OL38847W",
+      "record_sha256": "91547bc6a46dcb4c5f73ffafe9da475e0d051a01bd6093dc88651fe9de80ee3e",
+      "source_urls": [
+        "https://openlibrary.org/works/OL38847W"
+      ],
+      "source_revision": 25,
+      "source_content_sha256": "6fef485b8b1989004869e62832e15d4c6a02f93571053100f703d0f1afb9b6c1"
+    },
+    {
+      "work_id": "OL39160W",
+      "record_sha256": "08b5bb7ae74c33ced55a3dbb163e2767f9eac8e5cb863ff6cbaada5109c841e4",
+      "source_urls": [
+        "https://openlibrary.org/works/OL39160W"
+      ],
+      "source_revision": 15,
+      "source_content_sha256": "caa1312ce59fa826650521f9935b27b1fb3237d217f14933ead0291d885601b6"
+    },
+    {
+      "work_id": "OL39275W",
+      "record_sha256": "22694a925e4b1f1c4cd08e58179b3b72c1310173e06683c26544227e233bf161",
+      "source_urls": [
+        "https://openlibrary.org/works/OL39275W"
+      ],
+      "source_revision": 14,
+      "source_content_sha256": "0eaf962989598e5a25476601b7516ab36032ad1a4cee995edcbaa1fd2a37f6b2"
+    },
+    {
+      "work_id": "OL40879W",
+      "record_sha256": "d5402b836cd5ced81111610f75eedecffcc017ef1017455f767f673821ef7e60",
+      "source_urls": [
+        "https://openlibrary.org/works/OL40879W"
+      ],
+      "source_revision": 26,
+      "source_content_sha256": "8c28d57c4202b311c628d1b3357e8f88f7bde171366ca69e89c9fd2a91a81925"
+    },
+    {
+      "work_id": "OL41078W",
+      "record_sha256": "1e9411482d067fb56b3c8f2e5afade42269e0f7f055f66154e43a1f0b94af8f5",
+      "source_urls": [
+        "https://openlibrary.org/works/OL41078W"
+      ],
+      "source_revision": 38,
+      "source_content_sha256": "c45e3c7166b01abbfad01ccf30616348439a32437ec17827361685b3d33e8cb3"
+    },
+    {
+      "work_id": "OL41081W",
+      "record_sha256": "e4fbc9c8a35fd45c46a379d0bcd21e20b6b7f451f0a6394faa5aef5681ac8ead",
+      "source_urls": [
+        "https://openlibrary.org/works/OL41081W"
+      ],
+      "source_revision": 61,
+      "source_content_sha256": "8bba4eec69ed849f4f1be7809c4ab926b5c55df872ad218f2d8f4602d920a117"
+    },
+    {
+      "work_id": "OL4233169W",
+      "record_sha256": "7f83b649d8cf2a2ca24d6548bc532dfdbbb6df8da675eb683fdbb1fe6133f509",
+      "source_urls": [
+        "https://openlibrary.org/works/OL4233169W"
+      ],
+      "source_revision": 10,
+      "source_content_sha256": "79bfe5f7d8bfa9de30d355b74281b56b8c0716a999fa59e73cb822896ee7a314"
+    },
+    {
+      "work_id": "OL42407991W",
+      "record_sha256": "ab649cbd7c457b67faae8b0a7086e0a509d8022d16eed14f790b7e1462998276",
+      "source_urls": [
+        "https://openlibrary.org/works/OL42407991W"
+      ],
+      "source_revision": 4,
+      "source_content_sha256": "13682757abeca958f4e3097671e12f1b8f4fb26ff3d672f2e46edf3952a651ca"
+    },
+    {
+      "work_id": "OL42577236W",
+      "record_sha256": "05b2c5ba4727adec4833185ca3641d6fbdf31724ee4ff5404ce334ed2a2a3942",
+      "source_urls": [
+        "https://openlibrary.org/works/OL42577236W"
+      ],
+      "source_revision": 3,
+      "source_content_sha256": "b10b8fb04577b889ff0a47dc2b7ac9323b0a92553dc896d053e591e3a7ca13d2"
+    },
+    {
+      "work_id": "OL43113687W",
+      "record_sha256": "845e2bfc1a1caa98eb3a44f025659374d92e67a6fa298c03d2994c19cbcc89e1",
+      "source_urls": [
+        "https://openlibrary.org/works/OL43113687W"
+      ],
+      "source_revision": 8,
+      "source_content_sha256": "6d2023e0511c23a28d1836daef8e544e6c5ee3262165fe5f5a6e6c1745485599"
+    },
+    {
+      "work_id": "OL450063W",
+      "record_sha256": "a5369b3e44e61477334106611c1ae3fcfd914ff925a7474c41975b65c7bec652",
+      "source_urls": [
+        "https://openlibrary.org/works/OL450063W"
+      ],
+      "source_revision": 64,
+      "source_content_sha256": "1acdea3a411996ee72ac80023c89eaec009e89bcea366194168e1d16531c7092"
+    },
+    {
+      "work_id": "OL45499W",
+      "record_sha256": "071ac14dc5a5ffc366d05f0ada8977cb80f1cc88dd64817e9e2e13cf3d4216a4",
+      "source_urls": [
+        "https://openlibrary.org/works/OL45499W"
+      ],
+      "source_revision": 37,
+      "source_content_sha256": "5fd875bea3fb985a4c43d8f97769def21c95c358182927b2781c283e80c2c07c"
+    },
+    {
+      "work_id": "OL457175W",
+      "record_sha256": "d89246ce4f27988b1cdbaa52ba7f281d0a37ce3fb79e2beb1d216c150a97a622",
+      "source_urls": [
+        "https://openlibrary.org/works/OL457175W"
+      ],
+      "source_revision": 60,
+      "source_content_sha256": "f60c6b36f2d2b6c27230e75d2df9bfc201d2f94486c73c14f59cfa602c6c77d9"
+    },
+    {
+      "work_id": "OL46374W",
+      "record_sha256": "17b3a8fa2fed440d39b87e5af99e443148304f1133e2a52458b65d68ae01ceca",
+      "source_urls": [
+        "https://openlibrary.org/works/OL46374W"
+      ],
+      "source_revision": 29,
+      "source_content_sha256": "5951536042e11c792f4225acdba549769b8d58c4833df05c73d848e96ab8a893"
+    },
+    {
+      "work_id": "OL46390W",
+      "record_sha256": "068656ccd0ef477dc99f556f8ddb7eff31eaee99584dad555fefe66bd752755b",
+      "source_urls": [
+        "https://openlibrary.org/works/OL46390W"
+      ],
+      "source_revision": 43,
+      "source_content_sha256": "7fd60a1d4ecda8dabab89e31dd3efeaa1dc34e2ad43242766edc7ee9bc6f1e99"
+    },
+    {
+      "work_id": "OL46398W",
+      "record_sha256": "c0b35fe7fe3ae176c7037a5b757b250ae3a8a46cdd187a0ec6c38184487d0d3d",
+      "source_urls": [
+        "https://openlibrary.org/works/OL46398W"
+      ],
+      "source_revision": 31,
+      "source_content_sha256": "15a3a3fcedd8ef6526aa703613ea1d1ff2a818f373b9e304a414e2aceb90c539"
+    },
+    {
+      "work_id": "OL46401W",
+      "record_sha256": "3e4d015faa180d7b25b89233b3a2ff1d4ede82084f58d062464f7c831c541024",
+      "source_urls": [
+        "https://openlibrary.org/works/OL46401W"
+      ],
+      "source_revision": 32,
+      "source_content_sha256": "b636c5a44051c289e98e65257b0c21ec981bfb7aff993c47d6739e24b8712b43"
+    },
+    {
+      "work_id": "OL471940W",
+      "record_sha256": "700347ad427f348a0984987f837333db3d87d501713065a9c0282290568f683f",
+      "source_urls": [
+        "https://openlibrary.org/works/OL471940W"
+      ],
+      "source_revision": 27,
+      "source_content_sha256": "ef9d96b4df5b28a167eb6fac1bed73d2915b39b9b919c1b4e2b57b67bc74073c"
+    },
+    {
+      "work_id": "OL472250W",
+      "record_sha256": "4287536aaf286e45cdcbb303484e88af8761b0f4d0d36dc42cfb611835576e69",
+      "source_urls": [
+        "https://openlibrary.org/works/OL472250W"
+      ],
+      "source_revision": 17,
+      "source_content_sha256": "9034c7eafe82ff040f1eff35f5fb3da07f44c9c6478e1eafb721a2f835f653ab"
+    },
+    {
+      "work_id": "OL472542W",
+      "record_sha256": "ecd6835d10291eadc22929c8b327d3bb56530ab28a8b36908e6d0e8df78a527f",
+      "source_urls": [
+        "https://openlibrary.org/works/OL472542W"
+      ],
+      "source_revision": 21,
+      "source_content_sha256": "3fd7496703e88fe021f6b34bfa1b565cb4d4173d72fb7b90a02bb563e22196b9"
+    },
+    {
+      "work_id": "OL472549W",
+      "record_sha256": "53a96a3acda5049108ff9826378617afc831c9574352f3aa1a0d6a4bf3477915",
+      "source_urls": [
+        "https://openlibrary.org/works/OL472549W"
+      ],
+      "source_revision": 19,
+      "source_content_sha256": "0dc6ef951f71e7a18d576faa2c6e8a41a3cddd7d4e74201d8a83ff1da249d0ad"
+    },
+    {
+      "work_id": "OL476846W",
+      "record_sha256": "234bf911acdc324f3982e27e3e355961302b780a874056240d98ae21b58a9a31",
+      "source_urls": [
+        "https://openlibrary.org/works/OL476846W"
+      ],
+      "source_revision": 30,
+      "source_content_sha256": "40e2474cb21aa2974babca141ef8fe6a1e240e1ec631f5be9880d041616c7d2e"
+    },
+    {
+      "work_id": "OL486967W",
+      "record_sha256": "f60c0e1bcc0ad4355b9236cd9567d75d1e199764f70cdf479a3b58cc805bbdbc",
+      "source_urls": [
+        "https://openlibrary.org/works/OL486967W"
+      ],
+      "source_revision": 18,
+      "source_content_sha256": "a00a2af09d4591b9237c3ea0b692f8f3834e57ea4814c3def776eefe01176447"
+    },
+    {
+      "work_id": "OL51948W",
+      "record_sha256": "91e9c4ab4b1cd54ff87c3fbf5f2938b325cf46e3772abfa6c41b343eebe4be36",
+      "source_urls": [
+        "https://openlibrary.org/works/OL51948W"
+      ],
+      "source_revision": 59,
+      "source_content_sha256": "144823f9d91c29e7087af07ed25b2b0b4e4daa66d7f69d4fcaf85bf0e4a02344"
+    },
+    {
+      "work_id": "OL52266W",
+      "record_sha256": "f2cd352301770a57a4c6ce63bdf71450a47c0486a7fbcbbb2df3e550fc68f4f1",
+      "source_urls": [
+        "https://openlibrary.org/works/OL52266W"
+      ],
+      "source_revision": 69,
+      "source_content_sha256": "d0c27f1eee7c31fc309415fbb6f1e978d56d4f9bda63b4cdcbc15fb95d6b4131"
+    },
+    {
+      "work_id": "OL528094W",
+      "record_sha256": "3cd4244b0a312b970ef5048f65b67030ed1b576a69f1c020c323006dc49685fe",
+      "source_urls": [
+        "https://openlibrary.org/works/OL528094W"
+      ],
+      "source_revision": 23,
+      "source_content_sha256": "46516e20998a7fd5ef47b7ed20998598153e6ebcf4c06f2de9fd9016eccdeab6"
+    },
+    {
+      "work_id": "OL5738154W",
+      "record_sha256": "0b93d700a0553b100e5d7162d04eb29e8a09f0663c61e08b05720cf2fd66cacf",
+      "source_urls": [
+        "https://openlibrary.org/works/OL5738154W"
+      ],
+      "source_revision": 27,
+      "source_content_sha256": "7c8f6dc623e0109c7b23b38f03776ed1b33db67ef3469d40d8623cb90ddc2f91"
+    },
+    {
+      "work_id": "OL69178W",
+      "record_sha256": "1620a3f986c82178707025ebec7e18b5dfefa4fa9935354ebdcadc1cb9e63e2d",
+      "source_urls": [
+        "https://openlibrary.org/works/OL69178W"
+      ],
+      "source_revision": 25,
+      "source_content_sha256": "0e3dc36d5a1a5374bdc996d2129dd267e3586f429f8a48202ffb47e10b2a9f6d"
+    },
+    {
+      "work_id": "OL72282W",
+      "record_sha256": "5b1e405390e79b92d3c84105a1866397a896be780f19b4c6c41488be36570482",
+      "source_urls": [
+        "https://openlibrary.org/works/OL72282W"
+      ],
+      "source_revision": 12,
+      "source_content_sha256": "2d63d861c6fcc4d7ba6a680ca9992b0c0bbabf08d4acc1ec3bb60cf15709387e"
+    },
+    {
+      "work_id": "OL72313W",
+      "record_sha256": "653a08d9a78f232412762909f08c9595e813ee83bcdbf3eb489cd1611dc286c2",
+      "source_urls": [
+        "https://openlibrary.org/works/OL72313W"
+      ],
+      "source_revision": 17,
+      "source_content_sha256": "46c70a23783211eddb3d0268e0a37caa4a6bffce09597506944e409672955f78"
+    },
+    {
+      "work_id": "OL74128W",
+      "record_sha256": "48c15b9111f65a053e6b07196a56ed33e94b2b70fe6a2c0305742fb014760104",
+      "source_urls": [
+        "https://openlibrary.org/works/OL74128W"
+      ],
+      "source_revision": 36,
+      "source_content_sha256": "a397bdc6be3f01891b0f05562d7b4994a0b0dbc10ab7283e8d9bee844bad466d"
+    },
+    {
+      "work_id": "OL7924103W",
+      "record_sha256": "5f057dea85763f3ea2254daad22fe95706b45a9aee221916044b6a489ca9d2c7",
+      "source_urls": [
+        "https://openlibrary.org/works/OL7924103W"
+      ],
+      "source_revision": 8,
+      "source_content_sha256": "5fe8628982bb766b357a065001e364bc0baa7a576b5cbd387c2f445fb65e8101"
+    },
+    {
+      "work_id": "OL7924208W",
+      "record_sha256": "7c6df542ba10b5b444d6225ed96fc5051ff2082aadfa6d5468b3de5529271ded",
+      "source_urls": [
+        "https://openlibrary.org/works/OL7924208W"
+      ],
+      "source_revision": 23,
+      "source_content_sha256": "d918e85b6e2aa74c557be5c5353b6812c5c57ba50940b423a9129de40320dbb7"
+    },
+    {
+      "work_id": "OL796601W",
+      "record_sha256": "e76d1bea6830a7db0e561207cb5f3ec82e5698213aa6b650d68ed2362e6dc37d",
+      "source_urls": [
+        "https://openlibrary.org/works/OL796601W"
+      ],
+      "source_revision": 17,
+      "source_content_sha256": "31aae122973afba0fd76c5d9337b1fddd9464724702546e03870c0598eb4f070"
+    },
+    {
+      "work_id": "OL7967812W",
+      "record_sha256": "6805de2d3a7409a23649c95ff702b037359c95d86aee17367cca18469b4b1425",
+      "source_urls": [
+        "https://openlibrary.org/works/OL7967812W"
+      ],
+      "source_revision": 22,
+      "source_content_sha256": "bb41e8609b013a7b960c1225313d05deb23ac002a73b7fac9e355c6261f6c07e"
+    },
+    {
+      "work_id": "OL81606W",
+      "record_sha256": "5ba2e86889c79e86792a4e26b09d219c040fb33758aa7f422c753bc4b073becf",
+      "source_urls": [
+        "https://openlibrary.org/works/OL81606W"
+      ],
+      "source_revision": 62,
+      "source_content_sha256": "55970f8665edd0334f9f4ef10abaf81a8964f3843955f6ca1fc586092e91fea5"
+    },
+    {
+      "work_id": "OL81634W",
+      "record_sha256": "026a35bf8c2f960dc6d506ba53cb1d08060ae4b9829a588bfaa1d06127e34276",
+      "source_urls": [
+        "https://openlibrary.org/works/OL81634W"
+      ],
+      "source_revision": 59,
+      "source_content_sha256": "a0f6c2f6f768a3234beb6b2b9b5c4ef564e3e7ffa987c9d454eddef034ede2be"
+    },
+    {
+      "work_id": "OL8369445W",
+      "record_sha256": "3e1606a97d1ac024748c7405dfdb8f606da18902c500a31d68a412d42fa304e0",
+      "source_urls": [
+        "https://openlibrary.org/works/OL8369445W"
+      ],
+      "source_revision": 6,
+      "source_content_sha256": "2f05c8977b58768698be0b2522797cec3fe27e071473747a7e909244bfda8930"
+    },
+    {
+      "work_id": "OL8400950W",
+      "record_sha256": "667fb32bbdaff12f6069c6601b4e0c278cbf1093d3f42d27742bebff0ed13dd6",
+      "source_urls": [
+        "https://openlibrary.org/works/OL8400950W"
+      ],
+      "source_revision": 11,
+      "source_content_sha256": "b70913471238769bf346a3c75c16caa8742b119b51ec495799f05bfe21c0d8db"
+    },
+    {
+      "work_id": "OL94858W",
+      "record_sha256": "8896026873ad0566f5f427c9aa5689f638348e3ee1f677322e317cfe2885e747",
+      "source_urls": [
+        "https://openlibrary.org/works/OL94858W"
+      ],
+      "source_revision": 18,
+      "source_content_sha256": "3db789f4255b3544f91da61119ef7b1a7a294a3b2aacdc5898b2b67d21914280"
+    },
+    {
+      "work_id": "OL979517W",
+      "record_sha256": "ec321be6d8d39ad20ced383b9570ce453f08f3e4c23189e27caefc5ed9b4db3d",
+      "source_urls": [
+        "https://openlibrary.org/works/OL979517W"
+      ],
+      "source_revision": 10,
+      "source_content_sha256": "4249746cf8d4d83be71cef87c31b31a04e60db8252c64bf081810b6937427457"
+    },
+    {
+      "work_id": "OL98174W",
+      "record_sha256": "fe47f99f84df27ef185ffe3c8e11e0bad511df0cc8c842227c9a41e4469f2d88",
+      "source_urls": [
+        "https://openlibrary.org/works/OL98174W"
+      ],
+      "source_revision": 30,
+      "source_content_sha256": "6f5d09761ed5e13fe3b941bdfa8a932a2a5739b35ad583b863b2b039282c7445"
+    },
+    {
+      "work_id": "OL9973101W",
+      "record_sha256": "4dac3863ed47cd9c2477bcc4911870bc0468502aafc8cc214dabe1cd8c6000c0",
+      "source_urls": [
+        "https://openlibrary.org/works/OL9973101W"
+      ],
+      "source_revision": 16,
+      "source_content_sha256": "7b74ef913a018a8b60488c9dbe20290a80d6e1778fbeae21e76a53b753479667"
+    }
+  ],
+  "queries": [],
+  "judgments": []
+}

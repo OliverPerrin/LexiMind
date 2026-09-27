@@ -2,19 +2,125 @@
   "schema_version": 1,
   "status": "draft",
   "paused_by_user": true,
-  "as_of": "2026-09-22",
-  "instruction": "Hold off on training or any experiments. Documentation, byte-level provenance checks and software unit tests only.",
+  "as_of": "2026-09-26",
+  "instruction": "Training, model execution/evaluation, research scoring and paid calls remain paused. Literature review, source/data preparation and software contract tests continue under the current user request.",
   "paid_spend_authorized": false,
   "hardware_available": false,
-  "proposed_first_comparison": ["joint_sft", "budget_matched_task_specialists", "merged_task_adapters"],
-  "deferred": ["backbone_feasibility_runs", "distillation", "teacher_api_generation", "rl", "all_training", "all_model_evaluation"],
+  "proposed_first_comparison": [
+    "joint_sft",
+    "budget_matched_task_specialists",
+    "merged_task_adapters"
+  ],
+  "deferred": [
+    "backbone_feasibility_runs",
+    "distillation",
+    "teacher_api_generation",
+    "rl",
+    "all_training",
+    "all_model_evaluation"
+  ],
   "gates": {
-    "literature_gate": {"status": "initial_review_only", "evidence": [], "draft_path": "docs/related_work.md"},
-    "protocol": {"status": "draft", "evidence": [], "draft_path": "docs/eval_protocol.md"},
-    "dataset_manifest": {"status": "missing_future_dataset", "evidence": []},
-    "group_split_audit": {"status": "pending_identity_repair", "evidence": []},
-    "backbone_revision": {"status": "unselected", "evidence": []},
-    "budget_definition": {"status": "draft_no_budget_authorized", "evidence": []},
-    "human_judged_recommendation_set": {"status": "not_collected", "evidence": []}
-  }
+    "literature_gate": {
+      "status": "resolved",
+      "evidence": [
+        {
+          "path": "docs/research/model_recipe_review.md",
+          "bytes": 14847,
+          "sha256": "ad045bf28977263526f71ab0cd944d7b9677669315cf0ce27ba7db81f1f2bd80"
+        },
+        {
+          "path": "docs/research/book_discovery_review.md",
+          "bytes": 21201,
+          "sha256": "0686d85a75035b1e6e8daf95a2895355da0043797cc76dbfb281e0fb8afb0b71"
+        }
+      ],
+      "draft_path": "docs/research/README.md",
+      "note": "Framing chosen as a controlled replication/application after methods review; no systematic novelty or exhaustive-coverage claim."
+    },
+    "protocol": {
+      "status": "specified_draft",
+      "evidence": [
+        {
+          "path": "configs/research/study_design.json",
+          "bytes": 7504,
+          "sha256": "57c10bbcff84df99a85bee20963e07af5a04bb215b63b40fba10c5358ec712fc"
+        },
+        {
+          "path": "docs/research/study_decisions.md",
+          "bytes": 7656,
+          "sha256": "4613e7eabce2b407e3ced35cbeee48a7abb415133186c4cd965eefaf76b922c9"
+        }
+      ],
+      "draft_path": "docs/eval_protocol.md",
+      "note": "Comparison interfaces, cost boundary and applied metric choices are proposed; protocol not frozen."
+    },
+    "dataset_manifest": {
+      "status": "audited_candidates_pending_admission",
+      "evidence": [
+        {
+          "path": "research/preparation/data_inventory.json",
+          "bytes": 28598,
+          "sha256": "533976c7994750c2910398faa0e1ca547132679369b4eb484d4e85116d0e86f4"
+        },
+        {
+          "path": "research/preparation/goemotions_candidate_manifest.json",
+          "bytes": 21259,
+          "sha256": "f69c5b0849c7ce697b271219d9f3b2da0b2d4eebf6be6258ce28af2da77f2e84"
+        }
+      ],
+      "note": "Current files audited; pinned GoEmotions candidate reconstructed separately. Source-use, duplicate/calibration policy and final dataset admission remain open."
+    },
+    "group_split_audit": {
+      "status": "blocked_identity_and_overlap",
+      "evidence": [
+        {
+          "path": "research/preparation/data_audit.json",
+          "bytes": 26844,
+          "sha256": "76e65e87784ce96324b49131eab3d3de8b66e3c2c053c2cd851ce858fd97be44"
+        }
+      ],
+      "note": "Existing parent identities are absent and cross-split duplicate signals need review."
+    },
+    "backbone_revision": {
+      "status": "metadata_reviewed_unselected",
+      "evidence": [
+        {
+          "path": "research/preparation/backbone_candidates.json",
+          "bytes": 18784,
+          "sha256": "f1bf116a1c9b988383e29bf7421a6e70e4639f78b057687bdedadf1a75340c9b"
+        }
+      ],
+      "note": "Three pinned config candidates inspected without instantiation; runtime/integration/feasibility unresolved."
+    },
+    "budget_definition": {
+      "status": "ledger_schema_prepared_no_observations",
+      "evidence": [
+        {
+          "path": "research/preparation/compute_ledger_template.json",
+          "bytes": 108,
+          "sha256": "963e268382b0b08afb27da5a795835a1d6a9e64beb45a40b0f138e0027bf19fe"
+        },
+        {
+          "path": "docs/research/compute_accounting.md",
+          "bytes": 8366,
+          "sha256": "6dd79a35087ab12e4229745ac96b6d025230985ec8956c47d1ad0c7a63e9563e"
+        }
+      ],
+      "note": "Unobserved ledger and cost-reuse accounting prepared; B/hardware/stopping policy unset."
+    },
+    "human_judged_recommendation_set": {
+      "status": "unlabelled_packet_prepared",
+      "evidence": [
+        {
+          "path": "research/preparation/annotation_packet.json",
+          "bytes": 35963,
+          "sha256": "44ece8a05d9b02528d0a3093c9b0c1b83e0468cd4f453a2c099e1ecafe46d2d5"
+        }
+      ],
+      "note": "102 source-linked work references; no query/judgment collection, gold labels or held-out assignment."
+    }
+  },
+  "study_design": "configs/research/study_design.json",
+  "preparation_manifest": "research/preparation/manifest.json",
+  "scope_decision": "Controlled replication/application; no novelty claim. Benchmark task retention and book relevance are separate studies."
 }

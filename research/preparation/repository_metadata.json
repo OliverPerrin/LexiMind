@@ -1,0 +1,558 @@
+{
+  "schema_version": 1,
+  "status": "candidate_metadata_only",
+  "records": [
+    {
+      "kind": "model",
+      "repo": "google/flan-t5-base",
+      "revision": "7bcac572ce56db69c1ea7c8af255c5d7c9672fc2",
+      "checked_at": "2026-09-26T08:25:14.701170+00:00",
+      "source_url": "https://huggingface.co/google/flan-t5-base",
+      "gated": false,
+      "card_license": "apache-2.0",
+      "card_datasets": [
+        "svakulenk0/qrecc",
+        "taskmaster2",
+        "djaym7/wiki_dialog",
+        "deepmind/code_contests",
+        "lambada",
+        "gsm8k",
+        "aqua_rat",
+        "esnli",
+        "quasc",
+        "qed"
+      ],
+      "card_configs": null,
+      "evidence_scope": "Repository metadata only; no weights or dataset rows downloaded",
+      "selected_for_training": false,
+      "config_sha256": "7c1853dbfa0e4aac093eb109a358b6ab25fe86b7c15185a91322f0ed26f0f940",
+      "config": {
+        "architectures": [
+          "T5ForConditionalGeneration"
+        ],
+        "d_ff": 2048,
+        "d_kv": 64,
+        "d_model": 768,
+        "decoder_start_token_id": 0,
+        "dropout_rate": 0.1,
+        "eos_token_id": 1,
+        "feed_forward_proj": "gated-gelu",
+        "initializer_factor": 1.0,
+        "is_encoder_decoder": true,
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "t5",
+        "n_positions": 512,
+        "num_decoder_layers": 12,
+        "num_heads": 12,
+        "num_layers": 12,
+        "output_past": true,
+        "pad_token_id": 0,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "task_specific_params": {
+          "summarization": {
+            "early_stopping": true,
+            "length_penalty": 2.0,
+            "max_length": 200,
+            "min_length": 30,
+            "no_repeat_ngram_size": 3,
+            "num_beams": 4,
+            "prefix": "summarize: "
+          },
+          "translation_en_to_de": {
+            "early_stopping": true,
+            "max_length": 300,
+            "num_beams": 4,
+            "prefix": "translate English to German: "
+          },
+          "translation_en_to_fr": {
+            "early_stopping": true,
+            "max_length": 300,
+            "num_beams": 4,
+            "prefix": "translate English to French: "
+          },
+          "translation_en_to_ro": {
+            "early_stopping": true,
+            "max_length": 300,
+            "num_beams": 4,
+            "prefix": "translate English to Romanian: "
+          }
+        },
+        "tie_word_embeddings": false,
+        "transformers_version": "4.23.1",
+        "use_cache": true,
+        "vocab_size": 32128
+      },
+      "config_source_url": "https://huggingface.co/google/flan-t5-base/blob/7bcac572ce56db69c1ea7c8af255c5d7c9672fc2/config.json"
+    },
+    {
+      "kind": "model",
+      "repo": "google/t5gemma-b-b-ul2",
+      "revision": "97ea9b7e92738bb57437867277ae38e65345b8d7",
+      "checked_at": "2026-09-26T08:25:14.813151+00:00",
+      "source_url": "https://huggingface.co/google/t5gemma-b-b-ul2",
+      "gated": "manual",
+      "card_license": "gemma",
+      "card_datasets": null,
+      "card_configs": null,
+      "evidence_scope": "Repository metadata only; no weights or dataset rows downloaded",
+      "selected_for_training": false,
+      "config_sha256": "575334409716886ac2952f5a275ed92868deef8a0ea560258d9970a431c6fb3a",
+      "config": {
+        "architectures": [
+          "T5GemmaForConditionalGeneration"
+        ],
+        "classifier_dropout_rate": 0.0,
+        "decoder": {
+          "attention_bias": false,
+          "attention_dropout": 0.0,
+          "attn_logit_softcapping": 50.0,
+          "classifier_dropout_rate": 0.0,
+          "cross_attention_hidden_size": 768,
+          "dropout_rate": 0.0,
+          "final_logit_softcapping": 30.0,
+          "head_dim": 64,
+          "hidden_activation": "gelu_pytorch_tanh",
+          "hidden_size": 768,
+          "initializer_range": 0.02,
+          "intermediate_size": 2048,
+          "is_decoder": true,
+          "layer_types": [
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention"
+          ],
+          "max_position_embeddings": 8192,
+          "model_type": "t5_gemma_module",
+          "num_attention_heads": 12,
+          "num_hidden_layers": 12,
+          "num_key_value_heads": 12,
+          "query_pre_attn_scalar": 64,
+          "rms_norm_eps": 1e-06,
+          "rope_theta": 10000.0,
+          "sliding_window": 4096,
+          "torch_dtype": "bfloat16",
+          "use_cache": true,
+          "vocab_size": 256000
+        },
+        "dropout_rate": 0.0,
+        "encoder": {
+          "attention_bias": false,
+          "attention_dropout": 0.0,
+          "attn_logit_softcapping": 50.0,
+          "classifier_dropout_rate": 0.0,
+          "dropout_rate": 0.0,
+          "final_logit_softcapping": 30.0,
+          "head_dim": 64,
+          "hidden_activation": "gelu_pytorch_tanh",
+          "hidden_size": 768,
+          "initializer_range": 0.02,
+          "intermediate_size": 2048,
+          "layer_types": [
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "full_attention"
+          ],
+          "max_position_embeddings": 8192,
+          "model_type": "t5_gemma_module",
+          "num_attention_heads": 12,
+          "num_hidden_layers": 12,
+          "num_key_value_heads": 12,
+          "query_pre_attn_scalar": 64,
+          "rms_norm_eps": 1e-06,
+          "rope_theta": 10000.0,
+          "sliding_window": 4096,
+          "torch_dtype": "bfloat16",
+          "use_cache": true,
+          "vocab_size": 256000
+        },
+        "eos_token_id": [
+          1,
+          107
+        ],
+        "initializer_range": 0.02,
+        "is_encoder_decoder": true,
+        "model_type": "t5gemma",
+        "pad_token_id": 0,
+        "torch_dtype": "bfloat16",
+        "transformers_version": "4.53.0.dev0",
+        "use_cache": true
+      },
+      "config_source_url": "https://huggingface.co/google/t5gemma-b-b-ul2/blob/97ea9b7e92738bb57437867277ae38e65345b8d7/config.json"
+    },
+    {
+      "kind": "model",
+      "repo": "google/t5gemma-2-270m-270m",
+      "revision": "7c38f16641f455ef0685b18431faf1b17722d5a1",
+      "checked_at": "2026-09-26T08:25:15.173102+00:00",
+      "source_url": "https://huggingface.co/google/t5gemma-2-270m-270m",
+      "gated": "manual",
+      "card_license": "gemma",
+      "card_datasets": null,
+      "card_configs": null,
+      "evidence_scope": "Repository metadata only; no weights or dataset rows downloaded",
+      "selected_for_training": false,
+      "config_sha256": "dc0abad09fc94797f7bd091b63b8d33ff6a70daf803683287acba57d8844d01c",
+      "config": {
+        "architectures": [
+          "T5Gemma2ForConditionalGeneration"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 2,
+        "classifier_dropout_rate": 0.0,
+        "decoder": {
+          "_sliding_window_pattern": 6,
+          "attention_bias": false,
+          "attention_dropout": 0.0,
+          "attn_logit_softcapping": null,
+          "dropout_rate": 0.0,
+          "dtype": "bfloat16",
+          "final_logit_softcapping": null,
+          "head_dim": 256,
+          "hidden_activation": "gelu_pytorch_tanh",
+          "hidden_size": 640,
+          "initializer_range": 0.02,
+          "intermediate_size": 2048,
+          "layer_types": [
+            "sliding_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "full_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "sliding_attention",
+            "full_attention"
+          ],
+          "max_position_embeddings": 32768,
+          "model_type": "t5gemma2_decoder",
+          "num_attention_heads": 4,
+          "num_hidden_layers": 18,
+          "num_key_value_heads": 1,
+          "query_pre_attn_scalar": 256,
+          "rms_norm_eps": 1e-06,
+          "rope_parameters": {
+            "full_attention": {
+              "factor": 8.0,
+              "rope_theta": 1000000,
+              "rope_type": "linear"
+            },
+            "sliding_attention": {
+              "rope_theta": 10000,
+              "rope_type": "default"
+            }
+          },
+          "sliding_window": 512,
+          "use_bidirectional_attention": false,
+          "use_cache": true,
+          "vocab_size": 262144
+        },
+        "dropout_rate": 0.0,
+        "dtype": "bfloat16",
+        "encoder": {
+          "attention_dropout": 0.0,
+          "boi_token_index": 255999,
+          "dropout_rate": 0.0,
+          "dtype": "bfloat16",
+          "eoi_token_index": 256000,
+          "image_token_index": 256001,
+          "initializer_range": 0.02,
+          "mm_tokens_per_image": 256,
+          "model_type": "t5gemma2_encoder",
+          "text_config": {
+            "_name_or_path": "",
+            "_sliding_window_pattern": 6,
+            "add_cross_attention": false,
+            "architectures": null,
+            "attention_bias": false,
+            "attention_dropout": 0.0,
+            "attn_logit_softcapping": null,
+            "bos_token_id": 2,
+            "chunk_size_feed_forward": 0,
+            "cross_attention_hidden_size": null,
+            "decoder_start_token_id": null,
+            "dropout_rate": 0.0,
+            "dtype": "bfloat16",
+            "eos_token_id": 1,
+            "final_logit_softcapping": null,
+            "finetuning_task": null,
+            "head_dim": 256,
+            "hidden_activation": "gelu_pytorch_tanh",
+            "hidden_size": 640,
+            "id2label": {
+              "0": "LABEL_0",
+              "1": "LABEL_1"
+            },
+            "initializer_range": 0.02,
+            "intermediate_size": 2048,
+            "is_decoder": false,
+            "is_encoder_decoder": false,
+            "label2id": {
+              "LABEL_0": 0,
+              "LABEL_1": 1
+            },
+            "layer_types": [
+              "sliding_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "full_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "full_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "sliding_attention",
+              "full_attention"
+            ],
+            "max_position_embeddings": 32768,
+            "model_type": "t5gemma2_text",
+            "num_attention_heads": 4,
+            "num_hidden_layers": 18,
+            "num_key_value_heads": 1,
+            "output_attentions": false,
+            "output_hidden_states": false,
+            "pad_token_id": 0,
+            "prefix": null,
+            "problem_type": null,
+            "query_pre_attn_scalar": 256,
+            "return_dict": true,
+            "rms_norm_eps": 1e-06,
+            "rope_parameters": {
+              "full_attention": {
+                "factor": 8.0,
+                "rope_theta": 1000000,
+                "rope_type": "linear"
+              },
+              "sliding_attention": {
+                "rope_theta": 10000,
+                "rope_type": "default"
+              }
+            },
+            "sep_token_id": null,
+            "sliding_window": 512,
+            "task_specific_params": null,
+            "tie_encoder_decoder": false,
+            "tie_word_embeddings": true,
+            "tokenizer_class": null,
+            "use_bidirectional_attention": false,
+            "use_cache": true,
+            "vocab_size": 262144
+          },
+          "vision_config": {
+            "_name_or_path": "",
+            "add_cross_attention": false,
+            "architectures": null,
+            "attention_dropout": 0.0,
+            "bos_token_id": null,
+            "chunk_size_feed_forward": 0,
+            "cross_attention_hidden_size": null,
+            "decoder_start_token_id": null,
+            "dropout_rate": 0.0,
+            "dtype": "bfloat16",
+            "eos_token_id": null,
+            "finetuning_task": null,
+            "hidden_act": "gelu_pytorch_tanh",
+            "hidden_size": 1152,
+            "id2label": {
+              "0": "LABEL_0",
+              "1": "LABEL_1"
+            },
+            "image_size": 896,
+            "intermediate_size": 4304,
+            "is_decoder": false,
+            "is_encoder_decoder": false,
+            "label2id": {
+              "LABEL_0": 0,
+              "LABEL_1": 1
+            },
+            "layer_norm_eps": 1e-06,
+            "model_type": "siglip_vision_model",
+            "num_attention_heads": 16,
+            "num_channels": 3,
+            "num_hidden_layers": 27,
+            "output_attentions": false,
+            "output_hidden_states": false,
+            "pad_token_id": null,
+            "patch_size": 14,
+            "prefix": null,
+            "problem_type": null,
+            "return_dict": true,
+            "sep_token_id": null,
+            "task_specific_params": null,
+            "tie_encoder_decoder": false,
+            "tie_word_embeddings": true,
+            "tokenizer_class": null,
+            "vision_use_head": false,
+            "vocab_size": 262144
+          },
+          "vocab_size": 262144
+        },
+        "eoi_token_index": 256000,
+        "eos_token_id": 1,
+        "image_token_index": 256001,
+        "initializer_range": 0.02,
+        "is_encoder_decoder": true,
+        "model_type": "t5gemma2",
+        "pad_token_id": 0,
+        "transformers_version": "5.0.0.dev0",
+        "vocab_size": 262144
+      },
+      "config_source_url": "https://huggingface.co/google/t5gemma-2-270m-270m/blob/7c38f16641f455ef0685b18431faf1b17722d5a1/config.json"
+    },
+    {
+      "kind": "dataset",
+      "repo": "google-research-datasets/go_emotions",
+      "revision": "add492243ff905527e67aeb8b80c082af02207c3",
+      "checked_at": "2026-09-26T08:25:15.286366+00:00",
+      "source_url": "https://huggingface.co/datasets/google-research-datasets/go_emotions",
+      "gated": false,
+      "card_license": [
+        "apache-2.0"
+      ],
+      "card_datasets": null,
+      "card_configs": [
+        {
+          "config_name": "raw",
+          "data_files": [
+            {
+              "split": "train",
+              "path": "raw/train-*"
+            }
+          ]
+        },
+        {
+          "config_name": "simplified",
+          "data_files": [
+            {
+              "split": "train",
+              "path": "simplified/train-*"
+            },
+            {
+              "split": "validation",
+              "path": "simplified/validation-*"
+            },
+            {
+              "split": "test",
+              "path": "simplified/test-*"
+            }
+          ],
+          "default": true
+        }
+      ],
+      "evidence_scope": "Repository metadata only; no weights or dataset rows downloaded",
+      "selected_for_training": false
+    },
+    {
+      "kind": "dataset",
+      "repo": "fancyzhx/ag_news",
+      "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+      "checked_at": "2026-09-26T08:25:15.407598+00:00",
+      "source_url": "https://huggingface.co/datasets/fancyzhx/ag_news",
+      "gated": false,
+      "card_license": [
+        "unknown"
+      ],
+      "card_datasets": null,
+      "card_configs": [
+        {
+          "config_name": "default",
+          "data_files": [
+            {
+              "split": "train",
+              "path": "data/train-*"
+            },
+            {
+              "split": "test",
+              "path": "data/test-*"
+            }
+          ]
+        }
+      ],
+      "evidence_scope": "Repository metadata only; no weights or dataset rows downloaded",
+      "selected_for_training": false
+    },
+    {
+      "kind": "dataset",
+      "repo": "ccdv/arxiv-summarization",
+      "revision": "240aaf1a969b3f8cd0ade6986bfad0cd730ee288",
+      "checked_at": "2026-09-26T08:25:15.516169+00:00",
+      "source_url": "https://huggingface.co/datasets/ccdv/arxiv-summarization",
+      "gated": false,
+      "card_license": null,
+      "card_datasets": null,
+      "card_configs": [
+        {
+          "config_name": "document",
+          "data_files": [
+            {
+              "split": "train",
+              "path": "document/train-*"
+            },
+            {
+              "split": "validation",
+              "path": "document/validation-*"
+            },
+            {
+              "split": "test",
+              "path": "document/test-*"
+            }
+          ]
+        },
+        {
+          "config_name": "section",
+          "data_files": [
+            {
+              "split": "train",
+              "path": "section/train-*"
+            },
+            {
+              "split": "validation",
+              "path": "section/validation-*"
+            },
+            {
+              "split": "test",
+              "path": "section/test-*"
+            }
+          ],
+          "default": true
+        }
+      ],
+      "evidence_scope": "Repository metadata only; no weights or dataset rows downloaded",
+      "selected_for_training": false
+    }
+  ]
+}

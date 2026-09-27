@@ -1,0 +1,919 @@
+{
+  "schema_version": 1,
+  "audit_version": "data-readiness/v1",
+  "input_root": "data/processed",
+  "audit_script_sha256": "d76602a2a8efbf8c5d5943576023e92216ce0df26c2e3dbe5eedff297cc702c8",
+  "records": 156796,
+  "bytes": 384924784,
+  "files": [
+    {
+      "path": "books/test.jsonl",
+      "task": "books",
+      "split": "test",
+      "bytes": 1213556,
+      "physical_lines": 1500,
+      "blank_lines": 0,
+      "records": 1500,
+      "malformed_records": 0,
+      "sha256": "223018a9656f6c87f2951bdee6210d78cbffff90ff21dcfcd9b63ffe14528e47",
+      "field_counts": {
+        "author": 1500,
+        "text": 1500,
+        "title": 1500,
+        "type": 1500
+      },
+      "domain_counts": {
+        "gutenberg": 1500
+      },
+      "label_counts": {},
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 0,
+        "literary_rows": 1500,
+        "missing_parent_identity": 1500,
+        "missing_source_url_provenance": 1500,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 1500,
+        "unresolved_literary_work_identity": 1500
+      },
+      "bounded_anomalies": [
+        {
+          "file": "books/test.jsonl",
+          "line": 1,
+          "record_sha256": "28d66e8d2d5ba28ba713b5705e5e9968ed27576d2d529d440fa13e9ac2816258",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "books/test.jsonl",
+          "line": 2,
+          "record_sha256": "6e5efac4c069101c72fa909146c6db35daf141959cc82ac75ed3e3f2e8b24f4d",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "books/test.jsonl",
+          "line": 3,
+          "record_sha256": "1496371a34aacda897f0696c0428b6cf19a99ed0e445fc4ed636a4d273aea63c",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "books/test.jsonl",
+          "line": 4,
+          "record_sha256": "7eae97053148e3f1dd0529b3b7dfac8b1e9f687e369a2c8b82f829f1e354c7b4",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "books/train.jsonl",
+      "task": "books",
+      "split": "train",
+      "bytes": 22053187,
+      "physical_lines": 27000,
+      "blank_lines": 0,
+      "records": 27000,
+      "malformed_records": 0,
+      "sha256": "f20def48eec167508c9d1770944ce12cf40b92d9e1889b0a5a2f0f9c94e993e3",
+      "field_counts": {
+        "author": 27000,
+        "text": 27000,
+        "title": 27000,
+        "type": 27000
+      },
+      "domain_counts": {
+        "gutenberg": 27000
+      },
+      "label_counts": {},
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 0,
+        "literary_rows": 27000,
+        "missing_parent_identity": 27000,
+        "missing_source_url_provenance": 27000,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 27000,
+        "unresolved_literary_work_identity": 27000
+      },
+      "bounded_anomalies": [
+        {
+          "file": "books/train.jsonl",
+          "line": 1,
+          "record_sha256": "b9942143e6f00f5772f0b71832c3adf3caf0c04060700fc96ac2d3482531edae",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "books/train.jsonl",
+          "line": 2,
+          "record_sha256": "a87a963c58ea350fb1addfbd9d5d38a76d891e5152ffe989eba72f56a52ae090",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "books/train.jsonl",
+          "line": 3,
+          "record_sha256": "ac7eb030582b7b5c75e6763caeebe08064810c927e7fc27b1cde2352389b5291",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "books/train.jsonl",
+          "line": 4,
+          "record_sha256": "29a7374b5a105bb516ecd0f86f169af4c9361c25edca993933e4ac0931e4dd62",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "books/validation.jsonl",
+      "task": "books",
+      "split": "validation",
+      "bytes": 1236629,
+      "physical_lines": 1500,
+      "blank_lines": 0,
+      "records": 1500,
+      "malformed_records": 0,
+      "sha256": "57a3a8c63f9454a2e6bcc616edfc153e399c092df54f949912f5e880f05f5f55",
+      "field_counts": {
+        "author": 1500,
+        "text": 1500,
+        "title": 1500,
+        "type": 1500
+      },
+      "domain_counts": {
+        "gutenberg": 1500
+      },
+      "label_counts": {},
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 0,
+        "literary_rows": 1500,
+        "missing_parent_identity": 1500,
+        "missing_source_url_provenance": 1500,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 1500,
+        "unresolved_literary_work_identity": 1500
+      },
+      "bounded_anomalies": [
+        {
+          "file": "books/validation.jsonl",
+          "line": 1,
+          "record_sha256": "30b6e5363a2a4b95bc5fb45008041ef6d3c4dc26828305ef1e483874e246f3e7",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "books/validation.jsonl",
+          "line": 2,
+          "record_sha256": "56fa96fb741e6273c9f820c7afb27247532cf8c9ccc81b889ee4d27bc7fc07bb",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "books/validation.jsonl",
+          "line": 3,
+          "record_sha256": "faa797014f9591444d5124b3ac06a648a86bc21db8d474b2d8a5a9b8a8baa098",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "books/validation.jsonl",
+          "line": 4,
+          "record_sha256": "6c906c2a828aa26fc4e129e7778665778e7bc1fc4061ace8e24c35cb089aacfb",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "emotion/test.jsonl",
+      "task": "emotion",
+      "split": "test",
+      "bytes": 593172,
+      "physical_lines": 5427,
+      "blank_lines": 0,
+      "records": 5427,
+      "malformed_records": 0,
+      "sha256": "34b54f88cb0425f7778e8593151cc80227039d2fab7a620b90712204f442ce2a",
+      "field_counts": {
+        "emotions": 5427,
+        "text": 5427
+      },
+      "domain_counts": {
+        "emotion_comments_unverified_origin": 5427
+      },
+      "label_counts": {
+        "admiration": 504,
+        "amusement": 264,
+        "anger": 198,
+        "annoyance": 320,
+        "approval": 351,
+        "caring": 135,
+        "confusion": 153,
+        "curiosity": 284,
+        "desire": 83,
+        "disappointment": 151,
+        "disapproval": 267,
+        "disgust": 123,
+        "embarrassment": 37,
+        "excitement": 103,
+        "fear": 78,
+        "gratitude": 352,
+        "grief": 6,
+        "joy": 161,
+        "love": 238,
+        "nervousness": 23,
+        "neutral": 1787,
+        "optimism": 186,
+        "pride": 16,
+        "realization": 145,
+        "relief": 11,
+        "remorse": 56,
+        "sadness": 156,
+        "surprise": 141
+      },
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 0,
+        "literary_rows": 0,
+        "missing_parent_identity": 5427,
+        "missing_source_url_provenance": 5427,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 0,
+        "unresolved_literary_work_identity": 0
+      },
+      "bounded_anomalies": [
+        {
+          "file": "emotion/test.jsonl",
+          "line": 1,
+          "record_sha256": "8b31f5ed052a117a1a02f136625f6652f36bca35255b3a62c55f0368648e32f8",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "emotion/test.jsonl",
+          "line": 2,
+          "record_sha256": "e7356ea5fdf0bb3fd82cfee3f2bb357da4d883c25f84d28563b753475e2adba9",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "emotion/test.jsonl",
+          "line": 3,
+          "record_sha256": "605aefd0400a3def2c6e4a108196c6d93afa4790a959620058a7db29c8b0d912",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "emotion/test.jsonl",
+          "line": 4,
+          "record_sha256": "78ffc8b03888a902e568aa6ef98f3b731714337dd06dacaacaaa02e6b2093909",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "emotion/train.jsonl",
+      "task": "emotion",
+      "split": "train",
+      "bytes": 4774263,
+      "physical_lines": 43410,
+      "blank_lines": 0,
+      "records": 43410,
+      "malformed_records": 0,
+      "sha256": "0b2ea898e47b375c6fedee4540d3b8196ceaf46b3f067c163789ba8a07bbc853",
+      "field_counts": {
+        "emotions": 43410,
+        "text": 43410
+      },
+      "domain_counts": {
+        "emotion_comments_unverified_origin": 43410
+      },
+      "label_counts": {
+        "admiration": 4130,
+        "amusement": 2328,
+        "anger": 1567,
+        "annoyance": 2470,
+        "approval": 2939,
+        "caring": 1087,
+        "confusion": 1368,
+        "curiosity": 2191,
+        "desire": 641,
+        "disappointment": 1269,
+        "disapproval": 2022,
+        "disgust": 793,
+        "embarrassment": 303,
+        "excitement": 853,
+        "fear": 596,
+        "gratitude": 2662,
+        "grief": 77,
+        "joy": 1452,
+        "love": 2086,
+        "nervousness": 164,
+        "neutral": 14219,
+        "optimism": 1581,
+        "pride": 111,
+        "realization": 1110,
+        "relief": 153,
+        "remorse": 545,
+        "sadness": 1326,
+        "surprise": 1060
+      },
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 0,
+        "literary_rows": 0,
+        "missing_parent_identity": 43410,
+        "missing_source_url_provenance": 43410,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 0,
+        "unresolved_literary_work_identity": 0
+      },
+      "bounded_anomalies": [
+        {
+          "file": "emotion/train.jsonl",
+          "line": 1,
+          "record_sha256": "91d2f47cf3974b2ccea5f3063b1f0902d7eb768d19b324467579d57ae0eabf18",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "emotion/train.jsonl",
+          "line": 2,
+          "record_sha256": "cd5ba81e708755b02baaf90886f25565bad62f56315b6aad3b48f7b17edfa354",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "emotion/train.jsonl",
+          "line": 3,
+          "record_sha256": "f0219d60c716c5e4e50a69db30128717adf999c50dac3ac1e364d277bbb6a204",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "emotion/train.jsonl",
+          "line": 4,
+          "record_sha256": "b1cab79164bef7b0e523637429e384457a615cbfe417a36922291667ca7dbb62",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "emotion/validation.jsonl",
+      "task": "emotion",
+      "split": "validation",
+      "bytes": 595897,
+      "physical_lines": 5426,
+      "blank_lines": 0,
+      "records": 5426,
+      "malformed_records": 0,
+      "sha256": "8eb09b3e163674714cedbe81929235bdaf4b72976c0577d1c9333d51ec11727e",
+      "field_counts": {
+        "emotions": 5426,
+        "text": 5426
+      },
+      "domain_counts": {
+        "emotion_comments_unverified_origin": 5426
+      },
+      "label_counts": {
+        "admiration": 488,
+        "amusement": 303,
+        "anger": 195,
+        "annoyance": 303,
+        "approval": 397,
+        "caring": 153,
+        "confusion": 152,
+        "curiosity": 248,
+        "desire": 77,
+        "disappointment": 163,
+        "disapproval": 292,
+        "disgust": 97,
+        "embarrassment": 35,
+        "excitement": 96,
+        "fear": 90,
+        "gratitude": 358,
+        "grief": 13,
+        "joy": 172,
+        "love": 252,
+        "nervousness": 21,
+        "neutral": 1766,
+        "optimism": 209,
+        "pride": 15,
+        "realization": 127,
+        "relief": 18,
+        "remorse": 68,
+        "sadness": 143,
+        "surprise": 129
+      },
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 0,
+        "literary_rows": 0,
+        "missing_parent_identity": 5426,
+        "missing_source_url_provenance": 5426,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 0,
+        "unresolved_literary_work_identity": 0
+      },
+      "bounded_anomalies": [
+        {
+          "file": "emotion/validation.jsonl",
+          "line": 1,
+          "record_sha256": "63c707c94422267a087a73a51510bab63b9affa015e7ea4970fbde0a33b21323",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "emotion/validation.jsonl",
+          "line": 2,
+          "record_sha256": "dabc833122c7485f9b22f44af873846fc90710fbfb3894660ce29df092edcdd3",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "emotion/validation.jsonl",
+          "line": 3,
+          "record_sha256": "8fb4118d225e5d3f60fd8da8cc774235f94046a43b903d721f297cab5948bce2",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "emotion/validation.jsonl",
+          "line": 4,
+          "record_sha256": "9e00f99c7b6183b57f33a11828b126e93ba8bc92c69d697ecd905910e8aaff1f",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "summarization/test.jsonl",
+      "task": "summarization",
+      "split": "test",
+      "bytes": 17893661,
+      "physical_lines": 3440,
+      "blank_lines": 0,
+      "records": 3440,
+      "malformed_records": 0,
+      "sha256": "438fb582d0cb0d7a91570b69955863f328635d7fa3bd1413a780c10f433dbdd3",
+      "field_counts": {
+        "source": 3440,
+        "summary": 3440,
+        "title": 3440,
+        "type": 3440
+      },
+      "domain_counts": {
+        "academic": 2506,
+        "literary": 934
+      },
+      "label_counts": {},
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 934,
+        "literary_rows": 934,
+        "missing_parent_identity": 3440,
+        "missing_source_url_provenance": 3440,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 3440,
+        "unresolved_literary_work_identity": 934
+      },
+      "bounded_anomalies": [
+        {
+          "file": "summarization/test.jsonl",
+          "line": 1,
+          "record_sha256": "74bbd5c9cc3a1d644afcdeef95f881d9eef3aa27902d57eaa9b7af0616c03085",
+          "reason": "legacy_literary_pair_identity_unverified"
+        },
+        {
+          "file": "summarization/test.jsonl",
+          "line": 2,
+          "record_sha256": "a21508a0a645124f2809774fc7db3016f1b404b23163e658c6354f8594c3d3c1",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "summarization/test.jsonl",
+          "line": 3,
+          "record_sha256": "eb49a27060fbd85630f6f35b0ff33cf0ae55e1b49c8941125fd12134be191f3f",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "summarization/test.jsonl",
+          "line": 4,
+          "record_sha256": "e846f430ce4f1fade933ef6b1856d705f86efd41e4d6c0d2a37d3b60a24d598b",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "summarization/train.jsonl",
+      "task": "summarization",
+      "split": "train",
+      "bytes": 316193892,
+      "physical_lines": 61877,
+      "blank_lines": 0,
+      "records": 61877,
+      "malformed_records": 0,
+      "sha256": "47f9b3c4e845b3da010756ec735caea290cb70ae308e9a7e7da4605ce651e6dc",
+      "field_counts": {
+        "source": 61877,
+        "summary": 61877,
+        "title": 61877,
+        "type": 61877
+      },
+      "domain_counts": {
+        "academic": 45001,
+        "literary": 16876
+      },
+      "label_counts": {},
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 16876,
+        "literary_rows": 16876,
+        "missing_parent_identity": 61877,
+        "missing_source_url_provenance": 61877,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 61877,
+        "unresolved_literary_work_identity": 16876
+      },
+      "bounded_anomalies": [
+        {
+          "file": "summarization/train.jsonl",
+          "line": 1,
+          "record_sha256": "ba1be69f2e601f063e4b6baa2bbb9a8b270512e65d14d57244c3d98484ed7fcb",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "summarization/train.jsonl",
+          "line": 2,
+          "record_sha256": "0453072307ad0f7d6638f62f1f783a7919e62e85b76cd32ecdf06d5d9961d7b4",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "summarization/train.jsonl",
+          "line": 3,
+          "record_sha256": "cc9153926f6d457ca6e293cf8139868956a506ef76f2f609f319ac2b8a415aec",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "summarization/train.jsonl",
+          "line": 4,
+          "record_sha256": "0136cfa44b8b63bd2370497c51d9bc49eaecde5a01c31abf2386c08b8d30731f",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "summarization/validation.jsonl",
+      "task": "summarization",
+      "split": "validation",
+      "bytes": 17599256,
+      "physical_lines": 3436,
+      "blank_lines": 0,
+      "records": 3436,
+      "malformed_records": 0,
+      "sha256": "08cb329933edb9e9425275d82617d80d75b07a3b76916b1c446c1226a5462fa7",
+      "field_counts": {
+        "source": 3436,
+        "summary": 3436,
+        "title": 3436,
+        "type": 3436
+      },
+      "domain_counts": {
+        "academic": 2493,
+        "literary": 943
+      },
+      "label_counts": {},
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 943,
+        "literary_rows": 943,
+        "missing_parent_identity": 3436,
+        "missing_source_url_provenance": 3436,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 3436,
+        "unresolved_literary_work_identity": 943
+      },
+      "bounded_anomalies": [
+        {
+          "file": "summarization/validation.jsonl",
+          "line": 1,
+          "record_sha256": "0a4fa414a963f66e5bbc56b9cbb363d7827fd30ae116adabda7186f47db0ff86",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "summarization/validation.jsonl",
+          "line": 2,
+          "record_sha256": "aa30d149b7d5ff34cd9fbc0ab96db1dfa89dc79925c86984980f61cbcc7e7588",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "summarization/validation.jsonl",
+          "line": 3,
+          "record_sha256": "1c4a82db0f10b50f776e883fef662e5e0b5ab0425a71a882db211fa74b7b391d",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "summarization/validation.jsonl",
+          "line": 4,
+          "record_sha256": "8094c90ca61a234694de57e661b64eb648c353883cfed41dee07cfafc6a69635",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "topic/test.jsonl",
+      "task": "topic",
+      "split": "test",
+      "bytes": 136740,
+      "physical_lines": 189,
+      "blank_lines": 0,
+      "records": 189,
+      "malformed_records": 0,
+      "sha256": "63f0291f274116aba4f5abc272a728fca6c815344188c2840e88f955430e30fb",
+      "field_counts": {
+        "source": 189,
+        "text": 189,
+        "topic": 189
+      },
+      "domain_counts": {
+        "gutenberg": 21,
+        "newsgroups": 168
+      },
+      "label_counts": {
+        "Arts": 35,
+        "Business": 23,
+        "Fiction": 21,
+        "History": 22,
+        "Philosophy": 31,
+        "Science": 31,
+        "Technology": 26
+      },
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 0,
+        "literary_rows": 21,
+        "missing_parent_identity": 189,
+        "missing_source_url_provenance": 189,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 0,
+        "unresolved_literary_work_identity": 21
+      },
+      "bounded_anomalies": [
+        {
+          "file": "topic/test.jsonl",
+          "line": 1,
+          "record_sha256": "cd45b33d332af5c7b507fdb0d1457ab6c56537d1c96f53070c7837594082d2c0",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "topic/test.jsonl",
+          "line": 2,
+          "record_sha256": "dcc63f11242e4749e365ff0580add126d5253b4b6f265e8dbb19ff67fc6d7b4c",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "topic/test.jsonl",
+          "line": 3,
+          "record_sha256": "91b5792f37f309aadb513e1789abe0daabc827afda4e8e018d39ab23606c690d",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "topic/test.jsonl",
+          "line": 4,
+          "record_sha256": "56564b18f2f1b1218af52ec8d7cb7ebaf25b89f074b701d1381dec0ec5449fcf",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "topic/train.jsonl",
+      "task": "topic",
+      "split": "train",
+      "bytes": 2504019,
+      "physical_lines": 3402,
+      "blank_lines": 0,
+      "records": 3402,
+      "malformed_records": 0,
+      "sha256": "faa645fe82f9c724dbdde43d6a1010277a50e6e421452c66a7bd3221255e1ba3",
+      "field_counts": {
+        "source": 3402,
+        "text": 3402,
+        "topic": 3402
+      },
+      "domain_counts": {
+        "gutenberg": 500,
+        "newsgroups": 2902
+      },
+      "label_counts": {
+        "Arts": 471,
+        "Business": 488,
+        "Fiction": 500,
+        "History": 481,
+        "Philosophy": 481,
+        "Science": 494,
+        "Technology": 487
+      },
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 0,
+        "literary_rows": 500,
+        "missing_parent_identity": 3402,
+        "missing_source_url_provenance": 3402,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 0,
+        "unresolved_literary_work_identity": 500
+      },
+      "bounded_anomalies": [
+        {
+          "file": "topic/train.jsonl",
+          "line": 1,
+          "record_sha256": "dd20038ae330a390d6fc4c0f27cdaf8881e5252cf99e747d5525b9c0bc6d9d53",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "topic/train.jsonl",
+          "line": 2,
+          "record_sha256": "7e641d19c5212e42ee588dd10cd45d4202eb1bed0c82dc49e1c180e42970de0e",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "topic/train.jsonl",
+          "line": 3,
+          "record_sha256": "5261c4d17687c12b7d1fdd129f7c5d8f3a9e0d8eef6d9cc1ba023e019d4f8955",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "topic/train.jsonl",
+          "line": 4,
+          "record_sha256": "2a983cde74a5e8c4057cb93c7f94a7cfc393e7f476fbdbb46d773a5b954f64f1",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    },
+    {
+      "path": "topic/validation.jsonl",
+      "task": "topic",
+      "split": "validation",
+      "bytes": 130512,
+      "physical_lines": 189,
+      "blank_lines": 0,
+      "records": 189,
+      "malformed_records": 0,
+      "sha256": "b807167b5c48a8df4c9efd78a0add8ce70259623a0a68399b5db1440c811e02a",
+      "field_counts": {
+        "source": 189,
+        "text": 189,
+        "topic": 189
+      },
+      "domain_counts": {
+        "gutenberg": 19,
+        "newsgroups": 170
+      },
+      "label_counts": {
+        "Arts": 34,
+        "Business": 29,
+        "Fiction": 19,
+        "History": 37,
+        "Philosophy": 28,
+        "Science": 15,
+        "Technology": 27
+      },
+      "identity_and_provenance": {
+        "author_identity_present": 0,
+        "declared_document_id": 0,
+        "declared_work_id": 0,
+        "explicit_provider_document_only": 0,
+        "legacy_literary_pair_identity_risk": 0,
+        "literary_rows": 19,
+        "missing_parent_identity": 189,
+        "missing_source_url_provenance": 189,
+        "provider_dataset": 0,
+        "source_url_provenance": 0,
+        "title_and_author_candidate": 0,
+        "title_present": 0,
+        "unresolved_literary_work_identity": 19
+      },
+      "bounded_anomalies": [
+        {
+          "file": "topic/validation.jsonl",
+          "line": 1,
+          "record_sha256": "14cdf8d846b91f53e70c13fa0cc02cbbc05a787473c7c0ef8ec92686a81bcf36",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "topic/validation.jsonl",
+          "line": 2,
+          "record_sha256": "ad7080e67d639f5bdb9472b96e626be3c30334cc65e008d38b3300fccd0169ff",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "topic/validation.jsonl",
+          "line": 3,
+          "record_sha256": "e6e46fe0664a246af69af2936fafebdcedf05b17deabfbad907321f74b5b1e55",
+          "reason": "parent_identity_missing"
+        },
+        {
+          "file": "topic/validation.jsonl",
+          "line": 4,
+          "record_sha256": "aa64d183b3acd86282b24a1172fdbe4b24be0a3295226feec5db4ef94057bc2a",
+          "reason": "parent_identity_missing"
+        }
+      ]
+    }
+  ],
+  "label_files": [
+    {
+      "path": "emotion/labels.json",
+      "bytes": 391,
+      "sha256": "fb15e2ee53c951c9c7789ed29a5e576d77b4820cab2cbe0d76d89c218753f70f",
+      "status": "readable",
+      "label_count": 28,
+      "labels": [
+        "admiration",
+        "amusement",
+        "anger",
+        "annoyance",
+        "approval",
+        "caring",
+        "confusion",
+        "curiosity",
+        "desire",
+        "disappointment",
+        "disapproval",
+        "disgust",
+        "embarrassment",
+        "excitement",
+        "fear",
+        "gratitude",
+        "grief",
+        "joy",
+        "love",
+        "nervousness",
+        "optimism",
+        "pride",
+        "realization",
+        "relief",
+        "remorse",
+        "sadness",
+        "surprise",
+        "neutral"
+      ]
+    },
+    {
+      "path": "topic/labels.json",
+      "bytes": 97,
+      "sha256": "7cc6618487cb61f6e56c6d3bfb88e0a30315f6b2d6ba7f69b8e40229ecc9f770",
+      "status": "readable",
+      "label_count": 7,
+      "labels": [
+        "Fiction",
+        "Science",
+        "Technology",
+        "Philosophy",
+        "History",
+        "Business",
+        "Arts"
+      ]
+    }
+  ],
+  "normalization": "NFC Unicode normalization and whitespace collapse; case, punctuation and diacritics preserved. Titles use a separate noncanonical candidate key.",
+  "report_privacy": "No input text, summaries, titles, authors or model outputs are copied; references contain file/line/hash only."
+}

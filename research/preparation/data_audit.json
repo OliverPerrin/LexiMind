@@ -1,0 +1,843 @@
+{
+  "schema_version": 1,
+  "audit_version": "data-readiness/v1",
+  "inventory_sha256": "98b3bf48212a5489d859a35b0e665fbb29fa7acbe97d92eb06383875f5017331",
+  "status": "blocked",
+  "mechanical_checks_passed": false,
+  "training_authorized": false,
+  "blocking_findings": {
+    "cross_split_input_normalized_groups": 73,
+    "cross_split_target_normalized_groups": 1175,
+    "legacy_literary_pair_identity_risk": 18753,
+    "missing_parent_identity": 156796,
+    "missing_source_url_provenance": 156796,
+    "unresolved_literary_work_identity": 49293
+  },
+  "external_gates": [
+    "Dataset/source eligibility and rights decision",
+    "Canonical work/edition reconciliation where work generalization is claimed",
+    "Frozen dataset selection, calibration/model-selection split policy and contamination review",
+    "Explicit user authorization before any training or research evaluation"
+  ],
+  "task_disposition": [
+    {
+      "task": "books",
+      "records": 30000,
+      "status": "quarantined_pending_source_and_partition_review",
+      "structurally_readable": true,
+      "training_eligible": false
+    },
+    {
+      "task": "emotion",
+      "records": 54263,
+      "status": "quarantined_pending_source_and_partition_review",
+      "structurally_readable": true,
+      "training_eligible": false
+    },
+    {
+      "task": "summarization",
+      "records": 68753,
+      "status": "quarantined_pending_source_and_partition_review",
+      "structurally_readable": true,
+      "training_eligible": false
+    },
+    {
+      "task": "topic",
+      "records": 3780,
+      "status": "quarantined_pending_source_and_partition_review",
+      "structurally_readable": true,
+      "training_eligible": false
+    }
+  ],
+  "duplicate_groups": {
+    "input_raw": {
+      "groups": 196,
+      "records_in_groups": 496,
+      "cross_file_groups": 82,
+      "cross_split_groups": 72,
+      "samples": [
+        {
+          "group_sha256": "0028824d536d41c0335eac7169e108faa0e872ecbe772015074af5c4b2d1d014",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "emotion/train.jsonl",
+              "line": 24619,
+              "record_sha256": "50b00bd517d9219cae72a016e4838d568e357d0bc37d30f4cdeeb448b81e5bdc"
+            },
+            {
+              "file": "emotion/train.jsonl",
+              "line": 37696,
+              "record_sha256": "ee82d3d838781a9f864e7cf66b4d4b0b1875855097e83bd66849bb586d2f5397"
+            }
+          ]
+        },
+        {
+          "group_sha256": "0034e36956dca3a6229d19969ef8113a972ea2987fac7b0a65578c4942cd2f99",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "topic/train.jsonl",
+              "line": 1097,
+              "record_sha256": "fa7e902dea2f2bb22a57d904f0f86027d211a68fb8dec820c2b7c7804d58cd8c"
+            },
+            {
+              "file": "topic/train.jsonl",
+              "line": 1601,
+              "record_sha256": "fa7e902dea2f2bb22a57d904f0f86027d211a68fb8dec820c2b7c7804d58cd8c"
+            }
+          ]
+        },
+        {
+          "group_sha256": "05d2f4ffd28bf9dcefc2f3c1248cdb85bf61e7f2e5860404130b5d84c1489bad",
+          "records": 3,
+          "cross_split": true,
+          "references": [
+            {
+              "file": "emotion/train.jsonl",
+              "line": 26706,
+              "record_sha256": "841572e8cd0e1186635c273caa694f59048f300e289e6aecb699d2628140cf9e"
+            },
+            {
+              "file": "emotion/validation.jsonl",
+              "line": 2828,
+              "record_sha256": "841572e8cd0e1186635c273caa694f59048f300e289e6aecb699d2628140cf9e"
+            }
+          ]
+        },
+        {
+          "group_sha256": "05fc6cbfcc039337bc373aecb81c3b5d62172589611bf9c42ebcf81b64222b93",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "emotion/train.jsonl",
+              "line": 19629,
+              "record_sha256": "19a7fa511e77aeee34a9f3915b7237dce5e431f2cc49a41fac2d75c826f92f71"
+            },
+            {
+              "file": "emotion/train.jsonl",
+              "line": 34613,
+              "record_sha256": "19a7fa511e77aeee34a9f3915b7237dce5e431f2cc49a41fac2d75c826f92f71"
+            }
+          ]
+        }
+      ]
+    },
+    "input_normalized": {
+      "groups": 199,
+      "records_in_groups": 503,
+      "cross_file_groups": 83,
+      "cross_split_groups": 73,
+      "samples": [
+        {
+          "group_sha256": "0028824d536d41c0335eac7169e108faa0e872ecbe772015074af5c4b2d1d014",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "emotion/train.jsonl",
+              "line": 24619,
+              "record_sha256": "50b00bd517d9219cae72a016e4838d568e357d0bc37d30f4cdeeb448b81e5bdc"
+            },
+            {
+              "file": "emotion/train.jsonl",
+              "line": 37696,
+              "record_sha256": "ee82d3d838781a9f864e7cf66b4d4b0b1875855097e83bd66849bb586d2f5397"
+            }
+          ]
+        },
+        {
+          "group_sha256": "022aa256a85b50a1e59ba951719f8d627837221214c0a0f355589c7da9f85366",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "topic/train.jsonl",
+              "line": 722,
+              "record_sha256": "22f4049c66a0855c830ed474bb9cfe68e4932508abf781e12d2b366b736be10b"
+            },
+            {
+              "file": "topic/train.jsonl",
+              "line": 2066,
+              "record_sha256": "b3057db0aca36854acf8c7bc4ba517e40c7f7603b81787c14239dceb08c04dad"
+            }
+          ]
+        },
+        {
+          "group_sha256": "05d2f4ffd28bf9dcefc2f3c1248cdb85bf61e7f2e5860404130b5d84c1489bad",
+          "records": 3,
+          "cross_split": true,
+          "references": [
+            {
+              "file": "emotion/train.jsonl",
+              "line": 26706,
+              "record_sha256": "841572e8cd0e1186635c273caa694f59048f300e289e6aecb699d2628140cf9e"
+            },
+            {
+              "file": "emotion/validation.jsonl",
+              "line": 2828,
+              "record_sha256": "841572e8cd0e1186635c273caa694f59048f300e289e6aecb699d2628140cf9e"
+            }
+          ]
+        },
+        {
+          "group_sha256": "05fc6cbfcc039337bc373aecb81c3b5d62172589611bf9c42ebcf81b64222b93",
+          "records": 2,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "emotion/train.jsonl",
+              "line": 19629,
+              "record_sha256": "19a7fa511e77aeee34a9f3915b7237dce5e431f2cc49a41fac2d75c826f92f71"
+            },
+            {
+              "file": "emotion/train.jsonl",
+              "line": 34613,
+              "record_sha256": "19a7fa511e77aeee34a9f3915b7237dce5e431f2cc49a41fac2d75c826f92f71"
+            }
+          ]
+        }
+      ]
+    },
+    "target_normalized": {
+      "groups": 4231,
+      "records_in_groups": 13885,
+      "cross_file_groups": 1175,
+      "cross_split_groups": 1175,
+      "samples": [
+        {
+          "group_sha256": "006174dc8b0d4c195d0af200ec07ce52afc97df3d5b72ec653c86c0065c7e8de",
+          "records": 3,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "summarization/train.jsonl",
+              "line": 58109,
+              "record_sha256": "69b93fb5af172794e63b613fa8c966178c4c3870b2c7107b1821169461a07460"
+            },
+            {
+              "file": "summarization/train.jsonl",
+              "line": 60600,
+              "record_sha256": "7638a0bda9276fafcb4607e993b1413b71c43b64e28e1857eaf1339fdad64151"
+            },
+            {
+              "file": "summarization/train.jsonl",
+              "line": 60647,
+              "record_sha256": "41b8b4f7b811bae0a8afd78c43404cd78f3645cb28dbff293f2e82b40eeca36f"
+            }
+          ]
+        },
+        {
+          "group_sha256": "0067f14fa2b53aaaed10835d4610201467f6b30c83d9fc49f0699492beed6854",
+          "records": 2,
+          "cross_split": true,
+          "references": [
+            {
+              "file": "summarization/test.jsonl",
+              "line": 3414,
+              "record_sha256": "6df95386036e18d234df8c8b89f58896ca341cca06696d0ee583692eab44625f"
+            },
+            {
+              "file": "summarization/train.jsonl",
+              "line": 61537,
+              "record_sha256": "996091f6e710a5fb5d1208acc6110b814750a1ccaf7d9edcfbfd471541295c7a"
+            }
+          ]
+        },
+        {
+          "group_sha256": "006b545b931b8dad6034f3c91a020e80969211f99cc6398f03994256b64e3962",
+          "records": 3,
+          "cross_split": true,
+          "references": [
+            {
+              "file": "summarization/test.jsonl",
+              "line": 3225,
+              "record_sha256": "17bb5021f62693385c8842958c4e4de34122fa5c6aaa5df52171c29e3c395e80"
+            },
+            {
+              "file": "summarization/train.jsonl",
+              "line": 56622,
+              "record_sha256": "620cf0dcae88c47b82e9a7f316634dc0da8bb60072814b89b3e4ff8cf3f3e36f"
+            }
+          ]
+        },
+        {
+          "group_sha256": "0082da1dbbf86a086884bdfd86a0fffe2d510b18a9ca96a2615793e93f9fdcba",
+          "records": 3,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "summarization/train.jsonl",
+              "line": 52042,
+              "record_sha256": "f36f3670ebef1f9810e178e37c7428622164214aca83d02f8573fa7442a0a8e5"
+            },
+            {
+              "file": "summarization/train.jsonl",
+              "line": 52504,
+              "record_sha256": "a49c206c6d8681fbe29ec5f631318a11dd59504117e203648100ae485fb75ed9"
+            },
+            {
+              "file": "summarization/train.jsonl",
+              "line": 54805,
+              "record_sha256": "1ea677f49795a08563bf64239f673805d06e430fe8b99675f6a59d07eb369c40"
+            }
+          ]
+        }
+      ]
+    },
+    "declared_work": {
+      "groups": 0,
+      "records_in_groups": 0,
+      "cross_file_groups": 0,
+      "cross_split_groups": 0,
+      "samples": []
+    },
+    "declared_document": {
+      "groups": 0,
+      "records_in_groups": 0,
+      "cross_file_groups": 0,
+      "cross_split_groups": 0,
+      "samples": []
+    },
+    "title_author_candidate": {
+      "groups": 0,
+      "records_in_groups": 0,
+      "cross_file_groups": 0,
+      "cross_split_groups": 0,
+      "samples": []
+    },
+    "title_only_candidate": {
+      "groups": 5320,
+      "records_in_groups": 43693,
+      "cross_file_groups": 1720,
+      "cross_split_groups": 1688,
+      "samples": [
+        {
+          "group_sha256": "0003d6f74d6548f5e4cc69b6e19b56d445ee1b6c77e88cb4fe49cc5facffa51d",
+          "records": 3,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "books/train.jsonl",
+              "line": 3297,
+              "record_sha256": "69231bd425d31f9aaa523d47aaba3a9cdddd939e1111272142fa67786b089d36"
+            },
+            {
+              "file": "books/train.jsonl",
+              "line": 9024,
+              "record_sha256": "dae12231782e7305968be63df66ff57e57141bae8552026d3b2a9e33122502ac"
+            },
+            {
+              "file": "books/train.jsonl",
+              "line": 12322,
+              "record_sha256": "3cdec5f4462a0849bdb9ed5dcf6751ce26bdbc8201cfb65a3da1ab678bd50419"
+            }
+          ]
+        },
+        {
+          "group_sha256": "0003efc349add751bcbbeda21c164528e49750811626196a3293520cd237b736",
+          "records": 5,
+          "cross_split": true,
+          "references": [
+            {
+              "file": "summarization/test.jsonl",
+              "line": 2874,
+              "record_sha256": "26ac96b434f0e0ba0abd3d279930a1e1ab354ec2b5bee4d82810a4b757fbcbc6"
+            },
+            {
+              "file": "summarization/train.jsonl",
+              "line": 51038,
+              "record_sha256": "7a1a367af58856b68cd9fa9b24acbd9cff36154c76c4a4c08e3771f8643a24c3"
+            }
+          ]
+        },
+        {
+          "group_sha256": "00105ef3613dd0df5e34418d292326aa4354f112abbe73515392b7fc8b20c217",
+          "records": 3,
+          "cross_split": false,
+          "references": [
+            {
+              "file": "summarization/train.jsonl",
+              "line": 50922,
+              "record_sha256": "934e0b07d46a10add4063f86a5d59fd8e70f06158d4729f595c55b0e2fae2d14"
+            },
+            {
+              "file": "summarization/train.jsonl",
+              "line": 53457,
+              "record_sha256": "ae921c2fd61a85bcaf69a5ee008a1cdc3965da850de79ff09ea6e3df2a70406e"
+            },
+            {
+              "file": "summarization/train.jsonl",
+              "line": 54199,
+              "record_sha256": "856529ae168f843a2c55e946ba8bfbc34dccbbbf55b4cd2c35aa5ceb869307e4"
+            }
+          ]
+        },
+        {
+          "group_sha256": "00312dc9b130aceaffab8a68d4b9b05ac86fd79ed505d7671a6ca2f6533d6c28",
+          "records": 16,
+          "cross_split": true,
+          "references": [
+            {
+              "file": "books/test.jsonl",
+              "line": 705,
+              "record_sha256": "af5726a637ec95e48b1fe4c4c3a8a135959bfa68e830b988ffe4ba5197fd22ef"
+            },
+            {
+              "file": "books/train.jsonl",
+              "line": 1730,
+              "record_sha256": "dea6882f36111a6811081d5beba2fbc262e9902f9c804794ee8d073c19c192d6"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "pairwise_intersections": [
+    {
+      "kind": "input_normalized",
+      "left": "books/test.jsonl",
+      "right": "books/train.jsonl",
+      "shared_groups": 1,
+      "left_records": 1,
+      "right_records": 1,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "input_normalized",
+      "left": "books/train.jsonl",
+      "right": "summarization/train.jsonl",
+      "shared_groups": 1,
+      "left_records": 1,
+      "right_records": 1,
+      "cross_split": false,
+      "cross_task": true
+    },
+    {
+      "kind": "input_normalized",
+      "left": "books/train.jsonl",
+      "right": "topic/train.jsonl",
+      "shared_groups": 9,
+      "left_records": 9,
+      "right_records": 9,
+      "cross_split": false,
+      "cross_task": true
+    },
+    {
+      "kind": "input_normalized",
+      "left": "emotion/test.jsonl",
+      "right": "emotion/train.jsonl",
+      "shared_groups": 32,
+      "left_records": 37,
+      "right_records": 80,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "input_normalized",
+      "left": "emotion/test.jsonl",
+      "right": "emotion/validation.jsonl",
+      "shared_groups": 10,
+      "left_records": 13,
+      "right_records": 10,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "input_normalized",
+      "left": "emotion/train.jsonl",
+      "right": "emotion/validation.jsonl",
+      "shared_groups": 41,
+      "left_records": 84,
+      "right_records": 43,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "input_normalized",
+      "left": "topic/train.jsonl",
+      "right": "topic/validation.jsonl",
+      "shared_groups": 1,
+      "left_records": 1,
+      "right_records": 1,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "input_raw",
+      "left": "books/train.jsonl",
+      "right": "summarization/train.jsonl",
+      "shared_groups": 1,
+      "left_records": 1,
+      "right_records": 1,
+      "cross_split": false,
+      "cross_task": true
+    },
+    {
+      "kind": "input_raw",
+      "left": "books/train.jsonl",
+      "right": "topic/train.jsonl",
+      "shared_groups": 9,
+      "left_records": 9,
+      "right_records": 9,
+      "cross_split": false,
+      "cross_task": true
+    },
+    {
+      "kind": "input_raw",
+      "left": "emotion/test.jsonl",
+      "right": "emotion/train.jsonl",
+      "shared_groups": 32,
+      "left_records": 37,
+      "right_records": 79,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "input_raw",
+      "left": "emotion/test.jsonl",
+      "right": "emotion/validation.jsonl",
+      "shared_groups": 10,
+      "left_records": 13,
+      "right_records": 10,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "input_raw",
+      "left": "emotion/train.jsonl",
+      "right": "emotion/validation.jsonl",
+      "shared_groups": 41,
+      "left_records": 84,
+      "right_records": 43,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "input_raw",
+      "left": "topic/train.jsonl",
+      "right": "topic/validation.jsonl",
+      "shared_groups": 1,
+      "left_records": 1,
+      "right_records": 1,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "target_normalized",
+      "left": "summarization/test.jsonl",
+      "right": "summarization/train.jsonl",
+      "shared_groups": 638,
+      "left_records": 687,
+      "right_records": 2054,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "target_normalized",
+      "left": "summarization/test.jsonl",
+      "right": "summarization/validation.jsonl",
+      "shared_groups": 93,
+      "left_records": 112,
+      "right_records": 123,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "target_normalized",
+      "left": "summarization/train.jsonl",
+      "right": "summarization/validation.jsonl",
+      "shared_groups": 624,
+      "left_records": 1972,
+      "right_records": 684,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/test.jsonl",
+      "right": "books/train.jsonl",
+      "shared_groups": 340,
+      "left_records": 1476,
+      "right_records": 23260,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/test.jsonl",
+      "right": "books/validation.jsonl",
+      "shared_groups": 192,
+      "left_records": 1283,
+      "right_records": 1284,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/test.jsonl",
+      "right": "summarization/train.jsonl",
+      "shared_groups": 20,
+      "left_records": 91,
+      "right_records": 26,
+      "cross_split": true,
+      "cross_task": true
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/test.jsonl",
+      "right": "summarization/validation.jsonl",
+      "shared_groups": 3,
+      "left_records": 30,
+      "right_records": 3,
+      "cross_split": true,
+      "cross_task": true
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/train.jsonl",
+      "right": "books/validation.jsonl",
+      "shared_groups": 330,
+      "left_records": 23326,
+      "right_records": 1477,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/train.jsonl",
+      "right": "summarization/test.jsonl",
+      "shared_groups": 5,
+      "left_records": 20,
+      "right_records": 5,
+      "cross_split": true,
+      "cross_task": true
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/train.jsonl",
+      "right": "summarization/train.jsonl",
+      "shared_groups": 64,
+      "left_records": 1658,
+      "right_records": 74,
+      "cross_split": false,
+      "cross_task": true
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/train.jsonl",
+      "right": "summarization/validation.jsonl",
+      "shared_groups": 4,
+      "left_records": 463,
+      "right_records": 4,
+      "cross_split": true,
+      "cross_task": true
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/validation.jsonl",
+      "right": "summarization/test.jsonl",
+      "shared_groups": 2,
+      "left_records": 2,
+      "right_records": 2,
+      "cross_split": true,
+      "cross_task": true
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/validation.jsonl",
+      "right": "summarization/train.jsonl",
+      "shared_groups": 25,
+      "left_records": 97,
+      "right_records": 31,
+      "cross_split": true,
+      "cross_task": true
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "books/validation.jsonl",
+      "right": "summarization/validation.jsonl",
+      "shared_groups": 2,
+      "left_records": 35,
+      "right_records": 2,
+      "cross_split": false,
+      "cross_task": true
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "summarization/test.jsonl",
+      "right": "summarization/train.jsonl",
+      "shared_groups": 656,
+      "left_records": 692,
+      "right_records": 1725,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "summarization/test.jsonl",
+      "right": "summarization/validation.jsonl",
+      "shared_groups": 97,
+      "left_records": 105,
+      "right_records": 112,
+      "cross_split": true,
+      "cross_task": false
+    },
+    {
+      "kind": "title_only_candidate",
+      "left": "summarization/train.jsonl",
+      "right": "summarization/validation.jsonl",
+      "shared_groups": 638,
+      "left_records": 1756,
+      "right_records": 684,
+      "cross_split": true,
+      "cross_task": false
+    }
+  ],
+  "omitted_pair_counts_are_zero": true,
+  "identical_targets_across_distinct_titles": {
+    "groups": 28,
+    "samples": [
+      {
+        "target_sha256": "03e19aca882fdc0ad9d2e5af52e80ad0014397f2788778ac908eeaeedbcf7833",
+        "distinct_title_candidate_groups": 2,
+        "references": [
+          {
+            "file": "summarization/train.jsonl",
+            "line": 1172,
+            "record_sha256": "586548a5d03d6e1ac9c3f1dfebe86737f0d41b93407f64056a26e389e070831c"
+          },
+          {
+            "file": "summarization/train.jsonl",
+            "line": 15321,
+            "record_sha256": "8b3b7326abe175e37200d18137da1e4ed1a917fcb4ee2fa60ad9537193ae9b60"
+          }
+        ]
+      },
+      {
+        "target_sha256": "137c384555472c1fe3ae74c9189358e40d4b5c6d9e8e16d785419f7ae178609b",
+        "distinct_title_candidate_groups": 7,
+        "references": [
+          {
+            "file": "summarization/test.jsonl",
+            "line": 2909,
+            "record_sha256": "36876c57963566fe088b180d08125deb5acbfb4e575018c8b1a655500200b3c3"
+          },
+          {
+            "file": "summarization/test.jsonl",
+            "line": 2964,
+            "record_sha256": "4e7c451544c0218177b60a1fd6261c1178c8acf599e4035a1e402daa48ed7c81"
+          },
+          {
+            "file": "summarization/train.jsonl",
+            "line": 15483,
+            "record_sha256": "01c2c107254088f95c4f86cd1e3225582690dfdf60cdaf34ed605751aa07701d"
+          },
+          {
+            "file": "summarization/train.jsonl",
+            "line": 17824,
+            "record_sha256": "58ef5bb373a48313e71216696db365163a1e1b24a99b91d38e8d1408c03ddb8a"
+          }
+        ]
+      },
+      {
+        "target_sha256": "1c365e4572f375094325f985951d8af8c44bae7c6651e2e8b1e7206ea70fced7",
+        "distinct_title_candidate_groups": 2,
+        "references": [
+          {
+            "file": "summarization/test.jsonl",
+            "line": 3148,
+            "record_sha256": "ee18a73259526bcdd7868bfed6e23312a6bd0df88c2420e54145c139976192a0"
+          },
+          {
+            "file": "summarization/test.jsonl",
+            "line": 3436,
+            "record_sha256": "c33e75e17c782fadfe1bddebd06a320ab8d9825b72079bd1a8f18b3a80866428"
+          },
+          {
+            "file": "summarization/train.jsonl",
+            "line": 50953,
+            "record_sha256": "7a004c4567510bceffae0ed5a86eabdfc07ea0714dd691879ba5ae755154ff1f"
+          },
+          {
+            "file": "summarization/train.jsonl",
+            "line": 51874,
+            "record_sha256": "caa8d02d6f6d9536a93d2df048f33f0aa0193965df9b7cf69e5436798082bf98"
+          }
+        ]
+      },
+      {
+        "target_sha256": "242345efb2ad0792ce317a846a57d8ef4e1a258bfef912e14dccb8466e4f6ea7",
+        "distinct_title_candidate_groups": 2,
+        "references": [
+          {
+            "file": "summarization/train.jsonl",
+            "line": 42529,
+            "record_sha256": "1947e1e8f8793c221d5bb09c67a646fc7b99dbfe0d210557e1526477f649cd3b"
+          },
+          {
+            "file": "summarization/train.jsonl",
+            "line": 56712,
+            "record_sha256": "9607a414d0c065e34508e04caad64905a410be6e974062e2634576f7364a0cfd"
+          },
+          {
+            "file": "summarization/train.jsonl",
+            "line": 57892,
+            "record_sha256": "9527995355e4fef00684e43c9352f481e0ae7f40e50f123a01c9df9a3d976bd9"
+          },
+          {
+            "file": "summarization/train.jsonl",
+            "line": 60534,
+            "record_sha256": "458118365c528747d811bc321944712d386e8a9290974215cd534500aa96723c"
+          }
+        ]
+      }
+    ],
+    "interpretation": "A source-pairing review signal; titles alone cannot establish distinct canonical works or prove a bad match."
+  },
+  "historical_count_comparison": {
+    "status": "count_comparison_only",
+    "report": "research/results/historical/leximind_test.json",
+    "report_sha256": "75f731bcbfb6f9afedf201cb3ec2ae227e4810a505be2688181ecaf07bdf59e7",
+    "comparisons": [
+      {
+        "task": "summarization",
+        "historical_report_rows": 2727,
+        "current_test_rows": 3440,
+        "row_count_difference": 713,
+        "historical_domains": {
+          "academic": 2506,
+          "literary": 221
+        },
+        "current_domains": {
+          "academic": 2506,
+          "literary": 934
+        }
+      },
+      {
+        "task": "emotion",
+        "historical_report_rows": 5427,
+        "current_test_rows": 5427,
+        "row_count_difference": 0
+      },
+      {
+        "task": "topic",
+        "historical_report_rows": 189,
+        "current_test_rows": 189,
+        "row_count_difference": 0
+      }
+    ],
+    "note": "These are existing report sample counts, not new metrics. Equal counts do not establish identical examples or historical run provenance."
+  },
+  "limitations": [
+    "Exact hashes do not detect near-duplicates, overlapping excerpts, translations or related editions.",
+    "Declared IDs and title/author candidate groups are evidence to review, not independently verified canonical identities.",
+    "Title-only intersections indicate identity risk and are not proof that two records represent the same work.",
+    "Document-only grouping can prevent paragraph leakage while work-level generalization remains unresolved.",
+    "No model execution, output scoring, data repair or split reassignment was performed."
+  ]
+}

@@ -1,4 +1,13 @@
-# Related work — initial literature gate
+# Related work — review history
+
+**26 September update:** the initial abstract-level review below is preserved as
+history. Continue with the [model methods review](research/model_recipe_review.md),
+[book-discovery review](research/book_discovery_review.md), and
+[current study decisions](research/study_decisions.md). Those reviews resolve the
+framing as controlled replication/application; they do not establish novelty or
+close the remaining data, integration, budget and human-evidence requirements.
+
+# Initial literature gate, 22 September
 
 **Checked 2026-09-22. Status: OPEN; no novelty claim.** This is a bounded initial
 review of primary abstracts, publication records and official model documentation.

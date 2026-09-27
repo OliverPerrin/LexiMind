@@ -77,7 +77,18 @@ Do not include private reading histories, account identifiers, or personal query
 text without informed permission and an agreed handling policy. Synthetic examples
 below are not consented user records and are not real judgments.
 
-## Holding out works without leakage
+## Query generalization and optional work holdout
+
+The current B1 proposal is **new query families over a fixed catalogue**. Group
+queries by family and seed work before assigning development/test roles. Candidate
+works may legitimately be retrieved for queries in multiple partitions. The primary
+eligible pool covers the declared catalogue with explicit exclusions, including the
+seed work itself. This setting makes no claim that candidate works are unseen by
+the representation model.
+
+A separate future model-feature study may claim unseen-work generalization. The
+work-group procedure below applies to that explicit claim; it must not silently
+shrink the current B1 catalogue to match each query's partition.
 
 The held-out work set is currently **empty**. After research resumes:
 

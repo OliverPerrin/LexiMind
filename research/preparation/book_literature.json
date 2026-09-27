@@ -1,0 +1,559 @@
+{
+  "schemaVersion": 1,
+  "status": "preparation_only",
+  "checkedAt": "2026-09-26",
+  "reviewDocument": "docs/research/book_discovery_review.md",
+  "scope": "Book discovery, content and multi-task recommendation, dataset suitability, affective narrative labels, and evaluation design.",
+  "execution": {
+    "trainingRun": false,
+    "modelInferenceRun": false,
+    "modelEvaluationRun": false,
+    "datasetsDownloaded": false,
+    "annotatorsContacted": false,
+    "goldLabelsCreated": false,
+    "privateReadingHistoryAccessed": false,
+    "paidServicesUsed": false
+  },
+  "selection": {
+    "researchSourceGroups": 9,
+    "exhaustiveLiteratureReview": false,
+    "noveltyEstablished": false,
+    "note": "Substantive methods and named appendices were read. Versions are separate; an inaccessible KDD PDF is not counted as read. Provider pages are live documents rather than pinned dataset releases."
+  },
+  "sources": [
+    {
+      "id": "libra_2000",
+      "title": "Content-Based Book Recommending Using Learning for Text Categorization",
+      "url": "https://www.cs.utexas.edu/users/ml/papers/libra-dl-00.pdf",
+      "version": "DL 2000 author-hosted paper; distinct from 1999 workshop version",
+      "date": "2000-06",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "System Description: extraction, profile, explanations",
+        "Experimental Results: methodology, metrics, learning curves"
+      ],
+      "claims": [
+        {
+          "id": "libra_method",
+          "statement": "Slot-based preference model and its rating-study design.",
+          "locator": "System Description; Experimental Results, pp. 2-5 of PDF",
+          "url": "https://www.cs.utexas.edu/users/ml/papers/libra-dl-00.pdf"
+        }
+      ],
+      "limitations": [
+        "Historical Amazon data not acquired or licensed by this review.",
+        "Small reader sample and page-based anticipated-interest judgments do not establish post-reading satisfaction.",
+        "Related-title/author features contain collaborative information."
+      ]
+    },
+    {
+      "id": "goodreads_chainrec_2018",
+      "title": "Item Recommendation on Monotonic Behavior Chains",
+      "url": "https://cseweb.ucsd.edu/~jmcauley/pdfs/recsys18b.pdf",
+      "version": "RecSys 2018, DOI 10.1145/3240323.3240369",
+      "date": "2018-10",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Sections 2-3",
+        "Sections 4.1-4.2",
+        "Sections 5.1-5.3 and Table 3"
+      ],
+      "claims": [
+        {
+          "id": "chainrec_method",
+          "statement": "Monotonic multi-signal recommendation objective.",
+          "locator": "Sections 4.1-4.2, equations 8-16",
+          "url": "https://cseweb.ucsd.edu/~jmcauley/pdfs/recsys18b.pdf"
+        },
+        {
+          "id": "chainrec_evaluation",
+          "statement": "Interaction splits and comparative ranking results.",
+          "locator": "Sections 5.1-5.3, Table 3",
+          "url": "https://cseweb.ucsd.edu/~jmcauley/pdfs/recsys18b.pdf"
+        }
+      ],
+      "limitations": [
+        "Not a held-out-work text retrieval experiment.",
+        "Filtered users/items and observed public shelves are selected populations.",
+        "No causal interpretation or whole-work mood target."
+      ]
+    },
+    {
+      "id": "nrt_2017",
+      "title": "Neural Rating Regression with Abstractive Tips Generation for Recommendation",
+      "url": "https://arxiv.org/pdf/1708.00154v1",
+      "version": "arXiv:1708.00154v1; SIGIR 2017",
+      "date": "2017-08-01",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Sections 3.2-3.4, equations 7-22",
+        "Sections 4.2-4.5, Tables 2-3"
+      ],
+      "claims": [
+        {
+          "id": "nrt_joint",
+          "statement": "Joint rating/review/tip objectives.",
+          "locator": "Section 3.4, equation 22",
+          "url": "https://arxiv.org/pdf/1708.00154v1"
+        },
+        {
+          "id": "nrt_targets",
+          "statement": "Output targets and metrics.",
+          "locator": "Sections 4.2-4.3",
+          "url": "https://arxiv.org/pdf/1708.00154v1"
+        },
+        {
+          "id": "nrt_baseline_privilege",
+          "statement": "True-rating information in one baseline.",
+          "locator": "Section 4.4",
+          "url": "https://arxiv.org/pdf/1708.00154v1"
+        }
+      ],
+      "limitations": [
+        "No top-k query-work quality established by rating/text metrics.",
+        "Current dataset terms and access were not reviewed for acquisition.",
+        "User/item-factor method is not an inductive new-work text encoder."
+      ]
+    },
+    {
+      "id": "cmu_summaries_2013",
+      "title": "New Alignment Methods for Discriminative Book Summarization",
+      "url": "https://arxiv.org/pdf/1305.1319v1",
+      "version": "arXiv:1305.1319v1",
+      "date": "2013-05-06",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Section 3: both alignment methods",
+        "Sections 4.1-4.2 and 5; Table 2",
+        "Appendix example identified but not separately assessed"
+      ],
+      "claims": [
+        {
+          "id": "cmu_method",
+          "statement": "Alignment-derived extractive supervision and evaluation.",
+          "locator": "Sections 3-5; Table 2",
+          "url": "https://arxiv.org/pdf/1305.1319v1"
+        }
+      ],
+      "limitations": [
+        "Public 16,559-summary release is distinct from the paper's 439-pair experiment.",
+        "Plot-summary overlap is neither spoiler-light blurb utility nor recommendation relevance.",
+        "Paper does not confer rights to independently collected full books."
+      ]
+    },
+    {
+      "id": "booksum_2022",
+      "title": "BOOKSUM: A Collection of Datasets for Long-form Narrative Summarization",
+      "url": "https://aclanthology.org/2022.findings-emnlp.488.pdf",
+      "version": "Findings EMNLP 2022 proceedings, pp. 6536-6558; not conflated with original 2021 preprint",
+      "date": "2022-12",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Sections 3.1-3.2",
+        "Sections 4.1-4.5",
+        "Appendices A-C, Tables 4-6"
+      ],
+      "claims": [
+        {
+          "id": "booksum_identity",
+          "statement": "Author checks and grouped splits.",
+          "locator": "Section 3.1, pp. 6538-6539",
+          "url": "https://aclanthology.org/2022.findings-emnlp.488.pdf"
+        },
+        {
+          "id": "booksum_human_scope",
+          "statement": "Human evaluation scope limit.",
+          "locator": "Section 4.4, Table 3, p. 6543",
+          "url": "https://aclanthology.org/2022.findings-emnlp.488.pdf"
+        },
+        {
+          "id": "booksum_alignment",
+          "statement": "Paragraph alignment procedure.",
+          "locator": "Appendices B-C, pp. 6547-6548",
+          "url": "https://aclanthology.org/2022.findings-emnlp.488.pdf"
+        }
+      ],
+      "limitations": [
+        "No whole-work mood or recommendation labels.",
+        "Code license does not license third-party study-guide text.",
+        "Classic-literature and study-guide selection differ from current browsing blurbs."
+      ]
+    },
+    {
+      "id": "dens_2019",
+      "title": "DENS: A Dataset for Multi-class Emotion Analysis",
+      "url": "https://aclanthology.org/D19-1656.pdf",
+      "version": "EMNLP-IJCNLP 2019 proceedings; appendix read from author arXiv PDF",
+      "date": "2019-11",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Sections 3.1-3.4 and 4",
+        "Appendix A.1-A.2 at https://arxiv.org/pdf/1910.11769; absent from proceedings PDF"
+      ],
+      "claims": [
+        {
+          "id": "dens_target",
+          "statement": "Passage annotation task.",
+          "locator": "Sections 3.1-3.4",
+          "url": "https://aclanthology.org/D19-1656.pdf"
+        },
+        {
+          "id": "dens_benchmark",
+          "statement": "Benchmark protocol.",
+          "locator": "Section 4",
+          "url": "https://aclanthology.org/D19-1656.pdf"
+        },
+        {
+          "id": "dens_appendix",
+          "statement": "Filtering and annotation examples.",
+          "locator": "Appendix A.1-A.2, PDF p. 7",
+          "url": "https://arxiv.org/pdf/1910.11769"
+        }
+      ],
+      "limitations": [
+        "A passage's emotion is not whole-work reader atmosphere.",
+        "Work-disjoint folds are not established by the stated protocol.",
+        "Current dataset delivery and detailed terms remain unverified."
+      ]
+    },
+    {
+      "id": "implicit_hkv_2008",
+      "title": "Collaborative Filtering for Implicit Feedback Datasets",
+      "url": "https://yifanhu.net/PUB/cf.pdf",
+      "version": "ICDM 2008 author-hosted paper",
+      "date": "2008",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Sections 4-6, equations 3-7"
+      ],
+      "claims": [
+        {
+          "id": "implicit_method",
+          "statement": "Preference/confidence distinction.",
+          "locator": "Section 4, equations 3-6",
+          "url": "https://yifanhu.net/PUB/cf.pdf"
+        },
+        {
+          "id": "implicit_time",
+          "statement": "Temporal discovery evaluation.",
+          "locator": "Section 6, pp. 5-6 of PDF",
+          "url": "https://yifanhu.net/PUB/cf.pdf"
+        }
+      ],
+      "limitations": [
+        "Television domain, not book relevance.",
+        "No dataset was obtained; paper does not establish a public release.",
+        "Implicit confidence is a modeling assumption, not calibrated psychological preference."
+      ]
+    },
+    {
+      "id": "sampled_metrics_2019_2021",
+      "title": "Evaluation Metrics for Item Recommendation under Sampling / On Sampled Metrics for Item Recommendation",
+      "url": "https://arxiv.org/pdf/1912.02263v1",
+      "version": "Rendle 2019 v1 full precursor plus Krichene and Rendle IJCAI 2021 extended account; KDD 2020 full PDF inaccessible and not marked read",
+      "date": "2019-12-04",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "2019 Sections 2-4.5, including derivations",
+        "2021 Sections 2-5: https://www.ijcai.org/proceedings/2021/0651.pdf",
+        "KDD 2020 full PDF not accessible; not marked read"
+      ],
+      "claims": [
+        {
+          "id": "sampled_inconsistency",
+          "statement": "Ranking inconsistency under sampling.",
+          "locator": "2019 Sections 4.2-4.5",
+          "url": "https://arxiv.org/pdf/1912.02263v1"
+        },
+        {
+          "id": "sampled_corrections",
+          "statement": "Correction and bias-variance limits.",
+          "locator": "2021 Sections 4-6, equations 9-10",
+          "url": "https://www.ijcai.org/proceedings/2021/0651.pdf"
+        }
+      ],
+      "limitations": [
+        "Single-positive derivations do not settle graded multi-relevance pooling.",
+        "Ranking all candidates does not make all judgments available.",
+        "No experiments from these papers were replicated."
+      ]
+    },
+    {
+      "id": "incomplete_judgments_2004",
+      "title": "Retrieval Evaluation with Incomplete Information",
+      "url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=150469",
+      "version": "SIGIR 2004 paper, NIST-hosted PDF; NIST record dated 2004-07-01",
+      "date": "2004-07",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Sections 2-6, including reduced-qrels construction and pooling limitations"
+      ],
+      "claims": [
+        {
+          "id": "bpref_scope",
+          "statement": "Incomplete-judgment experiment.",
+          "locator": "Sections 2.1 and 4",
+          "url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=150469"
+        },
+        {
+          "id": "pooling_limit",
+          "statement": "Conditions on pooling validity.",
+          "locator": "Section 6, pp. 7-8 of PDF",
+          "url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=150469"
+        }
+      ],
+      "limitations": [
+        "Binary relevance study, not a validated graded book-discovery protocol.",
+        "Does not justify silently treating abstentions as negatives.",
+        "No judgment collection or metrics were run."
+      ]
+    }
+  ],
+  "providerSources": [
+    {
+      "id": "ucsd_goodreads_provider",
+      "title": "Goodreads Book Graph Datasets",
+      "url": "https://cseweb.ucsd.edu/~jmcauley/datasets/goodreads.html",
+      "version": "Live provider page; underlying collection late 2017; no immutable download selected",
+      "date": "2017 collection",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Overview",
+        "Meta-Data of Books",
+        "Book Shelves",
+        "Book Reviews",
+        "By Genre"
+      ],
+      "termsObserved": "Academic use only; redistribution and commercial use prohibited.",
+      "termsLocator": "Overview, first paragraph",
+      "unit": "Book-level interactions with separately provided work/author/series tables; edition-to-work resolution required.",
+      "signals": [
+        "shelf/read/rating/review",
+        "metadata",
+        "keyword-derived shelf genres"
+      ],
+      "absentTargets": [
+        "query-work relevance",
+        "whole-work reading atmosphere"
+      ],
+      "accessStatus": "Provider download links inspected; not fetched.",
+      "suitabilityDecision": "Conditional offline preference study; not admitted as a deployed catalog source.",
+      "unresolved": [
+        "Exact file revisions and hashes",
+        "Intended-use compatibility",
+        "Field-specific identity and temporal semantics"
+      ],
+      "legalClearanceAsserted": false
+    },
+    {
+      "id": "booksum_provider",
+      "title": "Salesforce BookSum author repository",
+      "url": "https://github.com/salesforce/booksum",
+      "version": "main page checked; archived 2026-06-25; no commit pinned for acquisition",
+      "date": "Initial release 2021-04-15",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Legal Note",
+        "License",
+        "Usage: chapterized Gutenberg, source collection, cleaning and alignments"
+      ],
+      "termsObserved": "Scripts restricted to research; source-service terms and rights remain user's responsibility. BSD-3 code license is separately stated.",
+      "termsLocator": "README Legal Note items 1-3; License",
+      "unit": "Paragraph/chapter/work source-summary alignments, with multiple summaries per work.",
+      "signals": [
+        "source narratives",
+        "study-guide summaries",
+        "alignment metadata"
+      ],
+      "absentTargets": [
+        "recommendation relevance",
+        "reader preference",
+        "whole-work mood"
+      ],
+      "accessStatus": "Documented bucket/collection route inspected; no scripts or data fetched.",
+      "suitabilityDecision": "Conditional summarization resource; text-rights and snapshot gates open.",
+      "unresolved": [
+        "Underlying summary-source terms",
+        "Jurisdiction-sensitive source-book rights",
+        "Reproducible source snapshot",
+        "Attribution and redistribution conditions"
+      ],
+      "legalClearanceAsserted": false
+    },
+    {
+      "id": "cmu_booksummaries_provider",
+      "title": "CMU Book Summary Dataset",
+      "url": "https://www.cs.cmu.edu/~dbamman/booksummaries.html",
+      "version": "Live provider page, 16,559-summary release; archive not downloaded",
+      "date": "Provider page does not state immutable release date",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Dataset description",
+        "Download link",
+        "License hyperlink",
+        "Metadata example"
+      ],
+      "termsObserved": "Provider labels all data Creative Commons Attribution-ShareAlike, linking CC BY-SA 3.0 US.",
+      "termsLocator": "Description paragraph and https://creativecommons.org/licenses/by-sa/3.0/us/legalcode",
+      "unit": "Wikipedia plot-summary record linked to Freebase metadata; not a verified edition.",
+      "signals": [
+        "plot summary",
+        "author",
+        "title",
+        "publication date",
+        "genres",
+        "Wikipedia/Freebase IDs"
+      ],
+      "absentTargets": [
+        "full source books",
+        "recommendation relevance",
+        "whole-work mood"
+      ],
+      "accessStatus": "Public archive link present; not downloaded.",
+      "suitabilityDecision": "Candidate metadata/genre or summary-text resource; attribution, intended reuse and work mapping still to freeze.",
+      "unresolved": [
+        "Archive checksum/version",
+        "Attribution/change records",
+        "Reuse obligations for intended artifact",
+        "Identity mapping and duplicate work groups"
+      ],
+      "legalClearanceAsserted": false
+    },
+    {
+      "id": "dens_access",
+      "title": "DENS access statement",
+      "url": "https://aclanthology.org/D19-1656.pdf",
+      "version": "2019 publication statement, not a current delivery confirmation",
+      "date": "2019-11",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Page 6293, dataset access statement and footnote 2"
+      ],
+      "termsObserved": "Available on request for non-commercial research purposes.",
+      "termsLocator": "Page 6293, preceding Section 3 and footnote 2",
+      "unit": "Narrative passage",
+      "signals": [
+        "dominant passage emotion",
+        "annotator agreement"
+      ],
+      "absentTargets": [
+        "whole-work mood",
+        "query relevance"
+      ],
+      "accessStatus": "No access request sent; current availability unverified.",
+      "suitabilityDecision": "Conditional narrative-emotion diagnostic only.",
+      "unresolved": [
+        "Present availability",
+        "Exact version and detailed terms",
+        "Work identifiers",
+        "Permitted model/artifact redistribution"
+      ],
+      "legalClearanceAsserted": false
+    },
+    {
+      "id": "openlibrary_provider",
+      "title": "Open Library Developer Center: Licensing and API documentation",
+      "url": "https://openlibrary.org/developers/licensing",
+      "version": "Licensing page last edited 2021-06-27; checked live",
+      "date": "2021-06-27",
+      "checkedAt": "2026-09-26",
+      "read_scope": [
+        "Licensing statement",
+        "API guidance and rate-limit sections at https://openlibrary.org/developers/api"
+      ],
+      "termsObserved": "Internet Archive asserts no new proprietary rights; existing rights may remain in contributions or jurisdictions.",
+      "termsLocator": "Developer Center / Licensing, main paragraph",
+      "unit": "Distinct work/edition/author records; preserve selected edition provenance.",
+      "signals": [
+        "bibliographic metadata",
+        "community subjects",
+        "descriptions",
+        "covers"
+      ],
+      "absentTargets": [
+        "independent query relevance",
+        "whole-work mood",
+        "consented central reader interactions"
+      ],
+      "accessStatus": "Documentation only; no catalog/API mutation or new acquisition.",
+      "suitabilityDecision": "Existing product-aligned corpus; not a universally rights-cleared or research-gold resource.",
+      "unresolved": [
+        "Contribution-specific rights for text/images",
+        "Frozen research snapshot and exclusions",
+        "Query sampling and judgments"
+      ],
+      "legalClearanceAsserted": false
+    }
+  ],
+  "proposals": {
+    "status": "unfrozen_not_executed",
+    "primaryEstimand": "Difference in query-work relevance for new query families over a fixed candidate catalogue and shared evidence conditions; no unseen-candidate-work claim.",
+    "primaryMetric": {
+      "name": "nDCG@10",
+      "unit": "query",
+      "gain": "2^grade - 1",
+      "relevanceGrades": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "candidatePolicy": "Rank every eligible canonical work in the fixed catalog.",
+      "idealRanking": "Same completely judged eligible candidate catalogue; unresolved eligible pairs block primary scoring.",
+      "unjudgedPolicy": "Never silently convert missing or unjudgeable labels to zero.",
+      "unresolved": [
+        "Query sample",
+        "Tie rules",
+        "Short lists",
+        "No-relevant queries",
+        "Evidence coverage",
+        "Uncertainty and final success criteria"
+      ],
+      "poolConditionalScoring": "Separate prespecified secondary analysis only; never a substitute for primary complete-catalogue coverage."
+    },
+    "secondaryMetrics": [
+      "hard-constraint violation rate",
+      "judged precision@10 under frozen grade>=2 rule",
+      "judgment coverage",
+      "catalog coverage",
+      "duplicate-work rate",
+      "relevant author/subject diversity",
+      "latency and storage separately"
+    ],
+    "relevanceCollection": {
+      "authorized": false,
+      "status": "not_started",
+      "queries": [],
+      "judgments": [],
+      "annotators": [],
+      "candidatePool": "Primary admission requires complete eligible-catalogue coverage; a separately frozen pooled collection may support secondary analysis only.",
+      "blinding": "Hide system names, scores, ranks and generated explanations; randomize work presentation.",
+      "evidenceScope": "Metadata/description relevance can be judged at that scope; sustained mood needs separate qualified work-level evidence.",
+      "primaryReview": "Two distinct-rater non-abstaining judgments per eligible primary pair, plus a separately hash-pinned human review/adjudication source. Syntactic validation does not verify human truth."
+    },
+    "moodCollection": {
+      "authorized": false,
+      "status": "not_started",
+      "annotations": [],
+      "wholeWorkGoldLabels": []
+    },
+    "leakageControls": [
+      "Work/edition identity with unresolved joins excluded",
+      "For work-held-out supervised studies, group chapters/excerpts/editions/derivative summaries across datasets",
+      "B1 partitions query families and seed-work groups while sharing its fixed candidate catalogue",
+      "Separate pilot, tuning and final query/seed groups",
+      "Freeze temporal feature availability for future interaction studies",
+      "Declare pretraining contamination limits",
+      "Do not promote legacy random tones or title-only text joins"
+    ],
+    "decisionsNotMade": [
+      "Dataset admission",
+      "Licensing/rights clearance",
+      "Model/backbone selection",
+      "Compute budget",
+      "Sample size",
+      "Training or evaluation resumption"
+    ]
+  },
+  "claimDetailLocation": "docs/research/book_discovery_review.md, Methods evidence and limits; Dataset suitability and terms"
+}

@@ -5,6 +5,14 @@ user has paused training and all research experiments. No evaluations, inference
 teacher generation, backbone pilots, or paid jobs may be launched under this draft.
 The items below specify preparation and decisions for a later explicit resumption.
 
+**September 26 refinement:** [study_decisions.md](research/study_decisions.md) and
+[`study_design.json`](../configs/research/study_design.json) specify the working
+first comparison. It matches a proposed student-training allowance and reports
+additional development cost; it does not silently claim equal total cost. Shared
+encoder attention deltas and retained private modules are explicit. Benchmark and
+book studies have separate readiness checks. Legacy files remain unadmitted, and
+numeric/empirical feasibility choices remain open. This is still a draft protocol.
+
 ## Questions and scope
 
 1. Applied: do independently validated topic/genre/mood features learned jointly
@@ -29,7 +37,10 @@ Every future run bundle must include:
   near-duplicate source documents are grouped before splitting. Author-held-out
   analysis may be a separate domain-shift probe, not silently mixed into test.
 - Explicit train, model-selection validation, calibration, and untouched test IDs.
-  Assert empty work-ID and duplicate-group intersections between partitions. For
+  Assert empty source-record/declared independent-group intersections between
+  partitions. Report text duplicates separately and apply a frozen, source-aware
+  policy; preserving official comment splits is different from claiming unseen-text
+  generalization. For
   GoEmotions, pin the actual example IDs assigned by `split_emotion_val`; apply that
   same partition to every model, including BERT. Do not use full validation for one
   arm and half validation for another.
