@@ -209,6 +209,68 @@ def _inspect_source_archive(root: Path, files: dict[str, Path]) -> list[str]:
     return errors
 
 
+def _inspect_book_candidates(files: dict[str, Path], bgc: dict[str, Any]) -> list[str]:
+    """Check candidate provenance without requiring ignored local corpora in CI."""
+    errors: list[str] = []
+    reports: dict[str, dict[str, Any]] = {}
+    shared_helpers = ("candidate_io", "file_integrity_contract")
+    contracts = (
+        (
+            "bgc_groups",
+            "bgc_group_builder",
+            (*shared_helpers, "book_group_contract", "bgc_builder"),
+            {"candidate_manifest": "bgc_candidate"},
+        ),
+        (
+            "book_fields",
+            "book_field_builder",
+            (*shared_helpers, "book_field_contract", "bgc_builder", "catalogue_storage"),
+            {
+                "candidate_manifest": "bgc_candidate",
+                "grouping_manifest": "bgc_groups",
+                "mapping": "book_field_mapping",
+            },
+        ),
+        (
+            "licensed_books",
+            "licensed_book_builder",
+            shared_helpers,
+            {"source_inventory": "licensed_book_sources"},
+        ),
+    )
+    for report_id, builder_id, helper_ids, references in contracts:
+        report = _object(read_json(files[report_id]), report_id)
+        reports[report_id] = report
+        if report.get("training_authorized") is not False:
+            errors.append(f"{report_id} must remain a preparation-only candidate")
+        if (
+            report.get("preparation_script_sha256")
+            != hashlib.sha256(files[builder_id].read_bytes()).hexdigest()
+        ):
+            errors.append(f"{report_id} used a different preparation script")
+        expected_helpers = {
+            ARTIFACTS[key][1]: hashlib.sha256(files[key].read_bytes()).hexdigest()
+            for key in helper_ids
+        }
+        if report.get("preparation_helper_sha256") != expected_helpers:
+            errors.append(f"{report_id} does not bind current preparation helpers")
+        for reference_key, artifact_id in references.items():
+            expected_reference = {
+                "path": ARTIFACTS[artifact_id][1],
+                "bytes": files[artifact_id].stat().st_size,
+                "sha256": hashlib.sha256(files[artifact_id].read_bytes()).hexdigest(),
+            }
+            if report.get(reference_key) != expected_reference:
+                errors.append(f"{report_id} does not bind current {reference_key}")
+        if report_id in {"bgc_groups", "book_fields"} and report.get("archive") != bgc.get(
+            "archive"
+        ):
+            errors.append(f"{report_id} refers to a different BGC archive")
+    if reports["book_fields"].get("assignments") != reports["bgc_groups"].get("assignments"):
+        errors.append("book_fields refers to different group assignments")
+    return errors
+
+
 def inspect_preparation(
     root: Path, manifest_path: Path, target: str, *, check_archive: bool = False
 ) -> dict[str, Any]:
@@ -281,6 +343,7 @@ def inspect_preparation(
                 }
                 if bgc.get("preparation_helper_sha256") != expected_helpers:
                     errors.append("BGC audit does not bind current preparation helpers")
+                errors.extend(_inspect_book_candidates(files, bgc))
                 validate_ledger(read_json(files["compute_ledger_template"]))
                 blockers.extend(validate_model_admission(root, plan))
             else:

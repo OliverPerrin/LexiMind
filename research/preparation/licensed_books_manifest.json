@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "candidate_status": "unadmitted",
+  "training_performed": false,
+  "training_authorized": false,
+  "preparation_script": "scripts/prepare_licensed_books.py",
+  "preparation_script_sha256": "2bffdd47083e07551b66eae7c95c874c98eaaa693653e1fb801eeb665b44bcc4",
+  "preparation_helper_sha256": {
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
+  },
+  "source_inventory": {
+    "path": "research/preparation/licensed_books_sources.json",
+    "bytes": 7705,
+    "sha256": "02dd9de53b398fefd671ab9b12e09c17e3af6cea7dcbe6e2976c70e1e446cfa0"
+  },
+  "cache_root": "data/research_candidates/licensed_books",
+  "build_key": "0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a",
+  "sources": {
+    "little-brother.txt": {
+      "path": "sources/24ac213b5bd7840df63f3bf970fee9bcdaec19a0dc994a4eb66e72ae56d3aa66/little-brother.txt",
+      "url": "https://craphound.com/littlebrother/Cory_Doctorow_-_Little_Brother.txt",
+      "bytes": 658936,
+      "sha256": "24ac213b5bd7840df63f3bf970fee9bcdaec19a0dc994a4eb66e72ae56d3aa66",
+      "receipt": {
+        "path": "sources/24ac213b5bd7840df63f3bf970fee9bcdaec19a0dc994a4eb66e72ae56d3aa66/little-brother.txt.receipt.json",
+        "sha256": "1c7f3e885b21af370a4e3bfaf072fc60f9d1f5ae747acc053555dec2bbd136df"
+      }
+    },
+    "bookdash-meta.yml": {
+      "path": "sources/2979394c86bf5a3171500a6d15e2cb45ef0f261d2dcab7a6322504319627564f/bookdash-meta.yml",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/_data/meta.yml",
+      "bytes": 102260,
+      "sha256": "2979394c86bf5a3171500a6d15e2cb45ef0f261d2dcab7a6322504319627564f",
+      "receipt": {
+        "path": "sources/2979394c86bf5a3171500a6d15e2cb45ef0f261d2dcab7a6322504319627564f/bookdash-meta.yml.receipt.json",
+        "sha256": "9f824e9f117321a6c59b1bf8dfd10364340dfadbc112c0b3e3f5b00f01ab2fe2"
+      }
+    },
+    "little-ants-big-plan.md": {
+      "path": "sources/3ee77e8921d71e07c0fb71babc50d15a67b14f45fde0b9b60ee5c4dbcc8fa4e2/little-ants-big-plan.md",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/little-ants-big-plan/en/index.md",
+      "bytes": 2606,
+      "sha256": "3ee77e8921d71e07c0fb71babc50d15a67b14f45fde0b9b60ee5c4dbcc8fa4e2",
+      "receipt": {
+        "path": "sources/3ee77e8921d71e07c0fb71babc50d15a67b14f45fde0b9b60ee5c4dbcc8fa4e2/little-ants-big-plan.md.receipt.json",
+        "sha256": "f6a61ad3008da53665685dc4e6ea2a05b4e100c2580eb8e8f424df9a55139c00"
+      }
+    },
+    "sizwes-smile.md": {
+      "path": "sources/a405ea40aeb2972fe82d91ddca14497579511ee38456ed6d7676051fc0b4fff0/sizwes-smile.md",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/sizwes-smile/en/index.md",
+      "bytes": 4987,
+      "sha256": "a405ea40aeb2972fe82d91ddca14497579511ee38456ed6d7676051fc0b4fff0",
+      "receipt": {
+        "path": "sources/a405ea40aeb2972fe82d91ddca14497579511ee38456ed6d7676051fc0b4fff0/sizwes-smile.md.receipt.json",
+        "sha256": "89b77a4c6beaa32b2798b1c33731149cae94f7ea6e093b9670438174e8b47d03"
+      }
+    },
+    "why-is-nita-upside-down.md": {
+      "path": "sources/32f687feccedda7c5679db3ec3e0d33fa61d045cfce3bf6312b1ba3da2ea1f73/why-is-nita-upside-down.md",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/why-is-nita-upside-down/en/index.md",
+      "bytes": 2373,
+      "sha256": "32f687feccedda7c5679db3ec3e0d33fa61d045cfce3bf6312b1ba3da2ea1f73",
+      "receipt": {
+        "path": "sources/32f687feccedda7c5679db3ec3e0d33fa61d045cfce3bf6312b1ba3da2ea1f73/why-is-nita-upside-down.md.receipt.json",
+        "sha256": "22a91a251e38a8b1b324b2641a2c2bfe584783e9688f9307ffb5b5563ddff164"
+      }
+    }
+  },
+  "books": [
+    {
+      "work_id": "cory-doctorow-little-brother",
+      "title": "Little Brother",
+      "domain": "young_adult_novel",
+      "license": "CC-BY-NC-SA-3.0",
+      "work_group_id": "cory-doctorow-little-brother",
+      "source": "little-brother.txt",
+      "sections": 22,
+      "empty_sections": [],
+      "whitespace_words": 105338,
+      "body_utf8_bytes": 569439,
+      "artifact": {
+        "path": "prepared/0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a/cory-doctorow-little-brother.json",
+        "bytes": 584065,
+        "sha256": "9aa0c4fa7d7cf24ceef4624cc837a8787cd6342b3eb60fc0fdf8fbb2042a0645"
+      }
+    },
+    {
+      "work_id": "bookdash-little-ants-big-plan",
+      "title": "Little Ant's Big Plan",
+      "domain": "childrens_picture_book",
+      "license": "CC-BY-4.0",
+      "work_group_id": "bookdash-little-ants-big-plan",
+      "source": "little-ants-big-plan.md",
+      "sections": 12,
+      "empty_sections": [],
+      "whitespace_words": 203,
+      "body_utf8_bytes": 1056,
+      "artifact": {
+        "path": "prepared/0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a/bookdash-little-ants-big-plan.json",
+        "bytes": 4657,
+        "sha256": "90819cdf883e2a8369e31927f8bb67b04bdfd278201948306e36fd3ac1552d10"
+      }
+    },
+    {
+      "work_id": "bookdash-sizwes-smile",
+      "title": "Sizwe's Smile",
+      "domain": "childrens_picture_book",
+      "license": "CC-BY-4.0",
+      "work_group_id": "bookdash-sizwes-smile",
+      "source": "sizwes-smile.md",
+      "sections": 12,
+      "empty_sections": [],
+      "whitespace_words": 685,
+      "body_utf8_bytes": 3796,
+      "artifact": {
+        "path": "prepared/0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a/bookdash-sizwes-smile.json",
+        "bytes": 7385,
+        "sha256": "9a049066613d28c3392722fcfc50226053521cabcc53b8ebc7df3857b48f036d"
+      }
+    },
+    {
+      "work_id": "bookdash-why-is-nita-upside-down",
+      "title": "Why is Nita upside down?",
+      "domain": "childrens_picture_book",
+      "license": "CC-BY-4.0",
+      "work_group_id": "bookdash-why-is-nita-upside-down",
+      "source": "why-is-nita-upside-down.md",
+      "sections": 12,
+      "empty_sections": [
+        "page-05"
+      ],
+      "whitespace_words": 219,
+      "body_utf8_bytes": 1205,
+      "artifact": {
+        "path": "prepared/0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a/bookdash-why-is-nita-upside-down.json",
+        "bytes": 4828,
+        "sha256": "e5832c7960cfd287fbea3898c4e81b051e1578ae1a8d455f8f063dc03eeba1d4"
+      }
+    }
+  ],
+  "totals": {
+    "works": 4,
+    "sections": 58,
+    "source_bytes": 771162,
+    "body_utf8_bytes": 575496,
+    "whitespace_words": 106445,
+    "domains": {
+      "young_adult_novel": 1,
+      "childrens_picture_book": 3
+    }
+  },
+  "split_policy": "No split assigned. Keep every chapter/page and future edition of a work in one group; match catalogue/BGC identities before admission.",
+  "limitations": [
+    "Four selected English works are preparation examples, not a representative corpus or evaluation set.",
+    "One long-form YA novel dominates text volume; three children's picture books rely on omitted images. No adult-fiction or general-nonfiction coverage.",
+    "Source spelling and punctuation are retained, including source typos; no OCR, inferred text, summaries, topic/genre labels or mood gold.",
+    "Licenses stay per work. Little Brother has NC and SA conditions; MIT repository licensing does not replace source licenses or clear every future training use.",
+    "Book Dash sections follow image/page markers (including an empty page), not inferred semantic chunks; source line spans include page markers and whitespace."
+  ]
+}

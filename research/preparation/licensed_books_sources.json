@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "purpose": "Pinned four-work licensed text preparation sample; no labels, splits, model calls or training",
+  "sources": {
+    "little-brother.txt": {
+      "url": "https://craphound.com/littlebrother/Cory_Doctorow_-_Little_Brother.txt",
+      "bytes": 658936,
+      "sha256": "24ac213b5bd7840df63f3bf970fee9bcdaec19a0dc994a4eb66e72ae56d3aa66"
+    },
+    "bookdash-meta.yml": {
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/_data/meta.yml",
+      "bytes": 102260,
+      "sha256": "2979394c86bf5a3171500a6d15e2cb45ef0f261d2dcab7a6322504319627564f"
+    },
+    "little-ants-big-plan.md": {
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/little-ants-big-plan/en/index.md",
+      "bytes": 2606,
+      "sha256": "3ee77e8921d71e07c0fb71babc50d15a67b14f45fde0b9b60ee5c4dbcc8fa4e2"
+    },
+    "sizwes-smile.md": {
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/sizwes-smile/en/index.md",
+      "bytes": 4987,
+      "sha256": "a405ea40aeb2972fe82d91ddca14497579511ee38456ed6d7676051fc0b4fff0"
+    },
+    "why-is-nita-upside-down.md": {
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/why-is-nita-upside-down/en/index.md",
+      "bytes": 2373,
+      "sha256": "32f687feccedda7c5679db3ec3e0d33fa61d045cfce3bf6312b1ba3da2ea1f73"
+    }
+  },
+  "books": [
+    {
+      "work_id": "cory-doctorow-little-brother",
+      "title": "Little Brother",
+      "creators": [
+        "Cory Doctorow"
+      ],
+      "publisher": "Tor (print); Cory Doctorow (author-hosted text)",
+      "source": "little-brother.txt",
+      "source_page": "https://craphound.com/littlebrother/download/",
+      "language": "en",
+      "domain": "young_adult_novel",
+      "edition": "Author-hosted official plain-text download, first released 2008; pinned byte version",
+      "publication_date": "2008",
+      "date_basis": "Author download page dated 2008-04-01; source introduction identifies 2008 editions",
+      "license": {
+        "id": "CC-BY-NC-SA-3.0",
+        "url": "https://creativecommons.org/licenses/by-nc-sa/3.0/",
+        "evidence_source": "little-brother.txt",
+        "evidence_anchor": "READ THIS FIRST",
+        "obligations": [
+          "Attribute Cory Doctorow and link the source and license",
+          "Noncommercial restriction",
+          "Preserve share-alike obligations for adaptations and mark changes",
+          "Cover art excluded by author; no images acquired"
+        ],
+        "intended_use": "Local noncommercial research candidate; not cleared here for commercial training or website text redistribution"
+      },
+      "extractor": "little_brother_txt",
+      "expected_sections": 22,
+      "excluded": "Frontmatter, blurbs, dedications, bookstore notes, afterwords, acknowledgments and legal text; license remains in original and attribution record"
+    },
+    {
+      "work_id": "bookdash-little-ants-big-plan",
+      "title": "Little Ant's Big Plan",
+      "creators": [
+        "Candice Dingwall",
+        "Steven McKimmie",
+        "Telri Stoop"
+      ],
+      "publisher": "Book Dash",
+      "source": "little-ants-big-plan.md",
+      "source_page": "https://bookdash.github.io/bookdash-books/little-ants-big-plan/en/",
+      "language": "en",
+      "domain": "childrens_picture_book",
+      "edition": "English source Markdown at Book Dash commit 54916310c5c06a5282e2d5d4add18d64f90e5fde",
+      "publication_date": "2015-07-27",
+      "date_basis": "Publisher repository date field; not an independently verified original-work publication date",
+      "provider_id": "9c9e55de-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-22-4",
+      "license": {
+        "id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidence_source": "bookdash-meta.yml",
+        "evidence_anchor": "titles.little-ants-big-plan.rights",
+        "obligations": [
+          "Credit all original creators and Book Dash",
+          "Link the source and license; mark text extraction changes",
+          "Do not imply endorsement"
+        ],
+        "intended_use": "Attributed text candidate; image-dependent storytelling is incomplete in text-only form"
+      },
+      "extractor": "bookdash_markdown",
+      "expected_sections": 12,
+      "excluded": "YAML frontmatter, title heading, images and image descriptions; empty image-only page retained as an empty section"
+    },
+    {
+      "work_id": "bookdash-sizwes-smile",
+      "title": "Sizwe's Smile",
+      "creators": [
+        "Vianne Venter",
+        "Genevieve Terblanche",
+        "Lauren Rycroft"
+      ],
+      "publisher": "Book Dash",
+      "source": "sizwes-smile.md",
+      "source_page": "https://bookdash.github.io/bookdash-books/sizwes-smile/en/",
+      "language": "en",
+      "domain": "childrens_picture_book",
+      "edition": "English source Markdown at Book Dash commit 54916310c5c06a5282e2d5d4add18d64f90e5fde",
+      "publication_date": "2014-06-28",
+      "date_basis": "Publisher repository date field; not an independently verified original-work publication date",
+      "provider_id": "9c9e87f2-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922358-4-0",
+      "license": {
+        "id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidence_source": "bookdash-meta.yml",
+        "evidence_anchor": "titles.sizwes-smile.rights",
+        "obligations": [
+          "Credit all original creators and Book Dash",
+          "Link the source and license; mark text extraction changes",
+          "Do not imply endorsement"
+        ],
+        "intended_use": "Attributed text candidate; image-dependent storytelling is incomplete in text-only form"
+      },
+      "extractor": "bookdash_markdown",
+      "expected_sections": 12,
+      "excluded": "YAML frontmatter, title heading, images and image descriptions; empty image-only page retained as an empty section"
+    },
+    {
+      "work_id": "bookdash-why-is-nita-upside-down",
+      "title": "Why is Nita upside down?",
+      "creators": [
+        "Emma Hearne",
+        "Roxana Bouwer",
+        "Sarah Bouwer"
+      ],
+      "publisher": "Book Dash",
+      "source": "why-is-nita-upside-down.md",
+      "source_page": "https://bookdash.github.io/bookdash-books/why-is-nita-upside-down/en/",
+      "language": "en",
+      "domain": "childrens_picture_book",
+      "edition": "English source Markdown at Book Dash commit 54916310c5c06a5282e2d5d4add18d64f90e5fde",
+      "publication_date": "2015-07-27",
+      "date_basis": "Publisher repository date field; not an independently verified original-work publication date",
+      "provider_id": "9c9e5f48-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-25-5",
+      "license": {
+        "id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidence_source": "bookdash-meta.yml",
+        "evidence_anchor": "titles.why-is-nita-upside-down.rights",
+        "obligations": [
+          "Credit all original creators and Book Dash",
+          "Link the source and license; mark text extraction changes",
+          "Do not imply endorsement"
+        ],
+        "intended_use": "Attributed text candidate; image-dependent storytelling is incomplete in text-only form"
+      },
+      "extractor": "bookdash_markdown",
+      "expected_sections": 12,
+      "excluded": "YAML frontmatter, title heading, images and image descriptions; empty image-only page retained as an empty section"
+    }
+  ]
+}

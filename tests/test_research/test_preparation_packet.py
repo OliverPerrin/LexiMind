@@ -204,3 +204,58 @@ def test_optional_control_artifacts_do_not_gate_book_domain_studies(packet_root)
     archive = inspect_preparation(packet_root, MANIFEST, "model_study", check_archive=True)
     assert archive["source_archive_checked"]
     assert not archive["artifacts_valid"]
+
+
+@pytest.mark.parametrize("artifact_id", ["bgc_groups", "book_fields", "licensed_books"])
+def test_book_candidate_helper_binding_survives_outer_rehash(packet_root, artifact_id):
+    path = packet_root / ARTIFACTS[artifact_id][1]
+    report = json.loads(path.read_text())
+    report["preparation_helper_sha256"]["src/research/candidate_io.py"] = "f" * 64
+    write_json(path, report)
+    write_json(packet_root / MANIFEST, build_manifest(packet_root))
+    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    assert not result["artifacts_valid"]
+    assert f"{artifact_id} does not bind current preparation helpers" in result["errors"]
+
+
+@pytest.mark.parametrize(
+    ("artifact_id", "reference_key"),
+    [
+        ("bgc_groups", "candidate_manifest"),
+        ("book_fields", "grouping_manifest"),
+        ("book_fields", "mapping"),
+        ("licensed_books", "source_inventory"),
+    ],
+)
+def test_book_candidates_bind_their_exact_inputs(packet_root, artifact_id, reference_key):
+    path = packet_root / ARTIFACTS[artifact_id][1]
+    report = json.loads(path.read_text())
+    report[reference_key]["sha256"] = "f" * 64
+    write_json(path, report)
+    write_json(packet_root / MANIFEST, build_manifest(packet_root))
+    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    assert not result["artifacts_valid"]
+    assert f"{artifact_id} does not bind current {reference_key}" in result["errors"]
+
+
+@pytest.mark.parametrize("artifact_id", ["bgc_groups", "book_fields", "licensed_books"])
+def test_candidate_preparation_cannot_declare_training_authorized(packet_root, artifact_id):
+    path = packet_root / ARTIFACTS[artifact_id][1]
+    report = json.loads(path.read_text())
+    report["training_authorized"] = True
+    write_json(path, report)
+    write_json(packet_root / MANIFEST, build_manifest(packet_root))
+    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    assert not result["artifacts_valid"]
+    assert f"{artifact_id} must remain a preparation-only candidate" in result["errors"]
+
+
+def test_current_group_manifest_cannot_hide_stale_field_assignment_reference(packet_root):
+    path = packet_root / ARTIFACTS["book_fields"][1]
+    report = json.loads(path.read_text())
+    report["assignments"]["sha256"] = "f" * 64
+    write_json(path, report)
+    write_json(packet_root / MANIFEST, build_manifest(packet_root))
+    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    assert not result["artifacts_valid"]
+    assert "book_fields refers to different group assignments" in result["errors"]

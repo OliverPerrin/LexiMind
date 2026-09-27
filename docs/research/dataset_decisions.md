@@ -44,31 +44,35 @@ are watchlist items, not automatic upgrades. Details and source terms are in the
    abstentions. Optional later book-text denoising uses the same adapted base and
    recorded cost for every comparison arm.
 
-## Next work, in order
+## Prepared; next work
 
-- Reconcile BGC work/edition groups and CR4 identities; define one small field
-  vocabulary and a positive/negative/unknown mapping. BGC's published splits contain
-  repeated identities and blurbs; see its [audit](../../research/preparation/bgc_candidate_manifest.json).
-- Prepare a reviewed field-label seed set and work-group split; then implement
-  masked multi-label loss and the character-conditioned input contract.
-- Resume model feasibility/training only when the existing pause is lifted.
+BGC now has **89,910 connected leakage groups** across 91,894 rows. The proposed
+64/16/20 allocation keeps all five detected identity/text match types together;
+849 groups crossed the original splits. These are not adjudicated literary works:
+shared blurbs connect 61 Shakespeare records. The [group audit](../../research/preparation/bgc_group_manifest.json)
+retains conflicts and review references. Two rare raw categories are absent from
+dev; all 48 mapped field targets occur in every proposed split.
+The [field mapping](../../research/preparation/book_field_mapping.json) separates
+genre/topic/form/audience, preserves composite genre umbrellas, and supplies only
+weak positives; omissions stay unknown. Text remains in the original ZIP.
 
-The custom transformer, four recipe arms and independent book-relevance study
-remain. BGC's original archive is now preserved and audited; dates are edition dates and
-must not be used as original-work ages. Model-quality evaluation remains paused.
-The existing `topic` runtime is single-label, so this proposal needs an explicit
-loss/output integration before training. Source checks are scoped to the data being
-used; optional datasets and later mood work need not block the genre/topic track.
+Next: review ambiguous groups and cross-source/series identities; review the mapping
+and collect negative or complete-label seed evidence. Then implement partial-label
+loss/output handling and audit CR4's character-conditioned input. The existing
+`topic` runtime is still single-label. The custom transformer, four recipe arms and
+independent book-relevance study remain; training and model evaluation stay paused.
+Optional corpora and later mood work need not block the genre/topic track.
 
 ## Modern books beyond Gutenberg
 
-Use Open Library for broad modern **catalogue** coverage. For field training,
-publisher blurbs remain the closest input match. For later full-text work, shortlist
-[OAPEN](https://www.oapen.org/article/metadata) nonfiction, author-released fiction
-such as [Green Comet](https://greencomet.org/welcome/) and
-[Little Brother](https://craphound.com/littlebrother/download/), and
-[Book Dash](https://bookdash.org/re-using-the-book-dash-content/) children's stories.
-Preserve exact edition/licence/source evidence; these collections do not supply
-mood gold or representative adult-fiction coverage. Free reading/borrowing or a
-preview is not a training licence. The source register records the per-provider
-limits, including Google Books caching terms and OpenStax's stated AI restrictions.
+Open Library supplies modern **catalogue** coverage; publisher blurbs match field
+inputs. A [four-work full-text pilot](../../research/preparation/licensed_books_manifest.json)
+now preserves the official [Little Brother](https://craphound.com/littlebrother/download/)
+text and three [Book Dash](https://bookdash.org/re-using-the-book-dash-content/)
+English books, with source hashes, per-work licences, attribution and section boundaries.
+Little Brother's NC/SA conditions remain separate from Book Dash's CC BY terms.
+One YA novel dominates the text; picture books omit visual context. No model ran.
+[OAPEN](https://www.oapen.org/article/metadata) nonfiction and
+[Green Comet](https://greencomet.org/welcome/) remain expansion candidates. Reconcile
+work identities before assigning any full-text splits. Free access is not blanket
+training permission; see the source register for provider-specific limits.
