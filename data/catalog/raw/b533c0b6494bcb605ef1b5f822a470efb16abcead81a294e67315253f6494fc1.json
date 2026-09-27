@@ -1,0 +1,68 @@
+{
+  "url": "https://openlibrary.org/works/OL39275W.json",
+  "retrievedAt": "2026-09-22T14:28:38.513267+00:00",
+  "sha256": "0eaf962989598e5a25476601b7516ab36032ad1a4cee995edcbaa1fd2a37f6b2",
+  "data": {
+    "title": "The Secret of the Old Clock",
+    "covers": [
+      15150724,
+      589371,
+      779413,
+      2644063,
+      589257,
+      6426730,
+      8596018,
+      14913125
+    ],
+    "key": "/works/OL39275W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL21218A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "Nancy Drew's keen mind is tested when she searches for a missing will.",
+    "subjects": [
+      "American Detective and mystery stories",
+      "Children's stories, American",
+      "Detective and mystery stories",
+      "Fiction",
+      "Juvenile fiction",
+      "Mystery",
+      "Mystery and detective stories",
+      "Nancy Drew (Fictitious character)",
+      "Adventure stories",
+      "Women detectives",
+      "Wills",
+      "Families",
+      "Inheritance and succession",
+      "Thieves",
+      "Children's fiction",
+      "Drew, nancy (fictitious character), fiction",
+      "Wills, fiction",
+      "Rescue work, fiction",
+      "CollectionID:NDMS"
+    ],
+    "genres": [
+      "/tags/OL175T",
+      "/tags/OL164T"
+    ],
+    "latest_revision": 14,
+    "revision": 14,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T08:10:41.157375"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-15T14:00:16.277226"
+    }
+  }
+}

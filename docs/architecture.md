@@ -1,5 +1,10 @@
 # LexiMind Architecture
 
+> **Note (2026-08-04):** This document describes the Phase 1 system. The results
+> tables near the end are superseded by [RESULTS.md](RESULTS.md), which is the
+> single source of truth for every reported number and cites the file each one
+> comes from. Where the two disagree, RESULTS.md wins.
+
 ## Overview
 
 LexiMind is a **272M parameter encoder-decoder transformer** initialized from Google's FLAN-T5-base, trained jointly on three tasks: abstractive summarization, topic classification, and multi-label emotion detection. The project spans data preparation, custom model architecture, multi-task training, evaluation, and a Gradio-based discovery demo.

@@ -98,3 +98,12 @@ class TestTokenizer(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_decoder_shift_replaces_ignored_labels_with_padding():
+    tokenizer = Tokenizer.__new__(Tokenizer)
+    tokenizer._bos_token_id = 0
+    tokenizer._pad_token_id = 0
+    labels = torch.tensor([[4, -100, 1, -100]])
+    assert tokenizer.prepare_decoder_inputs(labels).tolist() == [[0, 4, 0, 1]]
+    assert labels.tolist() == [[4, -100, 1, -100]]

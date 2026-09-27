@@ -1,0 +1,121 @@
+{
+  "url": "https://openlibrary.org/works/OL318900W.json",
+  "retrievedAt": "2026-09-22T14:30:01.942618+00:00",
+  "sha256": "10e71c1e0e93e1cd60cc096f7dd43e5471b34476864f53d47913746791f761ac",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "The Prophet is a book of 26 poetic essays written in English in 1923 by the Lebanese-American artist, philosopher and writer Khalil Gibran. In the book, the prophet Almustafa who has lived in the foreign city of Orphalese for 12 years is about to board a ship which will carry him home. He is stopped by a group of people, with whom he discusses many issues of life and the human condition. The book is divided into chapters dealing with love, marriage, children, giving, eating and drinking, work, joy and sorrow, houses, clothes, buying and selling, crime and punishment, laws, freedom, reason and passion, pain, self-knowledge, teaching, friendship, talking, time, good and evil, prayer, pleasure, beauty, religion, and death."
+    },
+    "links": [
+      {
+        "title": "Amazon.com",
+        "url": "https://www.amazon.com/Prophet-Deluxe-Hardbound-Kahlil-Gibran/dp/9388118456/ref=sr_1_1?crid=1FSIDEFLWMGDH&dib=eyJ2IjoiMSJ9.Ks7AnMF9B19BQyAhftUA2g.vYjRu7k3j5d8Bv5tOILpKSmtMfoT6_6sJ7fTzrXjbZ4&dib_tag=se&keywords=9388118456&nsdOptOutParam=true&qid=1777706651&s=books&sprefix=9354990118%2Cstripbooks-intl-ship%2C321&sr=1-1",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "The Prophet",
+    "covers": [
+      418324,
+      8245232,
+      73507,
+      2173398,
+      4891060,
+      3226242,
+      3129252,
+      3348910,
+      8801320,
+      8932626,
+      10419462,
+      11723219,
+      13575125,
+      13724288,
+      10418198,
+      12532218,
+      14509775,
+      108097,
+      902409,
+      8349363,
+      8353137,
+      10442608,
+      9130229,
+      398140,
+      489946,
+      12137057,
+      11962023,
+      12967521,
+      10387641,
+      10778539,
+      4914911,
+      14068027,
+      10669200,
+      11412710,
+      11515746,
+      12335219,
+      13525952,
+      14029805,
+      4933437,
+      9995465,
+      4615761,
+      3190840,
+      98221,
+      10090047,
+      12477892,
+      1946673,
+      13010894,
+      3214515,
+      10475477,
+      10534334,
+      12549544,
+      13817720,
+      8742984
+    ],
+    "first_publish_date": "1923",
+    "subject_people": [
+      "Kahlil Gibran (1883-1931)",
+      "Kahlil Gibran"
+    ],
+    "key": "/works/OL318900W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL2890A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Poetry",
+      "Classics",
+      "Literature & Fiction",
+      "Religion",
+      "American Prose poems",
+      "Mysticism",
+      "Spiritual life"
+    ],
+    "lc_classifications": [
+      "PS'3513'G447'P965'1964"
+    ],
+    "subject_times": [
+      "20th century",
+      "Siglo XX"
+    ],
+    "latest_revision": 38,
+    "revision": 38,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-27T01:19:28.035297"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-07-12T00:30:38.575870"
+    }
+  }
+}

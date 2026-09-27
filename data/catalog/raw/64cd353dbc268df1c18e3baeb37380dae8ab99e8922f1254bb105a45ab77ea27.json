@@ -1,0 +1,76 @@
+{
+  "url": "https://openlibrary.org/works/OL1963251W.json",
+  "retrievedAt": "2026-09-22T14:28:13.038340+00:00",
+  "sha256": "9020539e66d150dbea9db2ef1ee27fb3bbdd06f35e027f353a36ad81afdf83c3",
+  "data": {
+    "key": "/works/OL1963251W",
+    "title": "The Fall of Hyperion",
+    "first_publish_date": "October 1993",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL235668A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      484900,
+      1047847,
+      980226,
+      980227,
+      975068,
+      369137,
+      4093849,
+      6893809,
+      8042749,
+      10514350,
+      10673052,
+      10673053,
+      11301906,
+      12225341,
+      13182281
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "On the day the armada went off to war, on the last day of life as we knew it, I was invited to a party."
+    },
+    "subjects": [
+      "Littérature américaine",
+      "Science-fiction américaine",
+      "Science-fiction",
+      "Fiction, science fiction, action & adventure",
+      "Fiction, science fiction, general"
+    ],
+    "dewey_number": [
+      "818 S5923c"
+    ],
+    "description": "On the world called Hyperion, beyond the law of the Hegemony of Man, there waits the creature called the Shrike.  There are those who worship it.  There are those who fear it.  And there are those who have vowed to destroy it.  In the Valley of the Time Tombs, where huge, brooding structures move backward through time, the Shrike waits for them all.  On the eve of Armageddon, with the entire galaxy at war, seven pilgrims set forth on a final voyage to Hyperion seeking the answers to the unsolved riddles of their lives.  Each carries a desperate hope--and a terrible secret.  And one may hold the fate of humanity in his hands.",
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL331215L"
+        },
+        "position": "2"
+      }
+    ],
+    "genres": [
+      "/tags/OL179T"
+    ],
+    "latest_revision": 12,
+    "revision": 12,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T22:38:00.905612"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T21:02:13.386874"
+    }
+  }
+}

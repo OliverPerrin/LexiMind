@@ -1,0 +1,164 @@
+{
+  "url": "https://openlibrary.org/works/OL457175W.json",
+  "retrievedAt": "2026-09-26T07:12:31.844261+00:00",
+  "sha256": "f60c6b36f2d2b6c27230e75d2df9bfc201d2f94486c73c14f59cfa602c6c77d9",
+  "data": {
+    "description": "The Satanic Verses is Salman Rushdie's fourth novel, first published September 26, 1988 and inspired in part by the life of the Islamic prophet Muhammad. As with his previous books, Rushdie used magical realism and relied on contemporary events and people to create his characters. The title refers to the satanic verses, a group of Quranic verses that refer to three pagan Meccan goddesses: Allāt, Uzza, and Manāt. The part of the story that deals with the \"satanic verses\" was based on accounts from the historians al-Waqidi and al-Tabari.\r\n\r\nIn the United Kingdom, The Satanic Verses received positive reviews, was a 1988 Booker Prize finalist (losing to Peter Carey's Oscar and Lucinda) and won the 1988 Whitbread Award for novel of the year.",
+    "links": [
+      {
+        "title": "The Satanic Verses - Salman Rushdie",
+        "url": "http://www.salmanrushdie.com/the-satanic-verses/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Satanic Verses - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/The_Satanic_Verses",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "How one book ignited a culture war | Books | The Guardian",
+        "url": "https://www.theguardian.com/books/2009/jan/11/salman-rushdie-satanic-verses",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Satanic Verses - A Summary - Britannica.com",
+        "url": "https://www.britannica.com/topic/The-Satanic-Verses",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "The Satanic Verses",
+    "covers": [
+      8312209,
+      -1,
+      11514604,
+      8064339,
+      12694029,
+      13501928,
+      15057025,
+      14848634
+    ],
+    "subject_places": [
+      "India",
+      "England",
+      "London",
+      "Arabian Sea",
+      "Bombay",
+      "Brickhall",
+      "Everest",
+      "Yathrib",
+      "Spring of Zamzam"
+    ],
+    "subjects": [
+      "General & Literary Fiction",
+      "East Indians",
+      "Didactic fiction",
+      "literary fiction",
+      "families",
+      "Islam",
+      "Fiction",
+      "Survival after airplane accidents, shipwrecks",
+      "Survival",
+      "open_syllabus_project",
+      "metamorphosis",
+      "death",
+      "Family",
+      "Description and travel",
+      "Travel",
+      "Fiction, general",
+      "India, fiction",
+      "England, fiction",
+      "London (england), fiction",
+      "Criticism and interpretation",
+      "Islam in literature",
+      "Good and evil",
+      "English fiction",
+      "Roman de l'Inde de langue anglaise",
+      "Traductions françaises",
+      "Habiletés de survie",
+      "Romans, nouvelles",
+      "Indiens (Habitants de l'Inde)",
+      "Hijacking of aircraft",
+      "Identity (Psychology)",
+      "Airplane crash survival",
+      "Survie après accidents d'avion",
+      "General",
+      "Nicaragua, description and travel",
+      "Journeys"
+    ],
+    "subject_people": [
+      "Mahound",
+      "Allāt",
+      "Uzza",
+      "Manāt",
+      "Gibreel Farishta",
+      "Saladin Chamcha",
+      "Allie Cone",
+      "the Devil",
+      "Karim Abu Simbel",
+      "Al-Lat",
+      "Alleluia Cone",
+      "Ayesha",
+      "Anahita Sufyan",
+      "Bilal",
+      "Death",
+      "Changez Chamchawala",
+      "Hamza",
+      "Hanif Johnson",
+      "Hind",
+      "Mishal",
+      "Shaitan"
+    ],
+    "key": "/works/OL457175W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL26769A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "excerpt": "\"To be born again,\" sang Gibreel Farishta tumbling from the heavens, \"first you have to die.\"",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "identifiers": {
+      "librarything": [
+        "12601"
+      ],
+      "wikidata": [
+        "Q191288"
+      ]
+    },
+    "genres": [
+      "/tags/OL174T"
+    ],
+    "latest_revision": 60,
+    "revision": 60,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-08T02:30:37.628565"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T08:33:37.546843"
+    }
+  }
+}

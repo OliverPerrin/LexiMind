@@ -1,0 +1,81 @@
+{
+  "url": "https://openlibrary.org/works/OL46390W.json",
+  "retrievedAt": "2026-09-22T14:28:15.124913+00:00",
+  "sha256": "7fd60a1d4ecda8dabab89e31dd3efeaa1dc34e2ad43242766edc7ee9bc6f1e99",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "- Foundation\r\n - Foundation and Empire\r\n - Second Foundation\r\n\r\nIsaac Asimov's Foundation novels are some of the great masterworks of science fiction. Unsurpassed for their unique blend of nonstop action, daring ideas, and extensive world-building, they chronicle the struggle of a courageous group of men and women working to preserve humanity’s light against an inexorable tide of darkness and violence.\r\n\r\nLed by its founding father, the great psychohistorian Hari Seldon, and taking advantage of its superior science and technology, the Foundation has survived the greed and barbarism of its neighboring warrior-planets. Yet now it must face the Empire—still the mightiest force in the Galaxy even in its death throes. When an ambitious general determined to restore the Empire’s glory turns the vast imperial fleet toward the Foundation, the only hope for the small planet of scholars and scientists lies in the prophecies of Hari Seldon.\r\n\r\nBut not even Hari Seldon could have predicted the birth of the extraordinary creature called The Mule, a mutant intelligence with a power greater than a dozen battle fleets… a power that can turn the strongest-willed human into an obedient slave."
+    },
+    "covers": [
+      6502517,
+      -1,
+      9403999,
+      10332337,
+      10304245,
+      11727764,
+      10009257,
+      10867261,
+      3182901,
+      10375715,
+      7548147,
+      11727762
+    ],
+    "key": "/works/OL46390W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL34221A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "The Foundation Trilogy",
+    "subjects": [
+      "American Science fiction",
+      "Fiction",
+      "Psychohistory",
+      "Science fiction",
+      "Life on other planets",
+      "Prophecies",
+      "Fiction, science fiction, general",
+      "Abenteuer",
+      "Science-Fiction-Literatur",
+      "Weltraum",
+      "Prophecy",
+      "Long Now Manual for Civilization"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_people": [
+      "Hari Seldon (Fictitious character)"
+    ],
+    "subject_places": [
+      "Trantorian Empire (Fictitious place)"
+    ],
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL329813L"
+        },
+        "position": "1-3"
+      }
+    ],
+    "genres": [
+      "/tags/OL179T"
+    ],
+    "latest_revision": 43,
+    "revision": 43,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T11:34:21.437031"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T12:27:55.128480"
+    }
+  }
+}

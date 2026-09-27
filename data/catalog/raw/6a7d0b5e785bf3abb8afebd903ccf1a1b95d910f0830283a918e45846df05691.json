@@ -1,0 +1,60 @@
+{
+  "url": "https://openlibrary.org/works/OL8369445W.json",
+  "retrievedAt": "2026-09-22T14:28:22.817505+00:00",
+  "sha256": "2f05c8977b58768698be0b2522797cec3fe27e071473747a7e909244bfda8930",
+  "data": {
+    "title": "The Lies of Locke Lamora",
+    "key": "/works/OL8369445W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL2787719A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "Best book ever",
+    "covers": [
+      6307636,
+      1995297,
+      8777184,
+      -1
+    ],
+    "subjects": [
+      "Fiction, fantasy, general",
+      "Fantasy",
+      "Fiction",
+      "American Science Fiction And Fantasy",
+      "Fiction - Fantasy",
+      "Fantasy - Epic",
+      "Fiction / Fantasy / Epic",
+      "Juvenile fiction",
+      "Gangsters",
+      "Swindlers and swindling",
+      "Orphans",
+      "Adventure stories",
+      "Fantasy fiction",
+      "Robbers and outlaws",
+      "Fiction, fantasy, epic"
+    ],
+    "genres": [
+      "/tags/OL169T",
+      "/tags/OL164T"
+    ],
+    "latest_revision": 6,
+    "revision": 6,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T22:42:45.155028"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T02:41:32.509018"
+    }
+  }
+}

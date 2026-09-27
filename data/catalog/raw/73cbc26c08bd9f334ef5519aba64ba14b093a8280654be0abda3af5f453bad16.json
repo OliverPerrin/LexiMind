@@ -1,0 +1,106 @@
+{
+  "url": "https://openlibrary.org/works/OL7924103W.json",
+  "retrievedAt": "2026-09-22T14:28:26.300576+00:00",
+  "sha256": "5fe8628982bb766b357a065001e364bc0baa7a576b5cbd387c2f445fb65e8101",
+  "data": {
+    "title": "The Eye of the World",
+    "key": "/works/OL7924103W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL233594A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      980232,
+      2182401,
+      182341,
+      603075,
+      908780,
+      8784284,
+      8785931,
+      603208,
+      2056268,
+      9588941,
+      6878658,
+      10398333,
+      11404766,
+      13731417,
+      12144286,
+      14082812,
+      8456088,
+      8623997,
+      8631611,
+      8784016,
+      10674102,
+      12283128,
+      12294052,
+      12353462,
+      14286611,
+      8565631,
+      8634730,
+      10290889,
+      13839835,
+      14286610,
+      14286609
+    ],
+    "description": "The Wheel of Time turns and Ages come and go, leaving memories that become legend. Legend fades to myth, and even myth is long forgotten when the Age that gave it birth returns again. In the Third Age, an Age of Prophecy, the World and Time themselves hang in the balance. What was, what will be, and what is, may yet fall under the Shadow.",
+    "subjects": [
+      "series:The Wheel of Time",
+      "Fantasy fiction",
+      "Rand al'Thor (Fictitious character)",
+      "Fiction",
+      "Reader recommended, 2001-02",
+      "Fantasy .",
+      "American Fantasy",
+      "al'Thor Rand (Fictitious character)",
+      "Good and evil",
+      "Monsters",
+      "Rand al'thor (fictitious character), fiction",
+      "Fiction, fantasy, epic",
+      "Science fiction",
+      "Children's fiction",
+      "Fiction, fantasy, general",
+      "Comics & graphic novels, fantasy",
+      "Comic books, strips",
+      "nyt:hardcover-graphic-books=2013-02-17",
+      "New York Times bestseller",
+      "Fantasy",
+      "Children's stories",
+      "American literature"
+    ],
+    "identifiers": {
+      "bookbrainz": [
+        "a4a33937-33a0-4486-97d8-23e6550a8402"
+      ],
+      "musicbrainz": [
+        "3e9ce6a2-3f7f-4418-b7d5-2ea49b72573d"
+      ],
+      "wikidata": [
+        "Q477994"
+      ]
+    },
+    "subtitle": "Book One of the Wheel of Time",
+    "genres": [
+      "/tags/OL169T",
+      "/tags/OL179T"
+    ],
+    "latest_revision": 8,
+    "revision": 8,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T22:13:35.559002"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T07:39:43.168486"
+    }
+  }
+}

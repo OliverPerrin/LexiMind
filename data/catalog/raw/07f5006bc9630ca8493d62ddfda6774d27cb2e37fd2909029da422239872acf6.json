@@ -1,0 +1,53 @@
+{
+  "url": "https://openlibrary.org/works/OL4233169W.json",
+  "retrievedAt": "2026-09-22T14:28:53.838487+00:00",
+  "sha256": "79bfe5f7d8bfa9de30d355b74281b56b8c0716a999fa59e73cb822896ee7a314",
+  "data": {
+    "title": "The Ultimate Betrayal",
+    "subjects": [
+      "Fiction, Romance, Contemporary",
+      "Adultery, fiction",
+      "Love stories, fiction"
+    ],
+    "key": "/works/OL4233169W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL811660A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "A marriage in crisis. . .\r\n\"I never meant to do it...she was just there when I needed someone...\"\r\nRachel and Daniel had three adorable children and a strong marriage-or so Rachel had always believed.\r\nBut her happy life was shattered when she was told that Daniel had been having an affair. Then she realized that they'd been growing apart for years.\r\nRachel wanted so much to save her marriage--but was it too late? Could she ever forgive Daniel, if he had committed the ultimate betrayal?  \r\n\r\nGreat angsty, tear-welling, mood producing story\r\nDid he cheat? Did he really? Did she cheat? What's your definition? \r\nAll the tropes i despise, still a 5☆ read!\r\n1. already married \r\n2. got kids \r\n3.  he's out with OW\r\n4. she's out with OM\r\n5. M-i-L up front and center [yeah, that's a me thing] \r\n6. Tit-for-tat (lol, i'm okay with that) \r\n\r\nHuge \r\nSpoiler alert \r\n\r\nDon't scroll down\r\n\r\n.\r\n\r\n\r\nCheaters don't rate 5 ☆'s",
+    "covers": [
+      2342961,
+      6809694,
+      6858157
+    ],
+    "subject_people": [
+      "Rachel James Masterson",
+      "Daniel Masterson"
+    ],
+    "subject_times": [
+      "1990's"
+    ],
+    "genres": [
+      "/tags/OL177T"
+    ],
+    "latest_revision": 10,
+    "revision": 10,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T05:44:40.427288"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-04T18:33:16.324484"
+    }
+  }
+}

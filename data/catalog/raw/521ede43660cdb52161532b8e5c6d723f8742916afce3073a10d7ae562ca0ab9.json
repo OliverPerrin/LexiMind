@@ -1,0 +1,88 @@
+{
+  "url": "https://openlibrary.org/works/OL21181790W.json",
+  "retrievedAt": "2026-09-26T07:12:20.656158+00:00",
+  "sha256": "8b297d892575f140ab790da4571129dccb195d53eb4692611997d4b5b03d0915",
+  "data": {
+    "title": "The End of Everything (Astrophysically Speaking)",
+    "covers": [
+      10342810
+    ],
+    "key": "/works/OL21181790W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL8111164A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "links": [
+      {
+        "title": "Wordcat",
+        "url": "https://www.worldcat.org/title/end-of-everything-astrophysically-speaking/oclc/1148167457",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "New York Times review",
+        "url": "https://www.nytimes.com/2020/08/04/books/review/the-end-of-everything-katie-mack.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "https://www.newscientist.com/article/mg24732930-300-the-end-of-everything-review-a-rollicking-tour-of-the-wildest-physics/",
+        "title": "New Scientist review",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "subjects": [
+      "Science",
+      "Nonfiction",
+      "Physics",
+      "Astronomy",
+      "Space",
+      "Philosophy",
+      "Popular Science",
+      "Education",
+      "End of the world (astronomy)",
+      "Astrophysics",
+      "End of the universe",
+      "SCIENCE / Physics / Astrophysics",
+      "SCIENCE / Cosmology",
+      "SCIENCE / Astronomy",
+      "Cosmology"
+    ],
+    "excerpts": [
+      {
+        "author": {
+          "key": "/people/suchacomic"
+        },
+        "comment": "Perfectly describes what to expect from this book.",
+        "excerpt": "Over the millennia since humanity’s first pondering of its mortality, the philosophical implications of the question haven’t changed, but the tools we have to answer it have. Today, the question of the future and ultimate fate of all reality is a solidly scientific one, with the answer tantalizingly within reach. It hasn’t always been so. In Robert Frost’s time, debates still raged in astronomy about whether the universe might be in a steady state, existing unchanging forever. It was an appealing idea, that our cosmic home might be a stable, hospitable one: a safe place in which to grow old. The discovery of the Big Bang and the expansion of the universe, however, ruled that out. Our universe is changing, and we’ve only just begun to develop the theories and observations to understand exactly how. The developments of the last few years, and even months, are finally allowing us to paint a picture of the far future of the cosmos.\r\n\r\nI want to share that picture with you. The best measurements we have are only consistent with a handful of final apocalyptic scenarios, some of which may be confirmed or ruled out by observations we’re making right now. Exploring these possibilities gives us a glimpse of the workings of science at the cutting edge, and allows us to see humanity in a new context. One which, in my opinion, can bring a kind of joy even in the face of total destruction. We are a species poised between an awareness of our ultimate insignificance and an ability to reach far beyond our mundane lives, into the void, to solve the most fundamental mysteries of the cosmos."
+      }
+    ],
+    "description": {
+      "type": "/type/text",
+      "value": "**From one of the most dynamic rising stars in astrophysics, an accessible and eye-opening look—in the bestselling tradition of Sean Carroll and Carlo Rovelli—at the five different ways the universe could end, and the mind-blowing lessons each scenario reveals about the most important concepts in physics.**\r\n\r\nWe know the universe had a beginning. With the Big Bang, it went from a state of unimaginable density to an all-encompassing cosmic fireball to a simmering fluid of matter and energy, laying down the seeds for everything from dark matter to black holes to one rocky planet orbiting a star near the edge of a spiral galaxy that happened to develop life. But what happens at the end of the story? In billions of years, humanity could still exist in some unrecognizable form, venturing out to distant space, finding new homes and building new civilizations. But the death of the universe is final. What might such a cataclysm look like? And what does it mean for us?\r\n\r\nDr. Katie Mack has been contemplating these questions since she was eighteen, when her astronomy professor first informed her the universe could end at any moment, setting her on the path toward theoretical astrophysics. Now, with lively wit and humor, she unpacks them in The End of Everything, taking us on a mind-bending tour through each of the cosmos’ possible finales: the Big Crunch; the Heat Death; Vacuum Decay; the Big Rip; and the Bounce. In the tradition of Neil DeGrasse’s bestseller Astrophysics for People in a Hurry, Mack guides us through major concepts in quantum mechanics, cosmology, string theory, and much more, in a wildly fun, surprisingly upbeat ride to the farthest reaches of everything we know."
+    },
+    "latest_revision": 5,
+    "revision": 5,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2020-08-12T22:35:07.389014"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-07-31T03:07:19.185867"
+    }
+  }
+}

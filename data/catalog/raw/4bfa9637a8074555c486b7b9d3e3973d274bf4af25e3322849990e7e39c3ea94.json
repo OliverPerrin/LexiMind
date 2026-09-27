@@ -1,0 +1,139 @@
+{
+  "url": "https://openlibrary.org/works/OL2693077W.json",
+  "retrievedAt": "2026-09-26T07:12:35.606475+00:00",
+  "sha256": "f79d17bba1b11d53d26c3c4d8e62906b4b4ce17208f17410f68b310b18d59881",
+  "data": {
+    "covers": [
+      -1,
+      8567510,
+      12147936,
+      12292780,
+      12568172
+    ],
+    "first_publish_date": "September 1, 2001",
+    "key": "/works/OL2693077W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL393550A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "Me Talk Pretty One Day",
+    "type": {
+      "key": "/type/work"
+    },
+    "description": {
+      "type": "/type/text",
+      "value": "A recent transplant to Paris, humorist David Sedaris, bestselling author of “Naked”, presents a collection of his strongest work yet, including the title story about his hilarious attempt to learn French.\r\n\r\nDavid Sedaris' move to Paris from New York inspired these hilarious pieces, including the title essay, about his attempts to learn French from a sadistic teacher who declares that every day spent with you is like having a caesarean section. His family is another inspiration. **You Can't Kill the Rooster is a portrait of his brother, who talks incessant hip-hop slang** to his bewildered father. And no one hones a finer fury in response to such modern annoyances as restaurant meals presented in ludicrous towers of food and cashiers with six-inch fingernails."
+    },
+    "links": [
+      {
+        "title": "Me Talk Pretty One Day - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Me_Talk_Pretty_One_Day",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Mind your language",
+        "url": "https://www.theguardian.com/books/2001/feb/04/biography.davidvincent",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Nonfiction Book Review: Me Talk Pretty One Day by David Sedaris ...",
+        "url": "https://www.publishersweekly.com/978-0-316-77772-8",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "url": "https://www.bookbrowse.com/excerpts/index.cfm/book_number/556/me-talk-pretty-one-day",
+        "title": "Me Talk Pretty One Day Excerpt: Read free excerpt of Me Talk Pretty ...",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "ANYONE WHO WATCHES EVEN THE SLIGHTEST amount of TV is familiar with the scene: An agent knocks on the door of some seemingly ordinary home or office."
+    },
+    "subject_places": [
+      "Paris",
+      "France",
+      "Normandy",
+      "Raleigh",
+      "North Carolina",
+      "New York City",
+      "Asia",
+      "Africa"
+    ],
+    "subject_people": [
+      "David Sedaris",
+      "Hugh",
+      "Paul Sedaris",
+      "Amy Sedaris",
+      "Americans",
+      "Jesus Christ"
+    ],
+    "excerpts": [
+      {
+        "author": {
+          "key": "/people/seabelis"
+        },
+        "comment": "first sentence",
+        "excerpt": "ANYONE WHO WATCHES EVEN THE SLIGHTEST amount of TV is familiar with the scene: An agent knocks on the door of some seemingly ordinary home or office."
+      }
+    ],
+    "subjects": [
+      "David Sedaris",
+      "teens",
+      "teenagers",
+      "YA",
+      "young adult",
+      "juvenile",
+      "Nonfiction",
+      "Biography",
+      "Bio",
+      "Humor",
+      "Americans",
+      "Essays",
+      "French language",
+      "culture shock",
+      "Large type books",
+      "American literature",
+      "Humor, form, essays",
+      "LGBTQ humor",
+      "Lambda Literary Awards",
+      "Lambda Literary Award Winner",
+      "LGBTQ essays",
+      "German language materials",
+      "Wit and humor",
+      "Wit and Humor as Topic",
+      "Personal memoirs",
+      "Nature"
+    ],
+    "subject_times": [
+      "2000"
+    ],
+    "genres": [
+      "/tags/OL172T"
+    ],
+    "latest_revision": 15,
+    "revision": 15,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T00:14:33.498478"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T10:58:57.138646"
+    }
+  }
+}

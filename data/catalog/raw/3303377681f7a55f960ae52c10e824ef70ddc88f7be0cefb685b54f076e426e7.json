@@ -1,0 +1,61 @@
+{
+  "url": "https://openlibrary.org/works/OL20796936W.json",
+  "retrievedAt": "2026-09-22T14:29:03.003749+00:00",
+  "sha256": "4c709f398fc77838eba2af41bd3c30f8e5e32d0bfc74da1da6dfb64bc9864247",
+  "data": {
+    "title": "The Invisible Life of Addie LaRue",
+    "covers": [
+      10092261,
+      10489951,
+      10719299,
+      10719298,
+      11238955,
+      10518835,
+      13193087,
+      10632509,
+      11274310,
+      11519065,
+      11519066,
+      13163181,
+      13524830
+    ],
+    "key": "/works/OL20796936W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL6979295A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "nyt:combined-print-and-e-book-fiction=2020-10-25",
+      "New York Times bestseller",
+      "Fiction, fantasy, historical",
+      "LGBTQ science fiction & fantasy",
+      "Memory",
+      "Fiction",
+      "Immortalism",
+      "Deals",
+      "Man-woman relationships",
+      "FICTION / Fantasy / Historical",
+      "FICTION / Literary"
+    ],
+    "description": "France, 1714: in a moment of desperation, a young woman makes a Faustian bargain to live forever and is cursed to be forgotten by everyone she meets.\r\n\r\nThus begins the extraordinary life of Addie LaRue, and a dazzling adventure that will play out across centuries and continents, across history and art, as a young woman learns how far she will go to leave her mark on the world.\r\n\r\nBut everything changes when, after nearly 300 years, Addie stumbles across a young man in a hidden bookstore and he remembers her name.",
+    "latest_revision": 16,
+    "revision": 16,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2020-05-28T19:19:05.742175"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2025-07-24T16:01:22.415512"
+    }
+  }
+}

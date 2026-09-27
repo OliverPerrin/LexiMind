@@ -1,0 +1,442 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Abiography+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-22T14:29:21.245138+00:00",
+  "sha256": "34b0e0349957e3e9ed336f4a28f6f906912eae53eefe4b9e0b63456d6367e10a",
+  "data": {
+    "numFound": 444542,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 444542,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:biography language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL101656A"
+        ],
+        "author_name": [
+          "A. P. J. Abdul Kalam"
+        ],
+        "cover_i": 9153819,
+        "first_publish_year": 1999,
+        "key": "/works/OL1037811W",
+        "language": [
+          "hin",
+          "eng"
+        ],
+        "title": "Wings of Fire",
+        "subject": [
+          "Biography",
+          "Presidents",
+          "Scientists"
+        ]
+      },
+      {
+        "author_key": [
+          "OL37185A"
+        ],
+        "author_name": [
+          "Yogananda Paramahansa"
+        ],
+        "cover_i": 805448,
+        "first_publish_year": 1946,
+        "key": "/works/OL528094W",
+        "language": [
+          "vie",
+          "est",
+          "mar",
+          "hin",
+          "san",
+          "por",
+          "eng",
+          "ger",
+          "rus",
+          "swe",
+          "fre",
+          "tur",
+          "spa",
+          "mal",
+          "jpn"
+        ],
+        "title": "Autobiography of a Yogi",
+        "subject": [
+          "Autobiography",
+          "Yogis",
+          "Yoga",
+          "Yoguis",
+          "Biografía",
+          "Spiritual biography",
+          "Biography & Autobiography",
+          "New Age",
+          "Nonfiction",
+          "Biography",
+          "Correspondence, reminiscences",
+          "Autobiographies",
+          "General",
+          "Biography / Autobiography",
+          "Yōga (Japanese painting styles)",
+          "Yogananda, paramahansa, 1893-1952",
+          "Gurus",
+          "Hinduism",
+          "Kriya Yoga",
+          "Hindus",
+          "Self-realization",
+          "Spirituality",
+          "Radio programs",
+          "Popular culture",
+          "Social life and customs"
+        ]
+      },
+      {
+        "author_key": [
+          "OL446842A"
+        ],
+        "author_name": [
+          "Anne Frank"
+        ],
+        "cover_i": 13526331,
+        "first_publish_year": 2001,
+        "key": "/works/OL27294413W",
+        "language": [
+          "eng"
+        ],
+        "title": "The Diary of a Young Girl- Anne Frank",
+        "subject": [
+          "Historical",
+          "Biography"
+        ]
+      },
+      {
+        "author_key": [
+          "OL10032819A",
+          "OL12633762A"
+        ],
+        "author_name": [
+          "Jennette McCurdy",
+          "Jannettte Mcury"
+        ],
+        "cover_i": 12855985,
+        "first_publish_year": 2022,
+        "key": "/works/OL26663382W",
+        "language": [
+          "eng",
+          "ger",
+          "pol",
+          "dut"
+        ],
+        "title": "I'm Glad My Mom Died",
+        "subject": [
+          "New York Times bestseller",
+          "Family & Relationships",
+          "Biography & Autobiography",
+          "Entertainment & Performing Arts",
+          "Biography & Autobiography / Personal Memoirs",
+          "Dysfunctional families",
+          "TELEVISION ACTORS AND ACTRESSES",
+          "Adult child abuse victims' writings, American",
+          "Anorexia nervosa patients' writings, American",
+          "autobiographies",
+          "biographies",
+          "child actors",
+          "Health & Fitness",
+          "Mothers",
+          "Mothers and daughters",
+          "Death",
+          "Singers",
+          "Literature",
+          "Nonfiction",
+          "Memoir",
+          "Biography",
+          "Autobiography",
+          "Mental Health",
+          "Adult",
+          "Biography Memoir",
+          "Contemporary"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7421324A"
+        ],
+        "author_name": [
+          "Tara Westover"
+        ],
+        "cover_i": 8314077,
+        "first_publish_year": 2018,
+        "key": "/works/OL18139176W",
+        "language": [
+          "eng",
+          "por",
+          "ita",
+          "tha",
+          "spa",
+          "chi"
+        ],
+        "title": "Educated",
+        "subject": [
+          "Subculture",
+          "Home schooling",
+          "Family",
+          "Anecdotes",
+          "Victims of family violence",
+          "Women college students",
+          "Christian biography",
+          "Rural conditions",
+          "Survivalism",
+          "Biography",
+          "Women",
+          "Ancedotes",
+          "Idaho",
+          "BIOGRAPHY & AUTOBIOGRAPHY / Personal Memoirs",
+          "BIOGRAPHY & AUTOBIOGRAPHY / Women",
+          "BIOGRAPHY & AUTOBIOGRAPHY / Religious",
+          "Women, united states, biography",
+          "Idaho, biography",
+          "Idaho, social conditions",
+          "Family violence",
+          "nyt:combined-print-and-e-book-nonfiction=2018-03-11",
+          "New York Times bestseller",
+          "New York Times reviewed"
+        ]
+      },
+      {
+        "author_key": [
+          "OL45249A"
+        ],
+        "author_name": [
+          "Hunter S. Thompson"
+        ],
+        "cover_i": 13396,
+        "first_publish_year": 1971,
+        "key": "/works/OL158041W",
+        "language": [
+          "eng",
+          "ger",
+          "spa"
+        ],
+        "title": "Fear and Loathing in Las Vegas",
+        "subject": [
+          "comedy",
+          "Journalists, biography",
+          "Thompson, hunter s., 1937-2005",
+          "Journalists",
+          "Biography",
+          "Drug abuse",
+          "Fiction, general",
+          "Gesellschaftskritik",
+          "Prosa"
+        ]
+      },
+      {
+        "author_key": [
+          "OL23684A"
+        ],
+        "author_name": [
+          "Frederick Douglass"
+        ],
+        "cover_i": 8247724,
+        "first_publish_year": 1845,
+        "key": "/works/OL69178W",
+        "language": [
+          "spa",
+          "und",
+          "eng"
+        ],
+        "title": "Narrative of the life of Frederick Douglass",
+        "subject": [
+          "Douglass, frederick, 1818-1895",
+          "Biography",
+          "African American abolitionists",
+          "Abolitionists",
+          "Slaves",
+          "Slavery",
+          "History",
+          "African Americans",
+          "Slaves, united states",
+          "Biographies &amp; autobiographies",
+          "General",
+          "Personal narratives",
+          "African americans, biography",
+          "Dictionaries",
+          "English language",
+          "Historical",
+          "BIOGRAPHY & AUTOBIOGRAPHY",
+          "Korean",
+          "Antislavery movements, united states",
+          "United states, history, 19th century",
+          "Enslaved persons, united states",
+          "BIOGRAPHY & AUTOBIOGRAPHY / Cultural Heritage",
+          "HISTORY / United States / Civil War Period (1850-1877)",
+          "SOCIAL SCIENCE / Ethnic Studies / African American Studies",
+          "Douglass, frederick , 1818-1895",
+          "African american abolitionists--biography",
+          "Abolitionists--biography",
+          "Slaves--united states--biography",
+          "E449 .d749 2014",
+          "973.8/092 b",
+          "Bio002000 his036050 soc001000",
+          "Autobiography",
+          "United states, history",
+          "Fiction, historical, general",
+          "Slaves' writings",
+          "African American abolitionists -- Biography",
+          "Abolitionists -- United States -- Biography",
+          "Slaves -- United States -- Biography",
+          "Abolitionnistes noirs américains",
+          "Biographies",
+          "Abolitionnistes",
+          "Esclaves",
+          "Collectors and collecting",
+          "Social sciences",
+          "Language arts",
+          "Antislavery movements",
+          "Mouvements antiesclavagistes",
+          "Histoire",
+          "Long Now Manual for Civilization",
+          "Slavar",
+          "Biografi",
+          "Abolitionister",
+          "Slaveri",
+          "Historia",
+          "Women slaves",
+          "Social conditions",
+          "Mime"
+        ]
+      },
+      {
+        "author_key": [
+          "OL221095A"
+        ],
+        "author_name": [
+          "Robert L. Heilbroner"
+        ],
+        "cover_i": 15106531,
+        "first_publish_year": 1953,
+        "key": "/works/OL1847023W",
+        "language": [
+          "fre",
+          "spa",
+          "gre",
+          "eng"
+        ],
+        "title": "The worldly philosophers",
+        "subject": [
+          "Economics",
+          "Economists",
+          "History",
+          "Economists, biography",
+          "Biography",
+          "Economen",
+          "Volkswirtschaftslehre",
+          "Wirtschaftswissenschaftler",
+          "Biographies",
+          "Histoire",
+          "Économie politique",
+          "Économistes",
+          "Economie politique",
+          "Economistes",
+          "Economics, history",
+          "Heilbroner, robert l",
+          "Economics--history",
+          "Economists--biography",
+          "Hb76 .h4 1972",
+          "Hb76 .h4 1999",
+          "330/.092/2 b",
+          "Doctrines économiques",
+          "Manuel",
+          "[manuel]",
+          "Economists -- Biography",
+          "Biografie",
+          "Philosophers",
+          "Économique",
+          "Economic thought",
+          "Socioeconomic Factors"
+        ]
+      },
+      {
+        "author_key": [
+          "OL382524A"
+        ],
+        "author_name": [
+          "村上春樹"
+        ],
+        "cover_i": 7167416,
+        "first_publish_year": 2006,
+        "key": "/works/OL2625422W",
+        "language": [
+          "lit",
+          "chi",
+          "jpn",
+          "fre",
+          "eng"
+        ],
+        "title": "走ることについて語るときに僕の語ること",
+        "subject": [
+          "Marathon running",
+          "Japanese Authors",
+          "Biography",
+          "Running",
+          "Biography & Autobiography",
+          "Health & Fitness",
+          "New Age",
+          "Nonfiction",
+          "Japanese essays",
+          "Authorship",
+          "Travel",
+          "Japan, biography",
+          "Authors, biography",
+          "nyt:hardcover-nonfiction=2008-08-17",
+          "New York Times bestseller",
+          "autobiography",
+          "japan",
+          "sports",
+          "memoir",
+          "Biographies as Topic"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1394320A"
+        ],
+        "author_name": [
+          "Marjane Satrapi"
+        ],
+        "cover_i": 12648909,
+        "first_publish_year": 2003,
+        "key": "/works/OL20715162W",
+        "language": [
+          "spa",
+          "eng"
+        ],
+        "title": "Persepolis 1 & 2",
+        "subject": [
+          "Comics & graphic novels, nonfiction, biography & memoir",
+          "Iran, biography",
+          "Girls, biography",
+          "Authors, biography",
+          "Comics & graphic novels, nonfiction, general",
+          "Women, biography",
+          "nyt:paperback-graphic-books=2013-02-03",
+          "New York Times bestseller",
+          "Comic books, strips",
+          "Fiction",
+          "Teens - biography",
+          "Teens - life & relationships",
+          "Graphic novels & comic books",
+          "Women's biography",
+          "Peoples & cultures - biography",
+          "World literature",
+          "Comics & graphic novels",
+          "Regional studies",
+          "Iranians",
+          "Biography",
+          "Women illustrators",
+          "Iranian Women authors",
+          "Pictorial works",
+          "Islam"
+        ]
+      }
+    ]
+  }
+}

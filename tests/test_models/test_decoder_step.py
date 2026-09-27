@@ -96,3 +96,45 @@ def test_step_cache_growth_and_shapes():
         mem_k = cache[f"mem_k_{i}"]
         assert mem_k.shape[0] == batch_size
         assert mem_k.shape[2] == src_len  # seq length of memory
+
+
+def test_finished_batch_rows_do_not_generate_after_eos():
+    decoder = TransformerDecoder(
+        vocab_size=6,
+        d_model=8,
+        num_layers=1,
+        num_heads=2,
+        d_ff=16,
+        dropout=0.0,
+        max_len=6,
+        pad_token_id=0,
+    )
+    memory = torch.zeros(2, 2, 8)
+
+    def step(last, memory, cache):
+        position = cache.get("past_length", 0)
+        logits = torch.zeros(2, 6)
+        logits[0, 1 if position == 0 else 5] = 10
+        logits[1, 1 if position == 2 else 3] = 10
+        return logits, {"past_length": position + 1}
+
+    decoder.step = step
+    generated = decoder.greedy_decode(memory, max_len=6, start_token_id=0, end_token_id=1)
+    assert generated.tolist() == [[0, 1, 1, 1], [0, 3, 3, 1]]
+
+
+def test_unigram_repeat_constraint_blocks_all_previous_tokens():
+    decoder = TransformerDecoder(
+        vocab_size=5,
+        d_model=8,
+        num_layers=1,
+        num_heads=2,
+        d_ff=16,
+        dropout=0.0,
+        max_len=6,
+        pad_token_id=0,
+    )
+    memory = torch.zeros(1, 2, 8)
+    decoder.step = lambda last, memory, cache: (torch.tensor([[0.0, 1.0, 3.0, 4.0, 2.0]]), cache)
+    generated = decoder.greedy_decode(memory, max_len=4, start_token_id=0, no_repeat_ngram_size=1)
+    assert generated.tolist() == [[0, 3, 2, 4]]

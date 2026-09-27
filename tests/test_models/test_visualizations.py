@@ -1,6 +1,7 @@
 import os
 
 import matplotlib
+import pytest
 import torch
 
 matplotlib.use("Agg")  # use non-interactive backend
@@ -11,6 +12,12 @@ from src.models.attention import MultiHeadAttention, ScaledDotProductAttention
 from src.models.positional_encoding import PositionalEncoding
 
 OUTPUTS_DIR = "outputs"
+
+
+@pytest.fixture(autouse=True)
+def isolate_visualization_outputs(tmp_path, monkeypatch):
+    """Synthetic plots must never replace the project's historical figures."""
+    monkeypatch.setitem(globals(), "OUTPUTS_DIR", str(tmp_path))
 
 
 def ensure_outputs_dir():

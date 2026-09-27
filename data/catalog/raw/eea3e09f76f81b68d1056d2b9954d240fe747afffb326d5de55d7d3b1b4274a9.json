@@ -1,0 +1,375 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Ascience+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-22T14:29:34.956049+00:00",
+  "sha256": "443237caebfcba7cb539e32d59af45cc59d88832f5dad0001f58642ff6985e32",
+  "data": {
+    "numFound": 413923,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 413923,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:science language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL238569A"
+        ],
+        "author_name": [
+          "Neil Allison Campbell"
+        ],
+        "cover_i": 581911,
+        "first_publish_year": 1987,
+        "key": "/works/OL1983087W",
+        "language": [
+          "fre",
+          "spa",
+          "eng"
+        ],
+        "title": "Biology",
+        "subject": [
+          "Biology",
+          "Textbooks",
+          "Biology textbooks",
+          "Biologie",
+          "Science textbooks",
+          "Biology, Life Sciences",
+          "Biology (General)",
+          "Science",
+          "Science/Mathematics",
+          "Life Sciences - Biology - General",
+          "Problems, exercises",
+          "Biological Science Disciplines",
+          "Manuel",
+          "Biologi",
+          "Biological sciences & nutrition -> biology -> general",
+          "Qh308.2 .c34 2008",
+          "570",
+          "Children's non-fiction",
+          "Science & technology"
+        ]
+      },
+      {
+        "author_key": [
+          "OL235668A"
+        ],
+        "author_name": [
+          "Dan Simmons"
+        ],
+        "cover_i": 484900,
+        "first_publish_year": 1990,
+        "key": "/works/OL1963251W",
+        "language": [
+          "ita",
+          "por",
+          "fre",
+          "pol",
+          "spa",
+          "eng"
+        ],
+        "title": "The Fall of Hyperion",
+        "subject": [
+          "Littérature américaine",
+          "Science-fiction américaine",
+          "Science-fiction",
+          "Fiction, science fiction, action & adventure",
+          "Fiction, science fiction, general"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7044246A"
+        ],
+        "author_name": [
+          "刘慈欣"
+        ],
+        "cover_i": 7893958,
+        "first_publish_year": 2010,
+        "key": "/works/OL17610507W",
+        "language": [
+          "ger",
+          "fre",
+          "eng",
+          "chi",
+          "spa"
+        ],
+        "title": "Death's End (The Three-Body Problem Series Book 3)",
+        "subject": [
+          "Fiction",
+          "Science Fiction",
+          "Fiction, science fiction, general",
+          "Human-alien encounters",
+          "Imaginary wars and battles",
+          "Fiction, science fiction, action & adventure",
+          "Chinese Science fiction",
+          "Survival",
+          "Extraterrestrial beings",
+          "Hard Science Fiction",
+          "Alien Contact",
+          "FICTION / Science Fiction / Hard Science Fiction",
+          "FICTION / Science Fiction / Alien Contact",
+          "Chinese fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL34221A"
+        ],
+        "author_name": [
+          "Isaac Asimov"
+        ],
+        "cover_i": 13790511,
+        "first_publish_year": 1953,
+        "key": "/works/OL46401W",
+        "language": [
+          "spa",
+          "tur",
+          "fre",
+          "ita",
+          "por",
+          "ger",
+          "pol",
+          "chi",
+          "eng"
+        ],
+        "title": "The Caves of Steel",
+        "subject": [
+          "Robots",
+          "Fiction",
+          "Fiction, science fiction, hard science fiction",
+          "Fiction, mystery & detective, general",
+          "Interplanetary voyages",
+          "Murder",
+          "American literature",
+          "American Science fiction",
+          "Science fiction",
+          "Overpopulation"
+        ]
+      },
+      {
+        "author_key": [
+          "OL34221A"
+        ],
+        "author_name": [
+          "Isaac Asimov"
+        ],
+        "cover_i": 6502517,
+        "first_publish_year": 1950,
+        "key": "/works/OL46390W",
+        "language": [
+          "dut",
+          "por",
+          "ger",
+          "rus",
+          "spa",
+          "eng"
+        ],
+        "title": "The Foundation Trilogy",
+        "subject": [
+          "American Science fiction",
+          "Fiction",
+          "Psychohistory",
+          "Science fiction",
+          "Life on other planets",
+          "Prophecies",
+          "Fiction, science fiction, general",
+          "Abenteuer",
+          "Science-Fiction-Literatur",
+          "Weltraum",
+          "Prophecy",
+          "Long Now Manual for Civilization"
+        ]
+      },
+      {
+        "author_key": [
+          "OL182660A",
+          "OL3121035A",
+          "OL14432725A"
+        ],
+        "author_name": [
+          "Аркадий Стругацкий",
+          "Борис Стругацкий",
+          "Arkady and Boris Strugatsky"
+        ],
+        "cover_i": 6752719,
+        "first_publish_year": 1978,
+        "key": "/works/OL7967812W",
+        "language": [
+          "por",
+          "fre",
+          "rus",
+          "spa",
+          "eng"
+        ],
+        "title": "Roadside Picnic",
+        "subject": [
+          "science fiction",
+          "Russian science fiction",
+          "alien visitation",
+          "anomalies",
+          "Russian fiction",
+          "Fiction, science fiction, general"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7044246A"
+        ],
+        "author_name": [
+          "刘慈欣"
+        ],
+        "cover_i": 10526598,
+        "first_publish_year": 2008,
+        "key": "/works/OL16314245W",
+        "language": [
+          "pol",
+          "spa",
+          "tur",
+          "eng",
+          "fre",
+          "ita",
+          "chi",
+          "ger",
+          "por"
+        ],
+        "title": "The Dark Forest (The Three-Body Problem Series Book 2)",
+        "subject": [
+          "Chinese Science fiction",
+          "Fiction",
+          "Science Fiction",
+          "Fiction, science fiction, general",
+          "Human-alien encounters",
+          "Imaginary wars and battles",
+          "FICTION / Science Fiction / General",
+          "General"
+        ]
+      },
+      {
+        "author_key": [
+          "OL34221A"
+        ],
+        "author_name": [
+          "Isaac Asimov"
+        ],
+        "cover_i": 9302081,
+        "first_publish_year": 1969,
+        "key": "/works/OL46374W",
+        "language": [
+          "eng",
+          "rus",
+          "por",
+          "spa",
+          "fre"
+        ],
+        "title": "Nightfall",
+        "subject": [
+          "American Science fiction",
+          "American Fantasy fiction",
+          "Fiction, science fiction, general",
+          "Science fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL34221A"
+        ],
+        "author_name": [
+          "Isaac Asimov"
+        ],
+        "cover_i": 6542967,
+        "first_publish_year": 1954,
+        "key": "/works/OL46398W",
+        "language": [
+          "ita",
+          "chi",
+          "por",
+          "ger",
+          "fre",
+          "pol",
+          "spa",
+          "eng"
+        ],
+        "title": "The Naked Sun",
+        "subject": [
+          "Fiction",
+          "Science fiction",
+          "Robots",
+          "Robots in fiction",
+          "Fiction, science fiction, hard science fiction",
+          "Fiction, mystery & detective, general",
+          "American literature",
+          "Fiction, science fiction, general",
+          "American Science fiction",
+          "Murder",
+          "Investigation",
+          "Space colonies"
+        ]
+      },
+      {
+        "author_key": [
+          "OL21718A"
+        ],
+        "author_name": [
+          "Bill Bryson"
+        ],
+        "cover_i": 12725620,
+        "first_publish_year": 2003,
+        "key": "/works/OL74128W",
+        "language": [
+          "dut",
+          "ita",
+          "srp",
+          "por",
+          "ger",
+          "fre",
+          "rus",
+          "spa",
+          "eng"
+        ],
+        "title": "A short history of nearly everything",
+        "subject": [
+          "Science",
+          "Popular works",
+          "Ciencia",
+          "Obras populares",
+          "Science, popular works",
+          "Obras de divulgacio n.",
+          "Natuurwetenschappen",
+          "Sciences",
+          "Ouvrages de vulgarisation",
+          "Wetenschapsbeoefening",
+          "Origin",
+          "Life",
+          "Humor",
+          "Travel",
+          "Philosophy",
+          "Culture",
+          "Nonfiction",
+          "Open Library Staff Picks",
+          "Human beings",
+          "popular science",
+          "Long Now Manual for Civilization",
+          "Reading Level-Grade 11",
+          "Reading Level-Grade 12",
+          "30.01 history of the exact sciences",
+          "Einführung",
+          "Naturwissenschaften",
+          "Wetenschapsfilosofie",
+          "Natuurlijke historie",
+          "Einfu hrung",
+          "Large type books",
+          "Allgemeinwissen",
+          "Cosmology",
+          "Geology. Earth sciences",
+          "Science--popular works",
+          "Q162 .b88 2003",
+          "Q162 b916s 2003",
+          "500",
+          "Science - general & miscellaneous",
+          "History & philosophy of science",
+          "Civilization - history"
+        ]
+      }
+    ]
+  }
+}

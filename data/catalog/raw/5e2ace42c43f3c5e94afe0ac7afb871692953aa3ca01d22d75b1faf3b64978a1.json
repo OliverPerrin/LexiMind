@@ -1,0 +1,61 @@
+{
+  "url": "https://openlibrary.org/works/OL17800586W.json",
+  "retrievedAt": "2026-09-22T14:29:59.752710+00:00",
+  "sha256": "4ca4ad7dd41e53ed171eb9319740f23d5061fbf717f7caa35b801db17d1ee422",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "From rupi kaur, the #1 New York Times bestselling author of milk and honey, comes her long-awaited second collection of poetry. A vibrant and transcendent journey about growth and healing. Ancestry and honoring one’s roots. Expatriation and rising up to find a home within yourself.\r\n\r\nDivided into five chapters and illustrated by kaur, the sun and her flowers is a journey of wilting, falling, rooting, rising, and blooming. A celebration of love in all its forms.\r\n\r\nthis is the recipe of life\r\nsaid my mother\r\nas she held me in her arms as i wept\r\nthink of those flowers you plant\r\nin the garden each year\r\nthey will teach you\r\nthat people too\r\nmust wilt\r\nfall\r\nroot\r\nrise\r\nin order to bloom"
+    },
+    "covers": [
+      8084615,
+      -1
+    ],
+    "key": "/works/OL17800586W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7362769A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "the sun and her flowers",
+    "subjects": [
+      "Self-actualization (Psychology)",
+      "Poetry",
+      "American poetry",
+      "nyt:combined-print-and-e-book-fiction=2017-10-22",
+      "New York Times bestseller",
+      "New York Times reviewed",
+      "Poetry (poetic works by one author)",
+      "American poetry -- 21st century",
+      "Self-actualization (Psychology) -- Poetry",
+      "Women"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "links": [
+      {
+        "url": "https://www.nytimes.com/2017/12/15/books/review/rupi-kaur-instapoets.html",
+        "title": "New York Times review",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "latest_revision": 11,
+    "revision": 11,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2017-10-21T16:45:37.558495"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2025-05-02T03:28:28.693134"
+    }
+  }
+}

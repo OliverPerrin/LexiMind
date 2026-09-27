@@ -1,0 +1,94 @@
+{
+  "url": "https://openlibrary.org/works/OL1317211W.json",
+  "retrievedAt": "2026-09-22T14:29:44.527848+00:00",
+  "sha256": "5ea1ea5e81c04caadd5c2e48d5da71a9fb6819326006c68a6041c24862946d84",
+  "data": {
+    "first_publish_date": "1635",
+    "title": "Meditations",
+    "lc_classifications": [
+      "B580 .C3 1635",
+      "B580 .C3 1673",
+      "B580 F35",
+      "B581 .S94"
+    ],
+    "key": "/works/OL1317211W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL133986A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      211529,
+      9832386,
+      111244,
+      3327317,
+      6921392,
+      9036492,
+      9179569,
+      8693540,
+      7205280,
+      9293037,
+      10106156,
+      10306859,
+      8804714,
+      11067434,
+      12553997,
+      13124925,
+      13689101
+    ],
+    "description": "Meditations is a collection of personal reflections and notes by the Roman Emperor Marcus Aurelius (reigned 161 to 180 AD), offering a profound look into the philosophy of Stoicism. It was never intended for publication, making it a raw and intimate self-help manual for the emperor during his campaigns and rule. The central theme revolves around living a good, rational, and virtuous life in harmony with nature and the cosmos.\r\nAurelius continually reminds himself that everything in the universe is constantly changing and fleeting, urging the reader to accept the impermanence of life and the inevitability of death. He stresses the importance of focusing on what one can control—namely, their own thoughts and actions—and accepting everything else with tranquility, including the behavior of others and external events. This inner fortress of the mind is the only true source of peace.\r\nThe book emphasizes duty and service to the greater community. As a rational being, one's purpose is to act justly and benevolently towards fellow humans. Aurelius encourages practicing humility, rising above petty insults, and viewing difficulties as opportunities for growth and the exercise of virtue. He advocates for an objective, detached perspective on all things, stripping away subjective judgment to see the world as it truly is. Ultimately, Meditations is a powerful, timeless guide on how to face adversity, manage emotions, maintain personal integrity, and find contentment through disciplined, rational self-examination and adherence to virtue.",
+    "dewey_number": [
+      "878/.0108",
+      "188"
+    ],
+    "links": [
+      {
+        "title": "Amazon.com",
+        "url": "https://www.amazon.com/Meditations-Deluxe-Hardbound-Marcus-Aurelius/dp/9388118782/ref=tmm_hrd_swatch_0?_encoding=UTF8&dib_tag=se&dib=eyJ2IjoiMSJ9.i9vuC06RSp014-T5e_n9Qw.vzaPm8cDfKNTIqltOoHCl-QPJjsOaC5Y2M0fFogQ53Q&qid=1777617053&sr=8-1",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Booksdata.org",
+        "url": "https://generalpress.booksdata.org/book/BD00068042/meditations-marcus-aurelius-9789388118781",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "subjects": [
+      "Philosophy",
+      "Nonfiction",
+      "Classics",
+      "Self-Help",
+      "Ethics",
+      "Early works to 1800",
+      "Conduct of life",
+      "Ancient Philosophy",
+      "Stoics",
+      "Life"
+    ],
+    "genres": [
+      "/tags/OL174T"
+    ],
+    "latest_revision": 46,
+    "revision": 46,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T21:04:22.063679"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T11:47:58.127069"
+    }
+  }
+}

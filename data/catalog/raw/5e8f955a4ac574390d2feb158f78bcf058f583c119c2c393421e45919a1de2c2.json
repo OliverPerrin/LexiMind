@@ -1,0 +1,47 @@
+{
+  "url": "https://openlibrary.org/works/OL3518640W.json",
+  "retrievedAt": "2026-09-22T14:28:52.696725+00:00",
+  "sha256": "3038fb012151a9c5329063c0698fe09f1c0c4bec595d6cf437580012527069ee",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Their marriage was not a question of love\r\n\r\nInheriting her father's financial empire was the last thing fashion designer Sabrina Westlake had wanted.\r\n\r\nShe'd never loved Simon Westlake, a cold and domineering tyrant, and when she was forced to marry his enemy, rival industrialist Leo L'Aquila, to save the Westlake enterprises, she realized she'd merely exchanged one form of dominance for another.\r\n\r\nEspecially when she learned Leo's real purpose in marrying her was for vengeance, sweet and simple"
+    },
+    "title": "Hostage",
+    "covers": [
+      6615400
+    ],
+    "first_publish_date": "1985",
+    "key": "/works/OL3518640W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL589090A"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Fiction",
+      "Love stories"
+    ],
+    "genres": [
+      "/tags/OL177T"
+    ],
+    "latest_revision": 7,
+    "revision": 7,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T03:45:37.722573"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T09:31:17.800228"
+    }
+  }
+}

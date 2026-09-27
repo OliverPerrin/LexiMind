@@ -67,3 +67,10 @@ class TestPositionalEncoding:
         # Different positions should have different encodings
         assert not torch.allclose(pe[0], pe[1])
         assert not torch.allclose(pe[0], pe[50])
+
+
+def test_sinusoidal_encoding_supports_odd_hidden_dimensions():
+    encoder = PositionalEncoding(d_model=5, max_len=4, dropout=0.0)
+    output = encoder(torch.zeros(1, 3, 5))
+    assert output.shape == (1, 3, 5)
+    torch.testing.assert_close(output[0, 0], torch.tensor([0.0, 1.0, 0.0, 1.0, 0.0]))

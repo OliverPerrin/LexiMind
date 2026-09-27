@@ -1,0 +1,48 @@
+{
+  "url": "https://openlibrary.org/works/OL102483W.json",
+  "retrievedAt": "2026-09-22T14:30:00.873094+00:00",
+  "sha256": "f47dfe2ccf7e45c1d1ec73ba01724da4883f00fc5f971afd48d9e6fbd9c249e7",
+  "data": {
+    "subjects": [
+      "Poetry (poetic works by one author)",
+      "American poetry",
+      "American Poets",
+      "Beat generation",
+      "Poetry"
+    ],
+    "key": "/works/OL102483W",
+    "title": "Howl, and Other Poems",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL29479A"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      662901,
+      662789
+    ],
+    "first_publish_date": "1956",
+    "description": {
+      "type": "/type/text",
+      "value": "\"The prophetic poem that launched a generation when it was first published in 1956 is here presented in a commemorative 40th Anniversary Edition.\" \"When the book arrived from its British printers, it was seized almost immediately by U.S. Customs, and shortly thereafter the San Francisco police arrested its publisher and editor, Lawrence Ferlinghetti, together with the City Lights Bookstore manager, Shigeyoshi Murao. The two of them were charged with disseminating obscene literature, and the case went to trial in the Municipal Court of Judge Clayton Horn. A parade of distinguished literary and academic witnesses persuaded the judge that the title poem was indeed not obscene and that it had \"redeeming social significance.\"\" \"Thus was Howl and Other Poems freed to become the single most influential poetic work of the post World War II era, with over 800,000 copies now in print.\"--BOOK JACKET."
+    },
+    "latest_revision": 11,
+    "revision": 11,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-17T18:36:50.013545"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2024-07-29T11:50:51.416145"
+    }
+  }
+}

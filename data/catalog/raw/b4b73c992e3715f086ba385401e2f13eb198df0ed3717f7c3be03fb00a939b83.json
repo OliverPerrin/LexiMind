@@ -1,0 +1,108 @@
+{
+  "url": "https://openlibrary.org/works/OL17619932W.json",
+  "retrievedAt": "2026-09-22T14:29:03.787115+00:00",
+  "sha256": "99864b2ca4187c1ed0f8e7f3d16f2a151b67f37721e8de4658401947a208e6e4",
+  "data": {
+    "description": "Cora is a slave on a cotton plantation in Georgia. Life is hell for all the slaves, but especially bad for Cora; an outcast even among her fellow Africans, she is coming into womanhood—where even greater pain awaits. When Caesar, a recent arrival from Virginia, tells her about the Underground Railroad, they decide to take a terrifying risk and escape. Matters do not go as planned—Cora kills a young white boy who tries to capture her. Though they manage to find a station and head north, they are being hunted.\r\n     In Whitehead’s ingenious conception, the Underground Railroad is no mere metaphor—engineers and conductors operate a secret network of tracks and tunnels beneath the Southern soil. Cora and Caesar’s first stop is South Carolina, in a city that initially seems like a haven. But the city’s placid surface masks an insidious scheme designed for its black denizens. And even worse: Ridgeway, the relentless slave catcher, is close on their heels. Forced to flee again, Cora embarks on a harrowing flight, state by state, seeking true freedom.\r\n     Like the protagonist of Gulliver’s Travels, Cora encounters different worlds at each stage of her journey—hers is an odyssey through time as well as space. As Whitehead brilliantly re-creates the unique terrors for black people in the pre–Civil War era, his narrative seamlessly weaves the saga of America from the brutal importation of Africans to the unfulfilled promises of the present day. The Underground Railroad is at once a kinetic adventure tale of one woman’s ferocious will to escape the horrors of bondage and a shattering, powerful meditation on the history we all share.",
+    "title": "The Underground Railroad",
+    "covers": [
+      7899016,
+      8466309,
+      10083572,
+      8428305,
+      11947345,
+      12238188,
+      8066101,
+      8334972,
+      9286077,
+      10578939,
+      12329883,
+      14463940,
+      13193115,
+      13945348
+    ],
+    "subject_places": [
+      "United States",
+      "Georgia",
+      "South Carolina",
+      "Estados Unidos"
+    ],
+    "subjects": [
+      "FICTION / African American / General",
+      "History",
+      "Underground Railroad",
+      "Fiction",
+      "Fugitive slaves",
+      "Historical fiction",
+      "FICTION / Literary",
+      "FICTION / Historical",
+      "Literary",
+      "Historical",
+      "African American",
+      "General",
+      "18.06 Anglo-American literature",
+      "Historischer Roman",
+      "Amerikanisches Englisch",
+      "nyt:hardcover-fiction=2016-08-21",
+      "New York Times bestseller",
+      "New York Times reviewed",
+      "Slaves, fiction",
+      "Fiction, african american & black, historical",
+      "Fiction, historical",
+      "Southern states, fiction",
+      "Fiction, historical, general",
+      "Large type books",
+      "Historia",
+      "Esclavos fugitivos",
+      "Ficción",
+      "Esclavitud- -- Estados Unidos- -- Novelas"
+    ],
+    "key": "/works/OL17619932W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL218462A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subject_times": [
+      "19th century",
+      "Siglo XIX"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "links": [
+      {
+        "title": "New York Times review",
+        "url": "https://www.nytimes.com/2016/08/14/books/review/colson-whitehead-underground-railroad.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "New York Times review",
+        "url": "http://www.nytimes.com/2016/08/14/books/review/colson-whitehead-underground-railroad.html",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "genres": [
+      "/tags/OL170T"
+    ],
+    "latest_revision": 23,
+    "revision": 23,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2017-02-12T10:58:22.120414"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-02T19:50:04.969498"
+    }
+  }
+}

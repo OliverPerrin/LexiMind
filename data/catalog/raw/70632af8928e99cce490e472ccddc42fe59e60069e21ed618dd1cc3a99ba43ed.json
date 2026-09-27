@@ -1,0 +1,80 @@
+{
+  "url": "https://openlibrary.org/works/OL40879W.json",
+  "retrievedAt": "2026-09-22T14:29:06.019167+00:00",
+  "sha256": "8c28d57c4202b311c628d1b3357e8f88f7bde171366ca69e89c9fd2a91a81925",
+  "data": {
+    "description": "An epic novel of the violence and depravity that attended America's westward expansion, Blood Meridian brilliantly subverts the conventions of the Western novel and the mythology of the \"wild west.\" Based on historical events that took place on the Texas-Mexico border in the 1850s, it traces the fortunes of the Kid, a fourteen-year-old Tennesseean who stumbles into the nightmarish world where Indians are being murdered and the market for their scalps is thriving.",
+    "title": "Blood Meridian",
+    "covers": [
+      419991,
+      419627,
+      9425514,
+      -1,
+      11505038,
+      12376672,
+      13264904,
+      13526372
+    ],
+    "subject_places": [
+      "Mexican-American Border Region",
+      "Mexican- American Border Region"
+    ],
+    "subjects": [
+      "Fiction",
+      "Glanton Gang",
+      "Outlaws",
+      "Teenage boys",
+      "Indians of North America",
+      "Massacres",
+      "Indians of north america, fiction",
+      "Fiction, westerns",
+      "Fiction, historical",
+      "West (u.s.), fiction",
+      "Fiction, historical, general",
+      "Fiction, action & adventure",
+      "American fiction (fictional works by one author)",
+      "Fiction, general"
+    ],
+    "key": "/works/OL40879W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL28104A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_times": [
+      "1833-1878"
+    ],
+    "identifiers": {
+      "librarything": [
+        "7137558"
+      ],
+      "wikidata": [
+        "Q581426"
+      ]
+    },
+    "subtitle": "Or the Evening Redness in the West",
+    "genres": [
+      "/tags/OL182T",
+      "/tags/OL170T",
+      "/tags/OL164T"
+    ],
+    "latest_revision": 26,
+    "revision": 26,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T08:15:47.909262"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-04T15:11:34.619777"
+    }
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "status": "historical_reports_with_incomplete_run_provenance",
+  "captured_on": "2026-09-22",
+  "experiments_run_for_this_archive": false,
+  "artifacts": [
+    {
+      "id": "leximind_test",
+      "path": "research/results/historical/leximind_test.json",
+      "source_path": "outputs/evaluation_report_test.json",
+      "sha256": "75f731bcbfb6f9afedf201cb3ec2ae227e4810a505be2688181ecaf07bdf59e7",
+      "bytes": 10603,
+      "capture": "byte-for-byte copy; no rerun"
+    },
+    {
+      "id": "bert_combined_test",
+      "path": "research/results/historical/bert_combined_test.json",
+      "source_path": "outputs/bert_baseline/combined_results.json",
+      "sha256": "f65a2fc383e892e2c3faec8edc52662bc468ba4d2c25517460bd8be410e51fc4",
+      "bytes": 14458,
+      "capture": "byte-for-byte copy; no rerun"
+    },
+    {
+      "id": "root_training_history",
+      "path": "research/results/historical/root_training_history.json",
+      "source_path": "outputs/training_history.json",
+      "sha256": "ec9138c0c45eada8a55f3736d4439bfe40254e86e093990c07985a1cf4d105a0",
+      "bytes": 8215,
+      "capture": "byte-for-byte copy; no rerun"
+    },
+    {
+      "id": "seed17_training_history",
+      "path": "research/results/historical/seed17_training_history.json",
+      "source_path": "outputs/multiseed_emnlp/seed_17/training_history.json",
+      "sha256": "3b59bcb8b0d4ec9aac75dee4105be52980580be93bdde4b4e4403e61f08ddc85",
+      "bytes": 9547,
+      "capture": "byte-for-byte copy; no rerun"
+    },
+    {
+      "id": "root_labels",
+      "path": "research/results/historical/root_labels.json",
+      "source_path": "artifacts/labels.json",
+      "sha256": "df0d02cd2274cf1cb596a48f4ff2da9bf5bb677cdd94ebc10637f92921819910",
+      "bytes": 592,
+      "capture": "byte-for-byte copy; no rerun"
+    },
+    {
+      "id": "seed17_labels",
+      "path": "research/results/historical/seed17_labels.json",
+      "source_path": "outputs/multiseed_emnlp/seed_17/labels.json",
+      "sha256": "df0d02cd2274cf1cb596a48f4ff2da9bf5bb677cdd94ebc10637f92921819910",
+      "bytes": 592,
+      "capture": "byte-for-byte copy; no rerun"
+    },
+    {
+      "id": "seed17_logged_config",
+      "path": "research/results/historical/seed17_logged_config.yaml",
+      "source_path": "outputs/multiseed_emnlp/seed_17/train.log",
+      "source_sha256": "f863e7a15596dff5df6dfc8347386492948c06bf3297d5fe7050e81d143a2e1b",
+      "sha256": "e4b3fab08be7d5db4848dcc4160c379383221c16f19d6d39c2ea4e8db032887f",
+      "bytes": 1760,
+      "capture": "resolved YAML printed at start of seed17 log; not inferred from current config"
+    },
+    {
+      "id": "local_data_snapshot",
+      "path": "research/results/historical/local_data_snapshot_2026-09-22.json",
+      "sha256": "8631359db84f9e93d3636f9b6e1d531355e3e7fcf0688febce3f46b280922780",
+      "bytes": 3816,
+      "capture": "read-only JSONL counts and byte hashes on 2026-09-22"
+    },
+    {
+      "id": "seed17_log_observations",
+      "path": "research/results/historical/seed17_log_observations.json",
+      "source_path": "outputs/multiseed_emnlp/seed_17/train.log",
+      "sha256": "05c2e58ec0faba7ea2a1176e2f0a9ceff706fe1903ed9b4138ee5a07bf2c1ed1",
+      "bytes": 766,
+      "capture": "exact dataset-count and final training-progress lines; original full-log hash recorded inside"
+    }
+  ],
+  "checkpoint_observations": [
+    {
+      "path": "checkpoints/best.pt",
+      "sha256": "3f9ac2cdd30f6a3e205b8ff28cb43acbc21573fd0f1bcf0d8d8b87e539e9cc2c",
+      "bytes": 1091427590,
+      "observed_on": "2026-09-22",
+      "report_time_identity": "unknown; report did not record a checkpoint hash"
+    },
+    {
+      "path": "outputs/multiseed_emnlp/seed_17/checkpoints/best.pt",
+      "sha256": "f833727b1117cbf2a109083c34dafdc061bed2482551a23d973a0b7e86ef07df",
+      "bytes": 1091427590,
+      "observed_on": "2026-09-22",
+      "report_time_identity": "unknown; report did not record a checkpoint hash"
+    }
+  ],
+  "run_linkage": {
+    "leximind_test": {
+      "reported_checkpoint_path": "checkpoints/best.pt",
+      "report_time_checkpoint_sha256": null,
+      "seed": null,
+      "resolved_training_config": null,
+      "dataset_revision": null,
+      "evaluation_code_revision": null,
+      "warning": "Do not label this test report seed17. Current root and seed17 checkpoint files have different hashes."
+    },
+    "seed17_logged_run": {
+      "seed": 17,
+      "config_artifact": "seed17_logged_config",
+      "history_artifact": "seed17_training_history",
+      "task_weights": {
+        "summarization": 1.0,
+        "emotion": 1.0,
+        "topic": 0.3
+      },
+      "test_report_artifact": null,
+      "warning": "Training log/history establish a completed logged run, not linkage to the root test report."
+    }
+  },
+  "known_limitations": [
+    "Historical test reports do not contain immutable data or checkpoint hashes; provenance cannot be reconstructed by assuming current paths are unchanged.",
+    "LexiMind fixed emotion threshold is inferred from current pipeline default 0.5, not pinned in historical JSON; BERT reports explicitly store 0.3.",
+    "BERT frozen-tuned fields exist, but current BERT eval-only code tunes on the whole validation set; it does not use LexiMind split_emotion_val calibration half.",
+    "Current summarization test has 3440 rows, while the historical report records 2727 (2506 academic, 221 literary). Current bytes are not the historical evaluation set.",
+    "Literary source-target identity and work-level split safety need repair before using this data for new research.",
+    "No new training, inference, model evaluation, or experiment was run for this archive."
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "url": "https://openlibrary.org/works/OL20715162W.json",
+  "retrievedAt": "2026-09-22T14:29:31.825959+00:00",
+  "sha256": "ae7730bd31a98da42947b94a31a660d65ff4ff8b2bf58cba7621724bb2c6bb2f",
+  "data": {
+    "covers": [
+      12648909,
+      9395927
+    ],
+    "key": "/works/OL20715162W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL1394320A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "Persepolis 1 & 2",
+    "subjects": [
+      "Comics & graphic novels, nonfiction, biography & memoir",
+      "Iran, biography",
+      "Girls, biography",
+      "Authors, biography",
+      "Comics & graphic novels, nonfiction, general",
+      "Women, biography",
+      "nyt:paperback-graphic-books=2013-02-03",
+      "New York Times bestseller",
+      "Comic books, strips",
+      "Fiction",
+      "Teens - biography",
+      "Teens - life & relationships",
+      "Graphic novels & comic books",
+      "Women's biography",
+      "Peoples & cultures - biography",
+      "World literature",
+      "Comics & graphic novels",
+      "Regional studies",
+      "Iranians",
+      "Biography",
+      "Women illustrators",
+      "Iranian Women authors",
+      "Pictorial works",
+      "Islam"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "Wise, funny, and heartbreaking, Persepolis is Marjane Satrapi’s memoir of growing up in Iran during the Islamic Revolution. In powerful black-and-white comic strip images, Satrapi tells the story of her life in Tehran from ages six to fourteen, years that saw the overthrow of the Shah’s regime, the triumph of the Islamic Revolution, and the devastating effects of war with Iraq. The intelligent and outspoken only child of committed Marxists and the great-granddaughter of one of Iran’s last emperors, Marjane bears witness to a childhood uniquely entwined with the history of her country.\r\n\r\nPersepolis paints an unforgettable portrait of daily life in Iran and of the bewildering contradictions between home life and public life. Marjane’s child’s-eye view of dethroned emperors, state-sanctioned whippings, and heroes of the revolution allows us to learn as she does the history of this fascinating country and of her own extraordinary family. Intensely personal, profoundly political, and wholly original, Persepolis is at once a story of growing up and a reminder of the human cost of war and political repression. It shows how we carry on, with laughter and tears, in the face of absurdity. And, finally, it introduces us to an irresistible little girl with whom we cannot help but fall in love.",
+    "latest_revision": 18,
+    "revision": 18,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2020-05-07T14:23:06.469409"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-02-05T12:46:55.317836"
+    }
+  }
+}

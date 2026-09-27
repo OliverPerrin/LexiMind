@@ -57,9 +57,7 @@ def run_single_seed(
     if use_pcgrad:
         cmd.append("training.trainer.use_pcgrad=true")
     if gradient_conflict_frequency > 0:
-        cmd.append(
-            f"training.trainer.gradient_conflict_frequency={gradient_conflict_frequency}"
-        )
+        cmd.append(f"training.trainer.gradient_conflict_frequency={gradient_conflict_frequency}")
     if config_overrides:
         cmd.extend(config_overrides.split())
 
@@ -166,25 +164,34 @@ def aggregate_results(all_results: Dict[int, Dict]) -> Dict:
 
     # Collect all metric paths
     metric_values: Dict[str, List[float]] = {}
-    for _seed, results in all_results.items():
+    metric_seeds: Dict[str, List[int]] = {}
+    for seed, results in all_results.items():
         for task, task_metrics in results.items():
-            if not isinstance(task_metrics, dict):
+            if task.startswith("_") or not isinstance(task_metrics, dict):
                 continue
             for metric_name, value in task_metrics.items():
                 if (
                     isinstance(value, (int, float))
+                    and not isinstance(value, bool)
                     and metric_name != "num_samples"
                     and metric_name != "num_classes"
                 ):
+                    if not np.isfinite(value):
+                        raise ValueError(
+                            f"Non-finite report value for seed {seed}: {task}/{metric_name}"
+                        )
                     key = f"{task}/{metric_name}"
                     metric_values.setdefault(key, []).append(float(value))
+                    metric_seeds.setdefault(key, []).append(seed)
 
-    aggregated: Dict[str, Dict[str, float]] = {}
+    aggregated = {}
     for key, values in sorted(metric_values.items()):
         arr = np.array(values)
         aggregated[key] = {
             "mean": float(arr.mean()),
-            "std": float(arr.std()),
+            "std": float(arr.std(ddof=1)) if len(values) > 1 else None,
+            "std_definition": "sample standard deviation; unavailable with one seed",
+            "seeds": metric_seeds[key],
             "min": float(arr.min()),
             "max": float(arr.max()),
             "n_seeds": len(values),
@@ -193,100 +200,45 @@ def aggregate_results(all_results: Dict[int, Dict]) -> Dict:
     return aggregated
 
 
+def _format_result(stats: Dict, *, percent: bool = False, latex: bool = False) -> str:
+    scale = 100 if percent else 1
+    mean = stats["mean"] * scale
+    spread = stats["std"]
+    precision = 1 if percent else 4
+    value = f"{mean:.{precision}f}"
+    if percent:
+        value += r"\%" if latex else "%"
+    if spread is not None:
+        value += (r" $\pm$ " if latex else " ± ") + f"{spread * scale:.{precision}f}"
+    else:
+        value += " (spread unmeasured)"
+    return value + f"; n={stats['n_seeds']}"
+
+
 def print_summary(aggregated: Dict, seeds: List[int]) -> None:
-    """Print human-readable summary of multi-seed results."""
-    print(f"\n{'=' * 70}")
-    print(f"MULTI-SEED RESULTS SUMMARY ({len(seeds)} seeds: {seeds})")
-    print(f"{'=' * 70}")
-
-    # Group by task
-    tasks: Dict[str, Dict[str, Dict]] = {}
-    for key, stats in aggregated.items():
-        task, metric = key.split("/", 1)
-        tasks.setdefault(task, {})[metric] = stats
-
-    for task, metrics in sorted(tasks.items()):
-        print(f"\n  {task.upper()}:")
-        for metric, stats in sorted(metrics.items()):
-            mean = stats["mean"]
-            std = stats["std"]
-            # Format based on metric type
-            if "accuracy" in metric:
-                print(f"    {metric:25s}: {mean * 100:.1f}% ± {std * 100:.1f}%")
-            else:
-                print(f"    {metric:25s}: {mean:.4f} ± {std:.4f}")
+    """Each metric reports its actual successful seed count, including partial runs."""
+    print(f"\nRESULTS FROM {len(seeds)} REPORTS: {seeds}")
+    for key, stats in sorted(aggregated.items()):
+        print(f"  {key}: {_format_result(stats, percent='accuracy' in key)}")
 
 
 def generate_latex_table(aggregated: Dict, seeds: List[int]) -> str:
-    """Generate a LaTeX-ready table with mean ± std for key metrics.
-
-    Produces a table suitable for direct inclusion in an EMNLP paper.
-    """
-    # Define the metrics we want in the table, grouped by task
-    metric_rows = [
-        ("Summarization", [
-            ("ROUGE-1", "summarization/rouge1"),
-            ("ROUGE-2", "summarization/rouge2"),
-            ("ROUGE-L", "summarization/rougeL"),
-        ]),
-        ("Topic", [
-            ("Accuracy", "topic/accuracy"),
-            ("Macro F1", "topic/macro_f1"),
-        ]),
-        ("Emotion", [
-            ("Sample-avg F1", "emotion/sample_avg_f1"),
-            ("Macro F1", "emotion/macro_f1"),
-            ("Micro F1", "emotion/micro_f1"),
-        ]),
-    ]
-
+    """Render observed metrics with per-metric sample counts, never missing-run zeros."""
     lines = [
         r"\begin{table}[t]",
         r"\centering",
-        f"\\caption{{LexiMind results ({len(seeds)} seeds)}}",
-        r"\label{tab:multiseed}",
-        r"\begin{tabular}{lc}",
-        r"\toprule",
-        r"\textbf{Metric} & \textbf{Score} \\",
-        r"\midrule",
+        f"\\caption{{LexiMind stored report values ({len(seeds)} reports; per-metric seed counts shown)}}",
+        r"\begin{tabular}{ll}",
+        r"\hline",
+        r"Metric & Value \\",
+        r"\hline",
     ]
-
-    for task_name, task_metrics in metric_rows:
-        lines.append(f"\\multicolumn{{2}}{{l}}{{\\textit{{{task_name}}}}} \\\\")
-        for display_name, key in task_metrics:
-            if key in aggregated:
-                mean = aggregated[key]["mean"]
-                std = aggregated[key]["std"]
-                if "accuracy" in key:
-                    lines.append(
-                        f"\\quad {display_name} & ${mean*100:.1f} \\pm {std*100:.1f}$ \\\\"
-                    )
-                else:
-                    lines.append(
-                        f"\\quad {display_name} & ${mean:.4f} \\pm {std:.4f}$ \\\\"
-                    )
-            else:
-                lines.append(f"\\quad {display_name} & -- \\\\")
-
-    # Check for frozen tuned metrics
-    frozen_keys = [k for k in aggregated if "frozen_tuned" in k]
-    if frozen_keys:
-        lines.append(r"\midrule")
+    for key, stats in sorted(aggregated.items()):
+        name = key.replace("_", r"\_")
         lines.append(
-            r"\multicolumn{2}{l}{\textit{Emotion (val-tuned $\tau$)}} \\"
+            name + " & " + _format_result(stats, percent="accuracy" in key, latex=True) + r" \\"
         )
-        for key in sorted(frozen_keys):
-            metric_name = key.split("/")[-1].replace("frozen_tuned_", "").replace("_", " ").title()
-            mean = aggregated[key]["mean"]
-            std = aggregated[key]["std"]
-            lines.append(f"\\quad {metric_name} & ${mean:.4f} \\pm {std:.4f}$ \\\\")
-
-    lines.extend([
-        r"\bottomrule",
-        r"\end{tabular}",
-        r"\end{table}",
-    ])
-
+    lines.extend([r"\hline", r"\end{tabular}", r"\end{table}"])
     return "\n".join(lines)
 
 
@@ -304,12 +256,12 @@ def main():
     parser.add_argument(
         "--skip-training",
         action="store_true",
-        help="Skip training, only aggregate existing results",
+        help="Skip training; model evaluation still runs unless --skip-eval is also passed",
     )
     parser.add_argument(
         "--skip-eval",
         action="store_true",
-        help="Skip evaluation, only aggregate training histories",
+        help="Skip model evaluation and evaluation-result aggregation",
     )
     parser.add_argument(
         "--use-pcgrad",
@@ -345,7 +297,7 @@ def main():
     print(f"  Seeds: {args.seeds}")
     print(f"  Number of runs: {n_seeds}")
     print(f"  Estimated time per seed: ~{ESTIMATED_HOURS_PER_SEED:.0f} hours (RTX 4070 12GB)")
-    print(f"  Estimated total time: ~{est_hours:.0f} hours ({est_hours/24:.1f} days)")
+    print(f"  Estimated total time: ~{est_hours:.0f} hours ({est_hours / 24:.1f} days)")
     if args.use_pcgrad:
         print("  PCGrad: ENABLED (will propagate to each seed run)")
     print(f"  Output directory: {args.output_dir}")
@@ -353,13 +305,12 @@ def main():
 
     # Training phase
     per_seed_hours: Dict[int, float] = {}
+    failed_training_seeds = set()
     if not args.skip_training:
         train_start = time.time()
         for i, seed in enumerate(args.seeds):
-            conflict_freq = (
-                args.conflict_frequency if seed == args.conflict_seed else 0
-            )
-            _, seed_elapsed = run_single_seed(
+            conflict_freq = args.conflict_frequency if seed == args.conflict_seed else 0
+            history, seed_elapsed = run_single_seed(
                 seed,
                 args.config,
                 args.output_dir,
@@ -368,7 +319,13 @@ def main():
             )
             per_seed_hours[seed] = seed_elapsed
             remaining = (n_seeds - i - 1) * seed_elapsed
-            print(f"\n  Seed {seed} completed in {seed_elapsed:.1f}h")
+            if history:
+                print(f"\n  Seed {seed} completed in {seed_elapsed:.1f}h")
+            else:
+                failed_training_seeds.add(seed)
+                print(
+                    f"\n  Seed {seed} did not produce a completed run; elapsed {seed_elapsed:.1f}h"
+                )
             if i < n_seeds - 1:
                 print(f"  Estimated remaining: ~{remaining:.1f}h")
         total_train = (time.time() - train_start) / 3600
@@ -396,6 +353,11 @@ def main():
     all_eval_results: Dict[int, Dict] = {}
     if not args.skip_eval:
         for seed in args.seeds:
+            if seed in failed_training_seeds:
+                print(
+                    f"  Skipping seed {seed} evaluation after failed training; old checkpoints are not reused"
+                )
+                continue
             result = run_evaluation(seed, args.output_dir)
             if result:
                 all_eval_results[seed] = result
@@ -403,10 +365,11 @@ def main():
     # Aggregate and save
     if all_eval_results:
         aggregated = aggregate_results(all_eval_results)
-        print_summary(aggregated, args.seeds)
+        completed_seeds = list(all_eval_results)
+        print_summary(aggregated, completed_seeds)
 
         # Generate and print LaTeX table
-        latex = generate_latex_table(aggregated, args.seeds)
+        latex = generate_latex_table(aggregated, completed_seeds)
         print(f"\n{'=' * 70}")
         print("LATEX TABLE (copy-paste into paper)")
         print(f"{'=' * 70}")
@@ -423,7 +386,9 @@ def main():
         with open(output_path, "w") as f:
             json.dump(
                 {
-                    "seeds": args.seeds,
+                    "seeds": completed_seeds,
+                    "requested_seeds": args.seeds,
+                    "missing_seeds": [seed for seed in args.seeds if seed not in all_eval_results],
                     "use_pcgrad": args.use_pcgrad,
                     "conflict_seed": args.conflict_seed,
                     "per_seed": {str(k): v for k, v in all_eval_results.items()},

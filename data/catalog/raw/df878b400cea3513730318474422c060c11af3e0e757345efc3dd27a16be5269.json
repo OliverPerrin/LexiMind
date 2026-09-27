@@ -1,0 +1,55 @@
+{
+  "url": "https://openlibrary.org/works/OL26446888W.json",
+  "retrievedAt": "2026-09-22T14:30:03.097628+00:00",
+  "sha256": "a9690cacb2c3368cdf0ac2bc657ded1c43c09cc0521de938b34428c8190c72a9",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "The Odyssey",
+    "subjects": [
+      "Greek Epic poetry",
+      "Translations into English",
+      "Poetry",
+      "Classical Epic poetry",
+      "Translations"
+    ],
+    "subject_people": [
+      "Odysseus King of Ithaca (Mythological character)"
+    ],
+    "description": "A new translation of the epic poem retells the story of Odysseus's ten-year voyage home to Ithaca after the Trojan War.",
+    "key": "/works/OL26446888W",
+    "covers": [
+      12474938
+    ],
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL18404A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "links": [
+      {
+        "title": "The Odyssey-Ebookzy",
+        "url": "https://ebookzy.com/the-odyssey/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "latest_revision": 6,
+    "revision": 6,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2021-12-23T13:37:47.175534"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-18T13:25:31.962669"
+    }
+  }
+}

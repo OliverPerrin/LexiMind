@@ -1,0 +1,104 @@
+{
+  "url": "https://openlibrary.org/works/OL1073898W.json",
+  "retrievedAt": "2026-09-22T14:29:42.834628+00:00",
+  "sha256": "91ab0e91a036b673a078726af7b663619e1ac97d27080f8ab97ca8c9d23d08c9",
+  "data": {
+    "title": "The Story of Philosophy",
+    "key": "/works/OL1073898W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL109674A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      },
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL15226554A"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Philosophers",
+      "Philosophy",
+      "History",
+      "Biography",
+      "Philosophie",
+      "Philosophes",
+      "Philosophy, dictionaries",
+      "Philosophy, history",
+      "Nonfiction",
+      "Classics"
+    ],
+    "covers": [
+      405360,
+      8340849,
+      12444962,
+      5444146,
+      10331467,
+      15070491,
+      14912217,
+      14914316,
+      15070487,
+      15070518
+    ],
+    "description": "Includes chapters on Plato, Aristotle, Francis Bacon, Spinoza, Voltaire, Kant, and Nietzsche.",
+    "subject_people": [
+      "Bertrand Russell (1872-1970)",
+      "Francis Bacon (1561-1626)",
+      "Immanuel Kant (1724-1804)",
+      "Benedetto Croce (1866-1952)",
+      "Plato",
+      "George Santayana (1863-1952)",
+      "Friedrich Wilhelm Nietzsche (1844-1900)",
+      "Benedictus de Spinoza (1632-1677)",
+      "Aristotle",
+      "Voltaire (1694-1778)",
+      "Arthur Schopenhauer (1788-1860)",
+      "John Dewey (1859-1952)",
+      "William James (1842-1910)",
+      "Henri Bergson (1859-1941)"
+    ],
+    "links": [
+      {
+        "title": "Amazon.com",
+        "url": "https://www.amazon.com/Story-Philosophy-Will-Durant-ebook/dp/B0B9RG22BL",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Kobo.com",
+        "url": "https://www.kobo.com/us/en/ebook/the-story-of-philosophy-15",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Amazon.com",
+        "url": "https://www.amazon.com/gp/product/B0B9RG22BL?tag=internetarchi-20",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "latest_revision": 7,
+    "revision": 7,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T20:23:46.806100"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-07-26T08:46:25.167533"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "url": "https://openlibrary.org/works/OL1983087W.json",
+  "retrievedAt": "2026-09-22T14:29:36.529245+00:00",
+  "sha256": "2bdd052cedb44e43ee2a3a92a8cecbe2114c68df3e2d6c29fb2888c50a7ec416",
+  "data": {
+    "covers": [
+      581911
+    ],
+    "first_publish_date": "1987",
+    "key": "/works/OL1983087W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL238569A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subjects": [
+      "Biology",
+      "Textbooks",
+      "Biology textbooks",
+      "Biologie",
+      "Science textbooks",
+      "Biology, Life Sciences",
+      "Biology (General)",
+      "Science",
+      "Science/Mathematics",
+      "Life Sciences - Biology - General",
+      "Problems, exercises",
+      "Biological Science Disciplines",
+      "Manuel",
+      "Biologi",
+      "Biological sciences & nutrition -> biology -> general",
+      "Qh308.2 .c34 2008",
+      "570",
+      "Children's non-fiction",
+      "Science & technology"
+    ],
+    "title": "Biology",
+    "type": {
+      "key": "/type/work"
+    },
+    "description": {
+      "type": "/type/text",
+      "value": "A comprehensive text for undergraduate-level biology courses that covers cells, genetics, mechanisms and evolution, biological diversity, plant and animal forms and functions, and ecology; and includes review questions, activities, figures, chapter summaries, and a CD-ROM which provides access to online materials."
+    },
+    "latest_revision": 29,
+    "revision": 29,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T22:39:56.910459"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2025-06-10T11:13:36.032011"
+    }
+  }
+}

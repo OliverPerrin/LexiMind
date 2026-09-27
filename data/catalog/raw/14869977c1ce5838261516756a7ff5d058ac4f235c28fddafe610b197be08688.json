@@ -1,0 +1,70 @@
+{
+  "url": "https://openlibrary.org/works/OL472250W.json",
+  "retrievedAt": "2026-09-22T14:28:41.666773+00:00",
+  "sha256": "9034c7eafe82ff040f1eff35f5fb3da07f44c9c6478e1eafb721a2f835f653ab",
+  "data": {
+    "title": "Sleeping Murder",
+    "key": "/works/OL472250W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL27695A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "\"Let sleeping murder lie\": this is the proverb (a variation on \"Let sleeping dogs lie\") which is not obeyed by twenty-one-year-old New Zealander Gwenda Reed, who has recently married and now comes to England to settle down there.  While her husband, Giles, is out of the country, she buys a house for them and starts recalling memories which make her start to think that perhaps she had lived in the house before. She knows the pattern of the old wallpaper they find on the walls, the location of a now covered over doorway, a set of steps in the garden that are not where they should be, and so on. When she begins to remember seeing someone murdered at the bottom of the staircase however, she is convinced she is going mad. Miss Marple however has an explanation not only for why she may be having these memories but also solves the mystery of the murder victim and her murderer. \r\n\r\nSleeping Murder chronicles Miss Marple’s final case. Although Agatha Christie wrote it before Nemesis, it was not published until after her death in 1976. It is thought to have been written in the early 1940s, although the exact date has been debated",
+    "covers": [
+      10247294,
+      8078214,
+      14186408,
+      14186406,
+      14186407,
+      14186405,
+      13940858
+    ],
+    "subject_places": [
+      "England"
+    ],
+    "subjects": [
+      "Fiction",
+      "Jane Marple (Fictitious character)",
+      "Women detectives",
+      "Women detectives in fiction",
+      "Mystery",
+      "Large type books",
+      "English Detective and mystery stories",
+      "Translations into French",
+      "English literature",
+      "Fiction, mystery & detective, traditional",
+      "Fiction, mystery & detective, women sleuths",
+      "Marple, jane (fictitious character), fiction",
+      "England, fiction",
+      "Detective and mystery stories",
+      "Inspectrices de police",
+      "Romans, nouvelles"
+    ],
+    "subject_people": [
+      "Jane Marple (Fictitious character)",
+      "Hercule Poirot (Fictitious character)"
+    ],
+    "genres": [
+      "/tags/OL175T"
+    ],
+    "latest_revision": 17,
+    "revision": 17,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-08T02:57:56.524333"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-09T09:13:26.299060"
+    }
+  }
+}

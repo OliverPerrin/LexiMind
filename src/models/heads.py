@@ -39,8 +39,12 @@ class AttentionPooling(nn.Module):
         # Compute attention scores: (batch, seq_len, 1)
         scores = self.query(x)
         if mask is not None:
+            mask = mask.to(device=x.device, dtype=torch.bool)
             scores = scores.masked_fill(~mask.unsqueeze(-1), float("-inf"))
+            scores = torch.where(mask.any(dim=1)[:, None, None], scores, 0.0)
         weights = F.softmax(scores, dim=1)  # (batch, seq_len, 1)
+        if mask is not None:
+            weights = weights.masked_fill(~mask.unsqueeze(-1), 0.0)
         # Weighted sum: (batch, d_model)
         return (weights * x).sum(dim=1)
 
@@ -92,6 +96,8 @@ class ClassificationHead(nn.Module):
         mask: (batch, seq_len) - True for valid tokens, False for padding
         returns: (batch, num_labels)
         """
+        if mask is not None:
+            mask = mask.to(device=x.device, dtype=torch.bool)
         if self.pooler == "attention":
             pooled = self.attn_pool(x, mask)
         elif self.pooler == "mean":
@@ -111,6 +117,8 @@ class ClassificationHead(nn.Module):
                 mask_expanded = mask.unsqueeze(-1)
                 x = x.masked_fill(~mask_expanded, float("-inf"))
             pooled, _ = x.max(dim=1)
+            if mask is not None:
+                pooled = torch.where(mask.any(dim=1, keepdim=True), pooled, 0.0)
         pooled = self.dropout(pooled)
         return self.out_proj(pooled)
 

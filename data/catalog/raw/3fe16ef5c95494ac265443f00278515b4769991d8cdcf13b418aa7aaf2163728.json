@@ -1,0 +1,39 @@
+{
+  "url": "https://openlibrary.org/works/OL28521353W.json",
+  "retrievedAt": "2026-09-22T14:29:52.161915+00:00",
+  "sha256": "ca75da30c48916dbc732cbd168faed3c968c964cb293d4109b69b5e522aaad82",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "Meditations",
+    "subjects": [
+      "Philosophy",
+      "Classical philology"
+    ],
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL133986A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL28521353W",
+    "covers": [
+      13202688
+    ],
+    "latest_revision": 5,
+    "revision": 5,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2022-07-21T08:08:45.286226"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-20T19:16:24.554320"
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "url": "https://openlibrary.org/works/OL528094W.json",
+  "retrievedAt": "2026-09-22T14:29:23.008572+00:00",
+  "sha256": "46516e20998a7fd5ef47b7ed20998598153e6ebcf4c06f2de9fd9016eccdeab6",
+  "data": {
+    "description": "The autobiography of Paramahansa Yogananda (1893 - 1952) details his search for a guru, during which he encountered many spiritual leaders and world-renowned scientists. When it was published in 1946 it was the first introduction of many westerners to yoga and meditation.The famous opera singer Amelita Galli-Curci said about the book:\"Amazing, true stories of saints and masters of India, blended with priceless superphysical information-much needed to balance the Western material efficiency with Eastern spiritual efficiency-come from the vigorous pen of Paramhansa Yogananda, whose teachings my husband and myself have had the pleasure of studying for twenty years.\"",
+    "title": "Autobiography of a Yogi",
+    "covers": [
+      805448,
+      3289031,
+      2175606,
+      4723087,
+      2210862,
+      1046217,
+      805462,
+      2917199,
+      6383646,
+      7526306,
+      7602992,
+      7809290,
+      8553232,
+      9026603,
+      9026608,
+      9053037,
+      9155569,
+      1628449,
+      3144441,
+      7712449,
+      7797468,
+      3346534,
+      10511777,
+      11122943,
+      12393890,
+      12674515,
+      13597286,
+      13465841,
+      13530446,
+      13708143,
+      13772879
+    ],
+    "subject_places": [
+      "India",
+      "Calcutta",
+      "Himalayas",
+      "Puri",
+      "Boston",
+      "Los Angeles",
+      "Inde"
+    ],
+    "subjects": [
+      "Autobiography",
+      "Yogis",
+      "Yoga",
+      "Yoguis",
+      "Biografía",
+      "Spiritual biography",
+      "Biography & Autobiography",
+      "New Age",
+      "Nonfiction",
+      "Biography",
+      "Correspondence, reminiscences",
+      "Autobiographies",
+      "General",
+      "Biography / Autobiography",
+      "Yōga (Japanese painting styles)",
+      "Yogananda, paramahansa, 1893-1952",
+      "Gurus",
+      "Hinduism",
+      "Kriya Yoga",
+      "Hindus",
+      "Self-realization",
+      "Spirituality",
+      "Radio programs",
+      "Popular culture",
+      "Social life and customs"
+    ],
+    "subject_people": [
+      "Paramahansa Yogananda (1893-1952)",
+      "Paramhansa Yogananda (1893-1952)",
+      "Paramhansa Yogananda",
+      "Yogananda Paramhansa (1893-1952)",
+      "Yogananda Paramahansa (1893-1952)"
+    ],
+    "key": "/works/OL528094W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL37185A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subject_times": [
+      "1893-1952",
+      "1893-1945"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "first_publish_date": "1975",
+    "links": [
+      {
+        "title": "Booksdata.org",
+        "url": "https://generalpress.booksdata.org/book/BD00068224/the-autobiography-of-a-yogi-paramahansa-yogananda-b00r6vnen6",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "latest_revision": 23,
+    "revision": 23,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-08T04:31:27.393476"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-01T11:26:28.048671"
+    }
+  }
+}

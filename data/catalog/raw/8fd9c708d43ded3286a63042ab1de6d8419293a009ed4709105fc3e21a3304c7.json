@@ -1,0 +1,252 @@
+{
+  "url": "https://openlibrary.org/works/OL81634W.json",
+  "retrievedAt": "2026-09-22T14:29:12.524342+00:00",
+  "sha256": "a0f6c2f6f768a3234beb6b2b9b5c4ef564e3e7ffa987c9d454eddef034ede2be",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Novelist Paul Sheldon has plans to make the difficult transition from writing historical romances featuring heroine Misery Chastain to publishing literary fiction. Annie Wilkes, Sheldon's number one fan, rescues the author from the scene of a car accident. The former nurse takes care of him in her remote house, but becomes irate when she discovers that the author has killed Misery off in his latest book. Annie keeps Sheldon prisoner while forcing him to write a book that brings Misery back to life.\r\n\r\n[Source][1]\r\n\r\n\r\n  [1]: https://stephenking.com/library/novel/misery.html"
+    },
+    "links": [
+      {
+        "title": "Author's book page",
+        "url": "http://stephenking.com/library/novel/misery.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Rereading Stephen King, chapter 24: Misery (The Guardian)",
+        "url": "https://www.theguardian.com/books/booksblog/2013/jul/30/rereading-stephen-king-misery",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Misery (novel) - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Misery_(novel)",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Fiction Book Review: Misery by Stephen King - Publishers Weekly",
+        "url": "https://www.publishersweekly.com/978-0-670-81364-3",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Misery | Readers' Poll: The 10 Best Stephen King Books - Rolling Stone",
+        "url": "https://www.rollingstone.com/culture/lists/readers-poll-the-10-best-stephen-king-books-20141105/misery-20141105",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "Misery",
+    "covers": [
+      8259296,
+      8148855,
+      8581240,
+      8362892,
+      8556321,
+      -1,
+      10458841,
+      11011211,
+      8785062,
+      11790302,
+      12108293,
+      12325136,
+      13904850,
+      13483340,
+      13332746,
+      13958047,
+      12774828,
+      14497277,
+      12805227
+    ],
+    "subject_places": [
+      "Arc de Triomphe",
+      "Mei guo"
+    ],
+    "subjects": [
+      "dope",
+      "pills",
+      "American Novelists",
+      "Captives",
+      "Fans (Persons)",
+      "Fiction",
+      "Novelists",
+      "Prisoners",
+      "Suspense fiction",
+      "Writers",
+      "abuse",
+      "fear",
+      "horror",
+      "isolation",
+      "prisoner",
+      "suspense",
+      "thriller",
+      "Nurses",
+      "American Horror stories",
+      "Horror tales",
+      "Pepsi",
+      "Fiction, horror",
+      "American literature",
+      "Authors, fiction",
+      "American fiction",
+      "Literary",
+      "Thrillers",
+      "Fiction, thrillers, suspense",
+      "Fiction, science fiction, general",
+      "Horror - General",
+      "Horror & ghost stories",
+      "Fiction - Horror",
+      "Zhang pian xiao shuo"
+    ],
+    "subject_people": [
+      "Bossie",
+      "Bully",
+      "Dumpster",
+      "Growler",
+      "Hezekiah",
+      "Mary",
+      "Misery",
+      "Peter Gunn",
+      "Daniel",
+      "Geoffrey Alliburton",
+      "Hester Beaulifant",
+      "Bryce Bell",
+      "Crysilda Berryman",
+      "Dr. Bilford",
+      "Mrs. Bollinger",
+      "Tony Bonasaro",
+      "Dr. Bookings",
+      "Lady Calthorpe",
+      "Ian Carmichael",
+      "Misery Carmichael",
+      "Sean Carmichael",
+      "Thomas Carmichael",
+      "Gwendoline Chastain",
+      "Misery Chastain",
+      "Girl Christopher",
+      "Careless Corrigan",
+      "Mr. Cranthorpe",
+      "Nancy Dartmonger",
+      "Eddie Desmond",
+      "Ralph Dugan",
+      "Charlotte Evelyn-Hyde",
+      "Mr. Faverey",
+      "Angela Ford",
+      "John Ford",
+      "Albert Fossington",
+      "John Fowles",
+      "Kirsten Frawley",
+      "Nicholas Freeling",
+      "Duncan Fromsley",
+      "Ernest Gonyar",
+      "Lieutenant Gray",
+      "Christopher Hale",
+      "Paul Harvey",
+      "Billy Haversham",
+      "Baron Heidzig",
+      "Officer Humbuggy",
+      "Mrs. Saspbrak",
+      "Tamara Kinsolving",
+      "Adrian Krenmitz",
+      "Alison Krenmitz",
+      "Frederic Krenmitz",
+      "Laurene Krenmitz",
+      "Paul Krenmitz",
+      "Duane Kuchner",
+      "Michael Leith",
+      "Chief M'Chibi",
+      "W. Somerset Maugham",
+      "Mr. McKibbon",
+      "Trooper McKnight",
+      "Danna McLaren",
+      "Lee McLaren",
+      "Charlie Merrill",
+      "Mrs. Mulvaney",
+      "Michael O'Whunn",
+      "Old Man Patterson",
+      "Andrew Pomeroy",
+      "Bill Ramage",
+      "Mrs. ramage",
+      "Glenna Roberts",
+      "Tony Roberts",
+      "Laura D. Rothberg",
+      "Gary Ruddman",
+      "Andrea Saint James",
+      "Roman D. Sandpiper",
+      "Virginia Sandpiper",
+      "Mrs. Sheldon",
+      "Paul Sheldon",
+      "Roger Sheldon",
+      "Dr. Shinebone",
+      "Paulette Simeaux",
+      "Mrs. Soames",
+      "Irving Thalman",
+      "John Daniel Torrance",
+      "Tom Twyford",
+      "Van der Valk",
+      "Daniel Webster",
+      "Mad Jack Wickersham",
+      "Trooper Wicks",
+      "Annie Marie Wilkes",
+      "Carl Wilkes",
+      "Crysilda Wilkes",
+      "Paul Emery Wilkes",
+      "Edmund Wilson",
+      "Chuckie Yoder",
+      "Scheherazade"
+    ],
+    "key": "/works/OL81634W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL19981A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "excerpt": "umber whunnnn",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_times": [
+      "1980s",
+      "Xiandai"
+    ],
+    "first_publish_date": "April 9, 2002",
+    "cover_edition": {
+      "key": "/books/OL7573105M"
+    },
+    "genres": [
+      "/tags/OL180T",
+      "/tags/OL171T",
+      "/tags/OL179T"
+    ],
+    "latest_revision": 59,
+    "revision": 59,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-17T04:57:55.334864"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-07T15:09:00.050842"
+    }
+  }
+}

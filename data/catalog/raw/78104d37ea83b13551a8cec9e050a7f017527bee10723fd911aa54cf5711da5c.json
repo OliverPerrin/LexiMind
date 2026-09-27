@@ -1,0 +1,96 @@
+{
+  "url": "https://openlibrary.org/works/OL3388961W.json",
+  "retrievedAt": "2026-09-22T14:29:13.659819+00:00",
+  "sha256": "892b3ebccb68b90b5f5e7457c3abf645352541befac8978b60736f8520cb17cd",
+  "data": {
+    "description": "Arthur Machen's first book, THE GREAT GOD PAN, published in 1894, is still one of the greatest works of weird horror and decadence ever produced. Arthur Machen with his taste for the bizarre and macabre, unfurls the tale of a young girl cursed by her unnatural parentage to become a creature of shape-shifting, poly-sexual, demi-human evil.",
+    "title": "The Great God Pan",
+    "covers": [
+      921610,
+      993833,
+      2889857,
+      12777116,
+      8443314,
+      8458112,
+      8572097,
+      8672565,
+      10443299,
+      10457489,
+      10850277,
+      12240303,
+      12265591,
+      854463,
+      854462,
+      13216146
+    ],
+    "first_publish_date": "June 1991",
+    "key": "/works/OL3388961W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL554155A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "austin osman spare",
+      "arthur machen",
+      "pan",
+      "occult",
+      "esoteric",
+      "classic literature",
+      "decadent",
+      "horror",
+      "gothic",
+      "Authors",
+      "English Horror tales",
+      "Fiction",
+      "Horror tales, English",
+      "Supernatural",
+      "Paranormal fiction",
+      "Fiction, ghost",
+      "Fiction, occult & supernatural",
+      "Fiction, horror",
+      "English Fantasy fiction",
+      "Pan (greek deity)",
+      "Ghost stories"
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "I am glad you came, Clarke; very glad indeed."
+    },
+    "subject_places": [
+      "London (England)"
+    ],
+    "excerpts": [
+      {
+        "excerpt": "I am glad you came, Clarke; very glad indeed."
+      }
+    ],
+    "identifiers": {
+      "wikidata": [
+        "Q1394704"
+      ]
+    },
+    "genres": [
+      "/tags/OL174T",
+      "/tags/OL171T"
+    ],
+    "latest_revision": 12,
+    "revision": 12,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T03:26:53.070985"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-26T15:32:50.171682"
+    }
+  }
+}

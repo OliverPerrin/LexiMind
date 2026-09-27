@@ -1,0 +1,65 @@
+{
+  "url": "https://openlibrary.org/works/OL476846W.json",
+  "retrievedAt": "2026-09-22T14:28:39.415920+00:00",
+  "sha256": "40e2474cb21aa2974babca141ef8fe6a1e240e1ec631f5be9880d041616c7d2e",
+  "data": {
+    "description": "This is probably one of the top classics of \"golden age\" detective fiction. Anyone who's read any mystery novels at all will be familiar with the tropes -- an English country house in the first half of the twentieth century, a locked room, a dead body, an amateur sleuth, a helpful sidekick, and all the rest.\r\n\r\nIt's a clever story, ingenious enough in its way, and an iconic example of Agatha Christie / Dorothy Sayers -type murder mysteries. If you've read more than a few of those kinds of books, you might find this one a little predictable, but it's fun despite that.\r\n\r\nIt's particularly of note, however, because Raymond Chandler wrote about it extensively in his essay \"The Simple Art of Murder.\" After praising it as \"an agreeable book, light, amusing in the Punch style, written with a deceptive smoothness that is not as easy as it looks,\" he proceeds to take it sharply to task for its essential lack of realism. This book -- which Chandler admired to an extent -- was what he saw as the iconic example of what was wrong with the detective fiction of his day, and to which novels like \"The Big Sleep\" or \"The Long Goodbye\", with their hard-boiled, hard-hitting gumshoes and gritty realism, were a direct response.\r\n\r\nSo this book's worth reading not just because it's \"an agreeable book, light, [and] amusing in the Punch style\", but also because reading it will give a deepened appreciation for the later, more realistic detective fiction of writers like Hammett and Chandler.",
+    "title": "The Red House Mystery",
+    "covers": [
+      6299936,
+      836898,
+      5848004,
+      8684549,
+      8977628,
+      9070974,
+      10122586,
+      10379912,
+      10944650,
+      11098333,
+      11226835
+    ],
+    "subject_places": [
+      "England"
+    ],
+    "key": "/works/OL476846W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL29881A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Mystery and detective stories",
+      "Fiction",
+      "Detective and mystery stories",
+      "England, fiction",
+      "Fiction, mystery & detective, general",
+      "Large type books",
+      "Parodies, imitations",
+      "Mansions",
+      "Murder",
+      "Investigation",
+      "FICTION / General"
+    ],
+    "genres": [
+      "/tags/OL175T"
+    ],
+    "latest_revision": 30,
+    "revision": 30,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-08T03:05:59.833948"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-26T14:55:51.996794"
+    }
+  }
+}

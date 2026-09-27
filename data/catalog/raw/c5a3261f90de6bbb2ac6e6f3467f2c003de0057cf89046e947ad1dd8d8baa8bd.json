@@ -1,0 +1,260 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Alove_stories+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-22T14:28:43.997979+00:00",
+  "sha256": "65a407fc9f1ba8467fae6d81bdac7d27ddd4333ad16834348e48eed1a6e2a384",
+  "data": {
+    "numFound": 8171,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 8171,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:love_stories language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL6964763A"
+        ],
+        "author_name": [
+          "Tahereh Mafi"
+        ],
+        "cover_i": 12727567,
+        "first_publish_year": 2013,
+        "key": "/works/OL19963111W",
+        "language": [
+          "tur",
+          "spa",
+          "ita",
+          "eng"
+        ],
+        "title": "Unravel me",
+        "subject": [
+          "Love",
+          "Ability",
+          "Dictatorship",
+          "Soldiers",
+          "Juvenile fiction",
+          "Fiction",
+          "Children's fiction",
+          "Science fiction",
+          "Love, fiction",
+          "Soldiers, fiction",
+          "Totalitarianism, fiction",
+          "Dictators",
+          "Love stories"
+        ]
+      },
+      {
+        "author_key": [
+          "OL6964763A"
+        ],
+        "author_name": [
+          "Tahereh Mafi"
+        ],
+        "cover_i": 6974992,
+        "first_publish_year": 2011,
+        "key": "/works/OL16014245W",
+        "language": [
+          "eng",
+          "dut"
+        ],
+        "title": "Shatter Me",
+        "subject": [
+          "Love",
+          "Ability",
+          "Dictatorship",
+          "Fiction",
+          "Science fiction",
+          "Soldiers",
+          "Juvenile fiction",
+          "Love stories",
+          "Children's fiction",
+          "Love, fiction",
+          "Soldiers, fiction",
+          "Totalitarianism, fiction",
+          "Romance fiction",
+          "Dictators",
+          "Aptitude",
+          "Romans, nouvelles, etc. pour la jeunesse",
+          "Dictature"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7512907A"
+        ],
+        "author_name": [
+          "Laura Nowlin"
+        ],
+        "cover_i": 14339089,
+        "first_publish_year": 2013,
+        "key": "/works/OL19667762W",
+        "language": [
+          "eng"
+        ],
+        "title": "If He Had Been With Me",
+        "subject": [
+          "Friendship",
+          "Fiction",
+          "Love",
+          "Love stories",
+          "Children's fiction",
+          "Love, fiction",
+          "Friendship, fiction",
+          "Romance",
+          "contemporary",
+          "young adult",
+          "coming-of-age",
+          "grief",
+          "loss",
+          "regret",
+          "second chances",
+          "love triangle",
+          "family",
+          "New York Times bestseller"
+        ]
+      },
+      {
+        "author_key": [
+          "OL661093A"
+        ],
+        "author_name": [
+          "Penny Jordan"
+        ],
+        "cover_i": 6383650,
+        "first_publish_year": 1982,
+        "key": "/works/OL11327982W",
+        "language": [
+          "eng"
+        ],
+        "title": "Blackmail",
+        "subject": [
+          "Fiction, Romance, Contemporary",
+          "Love Stories, fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL66700A"
+        ],
+        "author_name": [
+          "Paulo Coelho"
+        ],
+        "cover_i": 31228,
+        "first_publish_year": 2003,
+        "key": "/works/OL796601W",
+        "language": [
+          "eng"
+        ],
+        "title": "Eleven Minutes",
+        "subject": [
+          "Brazilians",
+          "Love",
+          "Prostitutes",
+          "Sex",
+          "Fiction",
+          "Romance fiction",
+          "Fiction, visionary & metaphysical",
+          "Brazil, fiction",
+          "Love stories"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1437085A"
+        ],
+        "author_name": [
+          "Susan Fox"
+        ],
+        "cover_i": 6997282,
+        "first_publish_year": 1986,
+        "key": "/works/OL15556315W",
+        "language": [
+          "eng"
+        ],
+        "title": "Vows of the heart",
+        "subject": [
+          "Love stories"
+        ]
+      },
+      {
+        "author_key": [
+          "OL3328092A"
+        ],
+        "author_name": [
+          "Rachel Lindsay"
+        ],
+        "cover_i": 6907372,
+        "first_publish_year": 1981,
+        "key": "/works/OL16031718W",
+        "language": [
+          "eng"
+        ],
+        "title": "Wife For A Year",
+        "subject": [
+          "Fiction",
+          "romance",
+          "Love stories"
+        ]
+      },
+      {
+        "author_key": [
+          "OL589090A"
+        ],
+        "author_name": [
+          "Madeleine Ker"
+        ],
+        "cover_i": 6615400,
+        "first_publish_year": 1985,
+        "key": "/works/OL3518640W",
+        "language": [
+          "eng"
+        ],
+        "title": "Hostage",
+        "subject": [
+          "Fiction",
+          "Love stories"
+        ]
+      },
+      {
+        "author_key": [
+          "OL811660A"
+        ],
+        "author_name": [
+          "Michelle Reid"
+        ],
+        "cover_i": 2342961,
+        "first_publish_year": 1995,
+        "key": "/works/OL4233169W",
+        "language": [
+          "eng"
+        ],
+        "title": "The Ultimate Betrayal",
+        "subject": [
+          "Fiction, Romance, Contemporary",
+          "Adultery, fiction",
+          "Love stories, fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL575932A"
+        ],
+        "author_name": [
+          "Betty Neels"
+        ],
+        "cover_i": 218941,
+        "first_publish_year": 1985,
+        "key": "/works/OL3457792W",
+        "language": [
+          "eng"
+        ],
+        "title": "Magic in Vienna",
+        "subject": [
+          "Fiction, Romance, Contemporary",
+          "Love stories, fiction"
+        ]
+      }
+    ]
+  }
+}

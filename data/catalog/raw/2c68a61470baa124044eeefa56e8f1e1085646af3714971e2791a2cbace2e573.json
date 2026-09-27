@@ -1,0 +1,75 @@
+{
+  "url": "https://openlibrary.org/works/OL7924208W.json",
+  "retrievedAt": "2026-09-22T14:28:30.552750+00:00",
+  "sha256": "d918e85b6e2aa74c557be5c5353b6812c5c57ba50940b423a9129de40320dbb7",
+  "data": {
+    "description": "The Wheel of Time turns and Ages come and go, leaving memories that become legend. Legend fades to myth, and even myth is long forgotten when the Age that gave it birth returns again. In the Third Age, an Age of Prophecy, the World and Time themselves hang in the balance. What was, what will be, and what is, may yet fall under the Shadow.\r\n\r\nOn the slopes of Shayol Ghul, the Myrddraal swords are forged, and the sky is not the sky of this world;\r\n\r\nIn Salidar the White Tower in exile prepares an embassy to Caemlyn, where Rand Al'Thor, the Dragon Reborn, holds the throne--and where an unexpected visitor may change the world....\r\n\r\nIn Emond's Field, Perrin Goldeneyes, Lord of the Two Rivers, feels the pull of ta'veren to ta'veren and prepares to march...\r\n\r\nMorgase of Caemlyn finds a most unexpected, and quite unwelcome, ally....And south lies Illian, where Sammael holds sway...\r\n\r\nTV series update: \"Sony will produce along with Red Eagle Entertainment and Radar Pictures. Rafe Judkins is attached to write and executive produce. Judkins previously worked on shows such as ABC’s “Agents of SHIELD,” the Netflix series “Hemlock Grove,” and the NBC series “Chuck.” Red Eagle partners Rick Selvage and Larry Mondragon will executive produce along with Radar’s Ted Field and Mike Weber. Darren Lemke will also executive produce, with Jordan’s widow Harriet McDougal serving as consulting producer.\" —*Variety*\r\n\r\nThe Wheel of Time**®**\r\nNew Spring: The Novel\r\n#1 The Eye of the World\r\n#2 The Great Hunt\r\n#3 The Dragon Reborn\r\n#4 The Shadow Rising\r\n#5 The Fires of Heaven\r\n#6 Lord of Chaos\r\n#7 A Crown of Swords\r\n#8 The Path of Daggers\r\n#9 Winter's Heart\r\n#10 Crossroads of Twilight\r\n#11 Knife of Dreams\r\n\r\nBy Robert Jordan and Brandon Sanderson\r\n#12 The Gathering Storm\r\n#13 Towers of Midnight\r\n#14 A Memory of Light",
+    "covers": [
+      182398,
+      871788,
+      858877,
+      10180074,
+      10310717,
+      10637725,
+      908864,
+      603241,
+      10153404,
+      14096954,
+      12325079,
+      14096953,
+      14096956
+    ],
+    "key": "/works/OL7924208W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL233594A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "Lord of Chaos",
+    "subjects": [
+      "Fantasy fiction",
+      "Rand al'Thor (Fictitious character)",
+      "Fiction",
+      "Fantasy",
+      "Fiction, fantasy, epic",
+      "Rand al'thor (fictitious character), fiction",
+      "American Fantasy fiction",
+      "Dragons",
+      "Fiction, fantasy, general",
+      "American literature"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subtitle": "(The Wheel of Time, Book 6)",
+    "identifiers": {
+      "bookbrainz": [
+        "66d67c46-9af8-4e4c-aa2e-56a2fe793792"
+      ],
+      "musicbrainz": [
+        "a8a193ac-c54b-490d-9720-3fe4f75441a5"
+      ],
+      "wikidata": [
+        "Q2718866"
+      ]
+    },
+    "genres": [
+      "/tags/OL169T"
+    ],
+    "latest_revision": 23,
+    "revision": 23,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T22:13:35.559002"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-04T14:18:54.582529"
+    }
+  }
+}

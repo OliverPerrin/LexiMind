@@ -33,3 +33,16 @@ def test_summarize_route_returns_pipeline_outputs() -> None:
         assert payload["topic_confidence"] == 0.8
     finally:
         app.dependency_overrides.clear()
+
+
+def test_inference_failure_does_not_expose_internal_paths_or_exception_details() -> None:
+    class FailedPipeline:
+        def batch_predict(self, texts):
+            raise RuntimeError("private checkpoint path: /secret/weights.pt")
+
+    app = create_app()
+    app.dependency_overrides[get_pipeline] = lambda: FailedPipeline()
+    with TestClient(app) as client:
+        response = client.post("/summarize", json={"text": "hello"})
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Text analysis temporarily unavailable"}

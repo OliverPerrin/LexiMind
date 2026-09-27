@@ -1,0 +1,91 @@
+{
+  "url": "https://openlibrary.org/works/OL1847023W.json",
+  "retrievedAt": "2026-09-22T14:29:29.476435+00:00",
+  "sha256": "daf32bda88dfe435498638afdd6e7c8d35a50cc975b29ac5cbf1f6b33d4ffb2b",
+  "data": {
+    "lc_classifications": [
+      "HB76 H45 1955",
+      "HB'76'H46'1992"
+    ],
+    "key": "/works/OL1847023W",
+    "title": "The worldly philosophers",
+    "first_publish_date": "1955",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL221095A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Economics",
+      "Economists",
+      "History",
+      "Economists, biography",
+      "Biography",
+      "Economen",
+      "Volkswirtschaftslehre",
+      "Wirtschaftswissenschaftler",
+      "Biographies",
+      "Histoire",
+      "Économie politique",
+      "Économistes",
+      "Economie politique",
+      "Economistes",
+      "Economics, history",
+      "Heilbroner, robert l",
+      "Economics--history",
+      "Economists--biography",
+      "Hb76 .h4 1972",
+      "Hb76 .h4 1999",
+      "330/.092/2 b",
+      "Doctrines économiques",
+      "Manuel",
+      "[manuel]",
+      "Economists -- Biography",
+      "Biografie",
+      "Philosophers",
+      "Économique",
+      "Economic thought",
+      "Socioeconomic Factors"
+    ],
+    "covers": [
+      15106531,
+      100829,
+      6993503,
+      10969797,
+      13297860,
+      4649717,
+      8672953,
+      10708061,
+      3071325,
+      9299463,
+      13983181,
+      13983182
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "This is a book about a handful of men with a curious claim to fame."
+    },
+    "description": "\"The Worldly Philosophers is a bestselling classic that not only enables us to see more deeply into our history but helps us better understand our own times. In this seventh edition, Robert L. Heilbroner provides a view theme that connects thinkers as diverse as Adam Smith and Karl Marx. The theme is the common focus of their highly varied ideas - namely, the search to understand how a capitalist society works.\"--BOOK JACKET.",
+    "dewey_number": [
+      "330.10922 H"
+    ],
+    "latest_revision": 11,
+    "revision": 11,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T22:27:30.881122"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-04T15:37:28.238537"
+    }
+  }
+}

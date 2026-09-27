@@ -1,0 +1,132 @@
+{
+  "url": "https://openlibrary.org/works/OL2746369W.json",
+  "retrievedAt": "2026-09-22T14:29:04.880284+00:00",
+  "sha256": "1b79385db4eb165d53306204c921fc4458985e2bdb37ea141d12699a4393d5a6",
+  "data": {
+    "title": "The Clan of the Cave Bear",
+    "covers": [
+      12529015,
+      1009640,
+      8579659,
+      10447737,
+      8667941,
+      11500800,
+      10776885,
+      11485062,
+      11502338,
+      10517275,
+      7274275,
+      7274278,
+      8183576,
+      13496597,
+      13695932,
+      13938360,
+      8763688
+    ],
+    "first_publish_date": "May 2000",
+    "key": "/works/OL2746369W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL402869A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "links": [
+      {
+        "title": "jeanauel.com/books",
+        "url": "http://www.jeanauel.com/books.php",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Clan of the Cave Bear - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/The_Clan_of_the_Cave_Bear",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "thegreatestbooks.org/items/573",
+        "url": "https://thegreatestbooks.org/items/573",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "The naked child ran out of the hide-covered lean-to toward the rocky beach at the bend in the small river."
+    },
+    "subject_people": [
+      "Ayla",
+      "Clan of the Cave Bear",
+      "Others",
+      "Iza",
+      "Creb",
+      "Broud",
+      "Brun"
+    ],
+    "excerpts": [
+      {
+        "excerpt": "The naked child ran out of the hide-covered lean-to toward the rocky beach at the bend in the small river."
+      },
+      {
+        "excerpt": "La nina desnuda salio corriendo del cobertizo de cuero hacia la playa rocosa en el recodo del riachuelo."
+      }
+    ],
+    "subjects": [
+      "Neanderthals",
+      "shamanism",
+      "sign language",
+      "taboos",
+      "prehistoric fiction",
+      "epic",
+      "epic fiction",
+      "prehistoric man",
+      "epic literature",
+      "historical fiction",
+      "Open Library Staff Picks",
+      "Prehistoric peoples",
+      "Fiction",
+      "Women",
+      "American fiction",
+      "Ayla (Fictitious character)",
+      "Glacial epoch",
+      "Fiction, historical",
+      "Ayla (fictitious character : auel), fiction",
+      "Europe, fiction",
+      "Romans, nouvelles",
+      "Préhistoire",
+      "Large type books",
+      "Fiction, historical, general",
+      "Ayla (Fictional character)",
+      "Ice age",
+      "Primitive societies"
+    ],
+    "subject_times": [
+      "Glacial epoch"
+    ],
+    "description": "The Clan of the Cave Bear is a 1980 novel and epic work of prehistoric fiction by Jean M. Auel about prehistoric times. It is the first book in the Earth's Children book series, which speculates on the possibilities of interactions between Neanderthal and modern Cro-Magnon humans.\r\n\r\n\r\n----------\r\nAlso contained in:\r\n[Earth's Children](https://openlibrary.org/works/OL2746374W)",
+    "genres": [
+      "/tags/OL170T"
+    ],
+    "latest_revision": 29,
+    "revision": 29,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T00:20:25.125972"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T00:59:54.566042"
+    }
+  }
+}

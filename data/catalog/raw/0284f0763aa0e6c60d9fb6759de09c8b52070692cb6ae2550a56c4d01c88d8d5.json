@@ -1,0 +1,74 @@
+{
+  "url": "https://openlibrary.org/works/OL16014245W.json",
+  "retrievedAt": "2026-09-22T14:28:46.133102+00:00",
+  "sha256": "4f4e24931f1b6e68a3301045a347599ea96ea68201f762f0fcb693019d062342",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Juliette hasn't touched anyone in exactly 264 days. The last time she did, it was an accident, but The Reestablishment locked her up for murder. No one knows why Juliette's touch is fatal. As long as she doesn't hurt anyone else, no one really cares. The world is too busy crumbling to pieces to pay attention to a 17-year-old girl. Diseases are destroying the population, food is hard to find, birds don't fly anymore, and the clouds are the wrong color. The Reestablishment said their way was the only way to fix things, so they threw Juliette in a cell. Now so many people are dead that the survivors are whispering war-- and The Reestablishment has changed its mind. Maybe Juliette is more than a tortured soul stuffed into a poisonous body. Maybe she's exactly what they need right now. Juliette has to make a choice: Be a weapon. Or be a warrior. In this electrifying debut, Tahereh Mafi presents a world as riveting as The Hunger Games and a superhero story as thrilling as The X-Men. Full of pulse-pounding romance, intoxicating villainy, and high-stakes choices, Shatter Me is a fresh and original dystopian novel—with a paranormal twist—that will leave readers anxiously awaiting its sequel."
+    },
+    "covers": [
+      6974992,
+      8742082,
+      8760337,
+      10861730,
+      15150315
+    ],
+    "key": "/works/OL16014245W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL6964763A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "Shatter Me",
+    "subjects": [
+      "Love",
+      "Ability",
+      "Dictatorship",
+      "Fiction",
+      "Science fiction",
+      "Soldiers",
+      "Juvenile fiction",
+      "Love stories",
+      "Children's fiction",
+      "Love, fiction",
+      "Soldiers, fiction",
+      "Totalitarianism, fiction",
+      "Romance fiction",
+      "Dictators",
+      "Aptitude",
+      "Romans, nouvelles, etc. pour la jeunesse",
+      "Dictature"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL329905L"
+        },
+        "position": "1"
+      }
+    ],
+    "genres": [
+      "/tags/OL179T",
+      "/tags/OL177T"
+    ],
+    "latest_revision": 25,
+    "revision": 25,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2011-07-30T12:22:39.754442"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T14:08:22.079131"
+    }
+  }
+}

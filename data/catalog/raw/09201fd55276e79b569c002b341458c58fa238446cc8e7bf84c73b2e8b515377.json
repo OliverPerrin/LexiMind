@@ -1,0 +1,64 @@
+{
+  "url": "https://openlibrary.org/works/OL16314245W.json",
+  "retrievedAt": "2026-09-22T14:28:16.228568+00:00",
+  "sha256": "df3ea202f6b6fe86e9228a323120b34f4ec81ebc5a49fda3d81802934634cedd",
+  "data": {
+    "subjects": [
+      "Chinese Science fiction",
+      "Fiction",
+      "Science Fiction",
+      "Fiction, science fiction, general",
+      "Human-alien encounters",
+      "Imaginary wars and battles",
+      "FICTION / Science Fiction / General",
+      "General"
+    ],
+    "key": "/works/OL16314245W",
+    "title": "The Dark Forest (The Three-Body Problem Series Book 2)",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7044246A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      10526598,
+      6977799,
+      7893957,
+      7892505,
+      9324894,
+      9323519,
+      8136573,
+      8747497,
+      9694620,
+      10376579,
+      10376599,
+      10376603,
+      8850958
+    ],
+    "description": "Soon to be a Netflix Original Series!\r\n\r\n\"Wildly imaginative.\" —President Barack Obama on The Three-Body Problem trilogy\r\n\r\nThis near-future trilogy is the first chance for English-speaking readers to experience this multiple-award-winning phenomenon from Cixin Liu, China's most beloved science fiction author.\r\n\r\nIn The Dark Forest, Earth is reeling from the revelation of a coming alien invasion-in just four centuries' time. The aliens' human collaborators may have been defeated, but the presence of the sophons, the subatomic particles that allow Trisolaris instant access to all human information, means that Earth's defense plans are totally exposed to the enemy. Only the human mind remains a secret. This is the motivation for the Wallfacer Project, a daring plan that grants four men enormous resources to design secret strategies, hidden through deceit and misdirection from Earth and Trisolaris alike. Three of the Wallfacers are influential statesmen and scientists, but the fourth is a total unknown. Luo Ji, an unambitious Chinese astronomer and sociologist, is baffled by his new status. All he knows is that he's the one Wallfacer that Trisolaris wants dead.",
+    "subject_people": [
+      "Luo Ji"
+    ],
+    "genres": [
+      "/tags/OL179T"
+    ],
+    "latest_revision": 14,
+    "revision": 14,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2011-12-07T06:54:50.825332"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-26T14:33:25.670130"
+    }
+  }
+}

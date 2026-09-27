@@ -1,0 +1,35 @@
+{
+  "url": "https://openlibrary.org/works/OL42577236W.json",
+  "retrievedAt": "2026-09-22T14:29:56.503775+00:00",
+  "sha256": "b10b8fb04577b889ff0a47dc2b7ac9323b0a92553dc896d053e591e3a7ca13d2",
+  "data": {
+    "title": "Thank You for Leaving",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL13815321A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL42577236W",
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "Poetry"
+    ],
+    "latest_revision": 3,
+    "revision": 3,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2025-02-19T16:37:36.038372"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2025-03-01T21:17:43.556856"
+    }
+  }
+}

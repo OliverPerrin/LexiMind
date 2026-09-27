@@ -1,0 +1,73 @@
+{
+  "url": "https://openlibrary.org/works/OL17610507W.json",
+  "retrievedAt": "2026-09-22T14:28:10.684244+00:00",
+  "sha256": "efae0cc0a2a635a28b44e486a3bee834a3d719ba16c628a37655eb6058095519",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Soon to be a Netflix Original Series!\r\n\r\n“The War of the Worlds for the 21st century… packed with a sense of wonder.” – Wall Street Journal\r\n\r\nThe New York Times bestselling conclusion to a tour de force near-future adventure trilogy from China's bestselling and beloved science fiction writer.\r\n\r\nWith The Three-Body Problem, English-speaking readers got their first chance to read China's most beloved science fiction author, Cixin Liu. The Three-Body Problem was released to great acclaim including coverage in The New York Times and The Wall Street Journal and reading list picks by Barack Obama and Mark Zuckerberg. It was also won the Hugo and Nebula Awards, making it the first translated novel to win a major SF award.\r\n\r\nNow this epic trilogy concludes with Death's End. Half a century after the Doomsday Battle, the uneasy balance of Dark Forest Deterrence keeps the Trisolaran invaders at bay. Earth enjoys unprecedented prosperity due to the infusion of Trisolaran knowledge. With human science advancing daily and the Trisolarans adopting Earth culture, it seems that the two civilizations will soon be able to co-exist peacefully as equals without the terrible threat of mutually assured annihilation. But the peace has also made humanity complacent.\r\n\r\nCheng Xin, an aerospace engineer from the early twenty-first century, awakens from hibernation in this new age. She brings with her knowledge of a long-forgotten program dating from the beginning of the Trisolar Crisis, and her very presence may upset the delicate balance between two worlds. Will humanity reach for the stars or die in its cradle?"
+    },
+    "title": "Death's End (The Three-Body Problem Series Book 3)",
+    "covers": [
+      7893958,
+      8152014,
+      8459740,
+      8544320,
+      8600529,
+      10516705,
+      10532478,
+      10539653,
+      11242503,
+      8814737,
+      9245889,
+      13861225
+    ],
+    "subjects": [
+      "Fiction",
+      "Science Fiction",
+      "Fiction, science fiction, general",
+      "Human-alien encounters",
+      "Imaginary wars and battles",
+      "Fiction, science fiction, action & adventure",
+      "Chinese Science fiction",
+      "Survival",
+      "Extraterrestrial beings",
+      "Hard Science Fiction",
+      "Alien Contact",
+      "FICTION / Science Fiction / Hard Science Fiction",
+      "FICTION / Science Fiction / Alien Contact",
+      "Chinese fiction"
+    ],
+    "subject_people": [
+      "Yun Tianming",
+      "Dr Cheng Xin"
+    ],
+    "key": "/works/OL17610507W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7044246A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL179T"
+    ],
+    "latest_revision": 21,
+    "revision": 21,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2017-01-16T22:24:32.302972"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T10:23:58.107431"
+    }
+  }
+}

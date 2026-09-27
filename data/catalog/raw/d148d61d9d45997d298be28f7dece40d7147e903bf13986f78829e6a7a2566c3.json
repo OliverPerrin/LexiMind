@@ -1,0 +1,74 @@
+{
+  "url": "https://openlibrary.org/works/OL472542W.json",
+  "retrievedAt": "2026-09-22T14:28:37.351971+00:00",
+  "sha256": "3fd7496703e88fe021f6b34bfa1b565cb4d4173d72fb7b90a02bb563e22196b9",
+  "data": {
+    "title": "The Secret of Chimneys",
+    "key": "/works/OL472542W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL27695A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "A bit of adventure and quick cash is all that good-natured drifter Anthony Cade is looking for when he accepts a messenger job from an old friend. It sounds so simple: deliver the provocative memoirs of a recently deceased European count to a London publisher. Little did Anthony suspect that a simple errand to deliver the manuscript on behalf of his friend would drop him right in the middle of an international conspiracy, and he begins to realize that it has placed him in serious danger. Why were Count Stylptich's memoirs so important? And what was \"King Victor\" really after? The parcel holds ore than scandalous royal secrets - because it contains a stash of letters that suggest blackmail. Someone would stop at nothing to prevent the monarchy being restored in faraway Herzoslovakia.\r\n\r\nWherever ravishing Virginia Revel went, death seemed sure to follow. First her husband died. The next to perish was a foreign prince whose ruthless power was matched by his scandalous passions. Then a bungling blackmailer followed them into the grave. Murder, blackmail, stolen letters, and a fabulous missing jewel: all under the not always co-operative eyes of Scotland Yard and the Surete. All threads lead to Chimneys, one of England's historic country house estates, where a master murderer mingled with the aristocratic guests. Virginia could turn to only one person to prove her innocence and end her nightmare, and she could only pray that she had not put her life into the hands of the man who was out to take it....\r\n\r\nThis novel was published in 1925 by Bodley Head in London, and by Dodd, Mead & Co. in New York. The Times Literary Supplement described it as \"a thick fog of mystery, cross purposes, and romance, which leads up to a most unexpected and highly satisfactory ending\".Chimneys was adapted by Christie as a stage play but was not performed until 2003, in Canada. It was filmed with the addition of Julia McKenzie as Miss Marple by ITV in 2009.",
+    "covers": [
+      12996574
+    ],
+    "subject_places": [
+      "England"
+    ],
+    "subjects": [
+      "Fiction",
+      "Mystery",
+      "Superintendent Battle (Fictitious character)",
+      "English Detective and mystery stories",
+      "Murder",
+      "Investigation",
+      "Conspiracies",
+      "Manors",
+      "Detective and mystery stories",
+      "Fiction, mystery & detective, traditional",
+      "Fiction, thrillers, suspense",
+      "London (england), fiction",
+      "Poirot, hercule (fictitious character), fiction",
+      "Fiction, mystery & detective, general",
+      "Fiction, mystery & detective, police procedural",
+      "Fiction, mystery & detective, international crime & mystery",
+      "Fiction, thrillers, general",
+      "Fiction, historical, general",
+      "English literature",
+      "Fiction, general"
+    ],
+    "subject_people": [
+      "Superintendent Battle",
+      "Anthony Cade",
+      "Virginia Revel"
+    ],
+    "subject_times": [
+      "1920s"
+    ],
+    "genres": [
+      "/tags/OL175T",
+      "/tags/OL180T",
+      "/tags/OL170T"
+    ],
+    "latest_revision": 21,
+    "revision": 21,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-08T02:57:56.524333"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-31T16:49:54.405903"
+    }
+  }
+}

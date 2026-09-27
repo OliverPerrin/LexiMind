@@ -1,0 +1,73 @@
+{
+  "url": "https://openlibrary.org/works/OL158041W.json",
+  "retrievedAt": "2026-09-22T14:29:27.546605+00:00",
+  "sha256": "7f1e45417e7385f31ab12eb08b7f77315cde287c893908675daf0fa09d7a51af",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Maverick author Hunter S. Thompson introduced the world to \"gonzo journalism\" with this cult classic that shot back up the best seller lists after Thompson's suicide in 2005. No book ever written has more perfectly captured the spirit of the 1960s counterculture. In Las Vegas to cover a motorcycle race, Raoul Duke (Thompson) and his attorney Dr. Gonzo (inspired by a friend of Thompson) are quickly diverted to search for the American dream. Their quest is fueled by nearly every drug imaginable and quickly becomes a surreal experience that blurs the line between reality and fantasy. But there is more to this hilarious tale than reckless behavior, for underneath the hallucinogenic facade is a stinging criticism of American greed and consumerism."
+    },
+    "title": "Fear and Loathing in Las Vegas",
+    "covers": [
+      13396,
+      422042,
+      4067690,
+      11291386,
+      1006735,
+      13174375
+    ],
+    "subject_places": [
+      "Las Vegas",
+      "United States",
+      "Nevada"
+    ],
+    "first_publish_date": "April 4, 2005",
+    "subject_people": [
+      "Johnny Depp",
+      "Benicio Del Toro",
+      "Hunter S. Thompson"
+    ],
+    "key": "/works/OL158041W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL45249A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subjects": [
+      "comedy",
+      "Journalists, biography",
+      "Thompson, hunter s., 1937-2005",
+      "Journalists",
+      "Biography",
+      "Drug abuse",
+      "Fiction, general",
+      "Gesellschaftskritik",
+      "Prosa"
+    ],
+    "subject_times": [
+      "1970s",
+      "United States of America"
+    ],
+    "genres": [
+      "/tags/OL165T"
+    ],
+    "latest_revision": 11,
+    "revision": 11,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-20T03:39:08.541232"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-12T12:58:40.351876"
+    }
+  }
+}

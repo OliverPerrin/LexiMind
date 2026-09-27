@@ -1,0 +1,64 @@
+{
+  "url": "https://openlibrary.org/works/OL38847W.json",
+  "retrievedAt": "2026-09-22T14:30:05.295287+00:00",
+  "sha256": "6fef485b8b1989004869e62832e15d4c6a02f93571053100f703d0f1afb9b6c1",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "A collection of the poetry of W. B. Yeats, famed Irish poet whose early poems are strongly influenced by the Pre-Raphaelites, and his later poems having more modernist leanings, although retaining the traditional forms rather than adopting free verse."
+    },
+    "title": "Poems",
+    "covers": [
+      6968826,
+      14366
+    ],
+    "subject_places": [
+      "Ireland"
+    ],
+    "subjects": [
+      "Poetry",
+      "Manuscripts",
+      "Translations into Irish",
+      "English Love poetry",
+      "English Manuscripts",
+      "Translations into French",
+      "Love poetry",
+      "Criticism and interpretation",
+      "Irish authors",
+      "English poetry",
+      "Irish poetry",
+      "Poetry (poetic works by one author)",
+      "Yeats, w. b. (william butler), 1865-1939",
+      "Collections",
+      "French Translations"
+    ],
+    "subject_people": [
+      "W. B. Yeats (1865-1939)",
+      "Ossian (3rd cent)"
+    ],
+    "key": "/works/OL38847W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL21207A"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "latest_revision": 25,
+    "revision": 25,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T08:10:41.157375"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2025-03-07T07:34:08.429985"
+    }
+  }
+}

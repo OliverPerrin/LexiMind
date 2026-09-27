@@ -1,0 +1,60 @@
+{
+  "url": "https://openlibrary.org/works/OL32195W.json",
+  "retrievedAt": "2026-09-22T14:29:09.244527+00:00",
+  "sha256": "a62a5f028fe751e0a2fac52c995a408b8df260b9793f83bef7ae30fb60361239",
+  "data": {
+    "title": "House of Leaves",
+    "key": "/works/OL32195W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL27918A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": "Nothing, in all it's entirety.",
+    "covers": [
+      6450442,
+      228503,
+      13942403
+    ],
+    "subjects": [
+      "Holes",
+      "Documentary films",
+      "Manuscripts",
+      "Fiction",
+      "Fiction, suspense",
+      "Fiction, horror",
+      "Fiction, thrillers, suspense",
+      "Suspense",
+      "Labyrinths",
+      "Dwellings",
+      "Horror tales",
+      "Paranormal fiction",
+      "Perception",
+      "Experimental fiction",
+      "American Experimental fiction",
+      "American Horror tales"
+    ],
+    "genres": [
+      "/tags/OL180T",
+      "/tags/OL171T"
+    ],
+    "latest_revision": 7,
+    "revision": 7,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-13T14:53:52.729159"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T06:44:35.111927"
+    }
+  }
+}

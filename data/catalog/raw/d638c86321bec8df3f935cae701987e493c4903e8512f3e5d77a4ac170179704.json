@@ -1,0 +1,85 @@
+{
+  "url": "https://openlibrary.org/works/OL74128W.json",
+  "retrievedAt": "2026-09-22T14:29:38.002528+00:00",
+  "sha256": "a397bdc6be3f01891b0f05562d7b4994a0b0dbc10ab7283e8d9bee844bad466d",
+  "data": {
+    "title": "A short history of nearly everything",
+    "key": "/works/OL74128W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL21718A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      12725620,
+      8568813
+    ],
+    "subjects": [
+      "Science",
+      "Popular works",
+      "Ciencia",
+      "Obras populares",
+      "Science, popular works",
+      "Obras de divulgacio n.",
+      "Natuurwetenschappen",
+      "Sciences",
+      "Ouvrages de vulgarisation",
+      "Wetenschapsbeoefening",
+      "Origin",
+      "Life",
+      "Humor",
+      "Travel",
+      "Philosophy",
+      "Culture",
+      "Nonfiction",
+      "Open Library Staff Picks",
+      "Human beings",
+      "popular science",
+      "Long Now Manual for Civilization",
+      "Reading Level-Grade 11",
+      "Reading Level-Grade 12",
+      "30.01 history of the exact sciences",
+      "Einführung",
+      "Naturwissenschaften",
+      "Wetenschapsfilosofie",
+      "Natuurlijke historie",
+      "Einfu hrung",
+      "Large type books",
+      "Allgemeinwissen",
+      "Cosmology",
+      "Geology. Earth sciences",
+      "Science--popular works",
+      "Q162 .b88 2003",
+      "Q162 b916s 2003",
+      "500",
+      "Science - general & miscellaneous",
+      "History & philosophy of science",
+      "Civilization - history"
+    ],
+    "description": "A Short History of Nearly Everything by American author Bill Bryson is a popular science book that explains some areas of science, using easily accessible language that appeals more so to the general public than many other books dedicated to the subject. It was one of the bestselling popular science books of 2005 in the United Kingdom, selling over 300,000 copies.\r\n\r\nA Short History deviates from Bryson's popular travel book genre, instead describing general sciences such as chemistry, paleontology, astronomy, and particle physics. In it, he explores time from the Big Bang to the discovery of quantum mechanics, via evolution and geology.\r\n\r\nBill Bryson wrote this book because he was dissatisfied with his scientific knowledge—that was, not much at all. He writes that science was a distant, unexplained subject at school. Textbooks and teachers alike did not ignite the passion for knowledge in him, mainly because they never delved in the whys, hows, and whens.\r\n\r\nThe ebook can be found elsewhere on the web at:\r\nhttp://www.huzheng.org/bookstore/AShortHistoryofNearlyEverything.pdf",
+    "subject_places": [
+      "Earth"
+    ],
+    "genres": [
+      "/tags/OL172T"
+    ],
+    "latest_revision": 36,
+    "revision": 36,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-16T09:25:55.733651"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T11:12:27.777391"
+    }
+  }
+}

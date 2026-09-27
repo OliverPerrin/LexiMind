@@ -1,0 +1,64 @@
+{
+  "url": "https://openlibrary.org/works/OL1230690W.json",
+  "retrievedAt": "2026-09-22T14:29:48.474430+00:00",
+  "sha256": "05b555f655a1f37e5a99c1bdcd0a0774a1c3152fef184d12a9e214991b4c0c13",
+  "data": {
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "THERE is but one truly serious philosophical problem, and that is suicide."
+    },
+    "first_publish_date": "February 12, 1959",
+    "key": "/works/OL1230690W",
+    "title": "The Myth of Sisyphus and Other Essays",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL124171A"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "lc_classifications": [
+      "PQ 2605 A3734 M93 1967"
+    ],
+    "subjects": [
+      "French essays",
+      "Life",
+      "Suicide",
+      "Absurd (philosophy)",
+      "Existentialism",
+      "Philosophy",
+      "History and criticism",
+      "French literature",
+      "French philosophy",
+      "Essays",
+      "Mythology",
+      "Modern philosophy"
+    ],
+    "covers": [
+      12726570
+    ],
+    "description": {
+      "type": "/type/text",
+      "value": "One of the most influential works of this century, this is a crucial exposition of existentialist thought. Influenced by works such as Don Juan and the novels of Kafka, these essays begin with a meditation on suicide: the question of living or not living in an absurd universe devoid of order or meaning. With lyric eloquence, Camus posits a way out of despair, reaffirming the value of personal existence, and the possibility of life lived with dignity and authenticity.--From publisher description."
+    },
+    "genres": [
+      "/tags/OL176T"
+    ],
+    "latest_revision": 12,
+    "revision": 12,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T20:48:02.913910"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-07T11:56:44.466133"
+    }
+  }
+}

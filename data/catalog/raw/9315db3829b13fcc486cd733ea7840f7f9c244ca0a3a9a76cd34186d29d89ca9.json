@@ -1,0 +1,63 @@
+{
+  "url": "https://openlibrary.org/works/OL23746568W.json",
+  "retrievedAt": "2026-09-26T07:12:38.500517+00:00",
+  "sha256": "6cdea18b9281731568ca36a4e1d492a8fcc050fd67ac8ab609fd09035ef313b3",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "101 Essays That Will Change The Way You Think",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL8946931A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      },
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL12566445A"
+        }
+      }
+    ],
+    "covers": [
+      10524689,
+      13574772
+    ],
+    "key": "/works/OL23746568W",
+    "subjects": [
+      "Self-Help",
+      "Self-improvement",
+      "BODY, MIND & SPIRIT / Meditation",
+      "Essays",
+      "Literary collections",
+      "Emotions and cognition",
+      "Self-actualization (Psychology)",
+      "Change (Psychology)",
+      "Thought and thinking",
+      "Philosophy"
+    ],
+    "description": {
+      "type": "/type/text",
+      "value": "> \"101 Essays That Will Change The Way You Think, the global bestseller and social media phenomenon, is a collection of author Brianna Wiest's most beloved pieces of writing. Her meditations include why you should pursue purpose over passion, embrace negative thinking, see the wisdom in daily routine, and become aware of the cognitive biases that are creating the way you see your life. Some of these pieces have never been seen; others have been read by millions of people around the world. Regardless, each will leave you thinking: this idea changed my life.\""
+    },
+    "subject_people": [
+      "Brianna Wiest"
+    ],
+    "latest_revision": 5,
+    "revision": 5,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2020-12-04T12:03:35.692918"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-04-29T20:38:55.841084"
+    }
+  }
+}

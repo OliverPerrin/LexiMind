@@ -1,0 +1,79 @@
+{
+  "url": "https://openlibrary.org/works/OL17606111W.json",
+  "retrievedAt": "2026-09-22T14:30:04.211583+00:00",
+  "sha256": "7387b00f1b6476e4a0ffc502d7d328564ff5f35a6b3416d575d73b1b941a6c38",
+  "data": {
+    "description": "The book is divided into four chapters, each chapter serves a different purpose. They deal with different pains; heal different heartaches. Milk and honey takes readers through a journey of the most bitter moments in life and finds sweetness in them, because there is sweetness everywhere If you are just willing to look.",
+    "links": [
+      {
+        "url": "http://movuse.co/read-online/23513349-milk-and-honey.html",
+        "title": "Free Reading Books Online",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "Milk and Honey",
+    "covers": [
+      8743595,
+      9137274,
+      8839689,
+      -1,
+      13314504,
+      13772129
+    ],
+    "subjects": [
+      "Canadian poetry",
+      "Survival",
+      "Poetry",
+      "Women",
+      "Poetry (poetic works by one author)",
+      "nyt:trade-fiction-paperback=2016-05-01",
+      "New York Times bestseller",
+      "collectionID:TexChallenge2021",
+      "BODY, MIND & SPIRIT",
+      "FICTION",
+      "Romance",
+      "Literature",
+      "Amerikanisches Englisch",
+      "Lyrik",
+      "Kvinnor",
+      "Survival skills",
+      "American poetry",
+      "collectionID:KellerChallenge",
+      "banned books",
+      "collectionID:AlpineChallenge",
+      "General",
+      "FICTION / Romance",
+      "collectionID:bannedbooks"
+    ],
+    "key": "/works/OL17606111W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7362769A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL177T",
+      "/tags/OL174T"
+    ],
+    "latest_revision": 20,
+    "revision": 20,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2016-12-26T22:12:26.035185"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T03:58:48.622079"
+    }
+  }
+}

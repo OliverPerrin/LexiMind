@@ -1,0 +1,273 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3A%22popular+science%22+language%3Aeng&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-26T07:12:15.891707+00:00",
+  "sha256": "8e41ce3a30c72a67ff2711a72da65e8b4a8fafdecb1116eef13d4d1a0e8f1d3c",
+  "data": {
+    "numFound": 598,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 598,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:\"popular science\" language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL7021331A",
+          "OL7482110A"
+        ],
+        "author_name": [
+          "Leonard Susskind",
+          "George Hrabovsky"
+        ],
+        "cover_i": 10156509,
+        "first_publish_year": 2013,
+        "key": "/works/OL17800180W",
+        "language": [
+          "ger",
+          "tur",
+          "eng",
+          "ita"
+        ],
+        "title": "Classical Mechanics (Physics)",
+        "subject": [
+          "Physics",
+          "Problems, exercises",
+          "Popular works",
+          "nyt:hardcover-nonfiction=2013-02-24",
+          "New York Times bestseller",
+          "Mechanics",
+          "Mécanique",
+          "Ouvrages de vulgarisation",
+          "Popular Science",
+          "Theoretische Mechanik",
+          "Popular Science and Mathematics"
+        ]
+      },
+      {
+        "author_key": [
+          "OL236174A"
+        ],
+        "author_name": [
+          "Richard Dawkins"
+        ],
+        "cover_i": 95763,
+        "first_publish_year": 1986,
+        "key": "/works/OL1966501W",
+        "language": [
+          "fre",
+          "rus",
+          "eng",
+          "hun",
+          "dut",
+          "ger",
+          "spa"
+        ],
+        "title": "The Blind Watchmaker",
+        "subject": [
+          "Natural selection",
+          "Evolution (Biology)",
+          "Evolution",
+          "Biodiversity",
+          "Evolution.",
+          "Evolution.\u001e 0",
+          "open_syllabus_project",
+          "Evolutionstheorie",
+          "Selection naturelle",
+          "Evolutie",
+          "Natuurlijke selectie",
+          "Biological Evolution",
+          "Genetic Selection",
+          "Darwinismus",
+          "Biology",
+          "Genetics",
+          "Genetic inheritance",
+          "Popular Science",
+          "Evolution (biologi)",
+          "Naturligt urval",
+          "Qh366.2 .d37 1986",
+          "575"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7396111A",
+          "OL2750954A"
+        ],
+        "author_name": [
+          "Siddhartha Mukherjee",
+          "Dennis Boutsikaris"
+        ],
+        "cover_i": 11320163,
+        "first_publish_year": 2016,
+        "key": "/works/OL17762235W",
+        "language": [
+          "spa",
+          "pol",
+          "eng",
+          "cat"
+        ],
+        "title": "The Gene",
+        "subject": [
+          "genetics",
+          "history",
+          "heredity",
+          "genes",
+          "family",
+          "medical ethics",
+          "health",
+          "abortion",
+          "prenatal tests",
+          "AIDS",
+          "acquired immunodeficiency syndrome",
+          "ADA deficiency",
+          "ADA gene mutations",
+          "ADCY5",
+          "addiction",
+          "adenine",
+          "adenosine metabolism",
+          "adenovirus",
+          "adoption",
+          "Advisory Committee on Uranium",
+          "aging",
+          "Aktion T4 program",
+          "alcoholism",
+          "alleles",
+          "alpha interferon",
+          "Genetic disorders",
+          "Herencia (Bilogía)",
+          "Genética médica",
+          "Medical genetics",
+          "Human genetics",
+          "nyt:combined-print-and-e-book-nonfiction=2016-06-05",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "Large type books",
+          "MEDICAL",
+          "Genetik",
+          "Heredity",
+          "Genes",
+          "Family",
+          "Health",
+          "Genetics",
+          "History",
+          "Medical ethics",
+          "Human genetics -- History -- Popular works",
+          "Human genome -- Popular works",
+          "Human genome",
+          "Genetics -- history",
+          "Popular Science",
+          "Popular Science and Mathematics",
+          "Popular works",
+          "Long Now Manual for Civilization"
+        ]
+      },
+      {
+        "author_key": [
+          "OL8111164A"
+        ],
+        "author_name": [
+          "Katie Mack"
+        ],
+        "cover_i": 10342810,
+        "first_publish_year": 2020,
+        "key": "/works/OL21181790W",
+        "language": [
+          "ger",
+          "eng"
+        ],
+        "title": "The End of Everything (Astrophysically Speaking)",
+        "subject": [
+          "Science",
+          "Nonfiction",
+          "Physics",
+          "Astronomy",
+          "Space",
+          "Philosophy",
+          "Popular Science",
+          "Education",
+          "End of the world (astronomy)",
+          "Astrophysics",
+          "End of the universe",
+          "SCIENCE / Physics / Astrophysics",
+          "SCIENCE / Cosmology",
+          "SCIENCE / Astronomy",
+          "Cosmology"
+        ]
+      },
+      {
+        "author_key": [
+          "OL7403201A"
+        ],
+        "author_name": [
+          "Ross Welford"
+        ],
+        "cover_i": 8093758,
+        "first_publish_year": 2015,
+        "key": "/works/OL17807435W",
+        "language": [
+          "eng"
+        ],
+        "title": "Time Travelling with a Hamster",
+        "subject": [
+          "hamster",
+          "charming",
+          "children",
+          "time travel",
+          "space",
+          "family",
+          "friends",
+          "popular science",
+          "Children's fiction",
+          "Science fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1745464A",
+          "OL7396111A",
+          "OL9566592A"
+        ],
+        "author_name": [
+          "Adam Rutherford",
+          "Siddhartha Mukherjee",
+          "Elizabeth Garay"
+        ],
+        "cover_i": 9155814,
+        "first_publish_year": 2016,
+        "key": "/works/OL17715915W",
+        "language": [
+          "spa",
+          "eng"
+        ],
+        "title": "A Brief History of Everyone Who Ever Lived",
+        "subject": [
+          "Origin",
+          "Genomics",
+          "DNA",
+          "Evolution (Biology)",
+          "Human genome",
+          "Human evolution",
+          "Human beings",
+          "History",
+          "Human beings, origin",
+          "Human genetics",
+          "New York Times reviewed",
+          "Popular works",
+          "Humans",
+          "Genetics",
+          "Popular Science",
+          "Anthropologie",
+          "Evolution",
+          "Genom",
+          "Popular Science and Mathematics",
+          "Long Now Manual for Civilization",
+          "Biological Evolution",
+          "REFERENCE / Genealogy & Heraldry",
+          "SCIENCE / Life Sciences / Genetics & Genomics",
+          "SOCIAL SCIENCE / Anthropology / Cultural & Social"
+        ]
+      }
+    ]
+  }
+}

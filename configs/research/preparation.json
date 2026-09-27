@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "status": "draft",
+  "paused_by_user": true,
+  "as_of": "2026-09-22",
+  "instruction": "Hold off on training or any experiments. Documentation, byte-level provenance checks and software unit tests only.",
+  "paid_spend_authorized": false,
+  "hardware_available": false,
+  "proposed_first_comparison": ["joint_sft", "budget_matched_task_specialists", "merged_task_adapters"],
+  "deferred": ["backbone_feasibility_runs", "distillation", "teacher_api_generation", "rl", "all_training", "all_model_evaluation"],
+  "gates": {
+    "literature_gate": {"status": "initial_review_only", "evidence": [], "draft_path": "docs/related_work.md"},
+    "protocol": {"status": "draft", "evidence": [], "draft_path": "docs/eval_protocol.md"},
+    "dataset_manifest": {"status": "missing_future_dataset", "evidence": []},
+    "group_split_audit": {"status": "pending_identity_repair", "evidence": []},
+    "backbone_revision": {"status": "unselected", "evidence": []},
+    "budget_definition": {"status": "draft_no_budget_authorized", "evidence": []},
+    "human_judged_recommendation_set": {"status": "not_collected", "evidence": []}
+  }
+}

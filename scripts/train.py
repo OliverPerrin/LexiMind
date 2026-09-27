@@ -17,6 +17,7 @@ Date: December 2025
 from __future__ import annotations
 
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -65,16 +66,37 @@ def set_seed(seed: int) -> None:
     torch.cuda.manual_seed_all(seed)
 
 
-def load_splits(data_dir: Path, loader_fn) -> Dict[str, list]:
-    """Load train/val/test splits from data directory."""
+def load_splits(data_dir: Path, loader_fn, *, include_test: bool = False) -> Dict[str, list]:
+    """Load training/model-selection inputs; test data is opt-in and never needed for fit."""
     splits = {}
-    for name, aliases in [("train", ["train"]), ("val", ["val", "validation"]), ("test", ["test"])]:
+    names = [("train", ["train"]), ("val", ["val", "validation"])]
+    if include_test:
+        names.append(("test", ["test"]))
+    for name, aliases in names:
         for alias in aliases:
             path = data_dir / f"{alias}.jsonl"
             if path.exists():
                 splits[name] = loader_fn(str(path))
                 break
     return splits
+
+
+def resume_start_epoch(checkpoint: Path) -> int:
+    """Infer only epoch metadata that belongs to the chosen weights.
+
+    best.pt may precede last.pt by several epochs; its sibling last_epoch.json
+    cannot identify it. This is a weights-only continuation, not exact recovery
+    of optimizer, scheduler or RNG state.
+    """
+    if checkpoint.name == "last.pt":
+        metadata = checkpoint.parent / "last_epoch.json"
+        if metadata.exists():
+            epoch = json.loads(metadata.read_text())["epoch"]
+            if isinstance(epoch, bool) or not isinstance(epoch, int) or epoch < 1:
+                raise ValueError("last_epoch.json must record a positive integer epoch")
+            return epoch + 1
+    match = re.fullmatch(r"epoch_(\d+)", checkpoint.stem)
+    return int(match.group(1)) + 1 if match else 1
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
@@ -319,24 +341,13 @@ def main(cfg: DictConfig) -> None:
     # Resume from checkpoint?
     start_epoch = 1
     resume_path = cfg.get("resume_from")
-    if resume_path and Path(resume_path).exists():
-        print(f"  Resuming from: {resume_path}")
+    if resume_path:
+        if not Path(resume_path).is_file():
+            raise FileNotFoundError(f"Requested resume checkpoint not found: {resume_path}")
+        print(f"  Loading weights from: {resume_path}")
+        print("  Weights-only continuation: optimizer, scheduler and RNG state are not restored.")
         load_state(model, str(resume_path))
-        import re
-
-        # Prefer explicit epoch metadata (written alongside last.pt); fall back
-        # to parsing digits from legacy epoch_N.pt filenames.
-        epoch_meta = Path(resume_path).parent / "last_epoch.json"
-        if epoch_meta.exists():
-            try:
-                with epoch_meta.open() as f:
-                    start_epoch = int(json.load(f)["epoch"]) + 1
-            except Exception:
-                pass
-        else:
-            digits = re.findall(r"\d+", Path(resume_path).stem)
-            if digits:
-                start_epoch = int(digits[-1]) + 1
+        start_epoch = resume_start_epoch(Path(resume_path))
 
     # Compile model for speed
     # Note: "reduce-overhead" mode uses CUDA graphs which conflicts with gradient checkpointing

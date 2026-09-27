@@ -1,0 +1,149 @@
+{
+  "url": "https://openlibrary.org/works/OL45499W.json",
+  "retrievedAt": "2026-09-22T14:29:45.665134+00:00",
+  "sha256": "5fd875bea3fb985a4c43d8f97769def21c95c358182927b2781c283e80c2c07c",
+  "data": {
+    "covers": [
+      662232,
+      254178,
+      10857861,
+      4847562,
+      8236334,
+      6723676,
+      795754,
+      5616629,
+      421743,
+      4822310,
+      46504,
+      9201429,
+      11010453,
+      13213015,
+      11513590,
+      13663861,
+      13574317,
+      2040171,
+      3329542,
+      569575,
+      2941213,
+      6906092,
+      8675391,
+      11498652,
+      13643740
+    ],
+    "key": "/works/OL45499W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL18293A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "title": "Tao te Ching",
+    "subjects": [
+      "Chinese Philosophy",
+      "Chinese language materials",
+      "Peace",
+      "Tao",
+      "Taoism",
+      "Ouvrages avant 1800",
+      "Taoïsme",
+      "Religion",
+      "Asian Philosophy",
+      "Philosophy",
+      "New Age",
+      "General",
+      "Religion / Eastern",
+      "Mind, body, spirit: disciplines & techniques",
+      "Body, Mind & Spirit",
+      "Religion - World Religions",
+      "Spiritualism - General",
+      "BG-JUVENILE PROP - BG-JUVY ACTIVITY",
+      "Body, Mind & Spirit / Spiritualism",
+      "Religion - Commentaries / Reference",
+      "Reference",
+      "China",
+      "Non-Western philosophy",
+      "Other prose: classical, early & medieval",
+      "Dao de jing (Laozi)",
+      "Laozi, dao de jing",
+      "Bilingual",
+      "Philosophy, chinese",
+      "Philosophy, chinese--to 221 b.c",
+      "Taoist philosophy",
+      "Taoism--sacred books",
+      "Bl1900.l26 e5 1990",
+      "299/.51482",
+      "Taoísmo",
+      "Chinese classics",
+      "Taoist literature",
+      "Sacred books",
+      "Chinese Taoist literature",
+      "Early works to 1800",
+      "Concordances",
+      "Military art and science",
+      "Translations into Russian",
+      "Classic Literature",
+      "Fiction",
+      "Commentaries",
+      "Laozi",
+      "Taoismus",
+      "Philosophie",
+      "Religious literature",
+      "Taoism Philosophy",
+      "Taoist",
+      "Tau-te-tjing (Lau-tse)",
+      "Philosophy and religion",
+      "Proverbs",
+      "Bl1900.l26 e5 2008b",
+      "299.5/1482",
+      "Eastern philosophy",
+      "Philosophy, asian",
+      "Taoist meditations",
+      "Philosophy, taoist",
+      "PHILOSOPHY / Taoist",
+      "RELIGION / Taoism (see also PHILOSOPHY / Taoist)",
+      "Philosophy of mind",
+      "Spirituality",
+      "Long Now Manual for Civilization",
+      "Nonfiction",
+      "Religions",
+      "Fiction, general",
+      "Arabic language",
+      "Grammar",
+      "Textual Criticism"
+    ],
+    "subject_people": [
+      "Lao-tzu",
+      "Laozi",
+      "Lao Tsu",
+      "Tao"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "description": {
+      "type": "/type/text",
+      "value": "\"Within ancient Chinese, a sole character possesses a broad, and sometimes contradictory, range of meanings. Moreover, the Tao Te Ching is rife with terms and expressions that have no exact counterpart in English. So while the Tao Te Ching ranks behind only the Bible as the most widely translated book in the world, it remains one of the least understood.\".\r\n\r\n\"Jonathan Star's Tao Te Ching: The Definitive Edition helps remedy this situation. The distinction of this new edition is that it supplies readers with the first comprehensive verbatim translation, which can be used to explore the multiple meanings contained in the Chinese characters. This unique tool gives readers direct access to the text and a way to understand the different interpretations put forth by modern-day translators.\r\n\r\nPerhaps most important, the verbatim translation gives each reader the ability to penetrate the inner meaning of the text and come up with his or her own personal interpretation.\"--BOOK JACKET."
+    },
+    "subject_places": [
+      "China"
+    ],
+    "first_publish_date": "November 25, 1989",
+    "genres": [
+      "/tags/OL174T"
+    ],
+    "latest_revision": 37,
+    "revision": 37,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-15T11:23:34.130855"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-07T18:16:36.048318"
+    }
+  }
+}

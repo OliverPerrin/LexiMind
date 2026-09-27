@@ -1,0 +1,63 @@
+{
+  "url": "https://openlibrary.org/works/OL796601W.json",
+  "retrievedAt": "2026-09-22T14:28:49.343745+00:00",
+  "sha256": "31aae122973afba0fd76c5d9337b1fddd9464724702546e03870c0598eb4f070",
+  "data": {
+    "description": {
+      "type": "/type/text",
+      "value": "Eleven Minutes is the story of Maria, a young girl from a Brazilian village, whose first innocent brushes with love leave her heartbroken. At a tender age, she becomes convinced that she will never find true love, instead believing that \"love is a terrible thing that will make you suffer. . . .\" A chance meeting in Rio takes her to Geneva, where she dreams of finding fame and fortune. Maria's despairing view of love is put to the test when she meets a handsome young painter. In this odyssey of self-discovery, Maria has to choose between pursuing a path of darkness — sexual pleasure for its own sake — or risking everything to find her own \"inner light\" and the possibility of sacred sex, sex in the context of love.This P.S. edition features an extra 16 pages of insights into the book, including author interviews, recommended reading, and more."
+    },
+    "title": "Eleven Minutes",
+    "covers": [
+      31228,
+      11741,
+      31229
+    ],
+    "subject_places": [
+      "Switzerland",
+      "Geneva",
+      "Brazil"
+    ],
+    "subjects": [
+      "Brazilians",
+      "Love",
+      "Prostitutes",
+      "Sex",
+      "Fiction",
+      "Romance fiction",
+      "Fiction, visionary & metaphysical",
+      "Brazil, fiction",
+      "Love stories"
+    ],
+    "key": "/works/OL796601W",
+    "authors": [
+      {
+        "type": {
+          "key": "/type/author_role"
+        },
+        "author": {
+          "key": "/authors/OL66700A"
+        }
+      }
+    ],
+    "subject_times": [
+      "mid-1990's"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "genres": [
+      "/tags/OL177T"
+    ],
+    "latest_revision": 17,
+    "revision": 17,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-09T04:18:04.254120"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-29T20:54:38.427250"
+    }
+  }
+}

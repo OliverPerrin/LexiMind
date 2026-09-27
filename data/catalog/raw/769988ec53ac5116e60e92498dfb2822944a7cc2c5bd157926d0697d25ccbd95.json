@@ -1,0 +1,439 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Aphilosophy+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-22T14:29:39.783853+00:00",
+  "sha256": "31259aa3f3318bd25e9733f49ec075dc9fe3029d88d923bf5a42f825a5f2e67e",
+  "data": {
+    "numFound": 135862,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 135862,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:philosophy language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL20157A"
+        ],
+        "author_name": [
+          "Friedrich Nietzsche"
+        ],
+        "cover_i": 8245356,
+        "first_publish_year": 1885,
+        "key": "/works/OL98174W",
+        "language": [
+          "ger",
+          "ita",
+          "fre",
+          "eng",
+          "spa"
+        ],
+        "title": "Jenseits von Gut und Böse",
+        "subject": [
+          "Ethics",
+          "Philosophy",
+          "Translations into English",
+          "Good and evil.",
+          "German Philosophy",
+          "Asceticism",
+          "Good and evil",
+          "Nonfiction",
+          "open_syllabus_project",
+          "Continental european drama (dramatic works by one author)",
+          "Philosophy, German",
+          "Morale",
+          "Philosophie",
+          "Ethics (philosophy)",
+          "History & Surveys",
+          "Modern",
+          "Good & evil",
+          "Modern Philosophy"
+        ]
+      },
+      {
+        "author_key": [
+          "OL109674A",
+          "OL15226554A"
+        ],
+        "author_name": [
+          "Will Durant",
+          "讀書新聞社"
+        ],
+        "cover_i": 405360,
+        "first_publish_year": 1926,
+        "key": "/works/OL1073898W",
+        "language": [
+          "urd",
+          "ger",
+          "heb",
+          "kor",
+          "fin",
+          "eng",
+          "chi",
+          "hun",
+          "spa",
+          "dan"
+        ],
+        "title": "The Story of Philosophy",
+        "subject": [
+          "Philosophers",
+          "Philosophy",
+          "History",
+          "Biography",
+          "Philosophie",
+          "Philosophes",
+          "Philosophy, dictionaries",
+          "Philosophy, history",
+          "Nonfiction",
+          "Classics"
+        ]
+      },
+      {
+        "author_key": [
+          "OL133986A"
+        ],
+        "author_name": [
+          "Marcus Aurelius"
+        ],
+        "cover_i": 211529,
+        "first_publish_year": 1626,
+        "key": "/works/OL1317211W",
+        "language": [
+          "ger",
+          "jpn",
+          "tur",
+          "lat",
+          "slo",
+          "ita",
+          "ukr",
+          "fre",
+          "arm",
+          "grc",
+          "und",
+          "eng",
+          "mul",
+          "cze",
+          "gre",
+          "spa",
+          "dut"
+        ],
+        "title": "Meditations",
+        "subject": [
+          "Philosophy",
+          "Nonfiction",
+          "Classics",
+          "Self-Help",
+          "Ethics",
+          "Early works to 1800",
+          "Conduct of life",
+          "Ancient Philosophy",
+          "Stoics",
+          "Life"
+        ]
+      },
+      {
+        "author_key": [
+          "OL18293A"
+        ],
+        "author_name": [
+          "老子"
+        ],
+        "cover_i": 662232,
+        "first_publish_year": 1842,
+        "key": "/works/OL45499W",
+        "language": [
+          "spa",
+          "vie",
+          "rus",
+          "bul",
+          "may",
+          "ita",
+          "por",
+          "ger",
+          "eng",
+          "mul",
+          "tha",
+          "fre",
+          "cmn",
+          "chi",
+          "ara",
+          "und",
+          "jpn",
+          "kor",
+          "heb"
+        ],
+        "title": "Tao te Ching",
+        "subject": [
+          "Chinese Philosophy",
+          "Chinese language materials",
+          "Peace",
+          "Tao",
+          "Taoism",
+          "Ouvrages avant 1800",
+          "Taoïsme",
+          "Religion",
+          "Asian Philosophy",
+          "Philosophy",
+          "New Age",
+          "General",
+          "Religion / Eastern",
+          "Mind, body, spirit: disciplines & techniques",
+          "Body, Mind & Spirit",
+          "Religion - World Religions",
+          "Spiritualism - General",
+          "BG-JUVENILE PROP - BG-JUVY ACTIVITY",
+          "Body, Mind & Spirit / Spiritualism",
+          "Religion - Commentaries / Reference",
+          "Reference",
+          "China",
+          "Non-Western philosophy",
+          "Other prose: classical, early & medieval",
+          "Dao de jing (Laozi)",
+          "Laozi, dao de jing",
+          "Bilingual",
+          "Philosophy, chinese",
+          "Philosophy, chinese--to 221 b.c",
+          "Taoist philosophy",
+          "Taoism--sacred books",
+          "Bl1900.l26 e5 1990",
+          "299/.51482",
+          "Taoísmo",
+          "Chinese classics",
+          "Taoist literature",
+          "Sacred books",
+          "Chinese Taoist literature",
+          "Early works to 1800",
+          "Concordances",
+          "Military art and science",
+          "Translations into Russian",
+          "Classic Literature",
+          "Fiction",
+          "Commentaries",
+          "Laozi",
+          "Taoismus",
+          "Philosophie",
+          "Religious literature",
+          "Taoism Philosophy",
+          "Taoist",
+          "Tau-te-tjing (Lau-tse)",
+          "Philosophy and religion",
+          "Proverbs",
+          "Bl1900.l26 e5 2008b",
+          "299.5/1482",
+          "Eastern philosophy",
+          "Philosophy, asian",
+          "Taoist meditations",
+          "Philosophy, taoist",
+          "PHILOSOPHY / Taoist",
+          "RELIGION / Taoism (see also PHILOSOPHY / Taoist)",
+          "Philosophy of mind",
+          "Spirituality",
+          "Long Now Manual for Civilization",
+          "Nonfiction",
+          "Religions",
+          "Fiction, general",
+          "Arabic language",
+          "Grammar",
+          "Textual Criticism"
+        ]
+      },
+      {
+        "author_key": [
+          "OL124171A"
+        ],
+        "author_name": [
+          "Albert Camus"
+        ],
+        "cover_i": 1014395,
+        "first_publish_year": 1941,
+        "key": "/works/OL1230601W",
+        "language": [
+          "spa",
+          "jpn",
+          "tur",
+          "heb",
+          "eng",
+          "ita",
+          "ger",
+          "por",
+          "fre"
+        ],
+        "title": "Le mythe de Sisyphe",
+        "subject": [
+          "French essays",
+          "Life",
+          "Suicide",
+          "Absurd (Philosophy)",
+          "Existentialism",
+          "Philosophy",
+          "History and criticism",
+          "French literature",
+          "French philosophy",
+          "Essays",
+          "Mythology",
+          "Modern philosophy",
+          "French language materials",
+          "Continental european fiction (fictional works by one author)",
+          "Mythology, greek",
+          "Kings and rulers, mythology",
+          "Essays (single author)",
+          "Filosofia",
+          "Absurd (Philosophy) in literature",
+          "Absurde (Philosophie) dans la littérature",
+          "Translations"
+        ]
+      },
+      {
+        "author_key": [
+          "OL124171A"
+        ],
+        "author_name": [
+          "Albert Camus"
+        ],
+        "cover_i": 12726570,
+        "first_publish_year": 1955,
+        "key": "/works/OL1230690W",
+        "language": [
+          "eng",
+          "fre"
+        ],
+        "title": "The Myth of Sisyphus and Other Essays",
+        "subject": [
+          "French essays",
+          "Life",
+          "Suicide",
+          "Absurd (philosophy)",
+          "Existentialism",
+          "Philosophy",
+          "History and criticism",
+          "French literature",
+          "French philosophy",
+          "Essays",
+          "Mythology",
+          "Modern philosophy"
+        ]
+      },
+      {
+        "author_key": [
+          "OL12823A"
+        ],
+        "author_name": [
+          "Plato"
+        ],
+        "cover_i": 14407561,
+        "first_publish_year": 1675,
+        "key": "/works/OL51948W",
+        "language": [
+          "lat",
+          "twi",
+          "dut",
+          "ita",
+          "grc",
+          "gre",
+          "ger",
+          "fre",
+          "mul",
+          "spa",
+          "eng"
+        ],
+        "title": "Ἀπολογία Σωκράτους",
+        "subject": [
+          "Nonfiction",
+          "Philosophy",
+          "Sophists (Greek philosophy)",
+          "Filosofía griega",
+          "History & Surveys",
+          "Ancient & Classical",
+          "Philosophie",
+          "Fiction, historical, general",
+          "Socrates.",
+          "Language and languages, study and teaching",
+          "Plato",
+          "Socrates",
+          "Spirituality",
+          "Philosophy, ancient",
+          "Criticism and interpretation",
+          "Immortality",
+          "Trials, litigation"
+        ]
+      },
+      {
+        "author_key": [
+          "OL422625A"
+        ],
+        "author_name": [
+          "Alan Watts"
+        ],
+        "cover_i": 254059,
+        "first_publish_year": 1951,
+        "key": "/works/OL266158W",
+        "language": [
+          "spa",
+          "tur",
+          "eng",
+          "fre",
+          "slv",
+          "chi",
+          "ger"
+        ],
+        "title": "The Wisdom of Insecurity",
+        "subject": [
+          "Peur",
+          "Religion",
+          "Philosophie",
+          "Fear",
+          "Security (Psychology)",
+          "Philosophy and religion",
+          "Philosophy",
+          "Mental health",
+          "Religion, philosophy",
+          "Samospoznavanje",
+          "Long Now Manual for Civilization"
+        ]
+      },
+      {
+        "author_key": [
+          "OL133986A"
+        ],
+        "author_name": [
+          "Marcus Aurelius"
+        ],
+        "cover_i": 13202688,
+        "first_publish_year": 2006,
+        "key": "/works/OL28521353W",
+        "language": [
+          "eng"
+        ],
+        "title": "Meditations",
+        "subject": [
+          "Philosophy",
+          "Classical philology"
+        ]
+      },
+      {
+        "author_key": [
+          "OL217191A"
+        ],
+        "author_name": [
+          "Norman Melchert"
+        ],
+        "cover_i": 1454089,
+        "first_publish_year": 1991,
+        "key": "/works/OL1810842W",
+        "language": [
+          "eng"
+        ],
+        "title": "The great conversation",
+        "subject": [
+          "Textbooks",
+          "Philosophy",
+          "Introductions",
+          "History",
+          "Filosofie",
+          "Philosophy, history",
+          "Philosophy, introductions"
+        ]
+      }
+    ]
+  }
+}

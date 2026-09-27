@@ -1,8 +1,8 @@
 """
 LexiMind -- Discover Books & Papers
 
-Browse literary works and research papers analyzed by a multi-task transformer.
-Find your next read by topic, emotion, or keyword -- with AI-generated summaries.
+Browse attributed book metadata and historical research-paper model outputs.
+Book descriptions and genres come from Open Library; unvalidated tones are hidden.
 
 Author: Oliver Perrin
 Date: 2026-01-14
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 import warnings
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,9 @@ from typing import Any
 warnings.filterwarnings("ignore", message=".*parameter in the Blocks constructor will be removed.*")
 
 import gradio as gr
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.catalog.demo import format_book_card, has_validated_tone, load_demo_items
 
 # --------------- Load Dataset ---------------
 
@@ -28,33 +32,18 @@ _DATA_PATHS = [
 ]
 
 
-def _load_jsonl() -> list[dict[str, Any]]:
-    for p in _DATA_PATHS:
-        if p.exists():
-            print(f"Loading discovery dataset from {p}...")
-            with open(p) as f:
-                return [json.loads(line) for line in f if line.strip()]
-    raise FileNotFoundError(
-        f"Discovery dataset not found. Looked in: {[str(p) for p in _DATA_PATHS]}"
-    )
+ALL_ITEMS, CATALOGUE_NOTICES = load_demo_items(
+    Path(__file__).parent.parent / "web/data/books.json",
+    _DATA_PATHS,
+    Path(__file__).parent.parent / "web/data/catalog-manifest.json",
+)
+print(f"Loaded {len(ALL_ITEMS)} source-aware discovery items")
 
-
-_raw_items = _load_jsonl()
-print(f"Loaded {len(_raw_items)} items")
-
-# Exclude social media posts
-ALL_ITEMS: list[dict[str, Any]] = [
-    item for item in _raw_items if item.get("source_type") != "social"
-]
-
-# Extract unique topics and emotions from the dataset (what model predicted)
-TOPICS: list[str] = sorted(set(str(item["topic"]) for item in ALL_ITEMS if item.get("topic")))
+TOPICS: list[str] = sorted(
+    {topic for item in ALL_ITEMS for topic in item.get("topics", [item.get("topic", "")]) if topic}
+)
 EMOTIONS: list[str] = sorted(
-    {
-        str(item["emotion"])
-        for item in ALL_ITEMS
-        if item.get("emotion") and item["emotion"] != "neutral"
-    }
+    {str(item["emotion"]) for item in ALL_ITEMS if has_validated_tone(item)}
 )
 
 # Group by source type
@@ -124,37 +113,7 @@ def _clean_paper_title(raw_title: str) -> str:
 ITEMS_PER_PAGE = 25
 
 
-def _format_book_card(item: dict) -> str:
-    """Format a literary work as a discovery card.
-
-    Uses the Goodreads description (reference summary) as the primary blurb.
-    AI-generated summaries are not shown for books because the model was
-    trained primarily on academic text and produces low-quality literary
-    summaries.
-    """
-    title = item.get("title", "Untitled")
-    topic = item.get("topic", "")
-    emotion = item.get("emotion", "neutral")
-
-    ref_summary = (item.get("reference_summary") or "").strip()
-
-    # Build metadata line
-    parts = ["Book"]
-    if topic:
-        parts.append(f"Topic: {topic}")
-    if emotion != "neutral":
-        parts.append(f"Tone: {emotion.title()}")
-    meta_line = " | ".join(parts)
-
-    card = f"### {title}\n\n"
-    card += f"*{meta_line}*\n\n"
-
-    # Show the Goodreads description as the primary blurb
-    if ref_summary:
-        card += f"> {ref_summary}\n\n"
-
-    card += "---\n\n"
-    return card
+_format_book_card = format_book_card
 
 
 def _format_paper_card(item: dict) -> str:
@@ -177,7 +136,7 @@ def _format_paper_card(item: dict) -> str:
     parts = ["Paper"]
     if topic:
         parts.append(f"Topic: {topic}")
-    if emotion != "neutral":
+    if has_validated_tone(item):
         parts.append(f"Tone: {emotion.title()}")
     meta_line = " | ".join(parts)
 
@@ -216,7 +175,7 @@ def browse_by_topic(topic: str, source_filter: str) -> str:
     if topic == "All Topics":
         items = list(ALL_ITEMS)
     else:
-        items = [i for i in ALL_ITEMS if i.get("topic") == topic]
+        items = [i for i in ALL_ITEMS if topic in i.get("topics", [i.get("topic")])]
 
     if source_filter == "Books Only":
         items = [i for i in items if i.get("source_type") == "literary"]
@@ -252,9 +211,11 @@ def browse_by_topic(topic: str, source_filter: str) -> str:
 def browse_by_emotion(emotion: str, source_filter: str) -> str:
     """Browse items filtered by tone and source type."""
     if emotion in ("All Emotions", "All Tones"):
-        items = [i for i in ALL_ITEMS if i.get("emotion") != "neutral"]
+        items = [i for i in ALL_ITEMS if has_validated_tone(i)]
     else:
-        items = [i for i in ALL_ITEMS if i.get("emotion") == emotion.lower()]
+        items = [
+            i for i in ALL_ITEMS if has_validated_tone(i) and i.get("emotion") == emotion.lower()
+        ]
 
     if source_filter == "Books Only":
         items = [i for i in items if i.get("source_type") == "literary"]
@@ -263,9 +224,9 @@ def browse_by_emotion(emotion: str, source_filter: str) -> str:
 
     if not items:
         return (
-            "No items found for this selection.\n\n"
-            "Try a different tone or select 'All Tones' to see "
-            "all items with a detected tone."
+            "No validated tone labels are available for this selection. "
+            "The historical social-media emotion model has not been validated "
+            "for book atmosphere or paper tone. Browse by genre, topic, or keyword."
         )
 
     books = [i for i in items if i.get("source_type") == "literary"]
@@ -345,13 +306,16 @@ with gr.Blocks(
     gr.Markdown(
         "# LexiMind\n"
         "### Discover Your Next Read\n\n"
-        "Browse **{book_count} books** and **{paper_count} research papers** "
-        "analyzed by a multi-task AI model. Each item has an AI-generated "
-        "summary, a topic classification, and an emotion label.\n\n"
-        "Use the tabs below to filter by topic or emotion, or search by keyword.".format(
+        "Browse **{book_count} books** from attributed Open Library records and "
+        "**{paper_count} historical research-paper examples**. Book descriptions "
+        "and genres are source metadata; paper summaries are archived model outputs.\n\n"
+        "Explore by genre, topic, author, or keyword. Mood labels await validation.".format(
             book_count=len(BOOKS), paper_count=len(PAPERS)
         )
     )
+
+    for notice in CATALOGUE_NOTICES:
+        gr.Markdown(notice)
 
     with gr.Tabs():
         # -- Browse by Topic --
@@ -390,10 +354,8 @@ with gr.Blocks(
             )
 
         # -- Browse by Tone --
-        with gr.Tab("By Tone"):
-            gr.Markdown(
-                "Find books and papers by the dominant emotional tone detected by the model."
-            )
+        with gr.Tab("By Tone", visible=bool(EMOTIONS)):
+            gr.Markdown("Browse independently validated tone labels with recorded sources.")
             with gr.Row():
                 emotion_dropdown = gr.Dropdown(
                     choices=["All Tones"] + [e.title() for e in EMOTIONS],
@@ -449,7 +411,9 @@ with gr.Blocks(
 
         # -- Metrics --
         with gr.Tab("Metrics"):
-            gr.Markdown("### Model Evaluation\n\nComputed on held-out validation data.")
+            gr.Markdown(
+                "### Historical Model Evaluation\n\nStored results from the earlier research project. These do not measure recommendation quality or validate book moods. No new evaluation has been run."
+            )
 
             gr.Markdown("#### Summarization")
 
@@ -470,7 +434,7 @@ with gr.Blocks(
                 )
                 gr.Markdown(summ_md)
             else:
-                gr.Markdown("Summarization metrics not available. Run the evaluation script.")
+                gr.Markdown("No historical summarization metrics are available.")
 
             gr.Markdown("#### Topic Classification")
 
@@ -527,35 +491,25 @@ with gr.Blocks(
         with gr.Tab("About"):
             gr.Markdown(
                 "### About LexiMind\n\n"
-                "LexiMind is a **272M parameter encoder-decoder transformer** "
-                "(FLAN-T5-base) trained jointly on three tasks:\n\n"
-                "| Task | What it does | Training data |\n"
-                "|------|-------------|---------------|\n"
-                "| **Summarization** | Generates abstracts for research papers | "
-                "~49K pairs (arXiv + Project Gutenberg/Goodreads) |\n"
-                "| **Topic Classification** | Assigns one of 7 topics | 3.4K samples |\n"
-                "| **Emotion Detection** | Detects up to 28 emotions | "
-                "43K GoEmotions samples |\n\n"
-                "**How to read the results:**\n\n"
-                "- **Research papers** show AI-generated summaries that condense the "
-                "paper's content. These are generated by the model and are generally "
-                "accurate.\n"
-                "- **Books** show the Goodreads description as the primary text. "
-                "The model was trained primarily on academic text (~45K academic vs ~4K literary), "
-                "so book summaries are not shown.\n"
-                "- **Tone labels** indicate the dominant emotional tone detected by the model. "
-                "Since the emotion detector was trained on social media (GoEmotions), "
-                "it captures general sentiment better than specific emotions for "
-                "formal text.\n\n"
-                "#### Architecture\n\n"
-                "- Custom from-scratch Transformer (not HuggingFace wrappers)\n"
-                "- Shared encoder with task-specific heads: decoder for summarization, "
-                "attention pooling for emotion, mean pooling for topic\n"
-                "- Trained in ~9 hours on a single RTX 4070 12GB\n\n"
+                "LexiMind is returning to books-first discovery. This Gradio Space "
+                "preserves the earlier research-paper browser alongside a reviewed "
+                "Open Library book catalogue.\n\n"
+                "- **Books** use descriptions, author identities, and genres from "
+                "linked Open Library records. Missing descriptions remain missing.\n"
+                "- **Research papers** show stored model-generated summaries and "
+                "topic predictions from the historical demo. Check the original "
+                "abstract; these outputs can contain errors.\n"
+                "- **Mood labels** are withheld until validated. GoEmotions was "
+                "trained on social-media comments and does not establish book atmosphere.\n\n"
+                "#### Historical research\n\n"
+                "The undergraduate project used a custom FLAN-T5-initialized "
+                "encoder-decoder with summarization, topic, and emotion heads. "
+                "Its stored runs and original paper drafts are archived; they are "
+                "not evidence that the new book recommendations have been evaluated.\n\n"
                 "[GitHub](https://github.com/OliverPerrin/LexiMind) | "
-                "[Model](https://huggingface.co/OliverPerrin/LexiMind-Model) | "
-                "[Dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery) | "
-                "[Paper](https://github.com/OliverPerrin/LexiMind/blob/main/docs/research_paper.tex)"
+                "[Historical model](https://huggingface.co/OliverPerrin/LexiMind-Model) | "
+                "[Historical dataset](https://huggingface.co/datasets/OliverPerrin/LexiMind-Discovery) | "
+                "[Research archive](https://github.com/OliverPerrin/LexiMind/tree/main/docs/archive)"
                 "\n\n*Oliver Perrin -- Appalachian State University -- 2025-2026*"
             )
 

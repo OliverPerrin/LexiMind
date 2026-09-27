@@ -1,0 +1,479 @@
+{
+  "url": "https://openlibrary.org/search.json?q=subject%3Ahistorical_fiction+language%3Aeng&limit=10&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+  "retrievedAt": "2026-09-22T14:28:56.353269+00:00",
+  "sha256": "02395d4900f366123cf47396107face6af1be75a981604eb82dc6d87c511690e",
+  "data": {
+    "numFound": 104669,
+    "start": 0,
+    "numFoundExact": true,
+    "num_found": 104669,
+    "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+    "q": "subject:historical_fiction language:eng",
+    "offset": null,
+    "docs": [
+      {
+        "author_key": [
+          "OL7018678A"
+        ],
+        "author_name": [
+          "Amor Towles"
+        ],
+        "cover_i": 11326818,
+        "first_publish_year": 2016,
+        "key": "/works/OL17797130W",
+        "language": [
+          "kor",
+          "eng",
+          "ger",
+          "spa",
+          "ita",
+          "chi"
+        ],
+        "title": "A Gentleman in Moscow",
+        "subject": [
+          "historical fiction",
+          "literary fiction",
+          "political fiction",
+          "Aristocracy (Social class)",
+          "Home detention",
+          "FICTION / Literary",
+          "FICTION / Political",
+          "Fiction",
+          "Interpersonal relations",
+          "Hotels",
+          "FICTION / Historical",
+          "History",
+          "Detention of persons",
+          "Fiction, historical",
+          "Moscow (russia), fiction",
+          "Fiction, political",
+          "nyt:hardcover-fiction=2016-09-25",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "Fiction, historical, general",
+          "Saint petersburg (russia), fiction",
+          "Hotel Metropol (Moscow, Russia)"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1926056A"
+        ],
+        "author_name": [
+          "Madeline Miller"
+        ],
+        "cover_i": 8739376,
+        "first_publish_year": 2018,
+        "key": "/works/OL18012166W",
+        "language": [
+          "eng",
+          "por",
+          "pol",
+          "tur",
+          "dut"
+        ],
+        "title": "Circe",
+        "subject": [
+          "Fantasy",
+          "Mythology",
+          "Historical Fiction",
+          "Retellings",
+          "Gods",
+          "Fiction",
+          "Paranormal fiction",
+          "Fiction, fantasy, historical",
+          "nyt:combined-print-and-e-book-fiction=2018-04-29",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "nyt:audio-fiction=2018-05-13",
+          "Witches",
+          "Magic",
+          "Greek Mythology",
+          "Historical",
+          "Ancient",
+          "General",
+          "Literary",
+          "Witchcraft",
+          "Circe",
+          "Witches--fiction",
+          "Magic--fiction",
+          "Mythology, greek",
+          "Mythology, greek--fiction",
+          "Fiction / historical / ancient",
+          "Fiction / historical / general",
+          "Fiction / literary",
+          "Witchcraft--fiction",
+          "Gods--fiction",
+          "Animals, mythical",
+          "Animals, mythical--fiction",
+          "Circe (greek mythology)",
+          "Circe (greek mythology)--fiction",
+          "Ps3613.i5445 c57 2018b",
+          "813/.6",
+          "Mythical Animals",
+          "Fiction, historical, ancient",
+          "Fiction, fairy tales, folk tales, legends & mythology",
+          "American literature"
+        ]
+      },
+      {
+        "author_key": [
+          "OL19430A"
+        ],
+        "author_name": [
+          "Neal Stephenson"
+        ],
+        "cover_i": 8347528,
+        "first_publish_year": 2003,
+        "key": "/works/OL38495W",
+        "language": [
+          "ger",
+          "eng"
+        ],
+        "title": "Quicksilver",
+        "subject": [
+          "Scientists",
+          "Fiction",
+          "Adventure stories",
+          "Alchemists",
+          "Puritans",
+          "Adventure and adventurers",
+          "Historical Fiction",
+          "Rogues and vagabonds",
+          "History",
+          "adventure fiction",
+          "Fiction, historical",
+          "Scientists, fiction",
+          "Fiction, historical, general",
+          "Fiction, technological",
+          "Fiction, action & adventure",
+          "Seventeenth century",
+          "Eighteenth century",
+          "FICTION / Fantasy / Historical",
+          "FICTION / Historical",
+          "FICTION / Science Fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL24635A"
+        ],
+        "author_name": [
+          "Francine Rivers"
+        ],
+        "cover_i": 8272833,
+        "first_publish_year": 1991,
+        "key": "/works/OL21435W",
+        "language": [
+          "ger",
+          "spa",
+          "eng"
+        ],
+        "title": "Redeeming Love",
+        "subject": [
+          "Frontier and pioneer life in fiction",
+          "Prostitutes in fiction",
+          "Frontier and pioneer life",
+          "Prostitutes",
+          "Fiction",
+          "Women pioneers",
+          "frontier life",
+          "love stories",
+          "Romance fiction",
+          "Christian fiction",
+          "historical fiction",
+          "Ficción",
+          "Prostitutas",
+          "Vida fronteriza",
+          "Fiction, christian, historical",
+          "California, fiction",
+          "Frontier and pioneer life, fiction",
+          "San francisco (calif.), fiction",
+          "Fiction, religious",
+          "Fiction, romance, historical",
+          "Fiction, christian, romance",
+          "Fiction, historical",
+          "Large type books",
+          "Fiction, christian, romance, general",
+          "Bible, criticism, interpretation, etc."
+        ]
+      },
+      {
+        "author_key": [
+          "OL7400941A"
+        ],
+        "author_name": [
+          "Yaa Gyasi"
+        ],
+        "cover_i": 8081171,
+        "first_publish_year": 2016,
+        "key": "/works/OL17795349W",
+        "language": [
+          "ita",
+          "chi",
+          "ice",
+          "dan",
+          "ger",
+          "spa",
+          "eng"
+        ],
+        "title": "Homegoing",
+        "subject": [
+          "African American Historical Fiction",
+          "LGBTQ historical fiction",
+          "saga",
+          "literary fiction",
+          "historical fiction",
+          "women",
+          "slavery",
+          "African Americans",
+          "history",
+          "FICTION",
+          "Literary",
+          "Sagas",
+          "Historical",
+          "African American",
+          "Large type books",
+          "FICTION / African American / Historical",
+          "FICTION / Literary",
+          "FICTION / Sagas",
+          "Fiction, african american, historical",
+          "Slaves, fiction",
+          "African americans, fiction",
+          "nyt:hardcover-fiction=2016-06-26",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "Fiction, african american & black, historical",
+          "collectionID:EanesChallenge",
+          "General",
+          "African American Fiction",
+          "Literature",
+          "collectionID:bannedbooks",
+          "Enslaved persons, fiction"
+        ]
+      },
+      {
+        "author_key": [
+          "OL6979295A"
+        ],
+        "author_name": [
+          "V. E. Schwab"
+        ],
+        "cover_i": 10092261,
+        "first_publish_year": 2015,
+        "key": "/works/OL20796936W",
+        "language": [
+          "eng",
+          "ger",
+          "por",
+          "dut"
+        ],
+        "title": "The Invisible Life of Addie LaRue",
+        "subject": [
+          "nyt:combined-print-and-e-book-fiction=2020-10-25",
+          "New York Times bestseller",
+          "Fiction, fantasy, historical",
+          "LGBTQ science fiction & fantasy",
+          "Memory",
+          "Fiction",
+          "Immortalism",
+          "Deals",
+          "Man-woman relationships",
+          "FICTION / Fantasy / Historical",
+          "FICTION / Literary"
+        ]
+      },
+      {
+        "author_key": [
+          "OL218462A"
+        ],
+        "author_name": [
+          "Colson Whitehead"
+        ],
+        "cover_i": 7899016,
+        "first_publish_year": 2000,
+        "key": "/works/OL17619932W",
+        "language": [
+          "kor",
+          "eng",
+          "ger",
+          "spa",
+          "ita",
+          "jpn"
+        ],
+        "title": "The Underground Railroad",
+        "subject": [
+          "FICTION / African American / General",
+          "History",
+          "Underground Railroad",
+          "Fiction",
+          "Fugitive slaves",
+          "Historical fiction",
+          "FICTION / Literary",
+          "FICTION / Historical",
+          "Literary",
+          "Historical",
+          "African American",
+          "General",
+          "18.06 Anglo-American literature",
+          "Historischer Roman",
+          "Amerikanisches Englisch",
+          "nyt:hardcover-fiction=2016-08-21",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "Slaves, fiction",
+          "Fiction, african american & black, historical",
+          "Fiction, historical",
+          "Southern states, fiction",
+          "Fiction, historical, general",
+          "Large type books",
+          "Historia",
+          "Esclavos fugitivos",
+          "Ficción",
+          "Esclavitud- -- Estados Unidos- -- Novelas"
+        ]
+      },
+      {
+        "author_key": [
+          "OL402869A"
+        ],
+        "author_name": [
+          "Jean M. Auel"
+        ],
+        "cover_i": 12529015,
+        "first_publish_year": 1900,
+        "key": "/works/OL2746369W",
+        "language": [
+          "dut",
+          "ita",
+          "swe",
+          "ger",
+          "fre",
+          "hrv",
+          "pol",
+          "spa",
+          "eng"
+        ],
+        "title": "The Clan of the Cave Bear",
+        "subject": [
+          "Neanderthals",
+          "shamanism",
+          "sign language",
+          "taboos",
+          "prehistoric fiction",
+          "epic",
+          "epic fiction",
+          "prehistoric man",
+          "epic literature",
+          "historical fiction",
+          "Open Library Staff Picks",
+          "Prehistoric peoples",
+          "Fiction",
+          "Women",
+          "American fiction",
+          "Ayla (Fictitious character)",
+          "Glacial epoch",
+          "Fiction, historical",
+          "Ayla (fictitious character : auel), fiction",
+          "Europe, fiction",
+          "Romans, nouvelles",
+          "Préhistoire",
+          "Large type books",
+          "Fiction, historical, general",
+          "Ayla (Fictional character)",
+          "Ice age",
+          "Primitive societies"
+        ]
+      },
+      {
+        "author_key": [
+          "OL28104A"
+        ],
+        "author_name": [
+          "Cormac McCarthy"
+        ],
+        "cover_i": 419991,
+        "first_publish_year": 1985,
+        "key": "/works/OL40879W",
+        "language": [
+          "cat",
+          "pol",
+          "eng",
+          "ger",
+          "fre",
+          "spa",
+          "heb",
+          "chi"
+        ],
+        "title": "Blood Meridian",
+        "subject": [
+          "Fiction",
+          "Glanton Gang",
+          "Outlaws",
+          "Teenage boys",
+          "Indians of North America",
+          "Massacres",
+          "Indians of north america, fiction",
+          "Fiction, westerns",
+          "Fiction, historical",
+          "West (u.s.), fiction",
+          "Fiction, historical, general",
+          "Fiction, action & adventure",
+          "American fiction (fictional works by one author)",
+          "Fiction, general"
+        ]
+      },
+      {
+        "author_key": [
+          "OL1926056A"
+        ],
+        "author_name": [
+          "Madeline Miller"
+        ],
+        "cover_i": 7098465,
+        "first_publish_year": 2011,
+        "key": "/works/OL16509148W",
+        "language": [
+          "pol",
+          "por",
+          "eng",
+          "ger",
+          "swe",
+          "gre",
+          "tur",
+          "spa",
+          "ita",
+          "srp",
+          "dut"
+        ],
+        "title": "The Song of Achilles",
+        "subject": [
+          "Trojan War",
+          "Achilles (Greek mythology)",
+          "Male friendship",
+          "Fiction",
+          "Gay love",
+          "Thetis",
+          "Greeks",
+          "History",
+          "Trojan War. fast (OCoLC)fst01157294",
+          "Friendship, fiction",
+          "Fiction, historical",
+          "Fiction, war & military",
+          "LGBTQ historical fiction",
+          "Stonewall Book Awards",
+          "nyt:trade-fiction-paperback=2020-08-30",
+          "New York Times bestseller",
+          "New York Times reviewed",
+          "Fiction, historical, general",
+          "Amitié masculine",
+          "Romans, nouvelles",
+          "Guerre de Troie",
+          "Gay fiction",
+          "Long now manual for civilization",
+          "American literature"
+        ]
+      }
+    ]
+  }
+}

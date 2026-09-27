@@ -1,0 +1,70 @@
+{
+  "url": "https://openlibrary.org/works/OL72313W.json",
+  "retrievedAt": "2026-09-22T14:29:11.463378+00:00",
+  "sha256": "46c70a23783211eddb3d0268e0a37caa4a6bffce09597506944e409672955f78",
+  "data": {
+    "title": "The New Girl",
+    "key": "/works/OL72313W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL35524A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      8203024,
+      4972364,
+      6283944,
+      6695231,
+      10754657,
+      11251579
+    ],
+    "description": "The new girl is as pale as a ghost, blond, and eerily beautiful -- and she seems to need him as much as he wants her. Cory Brooks hungers for Anna Corwin's kisses, drowns in her light blue eyes. He can't get her out of his mind. He has been loosing sleep, ditching his friends...and everyone has noticed.\r\n\r\nThen as suddenly as she came to Shadyside High, Anna disappears. To find a cure for his obsession, Cory must go to Anna's house on Fear Street -- no matter what the consequences.\r\n\r\nAnna may be the love of his life ... but finding out her secret might mean his death.",
+    "subjects": [
+      "Ghost stories",
+      "Horror tales",
+      "Horror stories",
+      "Gymnasts",
+      "Fiction",
+      "Horror tales.",
+      "Ghost stories.",
+      "Peur",
+      "Romans",
+      "Amour",
+      "collectionID:FearStreet",
+      "Children's fiction",
+      "Schools, fiction",
+      "Friendship, fiction",
+      "Love, fiction",
+      "Girls, fiction"
+    ],
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL337082L"
+        },
+        "position": "1"
+      }
+    ],
+    "genres": [
+      "/tags/OL171T"
+    ],
+    "latest_revision": 17,
+    "revision": 17,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-16T07:05:59.463429"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-07T22:45:09.895595"
+    }
+  }
+}
