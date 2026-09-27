@@ -14,6 +14,15 @@ function strings(value: unknown): value is string[] {
   return Array.isArray(value) && value.every(text) && new Set(value).size === value.length;
 }
 
+function httpsUrl(value: unknown): value is string {
+  if (typeof value !== "string" || /[\s\\]/.test(value) ||
+    !/^https:\/\/[^/?#%@]+(?:[/?#]|$)/i.test(value)) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && Boolean(url.hostname) && !url.username && !url.password;
+  } catch { return false; }
+}
+
 function timestamp(value: unknown): value is string {
   if (typeof value !== "string") return false;
   const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,6})?(Z|[+-]\d{2}:\d{2})$/.exec(value);
@@ -44,7 +53,7 @@ export function validateCatalog(input: unknown): Book[] {
       !object(identifiers) || typeof identifiers.openLibraryWork !== "string" ||
       identifiers.openLibraryWork.replace(/^\/works\//, "") !== entry.id ||
       !strings(identifiers.isbns) ||
-      !(entry.firstPublished === null || typeof entry.firstPublished === "number" && Number.isInteger(entry.firstPublished))
+      !(entry.firstPublished === null || typeof entry.firstPublished === "number" && Number.isInteger(entry.firstPublished) && entry.firstPublished > 0)
     ) throw new Error(`Invalid or duplicate catalogue identity: ${entry.id ?? "unknown"}`);
 
     if (entry.coverUrl !== null && (typeof entry.coverUrl !== "string" ||
@@ -57,6 +66,11 @@ export function validateCatalog(input: unknown): Book[] {
     if (entry.moods.length) {
       throw new Error(`Mood labels require a reviewed evidence schema before publication: ${entry.id}`);
     }
+    const publicationSource = entry.firstPublishedSource;
+    if (publicationSource !== undefined && (
+      !object(publicationSource) || !text(publicationSource.name) ||
+      !httpsUrl(publicationSource.url) || entry.firstPublished === null
+    )) throw new Error(`Invalid original-publication evidence: ${entry.id}`);
     ids.add(entry.id);
     // Unknown source fields/hashes stay in the archive, reducing the browser payload.
     return {
@@ -64,6 +78,9 @@ export function validateCatalog(input: unknown): Book[] {
       description: entry.description, descriptionSource: entry.description ? source.url as string : null,
       coverUrl: entry.coverUrl as string | null, genres: [...entry.genres],
       subjects: [...entry.subjects], moods: [], firstPublished: entry.firstPublished as number | null,
+      ...(object(publicationSource) ? { firstPublishedSource: {
+        name: publicationSource.name as string, url: publicationSource.url as string,
+      } } : {}),
       source: { name: "Open Library", url: source.url as string, retrievedAt: source.retrievedAt },
       identifiers: { openLibraryWork: identifiers.openLibraryWork, isbns: [...identifiers.isbns] },
     };

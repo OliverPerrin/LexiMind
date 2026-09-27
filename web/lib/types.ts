@@ -9,6 +9,7 @@ export interface Book {
   /** Only independently sourced labels belong here, never sampled predictions. */
   moods: string[];
   firstPublished: number | null;
+  firstPublishedSource?: { name: string; url: string };
   source: { name: string; url: string; retrievedAt: string };
   identifiers: { openLibraryWork: string; isbns: string[] };
   descriptionSource?: string | null;

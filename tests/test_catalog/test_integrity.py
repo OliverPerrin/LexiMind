@@ -34,6 +34,15 @@ def book():
         ("genres", [""]),
         ("firstPublished", True),
         ("firstPublished", 1.5),
+        ("firstPublished", 0),
+        ("firstPublished", -2000),
+        ("firstPublishedSource", None),
+        ("firstPublishedSource", {"name": "Author", "url": "javascript:alert(1)"}),
+        ("firstPublishedSource", {"name": "Author", "url": "https://user:pass@example.com/book"}),
+        ("firstPublishedSource", {"name": "Author", "url": "https://example.com:invalid/book"}),
+        ("firstPublishedSource", {"name": "Author", "url": "https://example.com:65536/book"}),
+        ("firstPublishedSource", {"name": "Author", "url": "https://[malformed]/book"}),
+        ("firstPublishedSource", {"name": "", "url": "https://author.example/book"}),
         ("coverUrl", "https://covers.openlibrary.org.evil.example/b/id/123-L.jpg"),
         ("coverUrl", "javascript:alert(1)"),
         ("sourceContentHash", "not-a-hash"),
@@ -118,6 +127,30 @@ def test_changed_review_aborts_build_instead_of_silently_dropping_work():
     }
     with pytest.raises(CatalogueIntegrityError, match="Source changed"):
         build_catalogue(Client(), review)
+
+
+def test_later_valid_duplicate_is_not_suppressed_by_first_malformed_record():
+    search, response = fixture_records()
+
+    class Client:
+        searches = 0
+
+        def get(self, path, params=None):
+            if path == "/search.json":
+                self.searches += 1
+                result = {**search, "author_name": []} if self.searches == 1 else search
+                return {
+                    "data": {"docs": [result]},
+                    "url": "https://openlibrary.org/search.json",
+                    "sha256": "search",
+                }
+            return response
+
+    catalogue, manifest = build_catalogue(
+        Client(), {"schemaVersion": 1, "excludedWorks": {}, "withheldDescriptions": {}}
+    )
+    assert [book["id"] for book in catalogue] == ["OL1W"]
+    assert len(manifest["rejected"]) == 1
 
 
 def test_catalogue_manifest_mismatch_is_rejected(book):

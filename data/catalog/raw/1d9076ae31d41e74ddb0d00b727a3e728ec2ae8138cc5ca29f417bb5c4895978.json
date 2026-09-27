@@ -1,0 +1,62 @@
+{
+  "url": "https://openlibrary.org/works/OL34224558W.json",
+  "retrievedAt": "2026-09-27T09:06:41.857447+00:00",
+  "sha256": "9593ed4247d1a9c67815fcb70f74d5b12cd7aa59bf0a2fe640f9adebab1dd097",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "Never Lie",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL8384995A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL34224558W",
+    "covers": [
+      13198561
+    ],
+    "identifiers": {
+      "librarything": [
+        "28935851"
+      ]
+    },
+    "description": {
+      "type": "/type/text",
+      "value": "Newlyweds Tricia and Ethan are searching for the house of their dreams.\r\n\r\nBut when they visit the remote manor that once belonged to Dr. Adrienne Hale, a renowned psychiatrist who vanished without a trace four years earlier, a violent winter storm traps them at the estate… with no chance of escape until the blizzard comes to an end.\r\n\r\nIn search of a book to keep her entertained until the snow abates, Tricia happens upon a secret room. One that contains audio transcripts from every single patient Dr. Hale has ever interviewed. As Tricia listens to the cassette tapes, she learns about the terrifying chain of events leading up to Dr. Hale’s mysterious disappearance.\r\n\r\nTricia plays the tapes one by one, late into the night. With each one, another shocking piece of the puzzle falls into place, and Dr. Adrienne Hale’s web of lies slowly unravels.\r\n\r\nAnd then Tricia reaches the final cassette.\r\n\r\nThe one that reveals the entire horrifying truth."
+    },
+    "subjects": [
+      "Thriller",
+      "Mystery",
+      "Mystery Thriller",
+      "Fiction",
+      "Suspense",
+      "Crime",
+      "Psychological Thriller",
+      "Contemporary"
+    ],
+    "subject_people": [
+      "Adrienne Hale"
+    ],
+    "genres": [
+      "/tags/OL180T",
+      "/tags/OL175T",
+      "/tags/OL166T"
+    ],
+    "latest_revision": 6,
+    "revision": 6,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2023-01-18T01:39:50.926493"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-31T12:50:19.622461"
+    }
+  }
+}

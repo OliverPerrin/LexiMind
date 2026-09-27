@@ -1,0 +1,59 @@
+{
+  "url": "https://openlibrary.org/works/OL31191485W.json",
+  "retrievedAt": "2026-09-27T09:06:45.179255+00:00",
+  "sha256": "d9f6a24b7a6e92a1222e59c680a53237c3ed3f5fa6f57d927d1452ddecd2cef4",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "The Inmate",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL8384995A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL31191485W",
+    "description": {
+      "type": "/type/text",
+      "value": "There are three rules Brooke Sullivan must follow as a new nurse practitioner at a men's maximum-security\r\n1) Treat all prisoners with respect.\r\n2) Never reveal any personal information.\r\n3) Never EVER become too friendly with the inmates.\r\n\r\nBut none of the staff at the prison knows Brooke has already broken the rules. Nobody knows about her intimate connection to Shane Nelson, one of the penitentiary's most notorious and dangerous inmates. And they certainly don't know that Shane was Brooke's high school sweetheart-the star quarterback who is now spending the rest of his life in prison for a series of grisly murders. Or that Brooke's testimony was what put him there. \r\n\r\nBut Shane knows. And he will never forget."
+    },
+    "identifiers": {
+      "librarything": [
+        "28362246"
+      ]
+    },
+    "subjects": [
+      "Thriller",
+      "Mystery",
+      "Mystery Thriller",
+      "Fiction",
+      "Suspense",
+      "Psychological Thriller",
+      "Crime"
+    ],
+    "subject_people": [
+      "Shane Nelson",
+      "Brooke Sullivan"
+    ],
+    "genres": [
+      "/tags/OL180T",
+      "/tags/OL175T",
+      "/tags/OL166T"
+    ],
+    "latest_revision": 7,
+    "revision": 7,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2022-12-03T19:51:19.499506"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T16:09:28.079618"
+    }
+  }
+}

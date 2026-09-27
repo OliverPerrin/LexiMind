@@ -1,0 +1,157 @@
+{
+  "url": "https://openlibrary.org/works/OL5731542W.json",
+  "retrievedAt": "2026-09-27T09:07:19.429213+00:00",
+  "sha256": "d7f09aef0dba6949d5c04155cd54b82389bfdbe85154c0b200e6af2f2687d5b5",
+  "data": {
+    "description": "Half of a Yellow Sun is a novel by Nigerian author Chimamanda Ngozi Adichie. Published in 2006 by Fourth Estate, the novel tells the story of the Biafran War through the perspective of the characters Olanna, Ugwu, and Richard.",
+    "links": [
+      {
+        "title": "Author's book page",
+        "url": "http://chimamanda.com/books/half-of-a-yellow-sun/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Wikipedia Entry",
+        "url": "https://en.wikipedia.org/wiki/Half_of_a_Yellow_Sun",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Master and his houseboy (review) | The Guardian",
+        "url": "https://www.theguardian.com/books/2006/aug/19/fiction.shopping2",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "New York Times review",
+        "url": "http://www.nytimes.com/2006/09/21/books/21masl.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "New York Times review",
+        "url": "http://www.nytimes.com/2006/10/01/books/review/Nixon.t.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "thegreatestbooks.org/items/1481",
+        "url": "https://thegreatestbooks.org/items/1481",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "bookmarks.reviews/reviews/half-of-a-yellow-sun/",
+        "url": "https://bookmarks.reviews/reviews/half-of-a-yellow-sun/",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "Half of a Yellow Sun",
+    "covers": [
+      8472660,
+      8200234,
+      10212554,
+      10710760,
+      10837342,
+      10155760,
+      10580077,
+      -1,
+      11430276,
+      11945873,
+      12126082,
+      12329506,
+      13963179
+    ],
+    "subject_places": [
+      "Nigeria",
+      "Biafra",
+      "Lagos",
+      "Africa"
+    ],
+    "subjects": [
+      "literary fiction",
+      "historical fiction",
+      "political fiction",
+      "war",
+      "military fiction",
+      "Fiction",
+      "History",
+      "Modern Literature",
+      "Civil War",
+      "Anisfield-Wolf Book Award winner",
+      "PEN/Open Book Award winner",
+      "Orange Broadband Prize winner",
+      "Women’s Prize for Fiction winner",
+      "Biafrakonflikt",
+      "Civil War (Nigeria : 1967-1970) fast (OCoLC)fst01352311",
+      "Social aspects",
+      "Nigeria, fiction",
+      "Fiction, historical",
+      "Fiction, political",
+      "Large type books",
+      "Fiction, war & military",
+      "New York Times reviewed",
+      "Fiction, historical, general",
+      "Politics and government",
+      "823.92"
+    ],
+    "subject_people": [
+      "Ugwu",
+      "Olanna",
+      "Odenigbo",
+      "Kainene",
+      "Richard"
+    ],
+    "key": "/works/OL5731542W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL1393502A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "subject_times": [
+      "1967-1970",
+      "Civil War, 1967-1970",
+      "1960-"
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "excerpts": [
+      {
+        "excerpt": "Master was a little crazy; he had spent too many years reading books overseas, talked to himself in his office, did not always return greetings, and had too much hair.",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "genres": [
+      "/tags/OL174T",
+      "/tags/OL170T"
+    ],
+    "latest_revision": 57,
+    "revision": 57,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-12-10T11:10:21.180469"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T05:07:54.853515"
+    }
+  }
+}

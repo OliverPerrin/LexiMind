@@ -1,0 +1,535 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-09-27T09:14:14.645044+00:00",
+  "yearRange": [
+    2000,
+    2025
+  ],
+  "scope": "Bounded contemporary catalogue metadata expansion, not training data or a representative sample. First publication means earliest supported work release across formats, not the date of a reprint. Primary references were read for publication facts; source pins below refer to exact cached Open Library responses.",
+  "baselineCatalogueFileSha256": "702cf3e16c091daafe1d293248dfed1955fe0545e4ca5c3089de3467f1ad4c6f",
+  "baselineGitRevision": "d28e386ace380e1335ea5de937df92b243f2cb2f",
+  "preservedWorkIds": [
+    "OL102483W",
+    "OL1037811W",
+    "OL11327982W",
+    "OL1230601W",
+    "OL1230690W",
+    "OL1317211W",
+    "OL14958204W",
+    "OL15094430W",
+    "OL15400582W",
+    "OL15556315W",
+    "OL158041W",
+    "OL16014245W",
+    "OL16031718W",
+    "OL16314245W",
+    "OL16509148W",
+    "OL17546674W",
+    "OL17606111W",
+    "OL17610507W",
+    "OL17619932W",
+    "OL17795349W",
+    "OL17797130W",
+    "OL17800180W",
+    "OL17800586W",
+    "OL17807435W",
+    "OL18012166W",
+    "OL1810842W",
+    "OL18139176W",
+    "OL1847023W",
+    "OL19351054W",
+    "OL1963251W",
+    "OL1966501W",
+    "OL19667762W",
+    "OL1983087W",
+    "OL19963111W",
+    "OL2010436W",
+    "OL20715162W",
+    "OL20796936W",
+    "OL21181790W",
+    "OL21435W",
+    "OL2577486W",
+    "OL257788W",
+    "OL262463W",
+    "OL262496W",
+    "OL2625422W",
+    "OL26446888W",
+    "OL266158W",
+    "OL2693077W",
+    "OL27294413W",
+    "OL27420W",
+    "OL2746369W",
+    "OL2943594W",
+    "OL318900W",
+    "OL32195W",
+    "OL3388961W",
+    "OL3457792W",
+    "OL3518640W",
+    "OL37949460W",
+    "OL38382569W",
+    "OL38495W",
+    "OL38847W",
+    "OL39160W",
+    "OL39275W",
+    "OL40879W",
+    "OL41078W",
+    "OL41081W",
+    "OL4233169W",
+    "OL42407991W",
+    "OL42577236W",
+    "OL43113687W",
+    "OL450063W",
+    "OL45499W",
+    "OL457175W",
+    "OL46374W",
+    "OL46390W",
+    "OL46398W",
+    "OL46401W",
+    "OL471940W",
+    "OL472250W",
+    "OL472542W",
+    "OL472549W",
+    "OL476846W",
+    "OL486967W",
+    "OL51948W",
+    "OL52266W",
+    "OL528094W",
+    "OL5738154W",
+    "OL69178W",
+    "OL72282W",
+    "OL72313W",
+    "OL74128W",
+    "OL7924103W",
+    "OL7924208W",
+    "OL796601W",
+    "OL7967812W",
+    "OL81606W",
+    "OL81634W",
+    "OL8369445W",
+    "OL8400950W",
+    "OL94858W",
+    "OL979517W",
+    "OL98174W",
+    "OL9973101W"
+  ],
+  "networkRequests": 42,
+  "queries": [
+    {
+      "subject": "mystery",
+      "url": "https://openlibrary.org/search.json?q=subject%3A%22mystery%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "597c55fe21439716f723ee53d322dc62f06b3ebd9059b195db0b94718c11803e",
+      "retrievedAt": "2026-09-27T09:06:41.030149+00:00",
+      "cacheFileSha256": "7e4a18cb1c3f8260fc56e3f4ed5b54f5c63a96d8ef4baf5adba248ceac1fe642"
+    },
+    {
+      "subject": "horror",
+      "url": "https://openlibrary.org/search.json?q=subject%3A%22horror%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "8093f5487036f0d9f9e33ba0574ac6a82ddde64c8b6ebaa31cbcb0e672cf96ee",
+      "retrievedAt": "2026-09-27T09:06:48.719268+00:00",
+      "cacheFileSha256": "518db1bae4e1e6f1a1d11835b7f357beadacf957f0a37bf7bb59b182158cb2df"
+    },
+    {
+      "subject": "science fiction",
+      "url": "https://openlibrary.org/search.json?q=subject%3A%22science+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "122d80637054d91ddce09bad3b76ffa4b43627d8fa5f6629e2b7cae8d2798a54",
+      "retrievedAt": "2026-09-27T09:06:56.950189+00:00",
+      "cacheFileSha256": "9bf40de5cdf716e9026ad42a3a97638ddb6e8418dc43e4d257acafe554535697"
+    },
+    {
+      "subject": "fantasy",
+      "url": "https://openlibrary.org/search.json?q=subject%3A%22fantasy%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "15d4f4e9887b822ac036cc2d34416999857afc2817c63adfc23949ede03fc130",
+      "retrievedAt": "2026-09-27T09:07:06.928662+00:00",
+      "cacheFileSha256": "5a89ad2fbfda5e12e4d9710221e89595c6aa4cd3f514bce174da466ed6145892"
+    },
+    {
+      "subject": "literary fiction",
+      "url": "https://openlibrary.org/search.json?q=subject%3A%22literary+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "d4186cc929815ee26c95c7e3f0e463895c4c1540a06e1269c57a9996a849b37e",
+      "retrievedAt": "2026-09-27T09:07:14.610554+00:00",
+      "cacheFileSha256": "cbad7ccba5a152ee2cd1181f78f425d70c883138a6873a2751a4c1669f297270"
+    },
+    {
+      "subject": "popular science",
+      "url": "https://openlibrary.org/search.json?q=subject%3A%22popular+science%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "sha256": "8d2946d398bd0af78e378735a8cec23a4a238a8bda1ddce545ed690aa9fce4f0",
+      "retrievedAt": "2026-09-27T09:07:23.985675+00:00",
+      "cacheFileSha256": "e7679f8afc5f832a5f119380dedb3ecdde275450169cbfd6964f51a666cd062b"
+    }
+  ],
+  "works": {
+    "OL34224558W": {
+      "status": "include",
+      "sourceContentHash": "9593ed4247d1a9c67815fcb70f74d5b12cd7aa59bf0a2fe640f9adebab1dd097",
+      "cacheFileSha256": "774f6cb544545a721bc1e63aee38ffadcb1dbf4681d67589787ae9d8a330497a",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22mystery%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2022,
+      "firstPublished": 2022,
+      "publicationEvidence": [
+        {
+          "name": "Freida McFadden",
+          "kind": "author",
+          "url": "https://www.freidamcfadden.com/books/standalone-thrillers/never-lie/",
+          "locator": "The Details, Published",
+          "summary": "Author book record gives September 19, 2022."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL16239762W": {
+      "status": "include",
+      "sourceContentHash": "2b2e93e7ce97a58023c78f13e0f8d9ce1162f45700b28d915442283d4e844af1",
+      "cacheFileSha256": "7859bc623a5cf3735ea7310e582e8e8b2c1b6ce6e11a88579b7047afa871d0de",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22mystery%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2011,
+      "firstPublished": 2012,
+      "publicationEvidence": [
+        {
+          "name": "Penguin Random House",
+          "kind": "publisher",
+          "url": "https://penguinrandomhouselibrary.com/book/?isbn=9780307588364",
+          "locator": "Hardcover on-sale metadata, ISBN 9780307588364",
+          "summary": "Original hardcover record gives June 5, 2012; search year 2011 is not used."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL28954802W": {
+      "status": "include",
+      "sourceContentHash": "9d350547e5ff36f6ae4db370c52f1090f7058f40f258c9df88c02587ecb770a1",
+      "cacheFileSha256": "d7b6bc054047ef2958877b4b790ddadc96ef3d043797a5e9d10c3b6bbb39acde",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22mystery%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2021,
+      "firstPublished": 2021,
+      "publicationEvidence": [
+        {
+          "name": "Freida McFadden",
+          "kind": "author",
+          "url": "https://www.freidamcfadden.com/books/standalone-thrillers/the-locked-door/",
+          "locator": "The Details, Published",
+          "summary": "Author book record gives June 1, 2021."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL31191485W": {
+      "status": "include",
+      "sourceContentHash": "d9f6a24b7a6e92a1222e59c680a53237c3ed3f5fa6f57d927d1452ddecd2cef4",
+      "cacheFileSha256": "b2fd78ba67f8117bd474b272dad3161517d81390897b085897b2aa396f3f1c76",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22mystery%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2022,
+      "firstPublished": 2022,
+      "publicationEvidence": [
+        {
+          "name": "Freida McFadden",
+          "kind": "author",
+          "url": "https://www.freidamcfadden.com/books/standalone-thrillers/the-inmate/",
+          "locator": "The Details, Published",
+          "summary": "Author book record gives June 13, 2022."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL28953746W": {
+      "status": "include",
+      "sourceContentHash": "24934f9e9a55453d6ed822e469b6764d412d90eb4e045f8292701d19fb8d2843",
+      "cacheFileSha256": "01c6694baf341b7fb50a7026cc20d437256a2817a58b4a9dcfc744f09c155c0d",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22mystery%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2016,
+      "firstPublished": 2016,
+      "publicationEvidence": [
+        {
+          "name": "Freida McFadden",
+          "kind": "author",
+          "url": "https://www.freidamcfadden.com/books/standalone-thrillers/brain-damage/",
+          "locator": "The Details, Published",
+          "summary": "Author book record gives April 30, 2016."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL27729743W": {
+      "status": "include",
+      "sourceContentHash": "b1e283b0be6e9fa0e733901074e8f48daf71fc5bbb8e8d02156f61df074bb125",
+      "cacheFileSha256": "20ca952f21649ded6c293d4895567edadcca971bb6e414079b356d0f73c4d154",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22mystery%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2022,
+      "firstPublished": 2022,
+      "publicationEvidence": [
+        {
+          "name": "Freida McFadden",
+          "kind": "author",
+          "url": "https://www.freidamcfadden.com/books/the-housemaid-series/the-housemaid/",
+          "locator": "The Details, Published",
+          "summary": "Author book record gives April 26, 2022."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL679358W": {
+      "status": "include",
+      "sourceContentHash": "3573ea452e46369ab04a461865d28986ba23b60bfc58428ca9d66284baff7743",
+      "cacheFileSha256": "035763bdd8d7f818ba5a89bb3677504db4ba1ead0263f954383e81723cfa45c2",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22horror%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2001,
+      "firstPublished": 2002,
+      "publicationEvidence": [
+        {
+          "name": "Neil Gaiman",
+          "kind": "author",
+          "url": "https://journal.neilgaiman.com/2002/05/couple-of-people-want-to-know-why.asp",
+          "locator": "May 14, 2002 journal entry",
+          "summary": "Contemporary author announcement distinguishes the first audio edition in June 2002 from the July 1 print release; both are 2002, not the search year 2001."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL81597W": {
+      "status": "include",
+      "sourceContentHash": "2336465cc70d31d20b32c45a4af29037f32228e3bd9069a6c13cbaaffc4b74c3",
+      "cacheFileSha256": "3bc9276e951b4b3db36e8d63356dec95f536a890fae5a57c795c84980e152997",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22horror%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2006,
+      "firstPublished": 2006,
+      "publicationEvidence": [
+        {
+          "name": "Stephen King",
+          "kind": "author",
+          "url": "https://stephenking.com/works/novel/cell.html",
+          "locator": "Released field",
+          "summary": "Author novel bibliography records January 24, 2006 and publisher Scribner."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL16820059W": {
+      "status": "exclude",
+      "sourceContentHash": "d9f836d89eb5c00933028d2b7f3054d04e91770406f676b3226e6d7b0e11e0f2",
+      "cacheFileSha256": "938141b032806b48c3236fd1d8b1a8afb6735c4f18987eb944716e8cf6c7b3dd",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22horror%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2013,
+      "reason": "Work credits duplicate Stephen King identities and Ingah Mikhaeli without distinguishing translator contributions; defer rather than rewrite source authors."
+    },
+    "OL16806877W": {
+      "status": "include",
+      "sourceContentHash": "bd88f2b7afd8c3bc6d39fe9f91b057c0c1693e273fb00ef269909ec3e57c62ed",
+      "cacheFileSha256": "b4662d27a4a4b6a34691def4b6a936bbeb7971b104e05886c49e06e98ee2d7e2",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22horror%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2013,
+      "firstPublished": 2013,
+      "publicationEvidence": [
+        {
+          "name": "Stephen King",
+          "kind": "author",
+          "url": "https://stephenking.com/works/novel/doctor-sleep.html",
+          "locator": "Released field",
+          "summary": "Author novel bibliography records September 24, 2013 and publisher Scribner."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL407498W": {
+      "status": "exclude",
+      "sourceContentHash": "645eeb96f1129ee00f87c856a319e1e6dde2ad0cf20be25312c23a78bf9adac6",
+      "cacheFileSha256": "a453d14a1e1e5b6a7f7687996ac6485026da0d8ba8e6d98e66fcbe1d32519ec5",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22horror%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2006,
+      "reason": "Modern anthology contains older Edith Nesbit stories. Excluded from this contemporary-original-content expansion rather than treating its 2006 collection date as new fiction."
+    },
+    "OL81586W": {
+      "status": "include",
+      "sourceContentHash": "6cbb977366468ea9d51a08ea2f13e21597ef4994080aac4f09de9587816fb4b6",
+      "cacheFileSha256": "39ba3a507ad1aa45aebb8906c24ee5844d627b91550b2feaddef81c93c860fde",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22horror%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2002,
+      "firstPublished": 2002,
+      "publicationEvidence": [
+        {
+          "name": "Stephen King",
+          "kind": "author",
+          "url": "https://stephenking.com/works/novel/from-a-buick-8.html",
+          "locator": "Released field",
+          "summary": "Author novel bibliography records September 24, 2002 and publisher Scribner."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated.",
+      "descriptionNote": "Source description is Spanish although the work has English editions. Retained as supplied, without translation."
+    },
+    "OL21745884W": {
+      "status": "include",
+      "sourceContentHash": "63235c9596beddc66336ecc624391570c9d7c09d8f950e2f028020dccffba4e3",
+      "cacheFileSha256": "1f588e83e58fa33ae189dd31a906ebcbe51abd3864c035f9f3589b0afe306491",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22science+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2021,
+      "firstPublished": 2021,
+      "publicationEvidence": [
+        {
+          "name": "Penguin Random House",
+          "kind": "publisher",
+          "url": "https://global.penguinrandomhouse.com/announcements/new-andy-weir-novel-project-hail-mary-to-be-published-in-may-2021/",
+          "locator": "Opening announcement paragraph, dated August 11, 2020",
+          "summary": "Contemporary announcement schedules the new novel for global English publication May 4, 2021, distinct from the announcement year."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL29914687W": {
+      "status": "include",
+      "sourceContentHash": "a20d13a08df95b57b4622420d83696e9e5580968943f1871123861de3865778c",
+      "cacheFileSha256": "19ac9b04c517d0f34f5e7bfae2c94cbf463e1f8d1da8f76a0b1c1409baf92b78",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22science+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2002,
+      "firstPublished": 2002,
+      "publicationEvidence": [
+        {
+          "name": "Richard K. Morgan",
+          "kind": "author",
+          "url": "https://www.richardkmorgan.com/2018/01/fragments-of-a-jet-lagged-dream/",
+          "locator": "Paragraph about publication and the film option",
+          "summary": "Author retrospectively places original publication and the film option in 2002; later US publisher metadata gives 2003 and is not used."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated.",
+      "descriptionNote": "Source work has no description; keep metadata-only."
+    },
+    "OL17837968W": {
+      "status": "include",
+      "sourceContentHash": "ed77d0fd7a73c5dbfe318380d976f50d455282e8fac4d05ede441f3730381a5a",
+      "cacheFileSha256": "9f43f904a8a1a897bc5d3668dea657f1589d1a196a95cd5c66d455457b2be946",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22science+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2017,
+      "firstPublished": 2017,
+      "publicationEvidence": [
+        {
+          "name": "Penguin Random House",
+          "kind": "publisher",
+          "url": "https://www.penguinrandomhouse.com/books/250305/artemis-by-andy-weir/9780553448139/",
+          "locator": "Hardcover and ebook format metadata",
+          "summary": "Hardcover and ebook records give November 14, 2017; the later 2018 paperback is not used."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL17716925W": {
+      "status": "include",
+      "sourceContentHash": "43c61b168759d54a9d41b76f3fbb14d130f1310f17ad6a46220f2ba0a63dbc71",
+      "cacheFileSha256": "028460edb978aa96ebc1d3605fb7b83f66d22c9a1c912245a2e1f9c904cd6704",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22science+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2014,
+      "firstPublished": 2014,
+      "publicationEvidence": [
+        {
+          "name": "Becky Chambers",
+          "kind": "author",
+          "url": "https://www.otherscribbles.com/thelongway",
+          "locator": "Publication history after the synopsis",
+          "summary": "Author explicitly separates 2012 Kickstarter funding, 2014 self-publication, and later traditional publisher acquisition."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL15358691W": {
+      "status": "include",
+      "sourceContentHash": "51ac51b1b80329db8aaeae244ab3312eb5e9f70766ce5168b17f03b659b0c679",
+      "cacheFileSha256": "aed19cdfb4ceb3bcb2ca066f174934ab5d26d9117d1249a755bda4f3ccd26b21",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22fantasy%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2010,
+      "firstPublished": 2010,
+      "publicationEvidence": [
+        {
+          "name": "Brandon Sanderson",
+          "kind": "author",
+          "url": "https://www.brandonsanderson.com/blogs/blog/the-way-of-kings-tour-details",
+          "locator": "Midnight release and August 31 launch signing entries",
+          "summary": "Contemporary author tour announcement schedules the novel launch at midnight August 30/31, 2010; this is not the separately published Way of Kings Prime draft."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL5731542W": {
+      "status": "include",
+      "sourceContentHash": "d7f09aef0dba6949d5c04155cd54b82389bfdbe85154c0b200e6af2f2687d5b5",
+      "cacheFileSha256": "1794a5687a1d11b24c4d0f09d653787d05e2078412f8dbe31e6bd74d0f824127",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22literary+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2006,
+      "firstPublished": 2006,
+      "publicationEvidence": [
+        {
+          "name": "Chimamanda Ngozi Adichie",
+          "kind": "author",
+          "url": "https://www.chimamanda.com/half-of-a-yellow-sun/",
+          "locator": "Opening publication-history paragraph",
+          "summary": "Author explicitly records publication in 2006 and distinguishes the 2007 Orange Prize."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL20760650W": {
+      "status": "include",
+      "sourceContentHash": "a1660f963f2f3dfdf2e694bcf9ee73b1d2c06f28c11057581c7aa08c5f780322",
+      "cacheFileSha256": "2ef90f417978620d5d0c96e5e9407ba186ffadf71f56c7f2c0815d38e885b284",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22literary+fiction%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2020,
+      "firstPublished": 2019,
+      "publicationEvidence": [
+        {
+          "name": "Audible",
+          "kind": "publisher",
+          "url": "https://www.audible.com/ep/best-of-the-year-audiobooks-2019-narrators-2",
+          "locator": "2019 collection introduction and Hilary Huber section",
+          "summary": "Original audio publisher includes this title in its 2019 retrospective, establishing an audio release before the 2020 print edition."
+        },
+        {
+          "name": "Audible",
+          "kind": "publisher",
+          "url": "https://www.audible.com/pd/A-Certain-Hunger-Audiobook/B07Y46F4YG",
+          "locator": "Author and audio-production copyright attribution",
+          "summary": "Audible Original record credits the author and Audible Originals in 2019. Reviewed year means earliest publication across formats; exact audio release day is not asserted."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated.",
+      "publicationScope": "Earliest publication includes original audio: 2019 audio precedes 2020 print."
+    },
+    "OL17762235W": {
+      "status": "exclude",
+      "sourceContentHash": "70e64a9a92bad38c602f08ad4f836bad131133ab910d9121d07bb216192d7c08",
+      "cacheFileSha256": "1b587295fcdbc25273e3fb608bf62fdbb1f88713f5f139a7a44cbbaee13f5fa4",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22popular+science%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2016,
+      "reason": "Work flattens author Siddhartha Mukherjee and narrator Dennis Boutsikaris into coauthors; existing source review excludes it pending contributor-role reconciliation."
+    },
+    "OL19552275W": {
+      "status": "include",
+      "sourceContentHash": "f5b7202b83b6de3a32bf5f0faa109a0dbde528baf6e9e792571b99d52f07a504",
+      "cacheFileSha256": "5b277cd80f66082f16b2989cec627ba2040995af8a66c2310aba1f46d8c22fe0",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22popular+science%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2014,
+      "firstPublished": 2018,
+      "publicationEvidence": [
+        {
+          "name": "Stephen Hawking Estate",
+          "kind": "author_estate",
+          "url": "https://www.hawking.org.uk/in-print/books/brief-answers-to-the-big-questions-9d0dc52f-6a77-43e2-8b18-ea17303f07d6?position=2",
+          "locator": "Date below book title",
+          "summary": "Estate bibliography records October 2018 for the final book; search year 2014 is contradicted."
+        },
+        {
+          "name": "Hachette UK",
+          "kind": "publisher",
+          "url": "https://www.hachette.co.uk/titles/stephen-hawking-2/brief-answers-to-the-big-questions/9781473696020/",
+          "locator": "Publication date",
+          "summary": "Publisher metadata corroborates October 16, 2018."
+        }
+      ],
+      "reason": "Same Open Library work and author identities; original publication is supported by the cited author or publisher evidence. Source description is retained verbatim if present; no mood or description is generated."
+    },
+    "OL17715915W": {
+      "status": "exclude",
+      "sourceContentHash": "bc9a43e685b624dae35687e566adc0a72cc26a5e364c9db2ac8b7c5c6436bd2c",
+      "cacheFileSha256": "8bf395e6d3e3cff6a8cacaaac1dec394ce39cf0a5ce544751ac3b0414a065624",
+      "searchUrl": "https://openlibrary.org/search.json?q=subject%3A%22popular+science%22+language%3Aeng+first_publish_year%3A%5B2000+TO+2025%5D&limit=6&fields=key%2Ctitle%2Cauthor_name%2Cauthor_key%2Cfirst_publish_year%2Ccover_i%2Csubject%2Clanguage",
+      "searchFirstPublished": 2016,
+      "reason": "Work flattens Adam Rutherford, Siddhartha Mukherjee and Elizabeth Garay into coauthors; existing source review excludes it pending contributor-role reconciliation."
+    }
+  }
+}

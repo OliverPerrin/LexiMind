@@ -1,0 +1,90 @@
+{
+  "url": "https://openlibrary.org/works/OL20760650W.json",
+  "retrievedAt": "2026-09-27T09:07:21.202940+00:00",
+  "sha256": "a1660f963f2f3dfdf2e694bcf9ee73b1d2c06f28c11057581c7aa08c5f780322",
+  "data": {
+    "title": "A Certain Hunger",
+    "subjects": [
+      "cannibalism",
+      "food criticism",
+      "media criticism",
+      "murder",
+      "psychopathy",
+      "Fiction, thrillers, general",
+      "Horror",
+      "Fiction",
+      "Thriller",
+      "Contemporary",
+      "Feminism",
+      "Literary Fiction",
+      "Horror Thriller",
+      "Dark"
+    ],
+    "key": "/works/OL20760650W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7906450A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "links": [
+      {
+        "title": "New York Times review",
+        "url": "https://www.nytimes.com/2020/12/01/books/review/a-certain-hunger-chelsea-g-summers.html",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "covers": [
+      11048597
+    ],
+    "subject_places": [
+      "Connecticut",
+      "Boston",
+      "Italy",
+      "Rome",
+      "New York"
+    ],
+    "description": {
+      "type": "/type/text",
+      "value": "Food critic Dorothy Daniels loves what she does. Discerning, meticulous, and very, very smart, Dorothy’s clear mastery of the culinary arts make it likely that she could, on any given night, whip up a more inspired dish than any one of the chefs she writes about. Dorothy loves sex as much as she loves food, and while she has struggled to find a long-term partner that can keep up with her, she makes the best of her single life, frequently traveling from Manhattan to Italy for a taste of both.\r\n\r\nBut there is something within Dorothy that’s different from everyone else, and having suppressed it long enough, she starts to embrace what makes Dorothy uniquely, terrifyingly herself. Recounting her life from a seemingly idyllic farm-to-table childhood, the heights of her career, to the moment she plunges an ice pick into a man's neck on Fire Island, Dorothy Daniels show us what happens when a woman finally embraces her superiority."
+    },
+    "subject_times": [
+      "the late 20th century-the early 21st century"
+    ],
+    "identifiers": {
+      "wikidata": [
+        "Q104877860"
+      ],
+      "librarything": [
+        "24784409"
+      ]
+    },
+    "subject_people": [
+      "Dorothy Daniels"
+    ],
+    "genres": [
+      "/tags/OL180T",
+      "/tags/OL171T",
+      "/tags/OL174T"
+    ],
+    "latest_revision": 9,
+    "revision": 9,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2020-05-17T15:50:29.338604"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-08T00:44:19.700990"
+    }
+  }
+}

@@ -29,7 +29,7 @@ Preferences stay in browser local storage; there are no accounts or cross-device
 sync. Recommendations use weighted TF-IDF, metadata overlap, and modest author
 and genre diversity. They are a content-based baseline, not a model-quality result.
 
-The catalogue contains 102 identified Open Library works with 96 sourced
+The catalogue contains 120 identified Open Library works with 113 sourced
 descriptions. There are no generated descriptions or inferred book-mood labels.
 Source records, hashes, and review decisions are retained by the
 [catalogue importer](data/catalog/README.md).

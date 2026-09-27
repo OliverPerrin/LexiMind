@@ -25,6 +25,7 @@ from src.catalog.openlibrary import (
     digest,
     make_book,
     validate_catalogue,
+    validate_publication_review,
     validate_review,
 )
 from src.catalog.storage import json_text, publish_catalogue
@@ -49,9 +50,99 @@ EXTRA_QUERIES = [
     ("essays", "subject:essays language:eng"),
 ]
 
+MODERN_SUBJECTS = [
+    "mystery",
+    "horror",
+    "science fiction",
+    "fantasy",
+    "literary fiction",
+    "popular science",
+]
+SEARCH_FIELDS = "key,title,author_name,author_key,first_publish_year,cover_i,subject,language"
+
+
+def _verify_cache_pin(client: OpenLibraryClient, response: dict, expected: dict) -> None:
+    cache = client.cache_dir / (hashlib.sha256(response["url"].encode()).hexdigest() + ".json")
+    if (
+        response["sha256"] != expected.get("sha256", expected.get("sourceContentHash"))
+        or hashlib.sha256(cache.read_bytes()).hexdigest() != expected["cacheFileSha256"]
+    ):
+        raise CatalogueIntegrityError(f"Modern source changed; review required: {response['url']}")
+
+
+def _add_modern_books(client: OpenLibraryClient, review: dict, modern: dict, books: dict) -> dict:
+    """Admit only explicitly reviewed works from six frozen search responses."""
+    validate_publication_review(modern)
+    query_pins = {query["url"]: query for query in modern["queries"]}
+    considered = set()
+    added, excluded = [], []
+    for subject in MODERN_SUBJECTS:
+        response = client.get(
+            "/search.json",
+            {
+                "q": f'subject:"{subject}" language:eng first_publish_year:[2000 TO 2025]',
+                "limit": 6,
+                "fields": SEARCH_FIELDS,
+            },
+        )
+        if response["url"] not in query_pins:
+            raise CatalogueIntegrityError("Modern search URL differs from the reviewed selection")
+        _verify_cache_pin(client, response, query_pins[response["url"]])
+        results = response["data"].get("docs")
+        if not isinstance(results, list) or len(results) > 6:
+            raise CatalogueIntegrityError("Modern search must contain at most six results")
+        for result in results:
+            key = result.get("key") if isinstance(result, dict) else None
+            if not isinstance(key, str) or not key.startswith("/works/"):
+                raise CatalogueIntegrityError("Modern search contains an invalid work identity")
+            if key in books or key in considered:
+                continue
+            work_id = key.rsplit("/", 1)[-1]
+            decision = modern["works"].get(work_id)
+            if not decision or decision["searchUrl"] != response["url"]:
+                raise CatalogueIntegrityError(f"Modern work needs a source-pinned review: {key}")
+            work = client.get(key + ".json")
+            _verify_cache_pin(client, work, decision)
+            book = make_book(result, work)
+            if result.get("first_publish_year") != decision.get("searchFirstPublished"):
+                raise CatalogueIntegrityError(f"Modern search year differs from review: {key}")
+            considered.add(key)
+            if decision["status"] == "exclude":
+                excluded.append(work_id)
+                continue
+            reviewed_book = apply_review(book, review)
+            if reviewed_book is None:
+                raise CatalogueIntegrityError(
+                    f"Modern inclusion conflicts with source review: {key}"
+                )
+            source = decision["publicationEvidence"][0]
+            reviewed_book["firstPublished"] = decision["firstPublished"]
+            reviewed_book["firstPublishedSource"] = {"name": source["name"], "url": source["url"]}
+            books[key] = reviewed_book
+            added.append(work_id)
+    if considered != {"/works/" + work_id for work_id in modern["works"]}:
+        raise CatalogueIntegrityError("Modern review contains unobserved or already-existing works")
+    missing = set(modern["preservedWorkIds"]) - {book["id"] for book in books.values()}
+    if missing:
+        raise CatalogueIntegrityError(
+            f"Modern expansion would remove existing IDs: {sorted(missing)}"
+        )
+    return {
+        "reviewSha256": digest(modern),
+        "addedWorkIds": sorted(added),
+        "excludedWorkIds": sorted(excluded),
+        "queries": modern["queries"],
+        "yearRange": modern["yearRange"],
+        "preservedCount": len(modern["preservedWorkIds"]),
+    }
+
 
 def build_catalogue(
-    client: OpenLibraryClient, review: dict, *, per_subject: int = 10
+    client: OpenLibraryClient,
+    review: dict,
+    *,
+    per_subject: int = 10,
+    modern_review: dict | None = None,
 ) -> tuple[list[dict], dict]:
     if not 1 <= per_subject <= 20:
         raise ValueError("per_subject must be 1..20")
@@ -60,11 +151,10 @@ def build_catalogue(
     queries = []
     rejected = []
     seen = set()
-    fields = "key,title,author_name,author_key,first_publish_year,cover_i,subject,language"
     selections = [(subject, f"subject:{subject} language:eng", per_subject) for subject in SUBJECTS]
     selections += [(label, query, 6) for label, query in EXTRA_QUERIES]
     for label, query, limit in selections:
-        response = client.get("/search.json", {"q": query, "limit": limit, "fields": fields})
+        response = client.get("/search.json", {"q": query, "limit": limit, "fields": SEARCH_FIELDS})
         results = response["data"].get("docs")
         if not isinstance(results, list):
             raise CatalogueIntegrityError(f"Search response has no result array: {response['url']}")
@@ -78,10 +168,10 @@ def build_catalogue(
             key = result["key"]
             if key in seen:
                 continue
-            seen.add(key)
             try:
                 work = client.get(key + ".json")
                 book = apply_review(make_book(result, work), review)
+                seen.add(key)
                 if book is None:
                     rejected.append(
                         {
@@ -96,6 +186,11 @@ def build_catalogue(
                 # review, and source-shape failures abort the entire build.
                 rejected.append({"work": key, "reason": str(error)})
         print(f"{label}: {len(books)} verified work records", flush=True)
+    modern_selection = (
+        _add_modern_books(client, review, modern_review, books)
+        if modern_review is not None
+        else None
+    )
     catalogue = sorted(books.values(), key=lambda book: book["id"])
     validate_catalogue(catalogue)
     manifest = {
@@ -116,12 +211,15 @@ def build_catalogue(
         "rejected": rejected,
         "provenance": {
             "title_description_subjects": "Open Library work record (search subjects only if work subjects absent)",
-            "authors_firstPublished": "Open Library search document for the same verified work and author IDs",
+            "authors": "Open Library search document for the same verified work and author IDs",
+            "firstPublished": "Open Library search year (nonpositive values become null); modern additions use explicitly reviewed primary publication evidence and firstPublishedSource",
             "genres": "Deterministic exact-subject mapping in src/catalog/openlibrary.py",
             "moods": "Empty: no validated editorial mood source",
             "isbns": "Empty: edition-level ISBNs are intentionally not flattened into a work identifier",
         },
     }
+    if modern_selection is not None:
+        manifest["modernSelection"] = modern_selection
     validate_catalogue(catalogue, manifest)
     return catalogue, manifest
 
@@ -135,6 +233,9 @@ def main() -> None:
     parser.add_argument("--manifest", type=Path)
     parser.add_argument("--receipt", type=Path)
     parser.add_argument("--review", type=Path, default=ROOT / "data/catalog/selection_review.json")
+    parser.add_argument(
+        "--modern-review", type=Path, default=ROOT / "data/catalog/modern_publication_review.json"
+    )
     args = parser.parse_args()
     if not 1 <= args.per_subject <= 20:
         parser.error(
@@ -142,7 +243,10 @@ def main() -> None:
         )
     client = OpenLibraryClient(args.cache_dir, offline=args.offline)
     review = json.loads(args.review.read_text(encoding="utf-8"))
-    catalogue, manifest = build_catalogue(client, review, per_subject=args.per_subject)
+    modern_review = json.loads(args.modern_review.read_text(encoding="utf-8"))
+    catalogue, manifest = build_catalogue(
+        client, review, per_subject=args.per_subject, modern_review=modern_review
+    )
     default_output = ROOT / "web/data/books.json"
     manifest_path = args.manifest or (
         ROOT / "data/catalog/manifest.json"

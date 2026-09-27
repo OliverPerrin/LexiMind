@@ -1,0 +1,159 @@
+{
+  "url": "https://openlibrary.org/works/OL81597W.json",
+  "retrievedAt": "2026-09-27T09:06:50.782074+00:00",
+  "sha256": "2336465cc70d31d20b32c45a4af29037f32228e3bd9069a6c13cbaaffc4b74c3",
+  "data": {
+    "description": "Cell is a 2006 apocalyptic horror novel by American author Stephen King. The story follows a New England artist struggling to reunite with his young son after a mysterious signal broadcast over the global cell phone network turns the majority of his fellow humans into mindless vicious animals.",
+    "links": [
+      {
+        "title": "Cell (novel) - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Cell_(novel)",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "Cell by Stephen King: Wipe my brain and fill it with Britney",
+        "url": "https://www.independent.co.uk/arts-entertainment/books/reviews/cell-by-stephen-king-345016.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "The Great Stephen King Reread: Cell",
+        "url": "https://www.tor.com/2017/07/27/the-great-stephen-king-reread-cell/",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "stephenking.com/works/novel/cell",
+        "url": "https://stephenking.com/works/novel/cell.html",
+        "type": {
+          "key": "/type/link"
+        }
+      },
+      {
+        "title": "New York Times review",
+        "url": "https://www.nytimes.com/2006/02/05/books/review/05itzkoff.html",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "title": "Cell",
+    "covers": [
+      14654054,
+      13696967
+    ],
+    "subject_places": [
+      "Boston",
+      "Maine",
+      "Kashwak",
+      "Boston Common",
+      "New England",
+      "New Hampshire",
+      "Harvard University",
+      "Canada",
+      "Malden",
+      "Gaiten Academy"
+    ],
+    "subjects": [
+      "computer worms",
+      "hive minds",
+      "zombies",
+      "horror fiction",
+      "cell phones",
+      "fiction",
+      "murderers",
+      "Psychological fiction",
+      "Cell phones in fiction",
+      "Asesinos",
+      "Novela psicológica",
+      "Cellular telephones in fiction",
+      "Murderers in fiction",
+      "Cellular telephones",
+      "Ficción",
+      "Teléfonos cellulares",
+      "Cuentos de terror",
+      "Horror tales",
+      "Fiction, horror",
+      "Fiction, psychological",
+      "Littérature américaine",
+      "Traductions françaises",
+      "Science-fiction américaine",
+      "Large type books",
+      "nyt:mass-market-monthly=2022-05-08",
+      "New York Times bestseller",
+      "New York Times reviewed",
+      "Hücresel telefon",
+      "Roman",
+      "Seri katiller",
+      "Meurtriers",
+      "Romans, nouvelles",
+      "American literature",
+      "Science fiction, fantasy, horror",
+      "King, Stephen - Prose & Criticism",
+      "Fiction - Horror",
+      "Horror",
+      "Horror - General",
+      "Fiction / General",
+      "Fictional Works"
+    ],
+    "subject_people": [
+      "Clayton Riddell",
+      "Tom McCourt",
+      "Alice Maxwell",
+      "Raggedy Man",
+      "Jordan",
+      "Charles Ardai",
+      "Dan Hartwick",
+      "Denise Link",
+      "Ray Huizenga",
+      "Pixie Ligh",
+      "Pixie Dark",
+      "Gunner",
+      "Harold"
+    ],
+    "key": "/works/OL81597W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL19981A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "excerpts": [
+      {
+        "excerpt": "The event that came to be known as The Pulse began at 3:03 P.M., eastern standard time, on the afternoon of October 1.",
+        "comment": "first sentence",
+        "author": {
+          "key": "/people/seabelis"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "first_publish_date": "2006",
+    "cover_edition": {
+      "key": "/books/OL8875505M"
+    },
+    "genres": [
+      "/tags/OL171T"
+    ],
+    "latest_revision": 57,
+    "revision": 57,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2009-10-17T04:57:55.334864"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T10:17:47.921318"
+    }
+  }
+}

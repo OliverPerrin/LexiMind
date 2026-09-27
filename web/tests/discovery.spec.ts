@@ -254,3 +254,19 @@ test("another tab's storage clear updates the active shelf", async ({
   ).toBeVisible();
   await other.close();
 });
+
+test("modern additions retain reviewed original-publication evidence on page and dialog", async ({ page }) => {
+  await page.goto("/books/OL16239762W");
+  await expect(page.getByRole("heading", { name: "Gone Girl", exact: true })).toBeVisible();
+  await expect(page.getByText("First published 2012", { exact: false })).toBeVisible();
+  const sourceName = "Publication history: Penguin Random House";
+  const sourceUrl = "https://penguinrandomhouselibrary.com/book/?isbn=9780307588364";
+  await expect(page.getByRole("link", { name: sourceName })).toHaveAttribute("href", sourceUrl);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.goto("/");
+  const search = page.getByRole("searchbox");
+  await search.fill("Gone Girl");
+  await search.press("Enter");
+  await page.getByRole("button", { name: "View Gone Girl", exact: true }).click();
+  await expect(page.getByRole("dialog").getByRole("link", { name: sourceName })).toHaveAttribute("href", sourceUrl);
+});

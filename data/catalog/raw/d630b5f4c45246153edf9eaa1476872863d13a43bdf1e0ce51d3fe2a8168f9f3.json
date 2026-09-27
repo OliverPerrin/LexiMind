@@ -1,0 +1,105 @@
+{
+  "url": "https://openlibrary.org/works/OL29914687W.json",
+  "retrievedAt": "2026-09-27T09:07:02.559267+00:00",
+  "sha256": "a20d13a08df95b57b4622420d83696e9e5580968943f1871123861de3865778c",
+  "data": {
+    "title": "Altered Carbon",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL2692915A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL29914687W",
+    "type": {
+      "key": "/type/work"
+    },
+    "covers": [
+      13223488,
+      994691,
+      9772370,
+      10191601,
+      11997573,
+      13919216,
+      13803226,
+      380139,
+      380085,
+      8506719,
+      11496570,
+      8587794,
+      12838088,
+      1726871,
+      10533860
+    ],
+    "subjects": [
+      "Science Fiction",
+      "Cyberpunk",
+      "Thriller",
+      "Life on other planets",
+      "Fiction",
+      "Fiction, science fiction, hard science fiction",
+      "Fiction, science fiction, general",
+      "Long Now Manual for Civilization",
+      "Science Fiction And Fantasy",
+      "Fiction - Science Fiction",
+      "Science Fiction - High Tech",
+      "Fiction / Science Fiction / High Tech",
+      "Conspiracy",
+      "Murder",
+      "Private investigators",
+      "Soldiers of fortune",
+      "Rich people",
+      "Investigation",
+      "Interstellar travel",
+      "Nanotechnology",
+      "Genetic engineering",
+      "Immortalism",
+      "General",
+      "Dystopias",
+      "Hard Science Fiction",
+      "Action & Adventure",
+      "Media Tie-In",
+      "Fiction, science fiction, steampunk"
+    ],
+    "identifiers": {
+      "wikidata": [
+        "Q1170644"
+      ]
+    },
+    "links": [
+      {
+        "title": "Official Website",
+        "url": "https://www.richardkmorgan.com/writing/altered-carbon",
+        "type": {
+          "key": "/type/link"
+        }
+      }
+    ],
+    "series": [
+      {
+        "series": {
+          "key": "/series/OL337009L"
+        },
+        "position": "1"
+      }
+    ],
+    "genres": [
+      "/tags/OL179T",
+      "/tags/OL180T"
+    ],
+    "latest_revision": 6,
+    "revision": 6,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2022-11-23T13:59:54.159294"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-09-01T12:33:46.133151"
+    }
+  }
+}

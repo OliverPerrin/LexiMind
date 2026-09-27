@@ -269,6 +269,18 @@ def inspect_preparation(
                     != hashlib.sha256(files["repository_metadata"].read_bytes()).hexdigest()
                 ):
                     errors.append("Backbone review does not bind the supplied repository metadata")
+                bgc = _object(read_json(files["bgc_candidate"]), "BGC source audit")
+                if (
+                    bgc.get("preparation_script_sha256")
+                    != hashlib.sha256(files["bgc_builder"].read_bytes()).hexdigest()
+                ):
+                    errors.append("BGC audit used a different source parser")
+                expected_helpers = {
+                    ARTIFACTS[key][1]: hashlib.sha256(files[key].read_bytes()).hexdigest()
+                    for key in ("candidate_io", "file_integrity_contract")
+                }
+                if bgc.get("preparation_helper_sha256") != expected_helpers:
+                    errors.append("BGC audit does not bind current preparation helpers")
                 validate_ledger(read_json(files["compute_ledger_template"]))
                 blockers.extend(validate_model_admission(root, plan))
             else:

@@ -152,6 +152,19 @@ export function BookDialog({
             </Link>
             <p>
               Book details from {book.source.name}.
+              {book.firstPublishedSource && (
+                <>
+                  {" "}
+                  <a
+                    href={book.firstPublishedSource.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Publication history: {book.firstPublishedSource.name}
+                  </a>
+                  .
+                </>
+              )}
               {book.descriptionSource &&
               book.descriptionSource !== book.source.url &&
               /^https:\/\//.test(book.descriptionSource) ? (

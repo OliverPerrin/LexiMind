@@ -5,7 +5,7 @@
 records, and content hash. `raw/` preserves the exact Open Library API response
 data, request URL, retrieval timestamp, and SHA-256 digest for each source.
 `web/data/catalog-manifest.json` is the deployment receipt: it hashes the exact
-catalogue bytes and the full source manifest. The website verifies
+catalogue bytes and the full source manifest. Website and Gradio loaders verify
 the receipt before using the catalogue.
 
 Rebuild without network access or model execution:
@@ -15,9 +15,15 @@ python3 scripts/build_book_catalog.py --offline
 python3 -m pytest tests/test_catalog -q
 ```
 
-The catalogue uses bounded subject searches and contains 102 works, 96 source
+The catalogue uses bounded subject searches and contains 120 works, 96 source
 descriptions, and 16 mapped genres. It is a small discovery selection, not a
 balanced research dataset or a comprehensive catalogue.
+
+The [modern review](modern_publication_review.json) pins six bounded 2000–2025
+searches, work-response hashes, 18 inclusions and four exclusions. Every original
+102-work ID remains present. Missing descriptions remain empty; one new Spanish
+source description is preserved without translation. This is catalogue expansion,
+not permission to train on modern copyrighted full text.
 
 Queries require an English edition, but a work's original title or description
 may be in another language. Source text is retained without generated translations.
@@ -42,8 +48,10 @@ the original subjects remain available. Mood labels are empty because no
 validated editorial mood source is available. The old social-media emotion
 model is not treated as a literary atmosphere classifier.
 
-Work IDs identify works, not editions. `firstPublished` comes from the matching
-search record. Covers represent an available edition, not necessarily the first
+Work IDs identify works, not editions. Existing `firstPublished` values come from
+the matching search record; nonpositive years are withheld. The 18 modern additions
+have separate source-linked original-publication reviews and `firstPublishedSource`
+attribution. Edition/reprint dates are not used as proof that a work is modern. Covers represent an available edition, not necessarily the first
 edition. ISBNs remain empty until edition records can be represented separately.
 
 The importer caches all responses, identifies itself, limits calls to no more

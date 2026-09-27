@@ -1,0 +1,73 @@
+{
+  "url": "https://openlibrary.org/works/OL17716925W.json",
+  "retrievedAt": "2026-09-27T09:07:05.179612+00:00",
+  "sha256": "43c61b168759d54a9d41b76f3fbb14d130f1310f17ad6a46220f2ba0a63dbc71",
+  "data": {
+    "description": "When Rosemary Harper joins the crew of the Wayfarer, she isn't expecting much. The Wayfarer, a patched-up ship that's seen better days, offers her everything she could possibly want: a small, quiet spot to call home for a while, adventure in far-off corners of the galaxy, and distance from her troubled past.\r\nBut Rosemary gets more than she bargained for with the Wayfarer. The crew is a mishmash of species and personalities, from Sissix, the friendly reptilian pilot, to Kizzy and Jenks, the constantly sparring engineers who keep the ship running. Life on board is chaotic, but more or less peaceful - exactly what Rosemary wants.\r\nUntil the crew are offered the job of a lifetime: the chance to build a hyperspace tunnel to a distant planet.",
+    "title": "The Long Way to a Small, Angry Planet",
+    "covers": [
+      8902659,
+      8576997,
+      8763635,
+      10327551,
+      10445918,
+      12214501,
+      9363549
+    ],
+    "subjects": [
+      "Fiction",
+      "Science fiction",
+      "Extraterrestrial beings",
+      "Interplanetary voyages",
+      "Fiction, science fiction, general",
+      "LGBTQ science fiction & fantasy",
+      "Space warfare",
+      "Action & Adventure",
+      "Romance",
+      "LGBT",
+      "Space Opera"
+    ],
+    "subject_people": [
+      "Rosemary Harper",
+      "Ashby Santoso",
+      "Lovey",
+      "Kizzy Shao",
+      "Jenks",
+      "Sissix Seshkethet",
+      "Dr Chef",
+      "Ohan",
+      "Pepper"
+    ],
+    "key": "/works/OL17716925W",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL7387940A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "type": {
+      "key": "/type/work"
+    },
+    "subject_times": [
+      "future"
+    ],
+    "genres": [
+      "/tags/OL179T",
+      "/tags/OL177T"
+    ],
+    "latest_revision": 21,
+    "revision": 21,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2017-05-27T04:11:33.373172"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T07:19:02.460861"
+    }
+  }
+}

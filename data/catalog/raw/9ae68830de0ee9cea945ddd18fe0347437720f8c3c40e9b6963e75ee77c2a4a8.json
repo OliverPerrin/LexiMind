@@ -1,0 +1,56 @@
+{
+  "url": "https://openlibrary.org/works/OL28953746W.json",
+  "retrievedAt": "2026-09-27T09:06:46.267566+00:00",
+  "sha256": "24934f9e9a55453d6ed822e469b6764d412d90eb4e045f8292701d19fb8d2843",
+  "data": {
+    "type": {
+      "key": "/type/work"
+    },
+    "title": "Brain Damage",
+    "authors": [
+      {
+        "author": {
+          "key": "/authors/OL8384995A"
+        },
+        "type": {
+          "key": "/type/author_role"
+        }
+      }
+    ],
+    "key": "/works/OL28953746W",
+    "subjects": [
+      "American literature",
+      "Thriller",
+      "Mystery",
+      "Fiction",
+      "Mystery Thriller",
+      "Psychological Thriller",
+      "Suspense",
+      "Crime"
+    ],
+    "identifiers": {
+      "librarything": [
+        "19892746"
+      ]
+    },
+    "description": "After years of hard work, Dr. Charly McKenna finally has it all. Prosperous career as a dermatologist? Check. Spacious apartment overlooking Central Park? Check. Handsome lawyer husband? Double check.\r\n\r\nThen one night, a bullet rips through the right side of her skull and she loses everything.\r\n\r\nAs Charly struggles to recover from her brain injury, she begins to realize that the events of that fateful night are trapped in the damaged right side of her brain. Now she must put the jigsaw pieces together to discover the identity of the man who tried to kill her... before he finishes the job he started.",
+    "subject_people": [
+      "Charly McKenna"
+    ],
+    "genres": [
+      "/tags/OL180T",
+      "/tags/OL175T",
+      "/tags/OL166T"
+    ],
+    "latest_revision": 7,
+    "revision": 7,
+    "created": {
+      "type": "/type/datetime",
+      "value": "2022-10-04T11:03:23.968099"
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2026-08-30T08:27:05.199754"
+    }
+  }
+}

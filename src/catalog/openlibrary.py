@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, TypeGuard, cast
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 
 from .identity import matched_work_id
@@ -77,6 +77,24 @@ def _strings(value: Any, *, nonempty: bool = False) -> TypeGuard[list[str]]:
         and (bool(value) or not nonempty)
         and all(isinstance(item, str) and bool(item.strip()) for item in value)
     )
+
+
+def valid_https_source(value: Any) -> bool:
+    if not isinstance(value, str) or re.search(r"[\s\\]", value):
+        return False
+    try:
+        parsed = urlsplit(value)
+        # Accessing port validates malformed and out-of-range values.
+        _ = parsed.port
+        return (
+            parsed.scheme == "https"
+            and bool(parsed.hostname)
+            and "%" not in (parsed.hostname or "")
+            and parsed.username is None
+            and parsed.password is None
+        )
+    except ValueError:
+        return False
 
 
 def validate_response(envelope: Any, expected_url: str) -> None:
@@ -221,7 +239,7 @@ def make_book(search: dict[str, Any], work_response: dict[str, Any]) -> dict[str
         "genres": genres_from_subjects(subjects),
         "subjects": subjects,
         "moods": [],
-        "firstPublished": year if type(year) is int else None,
+        "firstPublished": year if type(year) is int and year > 0 else None,
         "source": {
             "name": "Open Library",
             "url": API_BASE + key,
@@ -275,6 +293,79 @@ def validate_review(review: Any) -> None:
                 raise CatalogueIntegrityError(f"Invalid review decision for {work_id}")
 
 
+def validate_publication_review(review: Any) -> None:
+    """Validate a bounded modern selection receipt, not the truth of its evidence."""
+    if (
+        not isinstance(review, dict)
+        or type(review.get("schemaVersion")) is not int
+        or review["schemaVersion"] != 1
+        or review.get("yearRange") != [2000, 2025]
+        or not _valid_timestamp(review.get("reviewedAt"))
+    ):
+        raise CatalogueIntegrityError("Invalid modern publication review")
+    preserved = review.get("preservedWorkIds")
+    if (
+        not _strings(preserved, nonempty=True)
+        or len(set(preserved)) != len(preserved)
+        or any(not re.fullmatch(r"OL\d+W", work_id) for work_id in preserved)
+    ):
+        raise CatalogueIntegrityError("Modern review requires unique preserved work IDs")
+    if not _sha256(review.get("baselineCatalogueFileSha256")):
+        raise CatalogueIntegrityError("Modern review requires the baseline catalogue hash")
+    queries = review.get("queries")
+    if not isinstance(queries, list) or len(queries) != 6:
+        raise CatalogueIntegrityError("Modern review requires six bounded search sources")
+    for query in queries:
+        if (
+            not isinstance(query, dict)
+            or not isinstance(query.get("url"), str)
+            or not query["url"].startswith(API_BASE + "/search.json?")
+            or not _sha256(query.get("sha256"))
+            or not _sha256(query.get("cacheFileSha256"))
+        ):
+            raise CatalogueIntegrityError("Invalid modern search source pin")
+    if len({query["url"] for query in queries}) != 6:
+        raise CatalogueIntegrityError("Duplicate modern search source")
+    decisions = review.get("works")
+    if not isinstance(decisions, dict) or not decisions:
+        raise CatalogueIntegrityError("Modern review requires explicit work decisions")
+    for work_id, decision in decisions.items():
+        if (
+            not isinstance(work_id, str)
+            or not re.fullmatch(r"OL\d+W", work_id)
+            or not isinstance(decision, dict)
+            or decision.get("status") not in ("include", "exclude")
+            or not _sha256(decision.get("sourceContentHash"))
+            or not _sha256(decision.get("cacheFileSha256"))
+            or decision.get("searchUrl") not in {query["url"] for query in queries}
+            or not isinstance(decision.get("reason"), str)
+            or not decision["reason"].strip()
+        ):
+            raise CatalogueIntegrityError(f"Invalid modern work decision: {work_id}")
+        if decision["status"] == "exclude":
+            continue
+        year = decision.get("firstPublished")
+        evidence = decision.get("publicationEvidence")
+        if type(year) is not int or not 2000 <= year <= 2025:
+            raise CatalogueIntegrityError(f"Modern original-publication year required: {work_id}")
+        if not isinstance(evidence, list) or not evidence:
+            raise CatalogueIntegrityError(f"Original-publication evidence required: {work_id}")
+        for source in evidence:
+            if (
+                not isinstance(source, dict)
+                or source.get("kind") not in ("author", "publisher", "author_estate")
+                or not isinstance(source.get("name"), str)
+                or not source["name"].strip()
+                or not valid_https_source(source.get("url"))
+                or not _strings([source.get("locator"), source.get("summary")], nonempty=True)
+            ):
+                raise CatalogueIntegrityError(f"Invalid publication evidence: {work_id}")
+
+
+def _sha256(value: Any) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value) is not None
+
+
 def validate_book(book: Any) -> None:
     if (
         not isinstance(book, dict)
@@ -310,8 +401,19 @@ def validate_book(book: Any) -> None:
     expected_description_source = source["url"] if book["description"] else None
     if book.get("descriptionSource") != expected_description_source:
         raise SourceRecordError("Descriptions require matching source attribution")
-    if book.get("firstPublished") is not None and type(book["firstPublished"]) is not int:
-        raise SourceRecordError("First publication year must be an integer or null")
+    if book.get("firstPublished") is not None and (
+        type(book["firstPublished"]) is not int or book["firstPublished"] <= 0
+    ):
+        raise SourceRecordError("First publication year must be a positive integer or null")
+    publication_source = book.get("firstPublishedSource")
+    if "firstPublishedSource" in book and (
+        book.get("firstPublished") is None
+        or not isinstance(publication_source, dict)
+        or not isinstance(publication_source.get("name"), str)
+        or not publication_source["name"].strip()
+        or not valid_https_source(publication_source.get("url"))
+    ):
+        raise SourceRecordError("Reviewed publication year requires a named HTTPS source")
     cover = book.get("coverUrl")
     if cover is not None and (
         not isinstance(cover, str)

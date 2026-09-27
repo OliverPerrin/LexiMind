@@ -58,6 +58,15 @@ def test_missing_description_is_missing_not_generated():
     assert book["descriptionSource"] is None
 
 
+@pytest.mark.parametrize("year", [0, -1, True, 2001.0, "2001", None])
+def test_invalid_search_year_is_missing_without_using_work_reprint_date(year):
+    search, response = fixture_records()
+    search["first_publish_year"] = year
+    response["data"]["first_publish_date"] = "2006"
+    response["sha256"] = digest(response["data"])
+    assert make_book(search, response)["firstPublished"] is None
+
+
 def test_identity_disagreement_is_rejected():
     search, response = fixture_records()
     with pytest.raises(ValueError, match="identity mismatch|metadata"):

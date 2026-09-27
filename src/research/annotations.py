@@ -14,6 +14,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+from src.catalog.openlibrary import valid_https_source
+
 from .io import parse_json
 from .io import read_json as read_json
 
@@ -137,6 +139,18 @@ def build_annotation_packet(
         urls = {_url(source.get("url"))}
         if record.get("descriptionSource") is not None:
             urls.add(_url(record["descriptionSource"]))
+        if "firstPublishedSource" in record:
+            publication = record["firstPublishedSource"]
+            if (
+                not isinstance(publication, dict)
+                or type(record.get("firstPublished")) is not int
+                or record["firstPublished"] < 1
+                or not isinstance(publication.get("name"), str)
+                or not publication["name"].strip()
+                or not valid_https_source(publication.get("url"))
+            ):
+                raise ValueError("Reviewed publication year requires a named HTTPS source")
+            urls.add(publication["url"])
         revision = record.get("sourceRevision")
         if type(revision) is not int or revision < 1:
             raise ValueError("Source revision must be a positive integer")

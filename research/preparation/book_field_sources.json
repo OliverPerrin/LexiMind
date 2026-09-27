@@ -12,7 +12,7 @@
       "unit": "publisher blurb with hierarchical multi-label categories",
       "reported_samples": 91892,
       "reported_labels": 146,
-      "count_basis": "provider and paper; archive not acquired",
+      "count_basis": "Provider/paper report retained; acquired archive audited separately below",
       "terms": "CC BY-NC 4.0; publisher retains blurb rights",
       "role": "first genre research candidate",
       "limit": "audit editions/work groups; map publisher categories into separate field facets; no automatic commercial-use clearance",
@@ -24,7 +24,11 @@
         "bytes_declared": 48690771,
         "last_modified": "Mon, 17 Dec 2018 14:33:13 GMT",
         "body_downloaded": false
-      }
+      },
+      "local_audit": "research/preparation/bgc_candidate_manifest.json",
+      "observed_records": 91894,
+      "observed_distinct_isbns": 91892,
+      "audit_note": "Two repeated ISBN/provider identities cross splits with differing labels. Dates describe editions, not original work age. Group works before model splits."
     },
     {
       "id": "catalogue_subjects",
@@ -247,6 +251,66 @@
         "https://arxiv.org/html/2512.21076v1"
       ],
       "reason": "Inspected papers describe Goodreads/Gemini-derived processing; no reusable released corpus verified."
+    }
+  ],
+  "modern_book_sources": [
+    {
+      "id": "openlibrary_catalogue",
+      "role": "modern website catalogue and source links",
+      "urls": [
+        "https://openlibrary.org/developers/api",
+        "https://openlibrary.org/developers/dumps",
+        "https://openlibrary.org/developers/licensing"
+      ],
+      "decision": "Use bounded identified work searches; metadata dumps for later scale. Public metadata/borrowing links do not supply blanket full-text training rights. Original-publication evidence is separate from edition dates."
+    },
+    {
+      "id": "oapen_fulltext",
+      "role": "modern scholarly nonfiction text, title-level selection",
+      "urls": [
+        "https://www.oapen.org/article/metadata",
+        "https://www.oapen.org/oapen/posi-self-audit",
+        "https://www.doabooks.org/en/publishers/join-doab"
+      ],
+      "decision": "DOAB discovery metadata is not the full-text license. OAPEN hosts texts; inspect publisher-assigned license and third-party exceptions per title. Strong nonfiction coverage, not a general modern-fiction corpus."
+    },
+    {
+      "id": "author_fiction",
+      "role": "small explicitly licensed modern full-length fiction collection",
+      "urls": [
+        "https://greencomet.org/welcome/",
+        "https://craphound.com/littlebrother/download/",
+        "https://unglue.it/faq/"
+      ],
+      "decision": "Green Comet trilogy declares CC BY-SA; Little Brother declares CC BY-NC-SA with cover art excluded. Verify exact edition/file/license and obligations before training. Unglue.it is discovery, not a uniform license; collection is author/genre biased."
+    },
+    {
+      "id": "book_dash",
+      "role": "modern short children’s narratives",
+      "urls": [
+        "https://bookdash.org/re-using-the-book-dash-content/",
+        "https://bookdash.github.io/bookdash-books/"
+      ],
+      "decision": "Provider declares CC BY4.0 with text/EPUB/source files. Picture-book and translation units differ from adult novels; illustrations may be necessary context. No text acquired in this pass."
+    },
+    {
+      "id": "google_books",
+      "role": "optional terms-compliant live lookup/preview, not a default permanent importer",
+      "urls": [
+        "https://developers.google.com/books/docs/v1/reference/volumes",
+        "https://developers.google.com/books/terms",
+        "https://developers.google.com/terms"
+      ],
+      "decision": "Check API content/caching and app-use terms. Preview/free-ebook availability is not a training license; do not assume permanent description/full-text corpus rights."
+    },
+    {
+      "id": "openstax",
+      "role": "permission-required training candidate, not automatic clearance",
+      "urls": [
+        "https://help.openstax.org/s/article/Licensing-information-of-OpenStax-textbooks",
+        "https://openstax.org/books/introduction-computer-science/pages/preface"
+      ],
+      "decision": "Current provider guidance lists CC BY-NC-SA4.0; the cited edition explicitly requires written permission for LLM/generative-AI training or ingestion. Check exact editions instead of relying on historical CC BY assumptions."
     }
   ]
 }
