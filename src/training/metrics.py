@@ -18,6 +18,65 @@ import torch
 from nltk.translate.bleu_score import SmoothingFunction, sentence_bleu
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support
 
+from ..models.losses import observed_label_mask
+
+
+class ObservedMultilabelMetrics:
+    """Mergeable observed-only counts; missing labels are never negatives.
+
+    These scores describe the observed subset, not complete-label quality.
+    Macro F1 includes classes with at least one observed target; classes with
+    only true negatives receive zero F1. Empty observations yield zero scores
+    and zero coverage, so the count must accompany any quality interpretation.
+    """
+
+    def __init__(self, predictions: torch.Tensor, labels: torch.Tensor, label_mask=None):
+        mask = observed_label_mask(predictions, labels, label_mask)
+        if predictions.dtype != torch.bool:
+            raise ValueError("Multi-label metric predictions must be bool")
+        gold = labels == 1
+        self.tp = (predictions & gold & mask).sum(dim=0).cpu()
+        self.fp = (predictions & ~gold & mask).sum(dim=0).cpu()
+        self.fn = (~predictions & gold & mask).sum(dim=0).cpu()
+        self.observed = mask.sum(dim=0).cpu()
+        self.positive = (gold & mask).sum().item()
+        self.total = labels.numel()
+
+    def merge(self, other: ObservedMultilabelMetrics) -> None:
+        if self.tp.shape != other.tp.shape:
+            raise ValueError("Cannot merge metrics with different label dimensions")
+        self.tp += other.tp
+        self.fp += other.fp
+        self.fn += other.fn
+        self.observed += other.observed
+        self.positive += other.positive
+        self.total += other.total
+
+    def compute(self) -> Dict[str, float]:
+        tp, fp, fn = (float(value.sum()) for value in (self.tp, self.fp, self.fn))
+        observed = float(self.observed.sum())
+        per_class_f1 = 2 * self.tp / (2 * self.tp + self.fp + self.fn).clamp(min=1)
+        classes = self.observed > 0
+        return {
+            "observed_micro_precision": tp / max(tp + fp, 1),
+            "observed_micro_recall": tp / max(tp + fn, 1),
+            "observed_micro_f1": 2 * tp / max(2 * tp + fp + fn, 1),
+            "observed_macro_f1": float(per_class_f1[classes].mean()) if classes.any() else 0.0,
+            "label_coverage": observed / max(self.total, 1),
+            "observed_label_count": observed,
+            "observed_positive_count": float(self.positive),
+            "observed_negative_count": observed - self.positive,
+            "total_label_count": float(self.total),
+        }
+
+
+class MultilabelBatchMetrics(dict[str, float]):
+    """Public batch metrics with sufficient counts for exact epoch aggregation."""
+
+    def __init__(self, counts: ObservedMultilabelMetrics):
+        super().__init__(counts.compute())
+        self.counts = counts
+
 
 def accuracy(predictions: Sequence[int | str], targets: Sequence[int | str]) -> float:
     return cast(float, accuracy_score(targets, predictions))

@@ -46,6 +46,10 @@ def main(cfg: DictConfig) -> None:
     active_steps = profile_steps - warmup_steps
 
     data_cfg = cfg.data
+    if data_cfg.get("topic_problem_type", "single_label") != "single_label":
+        raise ValueError(
+            "The legacy profiler does not support partial book labels; no profile was started"
+        )
     trainer_cfg = cfg.training.get("trainer", {})
     enabled_tasks = list(trainer_cfg.get("tasks", ["summarization", "emotion", "topic"]))
     validate_task_directories(data_cfg.processed, enabled_tasks)

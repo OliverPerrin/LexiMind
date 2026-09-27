@@ -1,0 +1,1306 @@
+{
+  "bindings": {
+    "archive": {
+      "bytes": 48690771,
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+      "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+    },
+    "field_manifest": {
+      "bytes": 6425,
+      "path": "research/preparation/book_field_manifest.json",
+      "sha256": "a6222ae9215dc3e545c02e5e670fb9e56b6cb5995d971b017c78819c1b5e7f34"
+    },
+    "field_references": {
+      "bytes": 14336341,
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/fields-b2e001706648-df8484993cf9/field_references.jsonl.gz",
+      "sha256": "8f841f9707a6c65f296319855bfbce5b29b43700ed63555b4ee4232ca8b0a43a"
+    },
+    "mapping": {
+      "bytes": 39092,
+      "path": "research/preparation/book_field_mapping.json",
+      "sha256": "b2e001706648bfce0f55c2e285d25e8870531b364af711da2d984f87e6945ca7"
+    }
+  },
+  "contract": {
+    "admission": "No review status authorizes training; source-positive conflicts require separate adjudication.",
+    "agent_reviews": "Assistant-authored candidates, not independent human annotation or gold.",
+    "default_state": "unknown",
+    "evidence": "Unicode character offsets plus SHA-256; resolve passages from the pinned source ZIP.",
+    "human_reviews": "Null until a person reviews source evidence; never inherit agent decisions.",
+    "source_omissions": "unknown",
+    "text_scope": "Literal source title and description only; metadata stays outside classifier input."
+  },
+  "human_gold": false,
+  "records": [
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 45,
+                "input_field": "description",
+                "sha256": "b1b0499dc0cc7d54c165ef2bdd2769d080d1c95613bf1bb4dd43a2a60be2bcd3",
+                "start": 0
+              }
+            ],
+            "field": "form",
+            "label": "graphic_narrative",
+            "rationale": "The description identifies the creators and work as comics; this supports the graphic form independently of its source category.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "56240678cc9f0f41aaf0884ef067f1793696cb218c80568432765942a9e8a816",
+      "record_id": "bgc:train:2",
+      "selection": [
+        "source_label:Graphic Novels & Manga"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/539586/creatures-of-the-night-second-edition-by-written-and-created-by-neil-gaiman-illustrated-by-michael-zulli/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 676,
+                "input_field": "description",
+                "sha256": "320bc2216f074971fd5ee9bcae41ce2029703d844e6c902e470a5fcefbb2533b",
+                "start": 651
+              }
+            ],
+            "field": "form",
+            "label": "fiction",
+            "rationale": "The description explicitly calls this work a novel.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 24,
+                "input_field": "description",
+                "sha256": "bae2128115c95dc1bba381615ccfa9f996141bf66fcb22d0b0f8017a2f834d79",
+                "start": 0
+              }
+            ],
+            "field": "audience",
+            "label": "middle_grade",
+            "rationale": "A protagonist age is not an explicit intended reading age. The source audience remains weak metadata pending direct age evidence.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "169e00bddc406a9c1de381be3257a254c90935ae2f51cb9ca6026a86452df56f",
+      "record_id": "bgc:train:3",
+      "selection": [
+        "source_label:Children’s Middle Grade Books"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/15160/cornelia-and-the-audacious-escapades-of-the-somerset-sisters-by-lesley-m-m-blume/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 32,
+                "input_field": "description",
+                "sha256": "cde2efadd2790518e1e85898d9c95189cfce1885081482a4b12dc734bd81a3f6",
+                "start": 0
+              }
+            ],
+            "field": "genre",
+            "label": "historical_fiction",
+            "rationale": "The central invented character narrative is set in a named historical period; the following account specifies 1725.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "61f12775a72844f89b870a4235358d1edb94b69c757732ac4b3fcfd7b959192e",
+      "record_id": "bgc:train:4",
+      "selection": [
+        "source_label:Historical Fiction"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/112230/the-alchemists-daughter-by-katharine-mcmahon/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 883,
+                "input_field": "description",
+                "sha256": "0226b68cba899fe65f128f98c3d7c7122daa4d7ee6c3fffdd83384f51bd1fa44",
+                "start": 848
+              }
+            ],
+            "field": "genre",
+            "label": "suspense_thriller",
+            "rationale": "The book-level description expressly characterizes its narrative as suspense.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 424,
+                "input_field": "description",
+                "sha256": "6948d8eeda67ca0ec5059e7b9689ba7157fa8ecd1e48d0188be32dea1d9ff55b",
+                "start": 387
+              }
+            ],
+            "field": "audience",
+            "label": "teen_young_adult",
+            "rationale": "School attendance describes a character, not an explicit intended reader age.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "5ecf9c7f59ef76a980ddda82b286e2c3362b441303bbe5fae4b97433aa82c591",
+      "record_id": "bgc:train:5",
+      "selection": [
+        "source_label:Teen & Young Adult"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/305340/dangerous-boy-by-mandy-hubbard/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 127,
+                "input_field": "description",
+                "sha256": "6a464dbe95375c7fb0c273f1d254a2d9bd6815629ffea3c914a7344789b160b5",
+                "start": 101
+              }
+            ],
+            "field": "genre",
+            "label": "mystery",
+            "rationale": "The book is expressly positioned as an installment of a mystery series.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "3a2a432b14eda0efda9fb495c04ea79cec8dc99e0836ee97f678bb471233f1b2",
+      "record_id": "bgc:train:7",
+      "selection": [
+        "source_label:Mystery & Suspense"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/221109/the-woman-who-wouldnt-die-by-colin-cotterill/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 446,
+                "input_field": "description",
+                "sha256": "67c1a426812141d381383330c25e8d6f09cb2adcd90286c90a1eb01717982661",
+                "start": 403
+              }
+            ],
+            "field": "genre",
+            "label": "romance",
+            "rationale": "A sustained central romantic relationship and promised enduring love support the romance reading; this is an agent candidate, not an outcome audit.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "568b99807bddc2303a28e6c06851b6a63f2c9b7bf6c30bcb4ebbab0a09a77843",
+      "record_id": "bgc:train:14",
+      "selection": [
+        "source_label:Romance"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/116072/the-immortal-highlander-by-karen-marie-moning/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 456,
+                "input_field": "description",
+                "sha256": "093b1a59ce7d79eb799676e3a074de9fc814a64d8fe823302e4f4df4e027764a",
+                "start": 408
+              }
+            ],
+            "field": "topic",
+            "label": "religion",
+            "rationale": "The description expressly identifies biblical guidance as part of the book; this is aboutness, not endorsement of the claim.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 189,
+                "input_field": "description",
+                "sha256": "683bc542f3e1e3bf5a6de7cca437c73644e40a649393d586e5d4ca76978fc2b1",
+                "start": 163
+              }
+            ],
+            "field": "topic",
+            "label": "philosophy",
+            "rationale": "The combined source category does not establish philosophy; the description here establishes finance instead, without disproving philosophical content.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "0358871d1836b0a760030cc50b687e87eb6c8f1bc5a398acb373a467f2302cf9",
+      "record_id": "bgc:train:17",
+      "selection": [
+        "source_label:Religion & Philosophy"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/25172/women-get-answers-about-your-money-by-carolyn-castleberry/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 1010,
+                "input_field": "description",
+                "sha256": "b57172f2dadf59ac104039a0285c836ed7b1ce2aa62ce53e349f3794c7dc6e8f",
+                "start": 971
+              }
+            ],
+            "field": "genre",
+            "label": "fantasy",
+            "rationale": "This phrase concerns the subject poet's work, not a fantasy convention of the reviewed book. The blurb reads as a biographical account; flag the source Fantasy tag without negating it automatically.",
+            "state": "unknown"
+          },
+          {
+            "evidence": [
+              {
+                "end": 2060,
+                "input_field": "description",
+                "sha256": "006e6c3e26dd91b67c4f94a6f37e62a3dbbbcaeda95ba82cc0c7eed33ade587c",
+                "start": 2032
+              }
+            ],
+            "field": "topic",
+            "label": "politics",
+            "rationale": "The stated subject is a family and culture under political repression.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "d2609c4a63c16ea1304697db81d6d218c8f2e549f6a01a3026542a1d65b45992",
+      "record_id": "bgc:train:19",
+      "selection": [
+        "source_label:Fantasy"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/176634/the-poet-of-baghdad-by-jo-tatchell/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 972,
+                "input_field": "description",
+                "sha256": "36defea75343358a00b3a4892cc5fa05d038f1b34ad196c9836ca4408f2191bf",
+                "start": 949
+              }
+            ],
+            "field": "topic",
+            "label": "history",
+            "rationale": "The book describes and researches a named political figure in past American events.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "9def0f31bb703f1f5f5cbf1725c09012b88cf6bdb9636f28bd6119c69e5e8744",
+      "record_id": "bgc:train:22",
+      "selection": [
+        "source_label:History"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/160351/eugene-mccarthy-by-dominic-sandbrook/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 220,
+                "input_field": "description",
+                "sha256": "0b12a52049fa913414da180c171da568bc87978a48edcf44743e4ede28590b09",
+                "start": 180
+              }
+            ],
+            "field": "form",
+            "label": "poetry",
+            "rationale": "The description expressly includes poems within a mixed-form work.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 381,
+                "input_field": "description",
+                "sha256": "9011c66a27fe0080c7b1a8b2353d2e8b3a0f609d0b4a39d653ef397598e191a7",
+                "start": 328
+              }
+            ],
+            "field": "form",
+            "label": "life_writing",
+            "rationale": "Autobiographical material is explicitly included; forms can overlap.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "d0eec59bca6d619acd1720d81de720abbf18cc76ed7169314ccde74ed8b896db",
+      "record_id": "bgc:train:36",
+      "selection": [
+        "source_label:Poetry"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/310150/storyteller-by-leslie-marmon-silko/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 179,
+                "input_field": "description",
+                "sha256": "e655745ae5fe78cede6271b88b7fbcfa8e2b20997534ca912b0f6c10170f2ba7",
+                "start": 156
+              }
+            ],
+            "field": "topic",
+            "label": "cooking",
+            "rationale": "A wine-selection guide does not itself establish food preparation. Clarify whether the cooking label deliberately includes beverages before affirming this mapped parent.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "1973c4f08b3809667b6df8351777050d34b4e732725a87509524ad1fa02770db",
+      "record_id": "bgc:train:41",
+      "selection": [
+        "source_label:Cooking"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/532835/had-a-glass-2016-by-james-nevison/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 386,
+                "input_field": "description",
+                "sha256": "863b2cddd51371b4ee816778b7dc104dd40362783989b26012dfa06e551b33ea",
+                "start": 341
+              }
+            ],
+            "field": "topic",
+            "label": "science",
+            "rationale": "The zoologist-led account explains blood-feeding animals and their biology.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 203,
+                "input_field": "description",
+                "sha256": "352818dd7648ddd3fd37d238c494de9c5ebafc2c59a063c84309b48c907b8a35",
+                "start": 141
+              }
+            ],
+            "field": "genre",
+            "label": "gothic_horror",
+            "rationale": "The reference to horror describes cultural background, not a horror genre claim for this nonfiction work.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "ad310ee63ee739b082960444625e32609a8be2ed761ef922323fec2ccf931a88",
+      "record_id": "bgc:train:45",
+      "selection": [
+        "source_label:Science"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/162783/dark-banquet-by-bill-schutt/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 801,
+                "input_field": "description",
+                "sha256": "51781239ba0cfd7d4fcd16891f4414cb18a18e618333513884c421742cbbebb3",
+                "start": 765
+              }
+            ],
+            "field": "genre",
+            "label": "science_fiction",
+            "rationale": "Tentative technology alongside magic does not establish a science-fiction mechanism from this blurb alone; retain source-positive uncertainty rather than reverse it.",
+            "state": "unknown"
+          },
+          {
+            "evidence": [
+              {
+                "end": 1159,
+                "input_field": "description",
+                "sha256": "4ca059bab790caeecdccf5b71da4dc0b4e2eb9328f95140a6142b4f4db800896",
+                "start": 1133
+              }
+            ],
+            "field": "genre",
+            "label": "fantasy",
+            "rationale": "The description explicitly places magical powers in the work's narrative.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "743f1c1b9d6478e3e24a0c2ddc5e9f270a4e4c77124baaebec9ee499acb2737b",
+      "record_id": "bgc:train:51",
+      "selection": [
+        "source_label:Science Fiction"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/315179/the-regional-office-is-under-attack-by-manuel-gonzales/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 812,
+                "input_field": "description",
+                "sha256": "056f4a8504881dfcd415263eda3d52c8f552c902c3f0429f9df2902ca7a308a4",
+                "start": 754
+              }
+            ],
+            "field": "form",
+            "label": "poetry",
+            "rationale": "Collected poems directly establish form; Classics alone does not supply a content genre.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "3bf244cec709c01306d9048d421d24923d5401b409ffcc99be73290f9836ba5c",
+      "record_id": "bgc:train:52",
+      "selection": [
+        "source_label:Classics"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/261043/the-complete-poems-by-john-keats/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 50,
+                "input_field": "description",
+                "sha256": "53f035b73166a8b89c9c1c356165eadb2e48a8637fe0f508a777ddcbac176193",
+                "start": 0
+              }
+            ],
+            "field": "genre",
+            "label": "romance",
+            "rationale": "The central arranged-marriage conflict develops into mutual affection in the blurb; the gendered marketing label supplies no audience inference.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "161599e24217bf092ca213365d038b250314cf37468e75e38e5d16b359abd25c",
+      "record_id": "bgc:train:63",
+      "selection": [
+        "source_label:Women’s Fiction"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/130735/kiss-an-angel-by-susan-elizabeth-phillips/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 208,
+                "input_field": "description",
+                "sha256": "7c43789f171f217f17900ed9951914493fd73a1e73628d401d3390f43cb5553b",
+                "start": 176
+              }
+            ],
+            "field": "topic",
+            "label": "psychology",
+            "rationale": "The description concerns clinical training and psychological practices, not merely a figurative power-game title.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "3942d96b7a8bcc790086ea13284ab9b11d67bdc713e855e99f7e13b4c0fde1c2",
+      "record_id": "bgc:train:84",
+      "selection": [
+        "source_label:Psychology"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/139320/power-games-by-richard-raubolt/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 89,
+                "input_field": "description",
+                "sha256": "1ba784d7266879a7b90bb372c5aa7c115e3ffc6109522af2c2220136b75c3fe6",
+                "start": 72
+              }
+            ],
+            "field": "audience",
+            "label": "children",
+            "rationale": "The explicit intended age range supports children independently of a reading-program brand.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 228,
+                "input_field": "description",
+                "sha256": "f1b79e39a44d51dcb2cb4d9fa4296267fba99323055c1b9f76491e618f61d8d7",
+                "start": 193
+              }
+            ],
+            "field": "audience",
+            "label": "middle_grade",
+            "rationale": "The source does not define the project's middle-grade boundary; do not infer an additional age category or its negative.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "c8ef764dc403faaeef4c5f42463ef65acbbc08d86f5e9e7180f101171ac55fde",
+      "record_id": "bgc:train:106",
+      "selection": [
+        "source_label:Step Into Reading"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/223374/the-little-mermaid-step-into-reading-disney-princess-by-ruth-homberg-illustrated-by-rh-disney/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 70,
+                "input_field": "description",
+                "sha256": "31f5f4bfc8a10994c7998d784fb534e60b60018ea6033af774b2706d64cb7a1c",
+                "start": 31
+              }
+            ],
+            "field": "form",
+            "label": "reference",
+            "rationale": "A question-answer garden guide supports reference form.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 217,
+                "input_field": "description",
+                "sha256": "53fda16dc643064c23cb24f29a97bc5ad5003a8a746cf4c4c5b9afff767afc17",
+                "start": 197
+              }
+            ],
+            "field": "topic",
+            "label": "crafts",
+            "rationale": "Gardening instructions do not establish the separate crafts component of a combined category.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "70bb93187607e87d956ef331d6a26f61c6b1740aa5783f47a4fdb0362e3d97e5",
+      "record_id": "bgc:train:116",
+      "selection": [
+        "source_label:Crafts, Home & Garden"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/549719/stuff-every-gardener-should-know-by-scott-meyer/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 1765,
+                "input_field": "description",
+                "sha256": "8a55234f4aa1c0f01f4e7483054ab2b66238e4b2dfbc84247e9d6601201e1149",
+                "start": 1751
+              }
+            ],
+            "field": "topic",
+            "label": "politics",
+            "rationale": "The argument concerns public economic policy and redistribution; the classification does not endorse its economic claims.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "1efe2193be038f303312c825bcb3233b7987aa0e2978aab654cba397d567cb6f",
+      "record_id": "bgc:train:146",
+      "selection": [
+        "source_label:Politics"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/318965/the-upside-of-inequality-by-edward-conard/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 78,
+                "input_field": "description",
+                "sha256": "4532e22c35ec6f534c3474e8b7c0f7fecf97dca0d29102d6a7ac8a4ef7d93619",
+                "start": 52
+              }
+            ],
+            "field": "form",
+            "label": "life_writing",
+            "rationale": "The book explicitly presents a named designer's life and work.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 121,
+                "input_field": "description",
+                "sha256": "623a886b7ce65e648f342b3aed5a5817c4e6ef12dc56a0489b5f45aa3d02178f",
+                "start": 102
+              }
+            ],
+            "field": "topic",
+            "label": "crafts",
+            "rationale": "Landscape design does not entail the crafts component of the combined source category.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "e435574d97191cdefb912bb57c9762dfdc3db2f18009cc12838452f9f3c3817e",
+      "record_id": "bgc:train:206",
+      "selection": [
+        "source_label:Home & Garden"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/176426/beatrix-farrand-by-judith-b-tankard/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 341,
+                "input_field": "description",
+                "sha256": "b0152f89f6aad7ac3d4950a2a56212763ddb59b67e23119a5b5bb3c76711d202",
+                "start": 324
+              }
+            ],
+            "field": "topic",
+            "label": "health",
+            "rationale": "Cosmetic techniques do not independently establish a health topic. The mapped health parent requires review, and absence of health detail is not negative evidence.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "867e3409034a8a275963b98225144de3307c7134f6424cab9accfc73046ecb3a",
+      "record_id": "bgc:train:352",
+      "selection": [
+        "source_label:Beauty"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/313074/glitter-and-glam-by-melanie-mills/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 156,
+                "input_field": "description",
+                "sha256": "93f99ec69dfe86fb166b4f7d4145abde75620102653e8eddeb2e315a88db5a9f",
+                "start": 141
+              }
+            ],
+            "field": "topic",
+            "label": "crafts",
+            "rationale": "Wedding planning and decorative inspiration do not clearly establish making crafts. The vocabulary lacks a wedding-planning topic, so keep the broader candidate unknown.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "efb9ccc0e8fa33e539e65f76e9ebfcb8841e6d5720591d2277b777c54e75b7d4",
+      "record_id": "bgc:train:482",
+      "selection": [
+        "source_label:Weddings"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/239689/the-knot-little-books-of-big-wedding-ideas-by-carley-roney-and-the-editors-of-theknotcom/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 209,
+                "input_field": "description",
+                "sha256": "70363fd993fd7ac19a3bbbb645e738e3c1344828f8870f04c0314739c53a97c2",
+                "start": 161
+              }
+            ],
+            "field": "topic",
+            "label": "science",
+            "rationale": "The book explicitly explains anatomy and evolution.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 143,
+                "input_field": "description",
+                "sha256": "2201854cb28b243074cab8a6bce4c6d7738503400bcca427c93db706c7f9ba4d",
+                "start": 119
+              }
+            ],
+            "field": "form",
+            "label": "reference",
+            "rationale": "Guide is too general to establish reference organization; the combined category cannot supply the missing evidence.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "950c640c353e1905a84465d3e5f2fc81645443da2b85c52fdd8b7ff7606d3aaf",
+      "record_id": "bgc:train:519",
+      "selection": [
+        "source_label:Health & Reference"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/226332/the-body-in-motion-by-theodore-dimon-jr/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 1048,
+                "input_field": "description",
+                "sha256": "ff0a62327e36cb0b54caf96fae8184bf8d8bfc256f56fc039e5e2732abb3491a",
+                "start": 994
+              }
+            ],
+            "field": "form",
+            "label": "life_writing",
+            "rationale": "The explicit memoir description supports life writing.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 175,
+                "input_field": "description",
+                "sha256": "c6683b9f3a82c8869a086ba247317c48979f91e601111bcc25a6dc45129d4b01",
+                "start": 130
+              }
+            ],
+            "field": "topic",
+            "label": "travel",
+            "rationale": "This metaphor does not establish travel aboutness despite the combined source category.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "9c044e4a5805d188fcde8609e2c29ee6f5cd7102ab6625f24915ee4d606b049d",
+      "record_id": "bgc:train:856",
+      "selection": [
+        "source_label:Food Memoir & Travel"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/294587/toast-by-nigel-slater/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 691,
+                "input_field": "description",
+                "sha256": "83be9ea714179f94801e79b0611f35df6df557a113bb805c9235da652bfd505d",
+                "start": 542
+              }
+            ],
+            "field": "genre",
+            "label": "romance",
+            "rationale": "The denial may use romance in a historical literary sense while describing central love stories. Its relationship to the modern genre label is unresolved; do not force an explicit negative.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "dbdf391ee66368cc8903b76232675c39be6a233b0d3eccc5c6e12c54b7ec6fd6",
+      "record_id": "bgc:train:6018",
+      "selection": [
+        "negation_context:book-level romance denial"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/297876/the-complete-novels-by-jane-austen/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 49,
+                "input_field": "description",
+                "sha256": "c5796ce55ad15a121450c3738a4773d17c51ed6a8ee373194872f7897d37c64d",
+                "start": 1
+              }
+            ],
+            "field": "audience",
+            "label": "children",
+            "rationale": "The book directly addresses children. The later under-three warning excludes only a safety age subset and cannot negate children generally.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "d4819069c9ed1a90bcad0af365133ac6f49f269550902c1a7bb00f02b94a9b46",
+      "record_id": "bgc:train:6753",
+      "selection": [
+        "negation_context:under-three safety warning is not a child-audience denial"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/301505/how-to-find-flower-fairies-by-cicely-mary-barker/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 1128,
+                "input_field": "description",
+                "sha256": "eeb97e0fea83970c1f61cbc7e9b10bfba1999116cc8b88eac0eabbc6ab577757",
+                "start": 1063
+              }
+            ],
+            "field": "genre",
+            "label": "romance",
+            "rationale": "The narrative establishes a central romantic pursuit; an earlier no-romance phrase is a character's arrangement, not a denial of the book's genre.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "7fb1ac8ae19e315b33372c7489b2f216d0275d80d211b1d31116a509d931df92",
+      "record_id": "bgc:train:10611",
+      "selection": [
+        "negation_context:character dialogue is not a genre denial"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/314856/the-valentines-arrangement-by-kelsie-leverich/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 239,
+                "input_field": "description",
+                "sha256": "b0ff1335440a2ea00bacdc354ebad7da205d0e9a5799ce76730422924f5a4afe",
+                "start": 188
+              }
+            ],
+            "field": "audience",
+            "label": "children",
+            "rationale": "This book-level audience statement expressly excludes children and identifies adults. It does not imply negatives for every other age category.",
+            "state": "negative"
+          },
+          {
+            "evidence": [
+              {
+                "end": 333,
+                "input_field": "description",
+                "sha256": "c52bacc982fbeafdcd4050459f38ecbb48bfcc59e8ae29aeeed54539e3ee1340",
+                "start": 281
+              }
+            ],
+            "field": "topic",
+            "label": "self_development",
+            "rationale": "The work gives practical principles for personal working behavior.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "2838b83f1b81b9133efacc670171d950fc52e650755a8ac25c970e8323d21201",
+      "record_id": "bgc:train:25394",
+      "selection": [
+        "negation_context:book-level child-audience denial"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/313376/v-is-for-vulnerable-by-seth-godin-illustrated-by-hugh-macleod/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 959,
+                "input_field": "description",
+                "sha256": "6f16c5b93cbd70c37c9315a258caf0b15da5a67f1f9ef2e5cfe0944cdf1a3500",
+                "start": 905
+              }
+            ],
+            "field": "form",
+            "label": "fiction",
+            "rationale": "An explicit book-level novel claim is retained; the later qualified literary praise does not negate fiction.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "bd3573b04eb0589a083646d6382f5e02c069caac786a6d57c38bd1178c3fb5f6",
+      "record_id": "bgc:train:28677",
+      "selection": [
+        "negation_context:qualified novel denial is not a fiction denial"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/42840/sister-carrie-by-theodore-dreiser-with-a-foreword--by-the-author/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 814,
+                "input_field": "description",
+                "sha256": "acc10d934aaa4633fcb5a7abbbd91219e9f288d73e08f84f57b332e6a5b1710f",
+                "start": 726
+              }
+            ],
+            "field": "form",
+            "label": "life_writing",
+            "rationale": "The statement excludes two contribution types, not every life-writing form; the retrospective career context makes a broad negative unsafe.",
+            "state": "unknown"
+          },
+          {
+            "evidence": [
+              {
+                "end": 964,
+                "input_field": "description",
+                "sha256": "cf934931dbc7c068e506287afaa49a6eee187ec470b275258def69e76e51a8c9",
+                "start": 912
+              }
+            ],
+            "field": "topic",
+            "label": "social_issues",
+            "rationale": "The described analytic topics directly concern social and cultural issues.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "67d45b212297aec87fa99e5fba4ba6fb917973c32a4072d921dd809584f5f41d",
+      "record_id": "bgc:train:34106",
+      "selection": [
+        "negation_context:memoir denial does not exclude every life-writing form"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/233168/without-guarantees-by-stuart-hall/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 1186,
+                "input_field": "description",
+                "sha256": "047b6087d3d8a9e5890b11d3251168b56a61485ed1947789ebc607b153abee45",
+                "start": 1107
+              }
+            ],
+            "field": "topic",
+            "label": "cooking",
+            "rationale": "Explicit recipe and cooking-method content supports aboutness despite the cookbook form denial; no medical claim is endorsed.",
+            "state": "positive"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "04644903b184c2968fe0c2c260072b74bce27d1451fee5be22a3b35e4acf8374",
+      "record_id": "bgc:dev:8007",
+      "selection": [
+        "negation_context:cookbook denial does not negate cooking aboutness"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/288660/prescription-for-dietary-wellness-by-phyllis-a-balch/"
+    },
+    {
+      "agent_review": {
+        "decisions": [
+          {
+            "evidence": [
+              {
+                "end": 640,
+                "input_field": "description",
+                "sha256": "abcabf2f7575e4075d20c203543089eb2b4e8ddcce36ab3e47459bfc8dc569c5",
+                "start": 574
+              }
+            ],
+            "field": "form",
+            "label": "fiction",
+            "rationale": "The description expressly identifies the novel form.",
+            "state": "positive"
+          },
+          {
+            "evidence": [
+              {
+                "end": 528,
+                "input_field": "description",
+                "sha256": "187ac6b29e745dfa942e1586c5bd5aeed3c10d4688442c659670e7e9e94f9fb7",
+                "start": 508
+              }
+            ],
+            "field": "form",
+            "label": "life_writing",
+            "rationale": "Rejecting autobiography alone does not rule out every autobiographical or life-writing element.",
+            "state": "unknown"
+          }
+        ],
+        "reviewer": {
+          "id": "codex-gpt-6-astra",
+          "kind": "agent",
+          "method": "assistant_source_inspection",
+          "reviewed_at": "2026-09-27"
+        }
+      },
+      "human_review": null,
+      "input_sha256": "ef3415cb72c672895a4c34a4f2ba9b6d3751093aff19304dca777caeaf01d1ed",
+      "record_id": "bgc:test:5264",
+      "selection": [
+        "negation_context:autobiography denial does not exclude autobiographical elements"
+      ],
+      "source_url": "https://www.penguinrandomhouse.com/books/298092/of-human-bondage-by-w-somerset-maugham/"
+    }
+  ],
+  "schema_version": 1,
+  "selection": "First source row per declared category, plus eight hand-selected negation contexts; purposive and unsuitable for unbiased evaluation.",
+  "status": "candidate_field_reviews_not_admitted",
+  "training_authorized": false
+}

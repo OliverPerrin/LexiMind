@@ -28,11 +28,13 @@
       "local_audit": "research/preparation/bgc_candidate_manifest.json",
       "observed_records": 91894,
       "observed_distinct_isbns": 91892,
-      "audit_note": "Original split overlap is handled by proposed connected leakage groups, not verified literary-work identities. Per-record field states remain weak positives/unknowns; original labels and conflicting identities are preserved.",
+      "audit_note": "Proposed connected groups constrain known overlaps; bounded source inspection reviewed113rows and found cross-source matches including licensed Little Brother. Source metadata remains weak; agent field suggestions are not human labels or training gold.",
       "preparation": {
         "grouping": "research/preparation/bgc_group_manifest.json",
         "field_mapping": "research/preparation/book_field_mapping.json",
-        "field_candidates": "research/preparation/book_field_manifest.json"
+        "field_candidates": "research/preparation/book_field_manifest.json",
+        "group_review": "research/preparation/book_group_review.json",
+        "field_review": "research/preparation/book_field_review_manifest.json"
       }
     },
     {

@@ -3,7 +3,7 @@
 This module provides infrastructure for multi-task learning:
 - MultiTaskModel: Compose encoder/decoder with multiple task heads
 - Routing: forward(task_name, ...) dispatches to correct components
-- Loss computation: Built-in cross-entropy with ignore_index support
+- Loss computation: Cross-entropy and explicit observed-label binary cross-entropy
 
 Author: Oliver Perrin
 Date: 2025-10-23
@@ -20,6 +20,7 @@ from .decoder import TransformerDecoder
 # Import your components
 from .encoder import TransformerEncoder
 from .heads import ClassificationHead, LMHead, TokenClassificationHead
+from .losses import masked_binary_cross_entropy
 
 
 class MultiTaskModel(nn.Module):
@@ -105,6 +106,7 @@ class MultiTaskModel(nn.Module):
             task: registered head name
             inputs: dictionary; common keys:
                 - For encoder tasks: "input_ids" or "embeddings" (B, S) or (B, S, d)
+                  Multi-label heads accept float "labels" and optional bool "label_mask" (B, C).
                 - For seq2seq: "src_ids" (B,S) or "src_embeddings", and "tgt_ids" (B,T) or "tgt_embeddings"
                             when computing training loss, pass "labels" (B,T) for LM
             return_loss: if True and labels provided, returns (loss, logits)
@@ -122,7 +124,11 @@ class MultiTaskModel(nn.Module):
         if hasattr(head, "_orig_mod"):
             check_head = head._orig_mod
 
-        loss_kwargs = loss_kwargs or {}
+        loss_kwargs = dict(loss_kwargs or {})
+        if "label_mask" in inputs:
+            if "label_mask" in loss_kwargs:
+                raise ValueError("Pass label_mask once, in inputs or loss_kwargs")
+            loss_kwargs["label_mask"] = inputs["label_mask"]
 
         # Encoder-only heads expect encoder outputs
         if isinstance(check_head, (ClassificationHead, TokenClassificationHead)):
@@ -220,10 +226,19 @@ class MultiTaskModel(nn.Module):
         logits: torch.Tensor,
         labels: torch.Tensor,
         ignore_index: int = -100,
+        label_mask: torch.Tensor | None = None,
     ) -> torch.Tensor:
-        """CrossEntropy dispatch. Token/LM heads flatten (B,T,*) -> (B*T,*) and honour ignore_index."""
+        """Use the head's explicit problem type; never infer multi-label mode from rank."""
         if isinstance(head, ClassificationHead):
+            if head.problem_type == "multi_label":
+                return masked_binary_cross_entropy(logits, labels, label_mask)
+            if label_mask is not None:
+                raise ValueError("label_mask requires a multi_label classification head")
+            if labels.ndim != 1 or labels.shape[0] != logits.shape[0]:
+                raise ValueError("Single-label classification requires labels with shape B")
             return F.cross_entropy(logits, labels.long())
+        if label_mask is not None:
+            raise ValueError("label_mask requires a multi_label classification head")
         # TokenClassificationHead and LMHead: per-token CE with ignore_index.
         return F.cross_entropy(
             logits.view(-1, logits.size(-1)),

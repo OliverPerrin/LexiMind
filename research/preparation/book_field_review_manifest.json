@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "status": "candidate_field_reviews_not_admitted",
+  "training_authorized": false,
+  "human_gold": false,
+  "review_packet": {
+    "path": "research/preparation/book_field_review.json",
+    "bytes": 46288,
+    "sha256": "f2fab3d1768b4b33d4952431fc3de0d981ef6532f994d0a40fbf98b151959183"
+  },
+  "bindings": {
+    "archive": {
+      "bytes": 48690771,
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+      "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+    },
+    "field_manifest": {
+      "bytes": 6425,
+      "path": "research/preparation/book_field_manifest.json",
+      "sha256": "a6222ae9215dc3e545c02e5e670fb9e56b6cb5995d971b017c78819c1b5e7f34"
+    },
+    "field_references": {
+      "bytes": 14336341,
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/fields-b2e001706648-df8484993cf9/field_references.jsonl.gz",
+      "sha256": "8f841f9707a6c65f296319855bfbce5b29b43700ed63555b4ee4232ca8b0a43a"
+    },
+    "mapping": {
+      "bytes": 39092,
+      "path": "research/preparation/book_field_mapping.json",
+      "sha256": "b2e001706648bfce0f55c2e285d25e8870531b364af711da2d984f87e6945ca7"
+    }
+  },
+  "local_worksheet": {
+    "path": "data/research_candidates/bgc/field-review-f2fab3d1768b4b33/review_worksheet.json",
+    "bytes": 122260,
+    "sha256": "95fa9d65bf5b7e0e7a79140934b20f7b03e27729eb1df6ce67e994fac941062d"
+  },
+  "preparation_script_sha256": "a2f7352fe0281c9a15bf7d84d1c3c06ac63c42f1067d6ee445474857e93b2466",
+  "preparation_helper_sha256": {
+    "scripts/prepare_book_fields.py": "68544b311d919bf5adf009106b68553a443b29b7f9df797c1cb1608b2d1e66ea",
+    "src/research/field_reviews.py": "e2bba4baae378bb51072dbc4c284f649689dff39575904756c746606b61c25a0",
+    "src/research/book_fields.py": "4177ce85b4d146be8cfb18e5d4ea74c0f37a9dead20f6e0380bb9bfdf75d3536",
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433",
+    "src/catalog/storage.py": "876b0860e3354dabcd0031806e2c5c17f3b48986918b8bfa28bdc081da6f06be"
+  },
+  "observed": {
+    "records": 32,
+    "source_labels_covered": 54,
+    "declined_source_labels_covered": [
+      "Beauty",
+      "Classics",
+      "Crafts, Home & Garden",
+      "Food Memoir & Travel",
+      "Health & Reference",
+      "Home & Garden",
+      "Religion & Philosophy",
+      "Step Into Reading",
+      "Weddings",
+      "Women’s Fiction"
+    ],
+    "declined_source_labels_missing": [],
+    "reviewed_records": {
+      "agent": 32,
+      "human": 0
+    },
+    "decisions": {
+      "agent": {
+        "positive": 29,
+        "negative": 1,
+        "unknown": 17
+      },
+      "human": {
+        "positive": 0,
+        "negative": 0,
+        "unknown": 0
+      }
+    },
+    "explicit_human_labels": 0,
+    "vocabulary_labels": 48
+  },
+  "remaining_gates": [
+    "Independent human review and source-positive conflict adjudication.",
+    "Representative evaluation sampling; this purposive packet cannot estimate accuracy.",
+    "Dataset admission, split freeze and training authorization remain separate."
+  ]
+}

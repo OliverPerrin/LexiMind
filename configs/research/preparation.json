@@ -35,8 +35,8 @@
         },
         {
           "path": "research/preparation/book_field_sources.json",
-          "bytes": 14465,
-          "sha256": "6b1741cab6bc11b3abbbe1bf2fc8df87bef103cebcf15b6d83618c7625a2a8b6"
+          "bytes": 14644,
+          "sha256": "a2f0ef8262fc3390414bbb8eb9bac2487878806db5a93813e3cbf7fb4d111aea"
         }
       ],
       "draft_path": "docs/research/README.md",
@@ -47,8 +47,8 @@
       "evidence": [
         {
           "path": "configs/research/study_design.json",
-          "bytes": 11816,
-          "sha256": "fe58e119765e983b97874b6f1d0d6cc04ea4e14160d94b151810e4b6e7bb4c54"
+          "bytes": 12296,
+          "sha256": "e213fc91d1cafb32da10d6f4eb1dcf3545f888a4c0e6747a9a20b7a19731cdfd"
         },
         {
           "path": "docs/research/study_decisions.md",
@@ -60,12 +60,12 @@
       "note": "Comparison interfaces, cost boundary and applied metric choices are proposed; protocol not frozen."
     },
     "dataset_manifest": {
-      "status": "book_field_candidates_and_licensed_text_prepared",
+      "status": "field_review_candidates_and_runtime_prepared_human_labels_pending",
       "evidence": [
         {
           "path": "research/preparation/book_field_sources.json",
-          "bytes": 14465,
-          "sha256": "6b1741cab6bc11b3abbbe1bf2fc8df87bef103cebcf15b6d83618c7625a2a8b6"
+          "bytes": 14644,
+          "sha256": "a2f0ef8262fc3390414bbb8eb9bac2487878806db5a93813e3cbf7fb4d111aea"
         },
         {
           "path": "research/preparation/bgc_candidate_manifest.json",
@@ -86,20 +86,35 @@
           "path": "research/preparation/licensed_books_manifest.json",
           "bytes": 7747,
           "sha256": "79f8d4a044ef621b26c031683bb56239e59ebf0b16640cf4dbf355efd2de1467"
+        },
+        {
+          "path": "research/preparation/book_field_review_manifest.json",
+          "bytes": 3309,
+          "sha256": "90715b042d4850b3c0d7a1fdd1b749fefa706b1c96fcb366f4caa09efe33458a"
+        },
+        {
+          "path": "research/preparation/book_field_review.json",
+          "bytes": 46288,
+          "sha256": "f2fab3d1768b4b33d4952431fc3de0d981ef6532f994d0a40fbf98b151959183"
         }
       ],
-      "note": "BGC references carry authored partial field labels and proposed leakage groups; no gold or negatives. Four licensed full-text works are prepared locally without splits or labels. Review and runtime integration remain; training stays paused."
+      "note": "32 records have agent-only field suggestions; human review is empty. Explicit loss/mask/checkpoint/output contracts pass software tests, but no dataset or model run is admitted."
     },
     "group_split_audit": {
-      "status": "bgc_candidate_groups_prepared_review_pending",
+      "status": "bounded_group_and_cross_source_review_prepared",
       "evidence": [
         {
           "path": "research/preparation/bgc_group_manifest.json",
           "bytes": 6378,
           "sha256": "318df901615055ab188ceaf3e91e9d3a70d6005c511108b223dbcdb9cd57f8dc"
+        },
+        {
+          "path": "research/preparation/book_group_review.json",
+          "bytes": 26372,
+          "sha256": "810f93e27de5f43fc2e646a0b0693e0830452cb00bb05dbbeb0a559aea5800c2"
         }
       ],
-      "note": "89,910 connected groups constrain all five observed identity/text matches; zero detected-key overlap across proposed splits. Groups are not adjudicated works; series/fuzzy/cross-source reconciliation and rare-label coverage remain to review."
+      "note": "Seven components/113rows reviewed without relabeling or split changes. Snapshot matching links21catalogue works and licensed Little Brother to BGC;44 title-only pairs stay unmerged. Complete work/series reconciliation remains open."
     },
     "backbone_revision": {
       "status": "metadata_reviewed_unselected",

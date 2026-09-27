@@ -72,10 +72,22 @@ accumulation, mixed precision where supported, learning-rate scheduling, validat
 and checkpoint callbacks. `pcgrad.py` implements optional gradient-conflict
 projection. Metrics and calibration utilities remain separate from model layers.
 
+Classification heads explicitly select single-label CE or multi-label BCE. Book
+fields opt in through `data.topic_problem_type=multi_label`; legacy topic CE and
+dense emotion BCE remain supported. A boolean `label_mask` supervises only known
+cells. Entirely unknown training windows leave optimizer/scheduler state unchanged;
+validation tasks with no observed labels are rejected before model selection.
+Epoch diagnostics aggregate observed counts and report coverage, not complete-label
+accuracy. Gradient accumulation retains the existing average of microbatch losses;
+it is not an observed-cell average across the entire accumulation window.
+
 `src/inference/` loads explicit checkpoints, tokenizers and label metadata. Its
 combined prediction path can share one encoder pass across the supported heads
 and summary decoder; individual task methods remain available. Scripts expose
 training, evaluation, inference and profiling for later authorized research work.
+Book checkpoints use `predict_book_fields` with explicit thresholds and independent
+sigmoid scores; legacy topic/batch APIs and the old profiler reject that mode.
+Thresholds still need calibration; no book model has been trained or evaluated.
 
 The book site has no dependency on that runtime. Research outputs must pass their
 own source, domain and evaluation review before becoming catalogue features.
@@ -107,3 +119,12 @@ Validation/test labels never choose the training label space. Unknown labels fai
 instead of being silently discarded. Weights-only continuation requires
 `resume_labels` matching the exact active label order; unchanged head dimensions
 alone do not establish semantic compatibility.
+
+Book split JSONL uses `title`, `description`, `positive` and `negative`; the last
+two are lists of `facet:label` IDs. Only title/description are tokenized. Its
+`labels.json` is an object with `schema_version: 1`, `problem_type: "multi_label"`,
+`input_format: "book_title_description_v1"`, the ordered `labels`, and the reviewed
+`mapping_sha256`. No candidate directory is selected or exported automatically.
+Book label metadata records the same loss/input/mapping contract. It is written
+before any checkpoint, also beside the weights as `labels.json`; incompatible
+existing metadata is preserved and rejected. Resume/inference validate that contract.

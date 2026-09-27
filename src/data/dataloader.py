@@ -17,6 +17,8 @@ from torch.utils.data import DataLoader
 from .dataset import (
     EmotionDataset,
     EmotionExample,
+    PartialTopicDataset,
+    PartialTopicExample,
     SummarizationDataset,
     SummarizationExample,
     TopicDataset,
@@ -168,6 +170,52 @@ class TopicCollator:
         }
 
 
+class PartialTopicCollator:
+    """Encode book inputs and expose supervision only for explicitly known fields."""
+
+    def __init__(
+        self,
+        tokenizer: Tokenizer,
+        dataset: PartialTopicDataset,
+        *,
+        max_length: int | None = None,
+        padding: str = "longest",
+        pad_to_multiple_of: int | None = 8,
+    ) -> None:
+        self.tokenizer = tokenizer
+        self.columns = {label: index for index, label in enumerate(dataset.topic_classes)}
+        self.max_length = max_length
+        self.padding = padding
+        self.pad_to_multiple_of = pad_to_multiple_of
+
+    def __call__(self, batch: List[PartialTopicExample]) -> Dict[str, torch.Tensor]:
+        labels = torch.zeros((len(batch), len(self.columns)), dtype=torch.float32)
+        known = torch.zeros_like(labels, dtype=torch.bool)
+        for row, example in enumerate(batch):
+            for values in (example.positive, example.negative):
+                validate_known_labels(values, set(self.columns), "book field")
+                if len(values) != len(set(values)):
+                    raise ValueError("Repeated partial book field")
+            if set(example.positive) & set(example.negative):
+                raise ValueError("A book field cannot be both positive and negative")
+            for value, values in ((1.0, example.positive), (0.0, example.negative)):
+                columns = [self.columns[label] for label in values]
+                labels[row, columns] = value
+                known[row, columns] = True
+        encoded = self.tokenizer.batch_encode(
+            [example.text for example in batch],
+            max_length=self.max_length,
+            padding=self.padding,
+            pad_to_multiple_of=self.pad_to_multiple_of,
+        )
+        return {
+            "input_ids": encoded["input_ids"],
+            "attention_mask": encoded["attention_mask"],
+            "labels": labels,
+            "label_mask": known,
+        }
+
+
 # --------------- Factory Functions ---------------
 
 
@@ -223,7 +271,7 @@ def build_emotion_dataloader(
 
 
 def build_topic_dataloader(
-    dataset: TopicDataset,
+    dataset: TopicDataset | PartialTopicDataset,
     tokenizer: Tokenizer,
     *,
     batch_size: int,
@@ -233,7 +281,11 @@ def build_topic_dataloader(
     pin_memory: bool = False,
 ) -> DataLoader:
     """Create dataloader for topic classification task."""
-    collator = TopicCollator(tokenizer, dataset, max_length=max_length)
+    collator = (
+        PartialTopicCollator(tokenizer, dataset, max_length=max_length)
+        if isinstance(dataset, PartialTopicDataset)
+        else TopicCollator(tokenizer, dataset, max_length=max_length)
+    )
     return DataLoader(
         dataset,
         batch_size=batch_size,

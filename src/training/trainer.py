@@ -32,7 +32,16 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from ..data.tokenization import Tokenizer
-from .metrics import accuracy, calculate_bleu, calculate_rouge, multilabel_f1, rouge_like
+from ..models.losses import masked_binary_cross_entropy
+from .metrics import (
+    MultilabelBatchMetrics,
+    ObservedMultilabelMetrics,
+    accuracy,
+    calculate_bleu,
+    calculate_rouge,
+    multilabel_f1,
+    rouge_like,
+)
 from .pcgrad import PCGrad
 
 # --------------- Configuration ---------------
@@ -125,10 +134,6 @@ class Trainer:
         self.device = device
         self.tokenizer = tokenizer
         self.global_step = 0
-
-        # Task losses
-        self.emotion_loss = torch.nn.BCEWithLogitsLoss()
-        self.topic_loss = torch.nn.CrossEntropyLoss()
 
         # AMP: bfloat16 on Ampere+ GPUs
         self.use_amp = device.type == "cuda"
@@ -278,6 +283,8 @@ class Trainer:
             raise ValueError("Every selected task requires a nonempty data loader")
         metrics: Dict[str, List[float]] = defaultdict(list)
         metric_weights: Dict[str, List[int]] = defaultdict(list)
+        observed_metrics: Dict[str, ObservedMultilabelMetrics] = {}
+        window_has_supervision = False
         diagnostic_batches: Dict[str, Dict] = {}
         iterators = {task: iter(loader) for task, loader in loaders.items()}
         max_batches = max(len(loader) for loader in loaders.values())
@@ -343,7 +350,9 @@ class Trainer:
                         else [task for task in task_names if step < len(loaders[task])]
                     )
 
-                # Normalize the remainder by its actual number of outer steps.
+                # Preserve microbatch-mean accumulation, including a zero for
+                # unknown batches. Each masked BCE uses its own observed count;
+                # this is not an observed-cell mean over the merged window.
                 window_size = min(accum, max_batches - (step // accum) * accum)
 
                 # For PCGrad: collect task losses first, then do joint backward
@@ -370,27 +379,44 @@ class Trainer:
                     # Record metrics
                     loss_value = loss.item()
                     metrics[f"{task}_loss"].append(loss_value)
+                    batch_size = len(batch["labels"])
+                    has_supervision = True
+                    if isinstance(task_metrics, MultilabelBatchMetrics):
+                        counts = task_metrics.counts
+                        loss_count = int(counts.observed.sum())
+                        has_supervision = loss_count > 0
+                        metric_weights[f"{task}_loss"].append(loss_count)
+                        if task not in observed_metrics:
+                            observed_metrics[task] = counts
+                        else:
+                            observed_metrics[task].merge(counts)
+                        # Keep legacy sample F1 for dense emotion labels only.
+                        if "f1" in task_metrics:
+                            metrics[f"{task}_f1"].append(task_metrics["f1"])
+                            metric_weights[f"{task}_f1"].append(batch_size)
                     # Validation visits each example once. Loss is token-averaged
-                    # for summarization and example-averaged for classifiers.
-                    if not train:
-                        batch_size = len(batch["labels"])
+                    # for summarization, observed-cell-averaged for multi-label,
+                    # and example-averaged for single-label classifiers.
+                    elif not train:
                         loss_count = (
                             int((batch["labels"] != -100).sum())
                             if task == "summarization"
                             else batch_size
                         )
                         metric_weights[f"{task}_loss"].append(loss_count)
-                    for name, val in task_metrics.items():
-                        metrics[f"{task}_{name}"].append(val)
-                        if not train:
-                            metric_weights[f"{task}_{name}"].append(batch_size)
+                    if not isinstance(task_metrics, MultilabelBatchMetrics):
+                        for name, val in task_metrics.items():
+                            metrics[f"{task}_{name}"].append(val)
+                            if not train:
+                                metric_weights[f"{task}_{name}"].append(batch_size)
 
                     # Track step loss for both train and val
                     weight = (self.config.task_weights or {}).get(task, 1.0)
                     step_loss += loss_value * weight
 
                     # Backward (train only)
-                    if train:
+                    if train and has_supervision and weight != 0:
+                        window_has_supervision = True
                         if use_pcgrad:
                             # Collect losses for PCGrad (backward later)
                             # Temperature sampling can select the same task more
@@ -437,17 +463,18 @@ class Trainer:
 
                 # Optimizer step
                 if train and ((step + 1) % accum == 0 or step + 1 == max_batches):
-                    torch.nn.utils.clip_grad_norm_(
-                        self.model.parameters(), self.config.gradient_clip_norm
-                    )
-                    self.optimizer.step()
+                    if window_has_supervision:
+                        torch.nn.utils.clip_grad_norm_(
+                            self.model.parameters(), self.config.gradient_clip_norm
+                        )
+                        self.optimizer.step()
+                        if self.scheduler:
+                            self.scheduler.step()
+                            current_lr = self.scheduler.get_last_lr()[0]
+                            mlflow.log_metric("learning_rate", current_lr, step=self.global_step)
+                        self.global_step += 1
                     self.optimizer.zero_grad(set_to_none=True)
-                    if self.scheduler:
-                        self.scheduler.step()
-                        # Log learning rate to MLflow
-                        current_lr = self.scheduler.get_last_lr()[0]
-                        mlflow.log_metric("learning_rate", current_lr, step=self.global_step)
-                    self.global_step += 1
+                    window_has_supervision = False
 
                 if train and step_loss > 0:
                     metrics["total_loss"].append(step_loss)
@@ -456,13 +483,24 @@ class Trainer:
 
         # Average metrics
         averaged = {k: sum(v) / len(v) for k, v in metrics.items() if v}
+        averaged.setdefault("total_loss", 0.0)
+        for key, weights in metric_weights.items():
+            denominator = sum(weights)
+            averaged[key] = (
+                sum(v * n for v, n in zip(metrics[key], weights, strict=True)) / denominator
+                if denominator
+                else 0.0
+            )
+        for task, counts in observed_metrics.items():
+            if not train and not counts.observed.any():
+                raise ValueError(
+                    f"Validation task '{task}' has no observed labels; "
+                    "its loss cannot be used for early stopping or checkpoint selection"
+                )
+            averaged.update({f"{task}_{key}": value for key, value in counts.compute().items()})
+            if int(counts.observed.sum()) != counts.total:
+                averaged.pop(f"{task}_f1", None)
         if not train:
-            for key, weights in metric_weights.items():
-                denominator = sum(weights)
-                if denominator:
-                    averaged[key] = (
-                        sum(v * n for v, n in zip(metrics[key], weights, strict=True)) / denominator
-                    )
             averaged["total_loss"] = sum(
                 averaged[f"{task}_loss"] * (self.config.task_weights or {}).get(task, 1.0)
                 for task in task_names
@@ -540,25 +578,42 @@ class Trainer:
         return loss, metrics
 
     def _forward_emotion(self, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
-        """Multi-label emotion classification."""
-        inputs = {"input_ids": batch["input_ids"]}
-        if "attention_mask" in batch:
-            inputs["attention_mask"] = batch["attention_mask"]
-
-        logits = self.model.forward("emotion", inputs)
-        loss = self.emotion_loss(logits, batch["labels"].float())
-        # Lower threshold (0.3) for multi-label - 28 classes means lower confidence per class
-        preds = (torch.sigmoid(logits) > 0.3).int()
-        return loss, {"f1": multilabel_f1(preds, batch["labels"].int())}
+        """Emotion defaults to its existing multi-label contract and 0.3 threshold."""
+        return self._forward_classification("emotion", batch, threshold=0.3)
 
     def _forward_topic(self, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
-        """Single-label topic classification."""
+        """Topic mode is explicitly declared by its head; legacy default is CE."""
+        return self._forward_classification("topic", batch, threshold=0.5)
+
+    def _forward_classification(
+        self, task: str, batch: Dict, *, threshold: float
+    ) -> tuple[torch.Tensor, Dict[str, float]]:
         inputs = {"input_ids": batch["input_ids"]}
         if "attention_mask" in batch:
             inputs["attention_mask"] = batch["attention_mask"]
-
-        logits = self.model.forward("topic", inputs)
-        loss = self.topic_loss(logits, batch["labels"])
+        logits = self.model.forward(task, inputs)
+        head = getattr(self.model, "heads", {}).get(task)
+        head = getattr(head, "_orig_mod", head)
+        # Headless adapters retain established task defaults; labels never select mode.
+        problem_type = getattr(
+            head, "problem_type", "multi_label" if task == "emotion" else "single_label"
+        )
+        if problem_type == "multi_label":
+            labels = batch["labels"]
+            mask = batch.get("label_mask")
+            loss = masked_binary_cross_entropy(logits, labels, mask)
+            predictions = logits.detach().sigmoid() > threshold
+            metrics = MultilabelBatchMetrics(ObservedMultilabelMetrics(predictions, labels, mask))
+            if task == "emotion" and (mask is None or bool(mask.all())):
+                metrics["f1"] = multilabel_f1(predictions, labels)
+            return loss, metrics
+        if problem_type != "single_label":
+            raise ValueError(f"Unknown classification problem_type: {problem_type}")
+        if batch.get("label_mask") is not None:
+            raise ValueError("label_mask requires a multi_label classification head")
+        if batch["labels"].ndim != 1 or batch["labels"].shape[0] != logits.shape[0]:
+            raise ValueError("Single-label classification requires labels with shape B")
+        loss = F.cross_entropy(logits, batch["labels"])
         preds = logits.argmax(dim=-1)
         return loss, {"accuracy": accuracy(preds.tolist(), batch["labels"].tolist())}
 
@@ -653,7 +708,12 @@ class Trainer:
             for task, batch in batches.items():
                 dtype = torch.bfloat16 if self.use_bfloat16 else torch.float16
                 with torch.autocast("cuda", dtype=dtype, enabled=self.use_amp):
-                    loss, _ = self._forward_task(task, batch)
+                    loss, task_metrics = self._forward_task(task, batch)
+                if (
+                    isinstance(task_metrics, MultilabelBatchMetrics)
+                    and not task_metrics.counts.observed.any()
+                ):
+                    continue
                 if not torch.isfinite(loss):
                     continue
                 grads = torch.autograd.grad(loss, shared_params, allow_unused=True)

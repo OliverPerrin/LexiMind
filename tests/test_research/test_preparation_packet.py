@@ -259,3 +259,27 @@ def test_current_group_manifest_cannot_hide_stale_field_assignment_reference(pac
     result = inspect_preparation(packet_root, MANIFEST, "model_study")
     assert not result["artifacts_valid"]
     assert "book_fields refers to different group assignments" in result["errors"]
+
+
+@pytest.mark.parametrize(
+    "mutation", ["field_manifest", "field_packet", "group_assignments", "group_helpers"]
+)
+def test_review_provenance_cannot_be_hidden_by_outer_rehash(packet_root, mutation):
+    key = "book_field_review_report" if mutation.startswith("field") else "book_group_review"
+    path = packet_root / ARTIFACTS[key][1]
+    report = json.loads(path.read_text())
+    if mutation == "field_manifest":
+        report["bindings"]["field_manifest"]["sha256"] = "f" * 64
+    elif mutation == "field_packet":
+        report["review_packet"]["sha256"] = "f" * 64
+    elif mutation == "group_assignments":
+        report["inputs"]["assignments"]["sha256"] = "f" * 64
+    else:
+        report["implementation_sha256"]["scripts/review_book_groups.py"] = "f" * 64
+    write_json(path, report)
+    write_json(packet_root / MANIFEST, build_manifest(packet_root))
+    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    assert not result["artifacts_valid"]
+    assert any(
+        "review" in error and ("bind" in error or "packet" in error) for error in result["errors"]
+    )

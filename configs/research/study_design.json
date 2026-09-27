@@ -72,8 +72,9 @@
           "per_field_precision_coverage",
           "hierarchy_violations"
         ],
-        "integration_status": "candidate field vocabulary and source mapping prepared; reviewed labels and partial-label loss/output integration remain; current topic runtime is single-label",
-        "candidate_field_manifest": "research/preparation/book_field_manifest.json"
+        "integration_status": "opt-in partial-label runtime, data masks and sigmoid output implemented; synthetic tests only; reviewed targets, split freeze and calibration still required",
+        "candidate_field_manifest": "research/preparation/book_field_manifest.json",
+        "candidate_review_manifest": "research/preparation/book_field_review_manifest.json"
       },
       {
         "task_id": "emotion",
@@ -163,10 +164,10 @@
       ]
     },
     "unresolved": [
-      "review BGC leakage components, fuzzy/series/cross-source identities and rare-label split support",
-      "review candidate field mapping and obtain positive/negative or complete-label seed evidence",
+      "adjudicate remaining work/edition/series links and cross-source split membership; bounded review found Little Brother in BGC",
+      "collect human-reviewed negative or complete-label seed evidence; current agent reviews remain unadmitted",
       "CR4 schema, character context, source terms and human/derived label separation",
-      "partial-label loss and output-contract integration",
+      "validate and freeze book field task/evaluation contract after reviewed data admission; software partial-label integration is implemented",
       "backbone adapter allowlist and runtime",
       "hardware feasibility, B, sampling and equal selection allowance",
       "held-out book evaluation and protocol freeze",
@@ -185,7 +186,8 @@
       "input_parity": "all recipe arms use the same allowed evidence for each task",
       "evidence": "store source references and spans; span presence does not certify model reasoning",
       "prediction_policy": "calibrate per-field thresholds on held-out works and report precision/coverage; allow abstention",
-      "runtime_status": "proposal_only_not_implemented_or_evaluated"
+      "runtime_status": "partial_label_runtime_implemented_synthetic_tests_only_no_training_or_model_quality_evaluation",
+      "gradient_accumulation": "Existing per-microbatch loss means retained; each partial BCE averages observed cells within its batch. Epoch diagnostics weight observed cells; these are different reductions."
     },
     "optional_controls": [
       {

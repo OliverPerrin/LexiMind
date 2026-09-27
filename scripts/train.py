@@ -71,7 +71,15 @@ def resume_start_epoch(checkpoint: Path) -> int:
     return int(match.group(1)) + 1 if match else 1
 
 
-def validate_resume_labels(cfg: DictConfig, *, emotion: list[str], topic: list[str]) -> None:
+def validate_resume_labels(
+    cfg: DictConfig,
+    *,
+    emotion: list[str],
+    topic: list[str],
+    topic_problem_type: str = "single_label",
+    topic_input_format: str = "text",
+    topic_mapping_sha256: str | None = None,
+) -> None:
     """Bind existing classification columns before a weights-only continuation."""
     if not cfg.get("resume_from"):
         return
@@ -85,6 +93,36 @@ def validate_resume_labels(cfg: DictConfig, *, emotion: list[str], topic: list[s
         raise ValueError(
             "Resume label vocabularies/order differ from current datasets; supply the checkpoint's exact ordered labels and compatible dataset labels.json files"
         )
+    if (
+        saved.topic_problem_type != topic_problem_type
+        or saved.topic_input_format != topic_input_format
+        or saved.topic_mapping_sha256 != topic_mapping_sha256
+    ):
+        raise ValueError("Resume topic loss mode, input format or field mapping differs")
+
+
+def prepare_checkpoint_labels(
+    metadata: LabelMetadata, labels_path: Path, checkpoint_dir: Path
+) -> None:
+    """Publish the label contract before weights; never replace a different contract."""
+    paired = checkpoint_dir / "labels.json"
+    targets = {labels_path.resolve(), paired.resolve()}
+    for path in targets:
+        if path.exists() and load_label_metadata(path) != metadata:
+            raise ValueError(
+                f"Different label metadata already exists at {path}; use a new output location"
+            )
+    if (
+        metadata.topic_problem_type == "multi_label"
+        and not paired.exists()
+        and any(checkpoint_dir.glob("*.pt"))
+    ):
+        raise ValueError(
+            "Book field checkpoints require a fresh directory or their existing paired labels.json"
+        )
+    for path in targets:
+        if not path.exists():
+            save_label_metadata(metadata, path)
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
@@ -112,6 +150,7 @@ def main(cfg: DictConfig) -> None:
         enabled_tasks,
         max_train_samples=trainer_cfg.get("max_train_samples"),
         max_val_samples=trainer_cfg.get("max_val_samples"),
+        topic_problem_type=data_cfg.get("topic_problem_type", "single_label"),
     )
     for task in enabled_tasks:
         print(
@@ -120,7 +159,17 @@ def main(cfg: DictConfig) -> None:
     print(f"  Enabled tasks: {enabled_tasks}")
     emotion_classes = getattr(train_datasets.get("emotion"), "emotion_classes", [])
     topic_classes = getattr(train_datasets.get("topic"), "topic_classes", [])
-    validate_resume_labels(cfg, emotion=emotion_classes, topic=topic_classes)
+    topic_dataset = train_datasets.get("topic")
+    topic_contract = {
+        "topic_problem_type": getattr(topic_dataset, "topic_problem_type", "single_label"),
+        "topic_input_format": getattr(topic_dataset, "topic_input_format", "text"),
+        "topic_mapping_sha256": getattr(topic_dataset, "topic_mapping_sha256", None),
+    }
+    validate_resume_labels(cfg, emotion=emotion_classes, topic=topic_classes, **topic_contract)
+    label_metadata = LabelMetadata(emotion=emotion_classes, topic=topic_classes, **topic_contract)
+    labels_path = Path(cfg.labels_out)
+    ckpt_dir = Path(cfg.checkpoint_out).parent
+    prepare_checkpoint_labels(label_metadata, labels_path, ckpt_dir)
 
     # GPU optimizations for Ampere+
     if device.type == "cuda":
@@ -200,6 +249,7 @@ def main(cfg: DictConfig) -> None:
         num_emotions=len(emotion_classes),
         num_topics=len(topic_classes),
         config=model_cfg,
+        topic_problem_type=topic_contract["topic_problem_type"],
     ).to(device)
 
     param_count = sum(p.numel() for p in model.parameters())
@@ -305,12 +355,12 @@ def main(cfg: DictConfig) -> None:
     )
 
     # Checkpoint callback
-    ckpt_dir = Path(cfg.checkpoint_out).parent
     best_val_loss = float("inf")
 
     def save_checkpoint(epoch: int, model: torch.nn.Module, history: Dict) -> None:
         nonlocal best_val_loss
         ckpt_dir.mkdir(parents=True, exist_ok=True)
+        prepare_checkpoint_labels(label_metadata, labels_path, ckpt_dir)
 
         save_state(model, str(ckpt_dir / "last.pt"))
         with (ckpt_dir / "last_epoch.json").open("w") as f:
@@ -336,11 +386,7 @@ def main(cfg: DictConfig) -> None:
     print("\nSaving outputs...")
 
     # Labels
-    labels_path = Path(cfg.labels_out)
-    save_label_metadata(
-        LabelMetadata(emotion=emotion_classes, topic=topic_classes),
-        labels_path,
-    )
+    prepare_checkpoint_labels(label_metadata, labels_path, ckpt_dir)
     print(f"  Labels: {labels_path}")
 
     # History
