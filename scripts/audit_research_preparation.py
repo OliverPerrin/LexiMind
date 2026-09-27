@@ -19,9 +19,16 @@ def main() -> int:
     parser.add_argument("--manifest", type=Path, default=Path("research/preparation/manifest.json"))
     parser.add_argument("--target", choices=["model_study", "book_study"], default="model_study")
     parser.add_argument("--require-ready", action="store_true")
+    parser.add_argument(
+        "--check-archive",
+        action="store_true",
+        help="Also inspect optional retained source controls",
+    )
     args = parser.parse_args()
     try:
-        report = inspect_preparation(args.root, args.manifest, args.target)
+        report = inspect_preparation(
+            args.root, args.manifest, args.target, check_archive=args.check_archive
+        )
     except (ValueError, OSError, TypeError, KeyError) as exc:
         print(
             json.dumps(

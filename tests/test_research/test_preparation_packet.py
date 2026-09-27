@@ -35,8 +35,8 @@ def packet_root(tmp_path):
 
 
 def test_committed_preparation_valid_but_both_studies_blocked():
-    for target in ("model_study", "book_study"):
-        report = inspect_preparation(ROOT, MANIFEST, target)
+    for target, archive in (("model_study", False), ("book_study", False), ("model_study", True)):
+        report = inspect_preparation(ROOT, MANIFEST, target, check_archive=archive)
         assert report["artifacts_valid"], report["errors"]
         assert report["blockers"]
         assert not report["ready_for_requested_stage"]
@@ -53,7 +53,7 @@ def test_changed_book_catalogue_does_not_block_model_packet(packet_root):
 
 
 def test_missing_model_artifact_does_not_block_book_packet(packet_root):
-    (packet_root / ARTIFACTS["data_inventory"][1]).unlink()
+    (packet_root / ARTIFACTS["backbone_candidates"][1]).unlink()
     assert inspect_preparation(packet_root, MANIFEST, "book_study")["artifacts_valid"]
     assert not inspect_preparation(packet_root, MANIFEST, "model_study")["artifacts_valid"]
 
@@ -74,7 +74,7 @@ def test_rehashing_does_not_hide_stale_nested_data_binding(packet_root):
     value["audit_script_sha256"] = "a" * 64
     write_json(path, value)
     write_json(packet_root / MANIFEST, build_manifest(packet_root))
-    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    result = inspect_preparation(packet_root, MANIFEST, "model_study", check_archive=True)
     assert not result["artifacts_valid"]
     assert any("auditor revision" in error for error in result["errors"])
     assert any("supplied inventory" in error for error in result["errors"])
@@ -179,7 +179,7 @@ def test_partition_report_must_bind_its_exact_candidate(packet_root, mutation):
         report[mutation] = "different/provider" if mutation == "repo" else "f" * 40
     write_json(path, report)
     write_json(packet_root / MANIFEST, build_manifest(packet_root))
-    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    result = inspect_preparation(packet_root, MANIFEST, "model_study", check_archive=True)
     assert not result["artifacts_valid"]
     assert any("different source candidate" in error for error in result["errors"])
 
@@ -190,6 +190,17 @@ def test_arxiv_report_cannot_outlive_its_converter_version(packet_root):
     report["conversion"]["script_sha256"] = "f" * 64
     write_json(path, report)
     write_json(packet_root / MANIFEST, build_manifest(packet_root))
-    result = inspect_preparation(packet_root, MANIFEST, "model_study")
+    result = inspect_preparation(packet_root, MANIFEST, "model_study", check_archive=True)
     assert not result["artifacts_valid"]
     assert any("different reconstruction script" in error for error in result["errors"])
+
+
+def test_optional_control_artifacts_do_not_gate_book_domain_studies(packet_root):
+    (packet_root / ARTIFACTS["ag_news_candidate"][1]).unlink()
+    for target in ("model_study", "book_study"):
+        current = inspect_preparation(packet_root, MANIFEST, target)
+        assert current["artifacts_valid"], current["errors"]
+        assert not current["source_archive_checked"]
+    archive = inspect_preparation(packet_root, MANIFEST, "model_study", check_archive=True)
+    assert archive["source_archive_checked"]
+    assert not archive["artifacts_valid"]

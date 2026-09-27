@@ -145,7 +145,73 @@ def validate_study_design(plan: dict[str, Any]) -> None:
         raise ValueError("The current study has no admitted whole-work mood evidence")
 
 
-def inspect_preparation(root: Path, manifest_path: Path, target: str) -> dict[str, Any]:
+def _inspect_source_archive(root: Path, files: dict[str, Path]) -> list[str]:
+    """Optional integrity checks for retained controls; not a book-data prerequisite."""
+    errors: list[str] = []
+    inventory = _object(read_json(files["data_inventory"]), "data inventory")
+    audit = _object(read_json(files["data_audit"]), "data audit")
+    if (
+        inventory.get("audit_script_sha256")
+        != hashlib.sha256(files["data_auditor"].read_bytes()).hexdigest()
+    ):
+        errors.append("Data inventory was produced by a different auditor revision")
+    # Matches audit_research_data.py's documented inventory serialization.
+    canonical = json.dumps(inventory, sort_keys=True, ensure_ascii=False, allow_nan=False).encode()
+    if audit.get("inventory_sha256") != hashlib.sha256(canonical).hexdigest():
+        errors.append("Data audit does not bind the supplied inventory")
+    for prefix in ("goemotions", "ag_news"):
+        candidate = _object(read_json(files[prefix + "_candidate"]), prefix + " candidate")
+        if (
+            candidate.get("preparation_script_sha256")
+            != hashlib.sha256(files[prefix + "_builder"].read_bytes()).hexdigest()
+        ):
+            errors.append(f"{prefix} candidate was produced by a different preparation script")
+        helpers = _object(candidate.get("preparation_helper_sha256"), "source helper hashes")
+        expected_helpers = {
+            ARTIFACTS[key][1]: files[key] for key in ("candidate_io", "file_integrity_contract")
+        }
+        if set(helpers) != set(expected_helpers) or any(
+            helpers.get(path) != hashlib.sha256(local.read_bytes()).hexdigest()
+            for path, local in expected_helpers.items()
+        ):
+            errors.append(f"{prefix} candidate does not bind current preparation helpers")
+        partition = _object(read_json(files[prefix + "_partitions"]), prefix + " partitions")
+        expected_candidate_ref = {
+            "path": ARTIFACTS[prefix + "_candidate"][1],
+            "bytes": files[prefix + "_candidate"].stat().st_size,
+            "sha256": hashlib.sha256(files[prefix + "_candidate"].read_bytes()).hexdigest(),
+        }
+        if partition.get("candidate_manifest") != expected_candidate_ref or any(
+            partition.get(key) != candidate.get(key) for key in ("repo", "revision")
+        ):
+            errors.append(f"{prefix} assignments refer to a different source candidate")
+        errors.extend(check_file(root, partition["candidate_manifest"]))
+        if partition.get("source_files") != candidate.get("prepared_files"):
+            errors.append(f"{prefix} assignments do not bind current prepared source files")
+        if (
+            partition.get("implementation_sha256")
+            != hashlib.sha256(files["partition_contract"].read_bytes()).hexdigest()
+        ):
+            errors.append(f"{prefix} assignments used a different partition implementation")
+    arxiv = _object(read_json(files["arxiv_source"]), "arXiv source report")
+    conversion = _object(arxiv.get("conversion"), "arXiv conversion")
+    if (
+        conversion.get("script") != ARTIFACTS["arxiv_builder"][1]
+        or conversion.get("script_sha256")
+        != hashlib.sha256(files["arxiv_builder"].read_bytes()).hexdigest()
+    ):
+        errors.append("arXiv source report used a different reconstruction script")
+    if conversion.get("helper_sha256") != {
+        path: hashlib.sha256(local.read_bytes()).hexdigest()
+        for path, local in expected_helpers.items()
+    }:
+        errors.append("arXiv source report does not bind current preparation helpers")
+    return errors
+
+
+def inspect_preparation(
+    root: Path, manifest_path: Path, target: str, *, check_archive: bool = False
+) -> dict[str, Any]:
     """Check only common and requested-target evidence. Never authorize a run."""
     if target not in {"model_study", "book_study"}:
         raise ValueError("Target must be model_study or book_study")
@@ -156,7 +222,8 @@ def inspect_preparation(root: Path, manifest_path: Path, target: str) -> dict[st
     errors: list[str] = []
     ids: set[str] = set()
     files: dict[str, Path] = {}
-    required = {key for key, (scope, _) in ARTIFACTS.items() if scope in {"common", target}}
+    scopes = {"common", target} | ({"archive"} if check_archive else set())
+    required = {key for key, (scope, _) in ARTIFACTS.items() if scope in scopes}
     for artifact in artifacts:
         artifact_id = artifact.get("id")
         if not isinstance(artifact_id, str) or not artifact_id or artifact_id in ids:
@@ -196,93 +263,13 @@ def inspect_preparation(root: Path, manifest_path: Path, target: str) -> dict[st
                     blockers.append("The model task suite is still a candidate proposal")
                 if study["budget"].get("status") != "frozen":
                     blockers.append("The model budget policy is not frozen")
-                inventory = _object(read_json(files["data_inventory"]), "data inventory")
-                audit = _object(read_json(files["data_audit"]), "data audit")
-                if (
-                    inventory.get("audit_script_sha256")
-                    != hashlib.sha256(files["data_auditor"].read_bytes()).hexdigest()
-                ):
-                    errors.append("Data inventory was produced by a different auditor revision")
-                # Matches audit_research_data.py's documented inventory serialization.
-                canonical = json.dumps(
-                    inventory, sort_keys=True, ensure_ascii=False, allow_nan=False
-                ).encode()
-                if audit.get("inventory_sha256") != hashlib.sha256(canonical).hexdigest():
-                    errors.append("Data audit does not bind the supplied inventory")
                 backbone = _object(read_json(files["backbone_candidates"]), "backbone candidates")
                 if (
                     backbone.get("metadata_source_sha256")
                     != hashlib.sha256(files["repository_metadata"].read_bytes()).hexdigest()
                 ):
                     errors.append("Backbone review does not bind the supplied repository metadata")
-                for prefix in ("goemotions", "ag_news"):
-                    candidate = _object(
-                        read_json(files[prefix + "_candidate"]), prefix + " candidate"
-                    )
-                    if (
-                        candidate.get("preparation_script_sha256")
-                        != hashlib.sha256(files[prefix + "_builder"].read_bytes()).hexdigest()
-                    ):
-                        errors.append(
-                            f"{prefix} candidate was produced by a different preparation script"
-                        )
-                    helpers = _object(
-                        candidate.get("preparation_helper_sha256"), "source helper hashes"
-                    )
-                    expected_helpers = {
-                        ARTIFACTS[key][1]: files[key]
-                        for key in ("candidate_io", "file_integrity_contract")
-                    }
-                    if set(helpers) != set(expected_helpers) or any(
-                        helpers.get(path) != hashlib.sha256(local.read_bytes()).hexdigest()
-                        for path, local in expected_helpers.items()
-                    ):
-                        errors.append(
-                            f"{prefix} candidate does not bind current preparation helpers"
-                        )
-                    partition = _object(
-                        read_json(files[prefix + "_partitions"]), prefix + " partitions"
-                    )
-                    expected_candidate_ref = {
-                        "path": ARTIFACTS[prefix + "_candidate"][1],
-                        "bytes": files[prefix + "_candidate"].stat().st_size,
-                        "sha256": hashlib.sha256(
-                            files[prefix + "_candidate"].read_bytes()
-                        ).hexdigest(),
-                    }
-                    if partition.get("candidate_manifest") != expected_candidate_ref or any(
-                        partition.get(key) != candidate.get(key) for key in ("repo", "revision")
-                    ):
-                        errors.append(f"{prefix} assignments refer to a different source candidate")
-                    errors.extend(check_file(root, partition["candidate_manifest"]))
-                    if partition.get("source_files") != candidate.get("prepared_files"):
-                        errors.append(
-                            f"{prefix} assignments do not bind current prepared source files"
-                        )
-                    if (
-                        partition.get("implementation_sha256")
-                        != hashlib.sha256(files["partition_contract"].read_bytes()).hexdigest()
-                    ):
-                        errors.append(
-                            f"{prefix} assignments used a different partition implementation"
-                        )
-                arxiv = _object(read_json(files["arxiv_source"]), "arXiv source report")
-                conversion = _object(arxiv.get("conversion"), "arXiv conversion")
-                if (
-                    conversion.get("script") != ARTIFACTS["arxiv_builder"][1]
-                    or conversion.get("script_sha256")
-                    != hashlib.sha256(files["arxiv_builder"].read_bytes()).hexdigest()
-                ):
-                    errors.append("arXiv source report used a different reconstruction script")
-                if conversion.get("helper_sha256") != {
-                    path: hashlib.sha256(local.read_bytes()).hexdigest()
-                    for path, local in expected_helpers.items()
-                }:
-                    errors.append("arXiv source report does not bind current preparation helpers")
                 validate_ledger(read_json(files["compute_ledger_template"]))
-                observations.append(
-                    "Legacy corpus audit is historical preparation context; fresh dataset admission is checked separately"
-                )
                 blockers.extend(validate_model_admission(root, plan))
             else:
                 from src.research.annotations import validate_packet
@@ -296,6 +283,8 @@ def inspect_preparation(root: Path, manifest_path: Path, target: str) -> dict[st
                     root=root,
                 )
                 blockers.extend(validate_book_admission(root, plan, packet))
+            if check_archive:
+                errors.extend(_inspect_source_archive(root, files))
             gates = _object(status.get("gates"), "preparation gates")
             relevant_paths = {ARTIFACTS[key][1] for key in required}
             for name, gate in gates.items():
@@ -318,6 +307,7 @@ def inspect_preparation(root: Path, manifest_path: Path, target: str) -> dict[st
     return {
         "schema_version": 1,
         "target": target,
+        "source_archive_checked": check_archive,
         "artifacts_valid": not errors,
         "errors": errors,
         "blockers": blockers,

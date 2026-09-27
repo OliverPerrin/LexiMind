@@ -6,43 +6,43 @@
       "id": "study_design",
       "scope": "common",
       "path": "configs/research/study_design.json",
-      "bytes": 7504,
-      "sha256": "57c10bbcff84df99a85bee20963e07af5a04bb215b63b40fba10c5358ec712fc"
+      "bytes": 11456,
+      "sha256": "71c6fe907b548a28f4254346e9314990746e9370752451e8383473cfcd5d0680"
     },
     {
       "id": "preparation_status",
       "scope": "common",
       "path": "configs/research/preparation.json",
-      "bytes": 5850,
-      "sha256": "318e8ce04434d71877351d7b45c2c6dffc8b4d476642a5df422e1a7601ee0e2a"
+      "bytes": 5488,
+      "sha256": "a068b93d21706584f9fe17938ec2407e7430d6f575226841aa9340538b62f447"
     },
     {
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 7022,
-      "sha256": "0f9e9b01a7b754db0d49cbd77f7b885d624d411a8cfe3207960943159e84f240"
+      "bytes": 2543,
+      "sha256": "927c549d84a991873ddbf96a17d7c86c68cf64e6a7b37d028d9903c0d3b46d57"
     },
     {
       "id": "study_decisions",
       "scope": "common",
       "path": "docs/research/study_decisions.md",
-      "bytes": 7656,
-      "sha256": "4613e7eabce2b407e3ced35cbeee48a7abb415133186c4cd965eefaf76b922c9"
+      "bytes": 3034,
+      "sha256": "f4bb16415c71270094fb8ecfaa2e45c68b27de2e0d1cb6753831917982b8ef17"
     },
     {
       "id": "evaluation_protocol",
       "scope": "common",
       "path": "docs/eval_protocol.md",
-      "bytes": 10966,
-      "sha256": "163e01249e0325fc67852c208dcfb774c2d849a4f6602dbc210d33a7aabefa7a"
+      "bytes": 4153,
+      "sha256": "2aa9d310575492d2568f5442c751f37728ce695668d8a372005e9c84f152a7cb"
     },
     {
       "id": "preflight_contract",
       "scope": "common",
       "path": "src/research/preparation.py",
-      "bytes": 18312,
-      "sha256": "e37c761d0e107672781abf951693fef5256d2059114639a698c72f0ce81fd75a"
+      "bytes": 17431,
+      "sha256": "718e9ca99dc4498737e5ee90651e3624ed93ba22fd46ada9a608297374fabfca"
     },
     {
       "id": "file_integrity_contract",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 4887,
-      "sha256": "cee2468ef2a17ab1f5b4a4a6b7723971d1436b01a408e5423efb108662c372ba"
+      "bytes": 4529,
+      "sha256": "5531fe86e17fa3a7dbb1c6b81855c3257d1d7349aa72063f63689a3b8f94dc75"
     },
     {
       "id": "model_literature",
@@ -69,8 +69,8 @@
       "id": "model_methods_review",
       "scope": "model_study",
       "path": "docs/research/model_recipe_review.md",
-      "bytes": 14847,
-      "sha256": "ad045bf28977263526f71ab0cd944d7b9677669315cf0ce27ba7db81f1f2bd80"
+      "bytes": 3780,
+      "sha256": "f2c4bd51832b0e240b8209b0e1fc77235e021cb419d6641c476729b2b1ad48dd"
     },
     {
       "id": "backbone_candidates",
@@ -83,8 +83,8 @@
       "id": "backbone_review",
       "scope": "model_study",
       "path": "docs/research/backbone_interface_review.md",
-      "bytes": 12315,
-      "sha256": "0733ee9b24180fe01661a3ea87622113d684163f26f11863e018b806fffbcc99"
+      "bytes": 4060,
+      "sha256": "5532e016d6730df57c4f03c5d7c02665eef9bf5583dac69c8cdeb8fb99a10aed"
     },
     {
       "id": "repository_metadata",
@@ -95,143 +95,122 @@
     },
     {
       "id": "data_inventory",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "research/preparation/data_inventory.json",
       "bytes": 28598,
       "sha256": "533976c7994750c2910398faa0e1ca547132679369b4eb484d4e85116d0e86f4"
     },
     {
       "id": "data_audit",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "research/preparation/data_audit.json",
       "bytes": 26844,
       "sha256": "76e65e87784ce96324b49131eab3d3de8b66e3c2c053c2cd851ce858fd97be44"
     },
     {
       "id": "data_auditor",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "scripts/audit_research_data.py",
       "bytes": 29714,
       "sha256": "d76602a2a8efbf8c5d5943576023e92216ce0df26c2e3dbe5eedff297cc702c8"
     },
     {
-      "id": "data_readiness",
+      "id": "book_field_sources",
       "scope": "model_study",
-      "path": "docs/research/data_readiness.md",
-      "bytes": 8345,
-      "sha256": "1041d2b9b3a6a355f2d90d91cea64eb9e629b5ad5fb92c1088c681c330bcf80f"
+      "path": "research/preparation/book_field_sources.json",
+      "bytes": 10304,
+      "sha256": "60cab3259ee24392d66ad81a94d2730da213a7542f2313418b7184fdef838abf"
+    },
+    {
+      "id": "source_archive",
+      "scope": "archive",
+      "path": "docs/research/source_archive.md",
+      "bytes": 4327,
+      "sha256": "c48d21d3062b37abd08f7ad79e916c2e94ab0f750ae776c652f1427efd41c03a"
     },
     {
       "id": "dataset_decisions",
       "scope": "model_study",
       "path": "docs/research/dataset_decisions.md",
-      "bytes": 5037,
-      "sha256": "5d27ffca61aa03233b1ef681695806d3dd619046adc6783f630fa6d5a444d47d"
+      "bytes": 4855,
+      "sha256": "6d65593483e6bcada86b44ceb9cb4687c1a6acd12a98046770e404bf0d51fad0"
     },
     {
       "id": "goemotions_candidate",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "research/preparation/goemotions_candidate_manifest.json",
       "bytes": 22555,
       "sha256": "cb9a8ab762c293d4e386ac5df28a88abbd03bbb37165befdf753a16ff98be324"
     },
     {
       "id": "candidate_io",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "src/research/candidate_io.py",
       "bytes": 2662,
       "sha256": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4"
     },
     {
       "id": "ag_news_candidate",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "research/preparation/ag_news_candidate_manifest.json",
       "bytes": 7801,
       "sha256": "ebdbe66fa0afc36bb420dcfb66959d61f601f2a06ab47f50f50a09a0a0a78d7c"
     },
     {
       "id": "ag_news_builder",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "scripts/prepare_ag_news_candidate.py",
       "bytes": 17715,
       "sha256": "84dad583363256b4b826de41dc33787fef6d4afad05164abbbcfcf01f066286e"
     },
     {
-      "id": "ag_news_reconstruction",
-      "scope": "model_study",
-      "path": "docs/research/ag_news_reconstruction.md",
-      "bytes": 5267,
-      "sha256": "319e6fcb556809358b859c019f2c1b3ed6bc67cf451c024fd2dc8409d514ae84"
-    },
-    {
       "id": "arxiv_source",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "research/preparation/arxiv_source_manifest.json",
       "bytes": 9469,
       "sha256": "e66fc3b21ca61caee89a89a1bc3df66ba00fe1f054434d6081075b60a8958064"
     },
     {
       "id": "arxiv_builder",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "scripts/prepare_arxiv_candidate.py",
       "bytes": 30043,
       "sha256": "f0804f915b8f638f1ae8741f39471c5f6fd1385fbfc2ad696bbed6161b412925"
     },
     {
-      "id": "arxiv_reconstruction",
-      "scope": "model_study",
-      "path": "docs/research/arxiv_reconstruction.md",
-      "bytes": 8501,
-      "sha256": "e9e06df8fc2b2e78bb7f1f78dbdf98cf0ef0e1fdc06e4926bd60c6c3d072ddb3"
-    },
-    {
       "id": "goemotions_partitions",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "research/preparation/goemotions_partition_manifest.json",
       "bytes": 6309,
       "sha256": "5fee305b1d2b368cc111e3384cf68d155abf658ec96cd10dba85d9ca6839f068"
     },
     {
       "id": "ag_news_partitions",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "research/preparation/ag_news_partition_manifest.json",
       "bytes": 3584,
       "sha256": "e51eeb42bf9f8d4f56c2039c31f5f7eed78612422592cc8f566d22a8b2308ced"
     },
     {
       "id": "partition_contract",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "src/research/partitions.py",
       "bytes": 11976,
       "sha256": "0d4fd90a268147256c55d0e8106cf8c4bdc437d65f6cb81890a19f5a064168f3"
     },
     {
       "id": "partition_builder",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "scripts/prepare_research_partitions.py",
       "bytes": 1702,
       "sha256": "cabaf8760d3e5a630bc916d55b458e8e6018f84ae58ff1be5d73cc8694b19c45"
     },
     {
-      "id": "partition_guide",
-      "scope": "model_study",
-      "path": "docs/research/partitions.md",
-      "bytes": 3271,
-      "sha256": "3b3fd21da18bb4316c17221a64b579af3edfad39b3291649a4abc01aa56b75f4"
-    },
-    {
       "id": "goemotions_builder",
-      "scope": "model_study",
+      "scope": "archive",
       "path": "scripts/prepare_goemotions_candidate.py",
       "bytes": 25173,
       "sha256": "239e97a3b745d0f14a9dbb4d20ad16cc05ab5a7f098444292a11e06d88710a60"
-    },
-    {
-      "id": "goemotions_reconstruction",
-      "scope": "model_study",
-      "path": "docs/research/goemotions_reconstruction.md",
-      "bytes": 7840,
-      "sha256": "f34b9d578e39ab005915c9229941fb23b7ad67493b27844f4b8ad0f3fe95f3f5"
     },
     {
       "id": "compute_ledger_template",
@@ -251,8 +230,8 @@
       "id": "compute_accounting",
       "scope": "model_study",
       "path": "docs/research/compute_accounting.md",
-      "bytes": 8366,
-      "sha256": "6dd79a35087ab12e4229745ac96b6d025230985ec8956c47d1ad0c7a63e9563e"
+      "bytes": 3162,
+      "sha256": "5cff9b4de1e63344ea26a519a7763db7d8dd684303c9e4afc1913e25ee472d49"
     },
     {
       "id": "model_admission_contract",
@@ -265,8 +244,8 @@
       "id": "model_admission_guide",
       "scope": "model_study",
       "path": "docs/research/admission_contracts.md",
-      "bytes": 11206,
-      "sha256": "4cf30f483546fab8808530c1024ae791c366ebc472707e31ef0bb6fc8c81f5f4"
+      "bytes": 3857,
+      "sha256": "4dc1e72b5599ac3b58f94699a1b1a5ac641809512a615cf04755a3bc95f21074"
     },
     {
       "id": "book_literature",
@@ -279,15 +258,15 @@
       "id": "book_methods_review",
       "scope": "book_study",
       "path": "docs/research/book_discovery_review.md",
-      "bytes": 21201,
-      "sha256": "0686d85a75035b1e6e8daf95a2895355da0043797cc76dbfb281e0fb8afb0b71"
+      "bytes": 3777,
+      "sha256": "58a80327899d1f1ec8035cf0954247625b00322abb6a41edfd0a2cc941a5f6c9"
     },
     {
       "id": "annotation_packet",
       "scope": "book_study",
       "path": "research/preparation/annotation_packet.json",
       "bytes": 35963,
-      "sha256": "bc5bc85d5590cb3b539dc6aefea09566492514ab036cf1b93c4d657ed7920bd5"
+      "sha256": "50ccfcbc93c722a81682456bd58a7c0e1544cb8668d151f761bc9f7305496063"
     },
     {
       "id": "annotation_contract",
@@ -300,22 +279,22 @@
       "id": "annotation_guide",
       "scope": "book_study",
       "path": "docs/research/annotation_preparation.md",
-      "bytes": 9582,
-      "sha256": "bc1820cfa25a9fb9ebb7ade03564bd70fa633d16c5fe008057c303ae3274b94e"
+      "bytes": 3536,
+      "sha256": "62207dab1ed55fb44ff6df91e42cbc1cf9a3ab3c919cab7e4cebef4366cb6ca7"
     },
     {
       "id": "mood_rubric",
       "scope": "book_study",
       "path": "docs/mood_annotation_guide.md",
-      "bytes": 7193,
-      "sha256": "88003ffec0bb52d93633edbd25ad0cd9b4f263f7c4127e98d6958a2e71663c35"
+      "bytes": 2719,
+      "sha256": "2b6ed528efa4323c614fdf17e0afba9a459cc7da21eae5b59db454a5c8d5777f"
     },
     {
       "id": "relevance_rubric",
       "scope": "book_study",
       "path": "docs/recommendation_judgments.md",
-      "bytes": 9296,
-      "sha256": "2baca073f9b7f5dbecf91bfc2a66f678ad64a581b0a25a1fe56c1510ac18ad6f"
+      "bytes": 2713,
+      "sha256": "fd9fb4652101cebbcfc2440953d363074a11b0290e8504a5bff5931de5847f8d"
     },
     {
       "id": "book_admission_contract",
@@ -328,8 +307,8 @@
       "id": "book_admission_guide",
       "scope": "book_study",
       "path": "docs/research/book_admission_contract.md",
-      "bytes": 9803,
-      "sha256": "d201f8b471824abf5c69f68a473387a187c9d26cb96a34952c86d70c9036f69b"
+      "bytes": 3482,
+      "sha256": "5d7ae62c1003c1a5c26e38450f79bade80aaacdb274c08d6c2f66accb75d90df"
     }
   ]
 }
