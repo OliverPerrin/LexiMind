@@ -6,22 +6,22 @@
       "id": "study_design",
       "scope": "common",
       "path": "configs/research/study_design.json",
-      "bytes": 11456,
-      "sha256": "71c6fe907b548a28f4254346e9314990746e9370752451e8383473cfcd5d0680"
+      "bytes": 11816,
+      "sha256": "fe58e119765e983b97874b6f1d0d6cc04ea4e14160d94b151810e4b6e7bb4c54"
     },
     {
       "id": "preparation_status",
       "scope": "common",
       "path": "configs/research/preparation.json",
-      "bytes": 5640,
-      "sha256": "c0fb9e177bb3a2ae2b26a0f71bff3555ac287d4c9046639af0f83c5dad44ee3f"
+      "bytes": 5999,
+      "sha256": "68fe34f8c2fbddcd9530b39aae16b3a291324474986a40bc7b260c83cb2d1e8e"
     },
     {
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 2543,
-      "sha256": "927c549d84a991873ddbf96a17d7c86c68cf64e6a7b37d028d9903c0d3b46d57"
+      "bytes": 2952,
+      "sha256": "a22fa63b7cd2f971169fbdd7438332e90d1adb8273a0de1cb82f059944d4b129"
     },
     {
       "id": "study_decisions",
@@ -41,8 +41,8 @@
       "id": "preflight_contract",
       "scope": "common",
       "path": "src/research/preparation.py",
-      "bytes": 18163,
-      "sha256": "337dda273e7ef44d8ba4dfab951ecad13903d2d9eaa4b6d2a14c735a1cbc14e7"
+      "bytes": 20994,
+      "sha256": "32418746018a3122fcdf05c77a16f70364702cf58cb2ea1f13f0314610f24e58"
     },
     {
       "id": "file_integrity_contract",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 4762,
-      "sha256": "55e88e31f52560ae84847b8e369874f710405fcdb327535bb5d4a36834a9f850"
+      "bytes": 5659,
+      "sha256": "db1e6319762bea1f78d25038715dc0dd180efa7dddbee081060ca71f208e0f34"
     },
     {
       "id": "model_literature",
@@ -129,11 +129,81 @@
       "sha256": "06200e23523ea5c6a7f73cdf0895855e2fd7d4c546ebb5bbbad89ba1e1ead4f0"
     },
     {
+      "id": "bgc_groups",
+      "scope": "model_study",
+      "path": "research/preparation/bgc_group_manifest.json",
+      "bytes": 6378,
+      "sha256": "318df901615055ab188ceaf3e91e9d3a70d6005c511108b223dbcdb9cd57f8dc"
+    },
+    {
+      "id": "bgc_group_builder",
+      "scope": "model_study",
+      "path": "scripts/prepare_bgc_groups.py",
+      "bytes": 6617,
+      "sha256": "ac8156b1874c65828e7bc6e2b4b9b8b8701769156bdde15ff99da9a46d7cd1b6"
+    },
+    {
+      "id": "book_group_contract",
+      "scope": "model_study",
+      "path": "src/research/book_groups.py",
+      "bytes": 14078,
+      "sha256": "5ce2497ba51bf753c8653a4b5117ca2b41540cf15625f516f515f9595cd8a294"
+    },
+    {
+      "id": "book_field_mapping",
+      "scope": "model_study",
+      "path": "research/preparation/book_field_mapping.json",
+      "bytes": 39092,
+      "sha256": "b2e001706648bfce0f55c2e285d25e8870531b364af711da2d984f87e6945ca7"
+    },
+    {
+      "id": "book_fields",
+      "scope": "model_study",
+      "path": "research/preparation/book_field_manifest.json",
+      "bytes": 6425,
+      "sha256": "a6222ae9215dc3e545c02e5e670fb9e56b6cb5995d971b017c78819c1b5e7f34"
+    },
+    {
+      "id": "book_field_builder",
+      "scope": "model_study",
+      "path": "scripts/prepare_book_fields.py",
+      "bytes": 17981,
+      "sha256": "68544b311d919bf5adf009106b68553a443b29b7f9df797c1cb1608b2d1e66ea"
+    },
+    {
+      "id": "book_field_contract",
+      "scope": "model_study",
+      "path": "src/research/book_fields.py",
+      "bytes": 6161,
+      "sha256": "4177ce85b4d146be8cfb18e5d4ea74c0f37a9dead20f6e0380bb9bfdf75d3536"
+    },
+    {
+      "id": "licensed_books",
+      "scope": "model_study",
+      "path": "research/preparation/licensed_books_manifest.json",
+      "bytes": 7747,
+      "sha256": "79f8d4a044ef621b26c031683bb56239e59ebf0b16640cf4dbf355efd2de1467"
+    },
+    {
+      "id": "licensed_book_sources",
+      "scope": "model_study",
+      "path": "research/preparation/licensed_books_sources.json",
+      "bytes": 7705,
+      "sha256": "02dd9de53b398fefd671ab9b12e09c17e3af6cea7dcbe6e2976c70e1e446cfa0"
+    },
+    {
+      "id": "licensed_book_builder",
+      "scope": "model_study",
+      "path": "scripts/prepare_licensed_books.py",
+      "bytes": 16282,
+      "sha256": "2bffdd47083e07551b66eae7c95c874c98eaaa693653e1fb801eeb665b44bcc4"
+    },
+    {
       "id": "book_field_sources",
       "scope": "model_study",
       "path": "research/preparation/book_field_sources.json",
-      "bytes": 13822,
-      "sha256": "11c377e7d6a592b8de4be837cc92de77503fd672ea4d9e89c504dc1e58874f7a"
+      "bytes": 14465,
+      "sha256": "6b1741cab6bc11b3abbbe1bf2fc8df87bef103cebcf15b6d83618c7625a2a8b6"
     },
     {
       "id": "source_archive",
@@ -146,8 +216,8 @@
       "id": "dataset_decisions",
       "scope": "model_study",
       "path": "docs/research/dataset_decisions.md",
-      "bytes": 5821,
-      "sha256": "612995d3dc73398df162cf0482b8023ee0c199138272fe12e0e6bc7b9f36f379"
+      "bytes": 6182,
+      "sha256": "cbe3fae01b1a1073605008397f2f29a32cc5cb153339c58c9661639371525cc8"
     },
     {
       "id": "goemotions_candidate",
@@ -162,6 +232,13 @@
       "path": "src/research/candidate_io.py",
       "bytes": 2662,
       "sha256": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4"
+    },
+    {
+      "id": "catalogue_storage",
+      "scope": "common",
+      "path": "src/catalog/storage.py",
+      "bytes": 4656,
+      "sha256": "876b0860e3354dabcd0031806e2c5c17f3b48986918b8bfa28bdc081da6f06be"
     },
     {
       "id": "ag_news_candidate",

@@ -15,6 +15,18 @@ Book recommendation relevance is evaluated separately from model-task accuracy.
 
 ## Working commands
 
+Rebuild prepared book candidates offline from the preserved source cache:
+
+```sh
+python scripts/prepare_bgc_groups.py
+python scripts/prepare_book_fields.py
+python scripts/prepare_licensed_books.py
+```
+
+Only the licensed-book command has an explicit `--fetch` option for missing pinned
+public files. These commands use the standard library and do not load models.
+Then check the compact preparation evidence:
+
 ```sh
 python scripts/audit_research_preparation.py --target model_study
 python scripts/audit_research_preparation.py --target book_study

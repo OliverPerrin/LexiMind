@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "status": "weak_field_candidates_not_admitted",
+  "training_authorized": false,
+  "human_gold": false,
+  "archive": {
+    "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+    "bytes": 48690771,
+    "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+  },
+  "candidate_manifest": {
+    "path": "research/preparation/bgc_candidate_manifest.json",
+    "bytes": 18995,
+    "sha256": "da087d041a319c18f5b1fcdfaf97dcdbb65cc8feb6808928926a7fb82d53835d"
+  },
+  "grouping_manifest": {
+    "path": "research/preparation/bgc_group_manifest.json",
+    "bytes": 6378,
+    "sha256": "318df901615055ab188ceaf3e91e9d3a70d6005c511108b223dbcdb9cd57f8dc"
+  },
+  "mapping": {
+    "path": "research/preparation/book_field_mapping.json",
+    "bytes": 39092,
+    "sha256": "b2e001706648bfce0f55c2e285d25e8870531b364af711da2d984f87e6945ca7"
+  },
+  "assignments": {
+    "bytes": 19176017,
+    "sha256": "df8484993cf99d85b5646f1ba2fa863c39f0f8df4259ae0f7a5f094b9be4ed69",
+    "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/assignments.jsonl"
+  },
+  "field_references": {
+    "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/fields-b2e001706648-df8484993cf9/field_references.jsonl.gz",
+    "bytes": 14336341,
+    "sha256": "8f841f9707a6c65f296319855bfbce5b29b43700ed63555b4ee4232ca8b0a43a"
+  },
+  "preparation_script_sha256": "68544b311d919bf5adf009106b68553a443b29b7f9df797c1cb1608b2d1e66ea",
+  "preparation_helper_sha256": {
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433",
+    "scripts/prepare_bgc_candidate.py": "06200e23523ea5c6a7f73cdf0895855e2fd7d4c546ebb5bbbad89ba1e1ead4f0",
+    "src/research/book_fields.py": "4177ce85b4d146be8cfb18e5d4ea74c0f37a9dead20f6e0380bb9bfdf75d3536",
+    "src/catalog/storage.py": "876b0860e3354dabcd0031806e2c5c17f3b48986918b8bfa28bdc081da6f06be"
+  },
+  "observed": {
+    "records": 91894,
+    "source_splits": {
+      "train": 58715,
+      "dev": 14785,
+      "test": 18394
+    },
+    "mapped_source_labels": {
+      "mapped": 136,
+      "unsupported": 5,
+      "ambiguous": 5
+    },
+    "source_label_record_decisions": {
+      "mapped": 259125,
+      "ambiguous": 9384,
+      "unsupported": 8036
+    },
+    "positive_record_counts": {
+      "genre": {
+        "adventure": 1876,
+        "erotica": 43,
+        "fantasy": 4208,
+        "gothic_horror": 592,
+        "historical_fiction": 4365,
+        "humor": 1459,
+        "literary_fiction": 7378,
+        "mystery": 4999,
+        "mystery_suspense": 9386,
+        "paranormal_fiction": 1676,
+        "romance": 7333,
+        "science_fiction": 2222,
+        "spiritual_fiction": 632,
+        "suspense_thriller": 5463,
+        "western": 1333
+      },
+      "topic": {
+        "arts": 3622,
+        "business": 881,
+        "cooking": 3193,
+        "crafts": 920,
+        "finance": 294,
+        "games": 399,
+        "health": 3431,
+        "history": 4698,
+        "language": 354,
+        "literature": 902,
+        "parenting": 1287,
+        "pets": 263,
+        "philosophy": 3681,
+        "politics": 2585,
+        "psychology": 1930,
+        "religion": 4541,
+        "science": 2453,
+        "self_development": 3754,
+        "social_issues": 1804,
+        "sports": 1544,
+        "technology": 569,
+        "test_preparation": 365,
+        "travel": 835
+      },
+      "form": {
+        "fiction": 36234,
+        "graphic_narrative": 4428,
+        "life_writing": 5993,
+        "literary_collection": 1147,
+        "nonfiction": 34511,
+        "poetry": 1256,
+        "reference": 2145
+      },
+      "audience": {
+        "children": 19792,
+        "middle_grade": 7728,
+        "teen_young_adult": 3754
+      }
+    },
+    "negative_labels": 0,
+    "records_without_any_mapped_positive": 25,
+    "records_with_positive_by_field": {
+      "genre": 32162,
+      "topic": 33254,
+      "form": 71763,
+      "audience": 23405
+    },
+    "proposed_split_label_coverage": {
+      "train": {
+        "genre": {
+          "present_labels": 15,
+          "missing_labels": []
+        },
+        "topic": {
+          "present_labels": 23,
+          "missing_labels": []
+        },
+        "form": {
+          "present_labels": 7,
+          "missing_labels": []
+        },
+        "audience": {
+          "present_labels": 3,
+          "missing_labels": []
+        }
+      },
+      "dev": {
+        "genre": {
+          "present_labels": 15,
+          "missing_labels": []
+        },
+        "topic": {
+          "present_labels": 23,
+          "missing_labels": []
+        },
+        "form": {
+          "present_labels": 7,
+          "missing_labels": []
+        },
+        "audience": {
+          "present_labels": 3,
+          "missing_labels": []
+        }
+      },
+      "test": {
+        "genre": {
+          "present_labels": 15,
+          "missing_labels": []
+        },
+        "topic": {
+          "present_labels": 23,
+          "missing_labels": []
+        },
+        "form": {
+          "present_labels": 7,
+          "missing_labels": []
+        },
+        "audience": {
+          "present_labels": 3,
+          "missing_labels": []
+        }
+      }
+    },
+    "uncompressed_reference_bytes": 74564638
+  },
+  "contract": {
+    "input": [
+      "title",
+      "description"
+    ],
+    "text_storage": "Original ZIP only; references resolve source rows and verify canonical JSON input SHA-256.",
+    "default_state": "unknown",
+    "label_provenance": "Authored mapping of provider metadata; not human gold or complete negatives.",
+    "group_semantics": "Conservative leakage constraints and proposed splits, not adjudicated works or admitted training splits.",
+    "license": "CC BY-NC 4.0; README retains Penguin Random House/content-provider attribution"
+  },
+  "remaining_gates": [
+    "Review ambiguous/unsupported mappings and selected positive labels.",
+    "Review grouping candidates and freeze a work-aware split.",
+    "Collect explicit negatives or complete-label gold; positive-only masking does not establish a trainable objective.",
+    "Partial-label runtime integration remains unimplemented; training remains paused."
+  ]
+}

@@ -1,0 +1,1418 @@
+{
+  "schema_version": 1,
+  "mapping_id": "book-fields-bgc-v1",
+  "status": "authored_weak_candidate_not_human_gold",
+  "source_id": "bgc",
+  "source_archive_sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c",
+  "source_hierarchy_sha256": "9b8c86fb012084cf75c2c3f270629fb74158d61bcff345ab3fcb09ba4b8329c2",
+  "provenance": {
+    "provider_url": "https://www.inf.uni-hamburg.de/en/inst/ab/lt/resources/data/blurb-genre-collection.html",
+    "archive_url": "https://fiona.uni-hamburg.de/ca89b3cf/blurbgenrecollectionen.zip",
+    "source_audit": "research/preparation/bgc_candidate_manifest.json",
+    "basis": "Exact labels observed in the pinned archive, interpreted as an authored conservative vocabulary mapping; not expert adjudication."
+  },
+  "semantics": {
+    "default_state": "unknown",
+    "allowed_states": [
+      "positive",
+      "negative",
+      "unknown"
+    ],
+    "source_omissions": "unknown",
+    "negative_source": "none; explicit reviewed negatives require a separate future annotation source",
+    "hierarchy": "Only explicit labels in each BGC record are mapped. Validate BGC parent presence against its pinned hierarchy; no closure or cross-source implications.",
+    "input": "Exact title and body only; source labels, authors, URLs and identifiers remain outside classifier input.",
+    "reader_mood": "Not represented or inferred from BGC genres/topics.",
+    "preparation_only": true
+  },
+  "facets": {
+    "genre": {
+      "definition": "Content conventions; no audience, aboutness or reader mood inference.",
+      "labels": [
+        "adventure",
+        "erotica",
+        "fantasy",
+        "gothic_horror",
+        "historical_fiction",
+        "humor",
+        "literary_fiction",
+        "mystery",
+        "mystery_suspense",
+        "paranormal_fiction",
+        "romance",
+        "science_fiction",
+        "spiritual_fiction",
+        "suspense_thriller",
+        "western"
+      ],
+      "label_notes": {
+        "mystery_suspense": "Provider umbrella allows either component or their overlap; does not assert both components independently.",
+        "suspense_thriller": "Provider umbrella allows either component or their overlap; does not assert both components independently.",
+        "gothic_horror": "Provider umbrella allows either component or their overlap; does not assert both components independently."
+      }
+    },
+    "topic": {
+      "definition": "Broad explicit aboutness categories; source metadata provides weak evidence.",
+      "labels": [
+        "arts",
+        "business",
+        "cooking",
+        "crafts",
+        "finance",
+        "games",
+        "health",
+        "history",
+        "language",
+        "literature",
+        "parenting",
+        "pets",
+        "philosophy",
+        "politics",
+        "psychology",
+        "religion",
+        "science",
+        "self_development",
+        "social_issues",
+        "sports",
+        "technology",
+        "test_preparation",
+        "travel"
+      ]
+    },
+    "form": {
+      "definition": "Presentation or literary form, including the broad fiction/nonfiction distinction; not mutually exclusive.",
+      "labels": [
+        "fiction",
+        "graphic_narrative",
+        "life_writing",
+        "literary_collection",
+        "nonfiction",
+        "poetry",
+        "reference"
+      ]
+    },
+    "audience": {
+      "definition": "Only explicitly supported reading-age groups; no adult default or inferred gender.",
+      "labels": [
+        "children",
+        "middle_grade",
+        "teen_young_adult"
+      ]
+    }
+  },
+  "mappings": {
+    "1950 – Present Military History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "19th Century U.S. History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "20th Century U.S. History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "21st Century U.S. History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "African World History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Alternative Therapies": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "health"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Ancient World History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Art": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "arts"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Arts & Entertainment": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "arts"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Arts & Entertainment Biographies & Memoirs": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "life_writing"
+        ]
+      },
+      "note": "Shared life-writing umbrella; does not assert both biography and memoir."
+    },
+    "Asian World History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Baking & Desserts": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "cooking"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Beauty": {
+      "decision": "unsupported",
+      "positive": {},
+      "note": "Specific aboutness lies outside this small vocabulary."
+    },
+    "Bibles": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "religion"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Biography & Memoir": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "life_writing"
+        ]
+      },
+      "note": "Shared life-writing umbrella; does not assert both biography and memoir."
+    },
+    "Business": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "business"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Children’s Books": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "children"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Children’s Middle Grade Action & Adventure Books": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "middle_grade"
+        ],
+        "genre": [
+          "adventure"
+        ]
+      },
+      "note": "Explicit middle-grade audience; specific content mapped only where unambiguous."
+    },
+    "Children’s Middle Grade Books": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "middle_grade"
+        ]
+      },
+      "note": "Explicit middle-grade audience; specific content mapped only where unambiguous."
+    },
+    "Children’s Middle Grade Fantasy & Magical Books": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "middle_grade"
+        ],
+        "genre": [
+          "fantasy"
+        ]
+      },
+      "note": "Explicit middle-grade audience; specific content mapped only where unambiguous."
+    },
+    "Children’s Middle Grade Historical Books": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "middle_grade"
+        ]
+      },
+      "note": "Explicit middle-grade audience; specific content mapped only where unambiguous."
+    },
+    "Children’s Middle Grade Mystery & Detective Books": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "middle_grade"
+        ],
+        "genre": [
+          "mystery"
+        ]
+      },
+      "note": "Explicit middle-grade audience; specific content mapped only where unambiguous."
+    },
+    "Children’s Middle Grade Sports Books": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "middle_grade"
+        ],
+        "topic": [
+          "sports"
+        ]
+      },
+      "note": "Explicit middle-grade audience; specific content mapped only where unambiguous."
+    },
+    "Civil War Period": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Classics": {
+      "decision": "unsupported",
+      "positive": {},
+      "note": "Canonical/marketing status is outside these fields."
+    },
+    "Colonial/Revolutionary Period": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Contemporary Fantasy": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "fantasy"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Contemporary Romance": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "romance"
+        ]
+      },
+      "note": "Romance is explicit; no automatic second genre, audience, setting or topic."
+    },
+    "Cooking": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "cooking"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Cooking Methods": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "cooking"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Cozy Mysteries": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "mystery"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Crafts & Hobbies": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "crafts"
+        ]
+      },
+      "note": "Broad hobby/craft aboutness umbrella; does not imply gardening."
+    },
+    "Crafts, Home & Garden": {
+      "decision": "ambiguous",
+      "positive": {},
+      "note": "Combined provider category; does not establish each component independently. Retain source label for review."
+    },
+    "Crime Mysteries": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "mystery"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Cyber Punk": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "science_fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Design": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "arts"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Diet & Nutrition": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "health"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Domestic Politics": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "politics"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Economics": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "business"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Epic Fantasy": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "fantasy"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Erotica": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "erotica"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Espionage Mysteries": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "mystery"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "European World History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Exercise": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "health"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Fairy Tales": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "fantasy"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Fantasy": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "fantasy"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Fiction Classics": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Film": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "arts"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Food Memoir & Travel": {
+      "decision": "ambiguous",
+      "positive": {},
+      "note": "Combined provider category; does not establish each component independently. Retain source label for review."
+    },
+    "Games": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "games"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Gothic & Horror": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "gothic_horror"
+        ]
+      },
+      "note": "Provider umbrella allows either component or their overlap; does not assert both components independently."
+    },
+    "Graphic Novels & Manga": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "graphic_narrative"
+        ]
+      },
+      "note": "Shared graphic-narrative umbrella; does not assert novel form or manga separately."
+    },
+    "Health & Fitness": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "health"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Health & Reference": {
+      "decision": "ambiguous",
+      "positive": {},
+      "note": "Combined provider category; does not establish each component independently. Retain source label for review."
+    },
+    "Historical Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "historical_fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Historical Figure Biographies & Memoirs": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "life_writing"
+        ]
+      },
+      "note": "Shared life-writing umbrella; does not assert both biography and memoir."
+    },
+    "Historical Romance": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "romance"
+        ]
+      },
+      "note": "Romance is explicit; no automatic second genre, audience, setting or topic."
+    },
+    "History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Home & Garden": {
+      "decision": "ambiguous",
+      "positive": {},
+      "note": "Combined provider category; does not establish each component independently. Retain source label for review."
+    },
+    "Humor": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "humor"
+        ]
+      },
+      "note": "Humorous content convention; no claim about an individual reader response."
+    },
+    "Inspiration & Motivation": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "self_development"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Language": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "language"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Latin American World History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Literary Collections": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "literary_collection"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Literary Criticism": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "literature"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Literary Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "literary_fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Literary Figure Biographies & Memoirs": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "life_writing"
+        ]
+      },
+      "note": "Shared life-writing umbrella; does not assert both biography and memoir."
+    },
+    "Management": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "business"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Marketing": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "business"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Middle Eastern World History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Military Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Military History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Military Science Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "science_fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Music": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "arts"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Mystery & Suspense": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "mystery_suspense"
+        ]
+      },
+      "note": "Provider umbrella allows either component or their overlap; does not assert both components independently."
+    },
+    "Native American History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "New Adult Romance": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "romance"
+        ]
+      },
+      "note": "Romance is explicit; no automatic second genre, audience, setting or topic."
+    },
+    "Noir Mysteries": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "mystery"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Nonfiction": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "nonfiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Nonfiction Classics": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "nonfiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "North American World History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Paranormal Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "paranormal_fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Paranormal Romance": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "romance"
+        ]
+      },
+      "note": "Romance is explicit; no automatic second genre, audience, setting or topic."
+    },
+    "Parenting": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "parenting"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Performing Arts": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "arts"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Personal Finance": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "finance"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Personal Growth": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "self_development"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Pets": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "pets"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Philosophy": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "philosophy"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Photography": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "arts"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Poetry": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "poetry"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Political Figure Biographies & Memoirs": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "life_writing"
+        ]
+      },
+      "note": "Shared life-writing umbrella; does not assert both biography and memoir."
+    },
+    "Politics": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "politics"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Popular Science": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "science"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Psychology": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "psychology"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Reference": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "reference"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Regency Romance": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "romance"
+        ]
+      },
+      "note": "Romance is explicit; no automatic second genre, audience, setting or topic."
+    },
+    "Regional & Ethnic Cooking": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "cooking"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Religion": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "religion"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Religion & Philosophy": {
+      "decision": "ambiguous",
+      "positive": {},
+      "note": "Combined provider category; does not establish each component independently. Retain source label for review."
+    },
+    "Romance": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "romance"
+        ]
+      },
+      "note": "Romance is explicit; no automatic second genre, audience, setting or topic."
+    },
+    "Science": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "science"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Science Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "science_fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Self-Improvement": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "self_development"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Space Opera": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "science_fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Specialty Travel": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Spiritual Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "spiritual_fiction"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Sports": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "sports"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Step Into Reading": {
+      "decision": "unsupported",
+      "positive": {},
+      "note": "Publisher series/reading-program name; audience refinement needs reviewed series evidence."
+    },
+    "Suspense & Thriller": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "suspense_thriller"
+        ]
+      },
+      "note": "Provider umbrella allows either component or their overlap; does not assert both components independently."
+    },
+    "Suspense Romance": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "romance"
+        ]
+      },
+      "note": "Romance is explicit; no automatic second genre, audience, setting or topic."
+    },
+    "Technology": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "technology"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Teen & Young Adult": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "teen_young_adult"
+        ]
+      },
+      "note": "Provider combines teen and young-adult audiences; preserve that umbrella, not adult by default."
+    },
+    "Teen & Young Adult Action & Adventure": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "teen_young_adult"
+        ],
+        "genre": [
+          "adventure"
+        ]
+      },
+      "note": "Provider combines teen and young-adult audiences; preserve that umbrella, not adult by default."
+    },
+    "Teen & Young Adult Fantasy Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "teen_young_adult"
+        ],
+        "genre": [
+          "fantasy"
+        ]
+      },
+      "note": "Provider combines teen and young-adult audiences; preserve that umbrella, not adult by default."
+    },
+    "Teen & Young Adult Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "fiction"
+        ],
+        "audience": [
+          "teen_young_adult"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Teen & Young Adult Historical Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "teen_young_adult"
+        ],
+        "genre": [
+          "historical_fiction"
+        ]
+      },
+      "note": "Provider combines teen and young-adult audiences; preserve that umbrella, not adult by default."
+    },
+    "Teen & Young Adult Mystery & Suspense": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "teen_young_adult"
+        ],
+        "genre": [
+          "mystery_suspense"
+        ]
+      },
+      "note": "Provider combines teen and young-adult audiences; preserve that umbrella, not adult by default. Content maps only to the combined mystery/suspense umbrella."
+    },
+    "Teen & Young Adult Nonfiction": {
+      "decision": "mapped",
+      "positive": {
+        "form": [
+          "nonfiction"
+        ],
+        "audience": [
+          "teen_young_adult"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Teen & Young Adult Romance": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "teen_young_adult"
+        ],
+        "genre": [
+          "romance"
+        ]
+      },
+      "note": "Provider combines teen and young-adult audiences; preserve that umbrella, not adult by default."
+    },
+    "Teen & Young Adult Science Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "teen_young_adult"
+        ],
+        "genre": [
+          "science_fiction"
+        ]
+      },
+      "note": "Provider combines teen and young-adult audiences; preserve that umbrella, not adult by default."
+    },
+    "Teen & Young Adult Social Issues": {
+      "decision": "mapped",
+      "positive": {
+        "audience": [
+          "teen_young_adult"
+        ],
+        "topic": [
+          "social_issues"
+        ]
+      },
+      "note": "Provider combines teen and young-adult audiences; preserve that umbrella, not adult by default."
+    },
+    "Test Preparation": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "test_preparation"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel Writing": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel: Africa": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel: Asia": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel: Australia & Oceania": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel: Caribbean & Mexico": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel: Central & South America": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel: Europe": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel: Middle East": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Travel: USA & Canada": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "travel"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "U.S. History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Urban Fantasy": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "fantasy"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Weddings": {
+      "decision": "unsupported",
+      "positive": {},
+      "note": "Specific aboutness lies outside this small vocabulary."
+    },
+    "Western Fiction": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "western"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Western Romance": {
+      "decision": "mapped",
+      "positive": {
+        "genre": [
+          "romance"
+        ]
+      },
+      "note": "Romance is explicit; no automatic second genre, audience, setting or topic."
+    },
+    "Wine & Beverage": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "cooking"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Women’s Fiction": {
+      "decision": "unsupported",
+      "positive": {},
+      "note": "Marketing category does not establish reader gender or a single content convention."
+    },
+    "World History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "World Politics": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "politics"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "World War I Military History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "World War II Military History": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "history"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    },
+    "Writing": {
+      "decision": "mapped",
+      "positive": {
+        "topic": [
+          "literature"
+        ]
+      },
+      "note": "Direct label or conservative broader category; omitted detail is not supervised."
+    }
+  }
+}

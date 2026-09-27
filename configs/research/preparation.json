@@ -35,8 +35,8 @@
         },
         {
           "path": "research/preparation/book_field_sources.json",
-          "bytes": 13822,
-          "sha256": "11c377e7d6a592b8de4be837cc92de77503fd672ea4d9e89c504dc1e58874f7a"
+          "bytes": 14465,
+          "sha256": "6b1741cab6bc11b3abbbe1bf2fc8df87bef103cebcf15b6d83618c7625a2a8b6"
         }
       ],
       "draft_path": "docs/research/README.md",
@@ -47,8 +47,8 @@
       "evidence": [
         {
           "path": "configs/research/study_design.json",
-          "bytes": 11456,
-          "sha256": "71c6fe907b548a28f4254346e9314990746e9370752451e8383473cfcd5d0680"
+          "bytes": 11816,
+          "sha256": "fe58e119765e983b97874b6f1d0d6cc04ea4e14160d94b151810e4b6e7bb4c54"
         },
         {
           "path": "docs/research/study_decisions.md",
@@ -60,41 +60,46 @@
       "note": "Comparison interfaces, cost boundary and applied metric choices are proposed; protocol not frozen."
     },
     "dataset_manifest": {
-      "status": "bgc_source_audited_book_mapping_pending",
+      "status": "book_field_candidates_and_licensed_text_prepared",
       "evidence": [
         {
           "path": "research/preparation/book_field_sources.json",
-          "bytes": 13822,
-          "sha256": "11c377e7d6a592b8de4be837cc92de77503fd672ea4d9e89c504dc1e58874f7a"
+          "bytes": 14465,
+          "sha256": "6b1741cab6bc11b3abbbe1bf2fc8df87bef103cebcf15b6d83618c7625a2a8b6"
         },
         {
           "path": "research/preparation/bgc_candidate_manifest.json",
           "bytes": 18995,
           "sha256": "da087d041a319c18f5b1fcdfaf97dcdbb65cc8feb6808928926a7fb82d53835d"
+        },
+        {
+          "path": "research/preparation/book_field_mapping.json",
+          "bytes": 39092,
+          "sha256": "b2e001706648bfce0f55c2e285d25e8870531b364af711da2d984f87e6945ca7"
+        },
+        {
+          "path": "research/preparation/book_field_manifest.json",
+          "bytes": 6425,
+          "sha256": "a6222ae9215dc3e545c02e5e670fb9e56b6cb5995d971b017c78819c1b5e7f34"
+        },
+        {
+          "path": "research/preparation/licensed_books_manifest.json",
+          "bytes": 7747,
+          "sha256": "79f8d4a044ef621b26c031683bb56239e59ebf0b16640cf4dbf355efd2de1467"
         }
       ],
-      "note": "BGC archive acquired and audited; work/edition grouping and field-label mapping remain open. Other modern text sources have title-level terms; training stays paused."
+      "note": "BGC references carry authored partial field labels and proposed leakage groups; no gold or negatives. Four licensed full-text works are prepared locally without splits or labels. Review and runtime integration remain; training stays paused."
     },
     "group_split_audit": {
-      "status": "book_work_groups_pending_optional_controls_audited",
+      "status": "bgc_candidate_groups_prepared_review_pending",
       "evidence": [
         {
-          "path": "research/preparation/data_audit.json",
-          "bytes": 26844,
-          "sha256": "76e65e87784ce96324b49131eab3d3de8b66e3c2c053c2cd851ce858fd97be44"
-        },
-        {
-          "path": "research/preparation/goemotions_partition_manifest.json",
-          "bytes": 6309,
-          "sha256": "5fee305b1d2b368cc111e3384cf68d155abf658ec96cd10dba85d9ca6839f068"
-        },
-        {
-          "path": "research/preparation/ag_news_partition_manifest.json",
-          "bytes": 3584,
-          "sha256": "e51eeb42bf9f8d4f56c2039c31f5f7eed78612422592cc8f566d22a8b2308ced"
+          "path": "research/preparation/bgc_group_manifest.json",
+          "bytes": 6378,
+          "sha256": "318df901615055ab188ceaf3e91e9d3a70d6005c511108b223dbcdb9cd57f8dc"
         }
       ],
-      "note": "Book work/edition/series reconciliation remains to prepare. Existing generic-source partitions are optional-control evidence, not the new book task suite."
+      "note": "89,910 connected groups constrain all five observed identity/text matches; zero detected-key overlap across proposed splits. Groups are not adjudicated works; series/fuzzy/cross-source reconciliation and rare-label coverage remain to review."
     },
     "backbone_revision": {
       "status": "metadata_reviewed_unselected",

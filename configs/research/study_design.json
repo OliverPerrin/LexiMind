@@ -72,7 +72,8 @@
           "per_field_precision_coverage",
           "hierarchy_violations"
         ],
-        "integration_status": "requires_field_vocabulary_and_partial_label_loss; current topic runtime is single-label"
+        "integration_status": "candidate field vocabulary and source mapping prepared; reviewed labels and partial-label loss/output integration remain; current topic runtime is single-label",
+        "candidate_field_manifest": "research/preparation/book_field_manifest.json"
       },
       {
         "task_id": "emotion",
@@ -162,8 +163,8 @@
       ]
     },
     "unresolved": [
-      "BGC snapshot/terms and work-group audit",
-      "catalogue facet mapping and reviewed positive/negative labels",
+      "review BGC leakage components, fuzzy/series/cross-source identities and rare-label split support",
+      "review candidate field mapping and obtain positive/negative or complete-label seed evidence",
       "CR4 schema, character context, source terms and human/derived label separation",
       "partial-label loss and output-contract integration",
       "backbone adapter allowlist and runtime",
@@ -200,7 +201,7 @@
         "role": "optional generation control, not mandatory for book field accuracy"
       }
     ],
-    "optional_domain_adaptation": "Later teacher-free denoising on permitted training-book text only; one identical adapted initialization across recipe arms, with cost recorded. Not started."
+    "optional_domain_adaptation": "Four licensed full-text works prepared locally as a small pilot. Any later denoising uses permitted training-work text only after cross-source reconciliation, with one identical adapted initialization across recipe arms and cost recorded. No denoising or training started."
   },
   "applied_study": {
     "question": "Which source-backed representations improve graded query-to-work relevance within an explicitly eligible catalogue?",

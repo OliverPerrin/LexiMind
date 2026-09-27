@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-09-27",
-  "scope": "Primary methods/provider/schema review; no new corpus, model or teacher run",
+  "scope": "Primary-source review and local book-data preparation; no model, teacher or training run",
   "sources": [
     {
       "id": "bgc",
@@ -28,7 +28,12 @@
       "local_audit": "research/preparation/bgc_candidate_manifest.json",
       "observed_records": 91894,
       "observed_distinct_isbns": 91892,
-      "audit_note": "Two repeated ISBN/provider identities cross splits with differing labels. Dates describe editions, not original work age. Group works before model splits."
+      "audit_note": "Original split overlap is handled by proposed connected leakage groups, not verified literary-work identities. Per-record field states remain weak positives/unknowns; original labels and conflicting identities are preserved.",
+      "preparation": {
+        "grouping": "research/preparation/bgc_group_manifest.json",
+        "field_mapping": "research/preparation/book_field_mapping.json",
+        "field_candidates": "research/preparation/book_field_manifest.json"
+      }
     },
     {
       "id": "catalogue_subjects",
@@ -282,7 +287,8 @@
         "https://craphound.com/littlebrother/download/",
         "https://unglue.it/faq/"
       ],
-      "decision": "Green Comet trilogy declares CC BY-SA; Little Brother declares CC BY-NC-SA with cover art excluded. Verify exact edition/file/license and obligations before training. Unglue.it is discovery, not a uniform license; collection is author/genre biased."
+      "decision": "Pinned official Little Brother text acquired for a small preparation pilot; CC BY-NC-SA 3.0 with cover art excluded. Green Comet remains a CC BY-SA shortlist candidate. Preserve exact edition, attribution and obligations; no general commercial training clearance. Unglue.it is discovery, not a uniform license.",
+      "local_pilot": "research/preparation/licensed_books_manifest.json"
     },
     {
       "id": "book_dash",
@@ -291,7 +297,8 @@
         "https://bookdash.org/re-using-the-book-dash-content/",
         "https://bookdash.github.io/bookdash-books/"
       ],
-      "decision": "Provider declares CC BY4.0 with text/EPUB/source files. Picture-book and translation units differ from adult novels; illustrations may be necessary context. No text acquired in this pass."
+      "decision": "Three English source texts acquired with title-level CC BY 4.0 metadata and a pinned repository revision. Picture-book pages and translation units differ from novels; illustrations are omitted and one page has no text. A small preparation pilot, not representative adult-fiction coverage.",
+      "local_pilot": "research/preparation/licensed_books_manifest.json"
     },
     {
       "id": "google_books",

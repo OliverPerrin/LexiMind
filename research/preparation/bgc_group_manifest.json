@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "status": "candidate_leakage_groups_not_admitted",
+  "training_authorized": false,
+  "policy": "bgc-leakage-groups-v1",
+  "candidate_manifest": {
+    "path": "research/preparation/bgc_candidate_manifest.json",
+    "bytes": 18995,
+    "sha256": "da087d041a319c18f5b1fcdfaf97dcdbb65cc8feb6808928926a7fb82d53835d"
+  },
+  "archive": {
+    "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+    "bytes": 48690771,
+    "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+  },
+  "preparation_script_sha256": "ac8156b1874c65828e7bc6e2b4b9b8b8701769156bdde15ff99da9a46d7cd1b6",
+  "preparation_helper_sha256": {
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433",
+    "src/research/book_groups.py": "5ce2497ba51bf753c8653a4b5117ca2b41540cf15625f516f515f9595cd8a294",
+    "scripts/prepare_bgc_candidate.py": "06200e23523ea5c6a7f73cdf0895855e2fd7d4c546ebb5bbbad89ba1e1ead4f0"
+  },
+  "split_policy": {
+    "train": 0.64,
+    "dev": 0.16,
+    "test": 0.2
+  },
+  "counts": {
+    "records": 91894,
+    "groups": 89910,
+    "group_size_counts": {
+      "1": 88471,
+      "2": 1208,
+      "3": 121,
+      "4": 52,
+      "5": 23,
+      "6": 15,
+      "7": 7,
+      "8": 4,
+      "9": 3,
+      "10": 2,
+      "12": 1,
+      "13": 1,
+      "17": 1,
+      "61": 1
+    },
+    "proposed_split_records": {
+      "train": 58909,
+      "dev": 14645,
+      "test": 18340
+    },
+    "rows_whose_proposed_split_differs": 48144,
+    "multi_record_groups": 1439,
+    "groups_with_different_label_sets": 662,
+    "groups_with_identity_label_conflicts": 2,
+    "original_cross_split_groups": 849
+  },
+  "matching_key_overlap": {
+    "isbn13": {
+      "shared_keys": 2,
+      "original_cross_split_keys": 2,
+      "proposed_cross_split_keys": 0,
+      "different_label_set_keys": 2
+    },
+    "provider_book_id": {
+      "shared_keys": 2,
+      "original_cross_split_keys": 2,
+      "proposed_cross_split_keys": 0,
+      "different_label_set_keys": 2
+    },
+    "exact_blurb": {
+      "shared_keys": 460,
+      "original_cross_split_keys": 274,
+      "proposed_cross_split_keys": 0,
+      "different_label_set_keys": 106
+    },
+    "normalized_blurb": {
+      "shared_keys": 528,
+      "original_cross_split_keys": 312,
+      "proposed_cross_split_keys": 0,
+      "different_label_set_keys": 124
+    },
+    "normalized_title_author_candidate": {
+      "shared_keys": 1105,
+      "original_cross_split_keys": 650,
+      "proposed_cross_split_keys": 0,
+      "different_label_set_keys": 613
+    }
+  },
+  "records_without_matching_key": {
+    "isbn13": 0,
+    "provider_book_id": 0,
+    "exact_blurb": 0,
+    "normalized_blurb": 0,
+    "normalized_title_author_candidate": 2364
+  },
+  "proposed_split_source_label_support": {
+    "train": {
+      "unique_labels": 146,
+      "minimum_present_count": 3,
+      "missing_labels": [],
+      "labels_with_fewer_than_five_records": {
+        "Bibles": 3,
+        "Travel: Australia & Oceania": 4
+      }
+    },
+    "dev": {
+      "unique_labels": 144,
+      "minimum_present_count": 1,
+      "missing_labels": [
+        "Travel: Africa",
+        "Travel: Australia & Oceania"
+      ],
+      "labels_with_fewer_than_five_records": {
+        "Bibles": 1,
+        "Travel: Africa": 0,
+        "Travel: Australia & Oceania": 0,
+        "Travel: Caribbean & Mexico": 1,
+        "Travel: Central & South America": 2,
+        "Travel: Middle East": 3,
+        "Weddings": 4
+      }
+    },
+    "test": {
+      "unique_labels": 146,
+      "minimum_present_count": 1,
+      "missing_labels": [],
+      "labels_with_fewer_than_five_records": {
+        "Bibles": 1,
+        "Travel: Africa": 1,
+        "Travel: Australia & Oceania": 1,
+        "Travel: Central & South America": 3,
+        "World War I Military History": 1
+      }
+    }
+  },
+  "largest_group_examples": [
+    {
+      "group_id": "bgc-group:b1376165c87c42c190a4e70f8f5fe84025441d448840b1133ef34858d16d652e",
+      "records": 61,
+      "distinct_source_label_sets": 8,
+      "original_split_count": 3
+    },
+    {
+      "group_id": "bgc-group:3f4c6749c6fff655807b07410e89d64617ce238847f0d9a7322aa25281304600",
+      "records": 17,
+      "distinct_source_label_sets": 1,
+      "original_split_count": 3
+    },
+    {
+      "group_id": "bgc-group:c23cc0c3a9a326bcbc6384620a401dc764c0cdebc0f999070854a9ab90a38fd3",
+      "records": 13,
+      "distinct_source_label_sets": 6,
+      "original_split_count": 3
+    }
+  ],
+  "assignments": {
+    "bytes": 19176017,
+    "sha256": "df8484993cf99d85b5646f1ba2fa863c39f0f8df4259ae0f7a5f094b9be4ed69",
+    "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/assignments.jsonl"
+  },
+  "review_groups": {
+    "bytes": 998113,
+    "sha256": "fcb423e1d41f3348a1e4f3f6794460d4890146457247a0d505660982faf558d2",
+    "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/review_groups.jsonl"
+  },
+  "interpretation": [
+    "Connected groups are conservative leakage constraints, not verified literary works; title/author and shared blurbs can conflate unrelated editions or books.",
+    "ISBN prefix/checksum and provider URL parsing validate syntax only, not identity registration or metadata correctness.",
+    "Text matches use NFC and whitespace collapse only, preserving case/punctuation; empty blurbs and incomplete title-author pairs produce no shared key.",
+    "All original row IDs, splits and source labels remain unchanged; the proposed split is a separate deterministic hash allocation of complete groups.",
+    "Every multi-record group remains unadjudicated; conflicting label sets are reported per member and never combined into gold labels.",
+    "Zero residuals apply only to these exact matching keys; paraphrases, translated titles, author variants and unobserved work identities can still leak.",
+    "The proposed allocation is not a reproduction of the published benchmark splits, is not label-stratified and remains unadmitted.",
+    "Source rights and per-field mappings still govern any later use; no model, training, scoring or network requests occurred."
+  ]
+}
