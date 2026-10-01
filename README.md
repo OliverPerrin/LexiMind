@@ -8,33 +8,39 @@ app_file: scripts/demo_gradio.py
 pinned: false
 ---
 
-# LexiMind
+<h1 align="center">LexiMind</h1>
 
-**Discover books through subjects, genres, and books you already enjoy.**
+<p align="center">Find your next book through subjects, genres and the books you already like.</p>
 
-LexiMind combines a book-discovery website with research on a deliberately
-from-scratch PyTorch transformer. The website is usable independently of the
-model; current research work reconstructs source data and prepares controlled
-multi-task comparisons.
+<p align="center">
+  <a href="https://leximind-five.vercel.app"><strong>Live site</strong></a> ·
+  <a href="https://huggingface.co/spaces/OliverPerrin/LexiMind">Hugging Face Space</a> ·
+  <a href="docs/architecture.md">Architecture</a> ·
+  <a href="docs/research/README.md">Research notes</a>
+</p>
 
-[Live website](https://leximind-five.vercel.app) ·
-[Product](docs/product.md) · [Architecture](docs/architecture.md) ·
-[Research preparation](docs/research/README.md)
+<p align="center">
+  <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-black?style=flat-square" />
+  <img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-2.x-ee4c2c?style=flat-square" />
+</p>
 
-## Book discovery
+[![LexiMind book discovery site](docs/screenshot.png)](https://leximind-five.vercel.app)
 
-The Next.js app in `web/` provides search, genre and subject browsing, “more like
-this,” favourites, a reading list, hide/restore controls, and shelf export/import.
-Preferences stay in browser local storage; there are no accounts or cross-device
-sync. Recommendations use weighted TF-IDF, metadata overlap, and modest author
-and genre diversity. They are a content-based baseline, not a model-quality result.
+---
 
-The catalogue contains 120 identified Open Library works with 113 sourced
-descriptions. There are no generated descriptions or inferred book-mood labels.
-Source records, hashes, and review decisions are retained by the
-[catalogue importer](data/catalog/README.md).
+### What it is
 
-Use Node.js 24:
+LexiMind is two things in one repository:
+
+- **A book-discovery website.** Search by title, author or a description of what you want to read. Browse by genre and subject, open "more like this" on any book, and keep favourites and a reading list. No account is needed; your shelf stays in your browser and can be exported and imported.
+- **A transformer written from scratch in PyTorch.** Attention, encoder and decoder layers, T5 layer normalisation, relative-position bias, generation with a key-value cache, and task heads are all implemented in `src/models/`. Pretrained FLAN-T5 weights are loaded into these modules, and one shared encoder serves summarisation, emotion classification and topic classification.
+
+The website does not depend on the model. It runs without a GPU, an API key or a database.
+
+### Quick start
+
+Requires Node.js 24.
 
 ```sh
 cd web
@@ -42,49 +48,40 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. Software checks:
+Open http://localhost:3000.
+
+### How recommendations work
+
+Recommendations are content-based: weighted TF-IDF similarity over descriptions, overlap in subjects and genres, and a small adjustment so results are not dominated by one author or genre. This is a baseline, not a neural search model, and the scores are ranking values, not ratings.
+
+The catalogue holds 120 works identified in Open Library, 113 of them with sourced descriptions. No description is generated. Source records, hashes and review decisions are kept by the [catalogue importer](data/catalog/README.md).
+
+### The model
+
+| Part | Where |
+| --- | --- |
+| Attention, encoder, decoder, feed-forward, T5 layer norm | `src/models/` |
+| FLAN-T5 weight transfer (small, base, large) | `src/models/factory.py`, `configs/model/` |
+| Multi-task training, metrics, PCGrad | `src/training/` |
+| Checkpoint loading and shared-encoder inference | `src/inference/` |
+
+**Status:** training and experiments are paused. Current work is on reconstructing source data and designing two studies, one comparing model recipes and one measuring recommendation relevance. Neither has new results yet. Earlier results are kept as [historical evidence](docs/RESULTS.md) and have not been reproduced.
+
+The Hugging Face Space runs `scripts/demo_gradio.py`. It uses the same book catalogue and stored historical outputs; it does not run the research model.
+
+### Development
+
+Website checks, from `web/`:
 
 ```sh
 npm run lint
 npm run typecheck
 npm run test:unit
 npm run build
-npx playwright install chromium
-npm run test:e2e
+npx playwright install chromium && npm run test:e2e
 ```
 
-Deploy only `web/` to Vercel. The website needs no GPU, model API key, or database.
-See [web/README.md](web/README.md) and [deployment notes](docs/deployment.md).
-
-## Gradio demo
-
-The existing [Hugging Face Space](https://huggingface.co/spaces/OliverPerrin/LexiMind)
-remains available. Its code is `scripts/demo_gradio.py`, with the Docker setup and
-minimal `requirements-demo.txt` retained. It uses the same attributed book catalogue
-and historical paper outputs; it does not run the research model.
-
-## Model and research
-
-The model architecture is implemented in `src/models/`: attention, encoder and
-decoder layers, feed-forward blocks, T5 normalization, relative-position bias,
-generation with a KV cache, and task heads. Hugging Face supplies pretrained
-FLAN-T5 weights and tokenization; the research forward pass uses LexiMind's own
-modules. This implementation is an intentional part of the project.
-
-A shared encoder supports summarization, multilabel emotion classification, and
-topic classification. Training, evaluation, inference, and numerical component
-tests remain available. The website does not load these checkpoints, and a
-Reddit-comment emotion score does not establish a book's atmosphere.
-
-**Training and research experiments remain paused.** Current work concerns
-source reconstruction, data identity, and the design of two independent studies:
-model-recipe comparisons and book-recommendation relevance. Neither has new results.
-[Research preparation](docs/research/README.md) records what is ready, what remains
-unresolved, and the read-only verification commands.
-
-## Python development
-
-Catalogue and preparation tests use lightweight dependencies:
+Python checks for the catalogue and research tooling:
 
 ```sh
 python3 -m venv .venv
@@ -93,34 +90,21 @@ python -m pip install -r requirements-quality.txt
 python -m pytest tests/test_catalog tests/test_research -q
 ```
 
-Source reconstruction adds only the small data environment:
+Model tests need a PyTorch build for your machine plus `requirements-test.txt`. They use synthetic inputs and check the software, not model quality. Deployment is covered in [docs/deployment.md](docs/deployment.md); only `web/` is deployed to Vercel.
 
-```sh
-python -m pip install -r requirements-data.txt
-```
-
-For model software tests, install an appropriate PyTorch wheel and
-`requirements-test.txt`. These tests use synthetic inputs; they do not reproduce
-a research result or authorize training. Model/data environments and future run
-artifacts need their own pinned provenance. `pyproject.toml` retains the model's
-core dependencies, with separate optional extras for data preparation, Gradio,
-quantization, and profiling. These software environments are not frozen experiment
-recipes.
-
-## Layout
+### Layout
 
 ```text
-web/                    Book-discovery application and deployment snapshot
-src/catalog/            Source identity, Open Library import, publication checks
-src/models/             From-scratch transformer and FLAN-T5 weight transfer
-src/training/           Multi-task optimization, metrics, and PCGrad
-src/inference/          Checkpoint loading and shared-encoder prediction
-src/research/           Preparation, provenance, and admission contracts
-scripts/                Catalogue, reconstruction, and model tools
-docs/research/           Current research decisions and source reviews
-research/preparation/    Source-linked preparation evidence
+web/                  Book-discovery application
+src/catalog/          Open Library import and source identity checks
+src/models/           From-scratch transformer and FLAN-T5 weight transfer
+src/training/         Multi-task optimisation, metrics and PCGrad
+src/inference/        Checkpoint loading and prediction
+src/research/         Data provenance and study preparation
+scripts/              Catalogue, reconstruction and model tools
+docs/                 Product, architecture and research notes
 ```
 
-Code is [MIT licensed](LICENSE). Third-party text, covers, datasets, and pretrained
-weights retain their own terms. Originally an undergraduate research project at
-Appalachian State University, built by Oliver Perrin.
+### Licence
+
+Code is [MIT licensed](LICENSE). Third-party text, covers, datasets and pretrained weights keep their own terms. LexiMind began as an undergraduate research project at Appalachian State University and is built by [Oliver Perrin](https://github.com/OliverPerrin).
