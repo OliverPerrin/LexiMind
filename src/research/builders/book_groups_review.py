@@ -10,14 +10,12 @@ import zipfile
 from collections import Counter, defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from scripts import prepare_bgc_candidate as source
 from src.catalog.storage import write_json_atomic
+from src.research.builders import bgc_source as source
 from src.research.candidate_io import create_or_verify, sha
 from src.research.io import check_file, file_hash, parse_json, read_json, safe_path
+
+from . import ROOT
 
 POLICY = "book-group-evidence-review-v1"
 
@@ -159,7 +157,8 @@ def group_summary(review, members, reasons):
         "distinct_normalized_blurbs": len(body_groups),
         "distinct_source_label_sets": len({tuple(sorted(labels)) for labels in all_labels}),
         "labels_varying_between_members": [
-            list(pair) for pair in sorted(set.union(*all_labels) - set.intersection(*all_labels))
+            list(pair)
+            for pair in sorted(set.union(*all_labels) - all_labels[0].intersection(*all_labels[1:]))
         ],
         "identity_label_conflicts": review["identity_label_conflicts"],
         "distinct_title_shared_blurb_clusters": len(distinct_title_text),
@@ -249,7 +248,7 @@ def prepare(output: Path, *, root=ROOT):
     )
     dependencies = {str(Path(__file__).relative_to(root)): file_hash(Path(__file__))}
     for path in (
-        "scripts/prepare_bgc_candidate.py",
+        "src/research/builders/bgc_source.py",
         "src/research/book_groups.py",
         "src/research/candidate_io.py",
         "src/research/io.py",
@@ -367,15 +366,16 @@ def prepare(output: Path, *, root=ROOT):
     }
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--output-dir", type=Path, default=ROOT / "data/research_candidates/book-group-review-v1"
     )
     parser.add_argument(
         "--report", type=Path, default=ROOT / "research/preparation/book_group_review.json"
     )
-    args = parser.parse_args()
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if args.report.resolve() != ROOT / "research/preparation/book_group_review.json":
         parser.error("Report must use research/preparation/book_group_review.json")
     try:
@@ -386,7 +386,3 @@ def main():
         return 1
     print(json.dumps(report["counts"]))
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

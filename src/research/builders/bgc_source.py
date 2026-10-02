@@ -20,13 +20,11 @@ from datetime import date
 from pathlib import Path
 from urllib.parse import urlsplit
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
 from src.catalog.storage import write_json_atomic
 from src.research.candidate_io import create_or_verify, helper_hashes
 from src.research.io import check_file, file_hash
+
+from . import ROOT
 
 SOURCE_URL = "https://fiona.uni-hamburg.de/ca89b3cf/blurbgenrecollectionen.zip"
 SOURCE_SHA256 = "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
@@ -49,7 +47,8 @@ TOPIC = re.compile(r"<d([0-9]+)>(.*?)</d\1>", re.DOTALL)
 
 def records(stream, *, digest=None):
     """Yield literal fields from one bounded record at a time; fail on bad framing."""
-    parts, size, number = [], 0, 0
+    parts: list[bytes] = []
+    size, number = 0, 0
     while raw := stream.readline(MAX_RECORD_BYTES + 1):
         if digest is not None:
             digest.update(raw)
@@ -165,9 +164,12 @@ def audit_archive(path):
     """Read local archive only; temporary SQLite stores hashes/IDs, never blurb text."""
     if path.stat().st_size > MAX_ARCHIVE_BYTES:
         raise ValueError("Archive exceeds 100 MB source bound")
-    splits, labels, depth_labels = {}, Counter(), {}
-    member_refs, observed_dates, languages = {}, Counter(), Counter()
-    identity = Counter()
+    splits, member_refs = {}, {}
+    labels: Counter[str] = Counter()
+    depth_labels: dict[int, set[str]] = {}
+    observed_dates: Counter[str] = Counter()
+    languages: Counter[str] = Counter()
+    identity: Counter[str] = Counter()
     with (
         zipfile.ZipFile(path) as archive,
         tempfile.TemporaryDirectory(prefix="leximind-bgc-index-") as temporary,
@@ -200,7 +202,7 @@ def audit_archive(path):
                 edges.append(tuple(pair))
             else:
                 raise ValueError("Invalid hierarchy edge or standalone root")
-        parents = {}
+        parents: dict[str, set[str]] = {}
         for parent, child in edges:
             parents.setdefault(child, set()).add(parent)
         with sqlite3.connect(Path(temporary) / "audit.sqlite") as db:
@@ -208,9 +210,11 @@ def audit_archive(path):
                 "CREATE TABLE records(split TEXT,source_row INTEGER,isbn TEXT,provider TEXT,exact TEXT,normalized TEXT,title_author TEXT,labels TEXT)"
             )
             for split, member in MEMBERS.items():
-                count, split_labels, dates, years = 0, set(), Counter(), Counter()
+                count, split_labels = 0, set()
+                dates: Counter[str] = Counter()
+                years: Counter[str] = Counter()
                 date_count, date_min, date_max = 0, None, None
-                missing_fields = Counter()
+                missing_fields: Counter[str] = Counter()
                 hierarchy_missing = repeated_labels = 0
                 digest = hashlib.sha256()
                 with archive.open(member) as stream:
@@ -380,8 +384,7 @@ def prepare_candidate(source: Path, directory: Path) -> dict:
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--archive", type=Path, help="Already downloaded official ZIP; no network fallback"
     )
@@ -391,7 +394,9 @@ def main() -> int:
     parser.add_argument(
         "--report", type=Path, default=ROOT / "research/preparation/bgc_candidate_manifest.json"
     )
-    args = parser.parse_args()
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if not args.report.resolve().is_relative_to(ROOT / "research/preparation"):
         parser.error("Report must remain separate from source data, under research/preparation")
     try:
@@ -414,7 +419,3 @@ def main() -> int:
         )
     )
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

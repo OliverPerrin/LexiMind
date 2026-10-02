@@ -22,9 +22,6 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Iterable
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-
 from src.catalog.locking import advisory_lock
 from src.catalog.storage import write_json_atomic
 from src.research.candidate_io import (
@@ -36,6 +33,8 @@ from src.research.candidate_io import (
     sha,
 )
 from src.research.io import read_json
+
+from . import ROOT
 
 REPO = "fancyzhx/ag_news"
 REVISION = "eb185aade064a813bc0b7f42de02595523103ca4"
@@ -395,8 +394,7 @@ def prepare_candidate(directory: Path, receipt: dict[str, Any], legacy_dir: Path
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--fetch", action="store_true")
     parser.add_argument(
         "--candidate-dir", type=Path, default=ROOT / "data/research_candidates/ag_news" / REVISION
@@ -407,7 +405,9 @@ def main() -> int:
         type=Path,
         default=ROOT / "research/preparation/ag_news_candidate_manifest.json",
     )
-    args = parser.parse_args()
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     directory, legacy, manifest = (
         args.candidate_dir.resolve(),
         args.legacy_dir.resolve(),
@@ -440,7 +440,3 @@ def main() -> int:
         )
     )
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

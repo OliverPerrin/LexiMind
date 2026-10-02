@@ -1,0 +1,1343 @@
+{
+  "schema_version": 1,
+  "policy": "book-component-overlay-v1",
+  "status": "candidate_component_overlay_not_admitted",
+  "training_authorized": false,
+  "training_performed": false,
+  "inputs": {
+    "review": {
+      "path": "research/preparation/book_group_review.json",
+      "bytes": 26389,
+      "sha256": "8c6f8fb7e38ffddba360edf5134eb95776a2b3b51e43ae49c95eb16b47d7797c"
+    },
+    "groups": {
+      "path": "research/preparation/bgc_group_manifest.json",
+      "bytes": 6381,
+      "sha256": "e33d8d063060a96b02fb87a6f1c7d1bc1278f7a55d8b4bccd8b7df96e82f8abf"
+    },
+    "catalogue": {
+      "path": "web/data/books.json",
+      "bytes": 246566,
+      "sha256": "2adb8d4bdeb13cf367b76ea1fcbd8a4cccacad72699eb356b168974db221d777"
+    },
+    "licensed_sources": {
+      "path": "research/preparation/licensed_books_sources.json",
+      "bytes": 7705,
+      "sha256": "02dd9de53b398fefd671ab9b12e09c17e3af6cea7dcbe6e2976c70e1e446cfa0"
+    },
+    "licensed_manifest": {
+      "path": "research/preparation/licensed_books_manifest.json",
+      "bytes": 7753,
+      "sha256": "810f823565504cbf4db8422e7e753f7a52273f2f717842ebedaa3a3910e89053"
+    },
+    "archive": {
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+      "bytes": 48690771,
+      "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+    },
+    "candidate_manifest": {
+      "path": "research/preparation/bgc_candidate_manifest.json",
+      "bytes": 18995,
+      "sha256": "be54f692cdfa0cad29ff03de57009ed376fc41e04ff9805806d5817eb6a02dee"
+    },
+    "assignments": {
+      "bytes": 19176017,
+      "sha256": "df8484993cf99d85b5646f1ba2fa863c39f0f8df4259ae0f7a5f094b9be4ed69",
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/assignments.jsonl"
+    },
+    "review_groups": {
+      "bytes": 998113,
+      "sha256": "fcb423e1d41f3348a1e4f3f6794460d4890146457247a0d505660982faf558d2",
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/review_groups.jsonl"
+    },
+    "packet": {
+      "bytes": 160645,
+      "sha256": "63139b5c6ec871e1c66f260efe03a211fa7807c33d4c0e6d5c2c587db8f9e7e4",
+      "path": "data/research_candidates/book-group-review-v1/review.jsonl"
+    },
+    "fields": {
+      "path": "research/preparation/book_field_manifest.json",
+      "bytes": 6428,
+      "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
+    },
+    "field_mapping": {
+      "path": "research/preparation/book_field_mapping.json",
+      "bytes": 39092,
+      "sha256": "b2e001706648bfce0f55c2e285d25e8870531b364af711da2d984f87e6945ca7"
+    },
+    "field_references": {
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/fields-b2e001706648-df8484993cf9/field_references.jsonl.gz",
+      "bytes": 14336341,
+      "sha256": "8f841f9707a6c65f296319855bfbce5b29b43700ed63555b4ee4232ca8b0a43a"
+    }
+  },
+  "implementation_sha256": {
+    "src/research/builders/book_partitions.py": "67a4818d05177475fb4ed10660865429a4daa7304414521604fa930b96adb1d4",
+    "src/research/builders/book_groups_review.py": "0bcea09cc278d924b1c4a76af716400ef712cb5c5c3792367c48d65f7dbea435",
+    "src/research/builders/bgc_source.py": "fa987b2837097e68db3a02779295e4516524797af033cf009f8c19a0ea54d50e",
+    "src/research/book_partitions.py": "3f60bbc3660e68471caee06e20aa617cbdd652cfa9a1a229204ee13deee94853",
+    "src/catalog/storage.py": "876b0860e3354dabcd0031806e2c5c17f3b48986918b8bfa28bdc081da6f06be",
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
+  },
+  "components": {
+    "path": "data/research_candidates/book-partitions-v1/components.jsonl",
+    "bytes": 44021,
+    "sha256": "1eff85204e6917944287bca71cf79ae86f57b427f355ce11b09d527ed37f70aa"
+  },
+  "constraints": {
+    "path": "data/research_candidates/book-partitions-v1/constraints.jsonl",
+    "bytes": 15541,
+    "sha256": "2cb872a2dcb469103bdab058583163b6df624a2ece16cf11b2b32bef59bf9072"
+  },
+  "assignment_resolution": "Resolve each BGC record through inputs.assignments. If its group_id appears in components.members, use that component_id/proposed_split/status; otherwise retain the base group_id/proposed_split as candidate_not_admitted. External namespaces must appear in components.members. A null proposed_split excludes the entire component from train/dev/test.",
+  "split_policy": {
+    "untouched_bgc_groups": "inherit_immutable_base_assignment",
+    "overlay_components": {
+      "train": 0.64,
+      "dev": 0.16,
+      "test": 0.2
+    },
+    "title_only_ambiguity": "quarantine_both_connected_endpoints_without_identity_merge"
+  },
+  "counts": {
+    "bgc_records": 91894,
+    "bgc_groups": 89910,
+    "external_records": {
+      "catalogue": 120,
+      "licensed_text": 4
+    },
+    "overlay_components": 159,
+    "overridden_bgc_groups": 57,
+    "quarantined_components": 52,
+    "quarantined_external_records": 17,
+    "effective_bgc_split_records": {
+      "dev": 14630,
+      "quarantine": 49,
+      "test": 18326,
+      "train": 58889
+    },
+    "bgc_external_constraints": {
+      "identity_candidate_pairs": 24,
+      "unresolved_title_only_pairs": 44
+    },
+    "external_external_constraints": {},
+    "cross_split_identity_constraints": 0
+  },
+  "field_support": {
+    "columns": 48,
+    "basis": "Pinned weak source-mapped labels only; missing columns remain unknown, never negative. No human review or negative evidence is inferred.",
+    "by_proposed_split": {
+      "dev": {
+        "records": 14630,
+        "labels": {
+          "audience:children": {
+            "positive": 3129,
+            "negative": 0,
+            "unknown": 11501,
+            "positive_change_from_base": -1
+          },
+          "audience:middle_grade": {
+            "positive": 1228,
+            "negative": 0,
+            "unknown": 13402,
+            "positive_change_from_base": -1
+          },
+          "audience:teen_young_adult": {
+            "positive": 579,
+            "negative": 0,
+            "unknown": 14051,
+            "positive_change_from_base": -2
+          },
+          "form:fiction": {
+            "positive": 5753,
+            "negative": 0,
+            "unknown": 8877,
+            "positive_change_from_base": -8
+          },
+          "form:graphic_narrative": {
+            "positive": 710,
+            "negative": 0,
+            "unknown": 13920,
+            "positive_change_from_base": 0
+          },
+          "form:life_writing": {
+            "positive": 980,
+            "negative": 0,
+            "unknown": 13650,
+            "positive_change_from_base": -1
+          },
+          "form:literary_collection": {
+            "positive": 177,
+            "negative": 0,
+            "unknown": 14453,
+            "positive_change_from_base": 0
+          },
+          "form:nonfiction": {
+            "positive": 5497,
+            "negative": 0,
+            "unknown": 9133,
+            "positive_change_from_base": -6
+          },
+          "form:poetry": {
+            "positive": 212,
+            "negative": 0,
+            "unknown": 14418,
+            "positive_change_from_base": 0
+          },
+          "form:reference": {
+            "positive": 315,
+            "negative": 0,
+            "unknown": 14315,
+            "positive_change_from_base": 0
+          },
+          "genre:adventure": {
+            "positive": 298,
+            "negative": 0,
+            "unknown": 14332,
+            "positive_change_from_base": 0
+          },
+          "genre:erotica": {
+            "positive": 5,
+            "negative": 0,
+            "unknown": 14625,
+            "positive_change_from_base": 0
+          },
+          "genre:fantasy": {
+            "positive": 668,
+            "negative": 0,
+            "unknown": 13962,
+            "positive_change_from_base": -2
+          },
+          "genre:gothic_horror": {
+            "positive": 81,
+            "negative": 0,
+            "unknown": 14549,
+            "positive_change_from_base": 0
+          },
+          "genre:historical_fiction": {
+            "positive": 688,
+            "negative": 0,
+            "unknown": 13942,
+            "positive_change_from_base": 0
+          },
+          "genre:humor": {
+            "positive": 259,
+            "negative": 0,
+            "unknown": 14371,
+            "positive_change_from_base": 0
+          },
+          "genre:literary_fiction": {
+            "positive": 1196,
+            "negative": 0,
+            "unknown": 13434,
+            "positive_change_from_base": -1
+          },
+          "genre:mystery": {
+            "positive": 812,
+            "negative": 0,
+            "unknown": 13818,
+            "positive_change_from_base": 0
+          },
+          "genre:mystery_suspense": {
+            "positive": 1481,
+            "negative": 0,
+            "unknown": 13149,
+            "positive_change_from_base": -5
+          },
+          "genre:paranormal_fiction": {
+            "positive": 273,
+            "negative": 0,
+            "unknown": 14357,
+            "positive_change_from_base": 0
+          },
+          "genre:romance": {
+            "positive": 1201,
+            "negative": 0,
+            "unknown": 13429,
+            "positive_change_from_base": 0
+          },
+          "genre:science_fiction": {
+            "positive": 347,
+            "negative": 0,
+            "unknown": 14283,
+            "positive_change_from_base": -3
+          },
+          "genre:spiritual_fiction": {
+            "positive": 108,
+            "negative": 0,
+            "unknown": 14522,
+            "positive_change_from_base": 0
+          },
+          "genre:suspense_thriller": {
+            "positive": 852,
+            "negative": 0,
+            "unknown": 13778,
+            "positive_change_from_base": -3
+          },
+          "genre:western": {
+            "positive": 222,
+            "negative": 0,
+            "unknown": 14408,
+            "positive_change_from_base": 0
+          },
+          "topic:arts": {
+            "positive": 590,
+            "negative": 0,
+            "unknown": 14040,
+            "positive_change_from_base": 0
+          },
+          "topic:business": {
+            "positive": 140,
+            "negative": 0,
+            "unknown": 14490,
+            "positive_change_from_base": 0
+          },
+          "topic:cooking": {
+            "positive": 529,
+            "negative": 0,
+            "unknown": 14101,
+            "positive_change_from_base": 0
+          },
+          "topic:crafts": {
+            "positive": 150,
+            "negative": 0,
+            "unknown": 14480,
+            "positive_change_from_base": 0
+          },
+          "topic:finance": {
+            "positive": 48,
+            "negative": 0,
+            "unknown": 14582,
+            "positive_change_from_base": 0
+          },
+          "topic:games": {
+            "positive": 54,
+            "negative": 0,
+            "unknown": 14576,
+            "positive_change_from_base": 0
+          },
+          "topic:health": {
+            "positive": 558,
+            "negative": 0,
+            "unknown": 14072,
+            "positive_change_from_base": 0
+          },
+          "topic:history": {
+            "positive": 751,
+            "negative": 0,
+            "unknown": 13879,
+            "positive_change_from_base": -1
+          },
+          "topic:language": {
+            "positive": 66,
+            "negative": 0,
+            "unknown": 14564,
+            "positive_change_from_base": 0
+          },
+          "topic:literature": {
+            "positive": 147,
+            "negative": 0,
+            "unknown": 14483,
+            "positive_change_from_base": 0
+          },
+          "topic:parenting": {
+            "positive": 201,
+            "negative": 0,
+            "unknown": 14429,
+            "positive_change_from_base": 0
+          },
+          "topic:pets": {
+            "positive": 52,
+            "negative": 0,
+            "unknown": 14578,
+            "positive_change_from_base": 0
+          },
+          "topic:philosophy": {
+            "positive": 563,
+            "negative": 0,
+            "unknown": 14067,
+            "positive_change_from_base": -5
+          },
+          "topic:politics": {
+            "positive": 436,
+            "negative": 0,
+            "unknown": 14194,
+            "positive_change_from_base": 0
+          },
+          "topic:psychology": {
+            "positive": 305,
+            "negative": 0,
+            "unknown": 14325,
+            "positive_change_from_base": 0
+          },
+          "topic:religion": {
+            "positive": 682,
+            "negative": 0,
+            "unknown": 13948,
+            "positive_change_from_base": -3
+          },
+          "topic:science": {
+            "positive": 407,
+            "negative": 0,
+            "unknown": 14223,
+            "positive_change_from_base": 0
+          },
+          "topic:self_development": {
+            "positive": 567,
+            "negative": 0,
+            "unknown": 14063,
+            "positive_change_from_base": -1
+          },
+          "topic:social_issues": {
+            "positive": 274,
+            "negative": 0,
+            "unknown": 14356,
+            "positive_change_from_base": 0
+          },
+          "topic:sports": {
+            "positive": 222,
+            "negative": 0,
+            "unknown": 14408,
+            "positive_change_from_base": 0
+          },
+          "topic:technology": {
+            "positive": 80,
+            "negative": 0,
+            "unknown": 14550,
+            "positive_change_from_base": 0
+          },
+          "topic:test_preparation": {
+            "positive": 72,
+            "negative": 0,
+            "unknown": 14558,
+            "positive_change_from_base": 0
+          },
+          "topic:travel": {
+            "positive": 126,
+            "negative": 0,
+            "unknown": 14504,
+            "positive_change_from_base": 0
+          }
+        },
+        "missing_positive_columns": []
+      },
+      "test": {
+        "records": 18326,
+        "labels": {
+          "audience:children": {
+            "positive": 3993,
+            "negative": 0,
+            "unknown": 14333,
+            "positive_change_from_base": -1
+          },
+          "audience:middle_grade": {
+            "positive": 1523,
+            "negative": 0,
+            "unknown": 16803,
+            "positive_change_from_base": -1
+          },
+          "audience:teen_young_adult": {
+            "positive": 772,
+            "negative": 0,
+            "unknown": 17554,
+            "positive_change_from_base": -1
+          },
+          "form:fiction": {
+            "positive": 7271,
+            "negative": 0,
+            "unknown": 11055,
+            "positive_change_from_base": -11
+          },
+          "form:graphic_narrative": {
+            "positive": 945,
+            "negative": 0,
+            "unknown": 17381,
+            "positive_change_from_base": 0
+          },
+          "form:life_writing": {
+            "positive": 1156,
+            "negative": 0,
+            "unknown": 17170,
+            "positive_change_from_base": 1
+          },
+          "form:literary_collection": {
+            "positive": 245,
+            "negative": 0,
+            "unknown": 18081,
+            "positive_change_from_base": 0
+          },
+          "form:nonfiction": {
+            "positive": 6779,
+            "negative": 0,
+            "unknown": 11547,
+            "positive_change_from_base": 1
+          },
+          "form:poetry": {
+            "positive": 262,
+            "negative": 0,
+            "unknown": 18064,
+            "positive_change_from_base": -6
+          },
+          "form:reference": {
+            "positive": 402,
+            "negative": 0,
+            "unknown": 17924,
+            "positive_change_from_base": 0
+          },
+          "genre:adventure": {
+            "positive": 354,
+            "negative": 0,
+            "unknown": 17972,
+            "positive_change_from_base": -2
+          },
+          "genre:erotica": {
+            "positive": 9,
+            "negative": 0,
+            "unknown": 18317,
+            "positive_change_from_base": 0
+          },
+          "genre:fantasy": {
+            "positive": 849,
+            "negative": 0,
+            "unknown": 17477,
+            "positive_change_from_base": -5
+          },
+          "genre:gothic_horror": {
+            "positive": 124,
+            "negative": 0,
+            "unknown": 18202,
+            "positive_change_from_base": -1
+          },
+          "genre:historical_fiction": {
+            "positive": 829,
+            "negative": 0,
+            "unknown": 17497,
+            "positive_change_from_base": 0
+          },
+          "genre:humor": {
+            "positive": 275,
+            "negative": 0,
+            "unknown": 18051,
+            "positive_change_from_base": 0
+          },
+          "genre:literary_fiction": {
+            "positive": 1422,
+            "negative": 0,
+            "unknown": 16904,
+            "positive_change_from_base": -3
+          },
+          "genre:mystery": {
+            "positive": 997,
+            "negative": 0,
+            "unknown": 17329,
+            "positive_change_from_base": 0
+          },
+          "genre:mystery_suspense": {
+            "positive": 1785,
+            "negative": 0,
+            "unknown": 16541,
+            "positive_change_from_base": -2
+          },
+          "genre:paranormal_fiction": {
+            "positive": 338,
+            "negative": 0,
+            "unknown": 17988,
+            "positive_change_from_base": -4
+          },
+          "genre:romance": {
+            "positive": 1478,
+            "negative": 0,
+            "unknown": 16848,
+            "positive_change_from_base": -3
+          },
+          "genre:science_fiction": {
+            "positive": 436,
+            "negative": 0,
+            "unknown": 17890,
+            "positive_change_from_base": -1
+          },
+          "genre:spiritual_fiction": {
+            "positive": 128,
+            "negative": 0,
+            "unknown": 18198,
+            "positive_change_from_base": 0
+          },
+          "genre:suspense_thriller": {
+            "positive": 1055,
+            "negative": 0,
+            "unknown": 17271,
+            "positive_change_from_base": -3
+          },
+          "genre:western": {
+            "positive": 253,
+            "negative": 0,
+            "unknown": 18073,
+            "positive_change_from_base": 0
+          },
+          "topic:arts": {
+            "positive": 738,
+            "negative": 0,
+            "unknown": 17588,
+            "positive_change_from_base": 0
+          },
+          "topic:business": {
+            "positive": 174,
+            "negative": 0,
+            "unknown": 18152,
+            "positive_change_from_base": 0
+          },
+          "topic:cooking": {
+            "positive": 636,
+            "negative": 0,
+            "unknown": 17690,
+            "positive_change_from_base": 0
+          },
+          "topic:crafts": {
+            "positive": 165,
+            "negative": 0,
+            "unknown": 18161,
+            "positive_change_from_base": 0
+          },
+          "topic:finance": {
+            "positive": 58,
+            "negative": 0,
+            "unknown": 18268,
+            "positive_change_from_base": 0
+          },
+          "topic:games": {
+            "positive": 71,
+            "negative": 0,
+            "unknown": 18255,
+            "positive_change_from_base": 0
+          },
+          "topic:health": {
+            "positive": 684,
+            "negative": 0,
+            "unknown": 17642,
+            "positive_change_from_base": 0
+          },
+          "topic:history": {
+            "positive": 893,
+            "negative": 0,
+            "unknown": 17433,
+            "positive_change_from_base": 0
+          },
+          "topic:language": {
+            "positive": 73,
+            "negative": 0,
+            "unknown": 18253,
+            "positive_change_from_base": 0
+          },
+          "topic:literature": {
+            "positive": 165,
+            "negative": 0,
+            "unknown": 18161,
+            "positive_change_from_base": 0
+          },
+          "topic:parenting": {
+            "positive": 266,
+            "negative": 0,
+            "unknown": 18060,
+            "positive_change_from_base": 0
+          },
+          "topic:pets": {
+            "positive": 49,
+            "negative": 0,
+            "unknown": 18277,
+            "positive_change_from_base": 0
+          },
+          "topic:philosophy": {
+            "positive": 753,
+            "negative": 0,
+            "unknown": 17573,
+            "positive_change_from_base": 0
+          },
+          "topic:politics": {
+            "positive": 511,
+            "negative": 0,
+            "unknown": 17815,
+            "positive_change_from_base": 0
+          },
+          "topic:psychology": {
+            "positive": 372,
+            "negative": 0,
+            "unknown": 17954,
+            "positive_change_from_base": 0
+          },
+          "topic:religion": {
+            "positive": 887,
+            "negative": 0,
+            "unknown": 17439,
+            "positive_change_from_base": 0
+          },
+          "topic:science": {
+            "positive": 483,
+            "negative": 0,
+            "unknown": 17843,
+            "positive_change_from_base": 0
+          },
+          "topic:self_development": {
+            "positive": 747,
+            "negative": 0,
+            "unknown": 17579,
+            "positive_change_from_base": 0
+          },
+          "topic:social_issues": {
+            "positive": 381,
+            "negative": 0,
+            "unknown": 17945,
+            "positive_change_from_base": -1
+          },
+          "topic:sports": {
+            "positive": 300,
+            "negative": 0,
+            "unknown": 18026,
+            "positive_change_from_base": 0
+          },
+          "topic:technology": {
+            "positive": 117,
+            "negative": 0,
+            "unknown": 18209,
+            "positive_change_from_base": 0
+          },
+          "topic:test_preparation": {
+            "positive": 74,
+            "negative": 0,
+            "unknown": 18252,
+            "positive_change_from_base": 0
+          },
+          "topic:travel": {
+            "positive": 154,
+            "negative": 0,
+            "unknown": 18172,
+            "positive_change_from_base": 0
+          }
+        },
+        "missing_positive_columns": []
+      },
+      "train": {
+        "records": 58889,
+        "labels": {
+          "audience:children": {
+            "positive": 12667,
+            "negative": 0,
+            "unknown": 46222,
+            "positive_change_from_base": -1
+          },
+          "audience:middle_grade": {
+            "positive": 4974,
+            "negative": 0,
+            "unknown": 53915,
+            "positive_change_from_base": -1
+          },
+          "audience:teen_young_adult": {
+            "positive": 2399,
+            "negative": 0,
+            "unknown": 56490,
+            "positive_change_from_base": -1
+          },
+          "form:fiction": {
+            "positive": 23179,
+            "negative": 0,
+            "unknown": 35710,
+            "positive_change_from_base": -12
+          },
+          "form:graphic_narrative": {
+            "positive": 2773,
+            "negative": 0,
+            "unknown": 56116,
+            "positive_change_from_base": 0
+          },
+          "form:life_writing": {
+            "positive": 3856,
+            "negative": 0,
+            "unknown": 55033,
+            "positive_change_from_base": -1
+          },
+          "form:literary_collection": {
+            "positive": 725,
+            "negative": 0,
+            "unknown": 58164,
+            "positive_change_from_base": 0
+          },
+          "form:nonfiction": {
+            "positive": 22227,
+            "negative": 0,
+            "unknown": 36662,
+            "positive_change_from_base": -3
+          },
+          "form:poetry": {
+            "positive": 772,
+            "negative": 0,
+            "unknown": 58117,
+            "positive_change_from_base": -4
+          },
+          "form:reference": {
+            "positive": 1428,
+            "negative": 0,
+            "unknown": 57461,
+            "positive_change_from_base": 0
+          },
+          "genre:adventure": {
+            "positive": 1220,
+            "negative": 0,
+            "unknown": 57669,
+            "positive_change_from_base": -2
+          },
+          "genre:erotica": {
+            "positive": 29,
+            "negative": 0,
+            "unknown": 58860,
+            "positive_change_from_base": 0
+          },
+          "genre:fantasy": {
+            "positive": 2682,
+            "negative": 0,
+            "unknown": 56207,
+            "positive_change_from_base": -2
+          },
+          "genre:gothic_horror": {
+            "positive": 383,
+            "negative": 0,
+            "unknown": 58506,
+            "positive_change_from_base": -3
+          },
+          "genre:historical_fiction": {
+            "positive": 2848,
+            "negative": 0,
+            "unknown": 56041,
+            "positive_change_from_base": 0
+          },
+          "genre:humor": {
+            "positive": 925,
+            "negative": 0,
+            "unknown": 57964,
+            "positive_change_from_base": 0
+          },
+          "genre:literary_fiction": {
+            "positive": 4755,
+            "negative": 0,
+            "unknown": 54134,
+            "positive_change_from_base": -1
+          },
+          "genre:mystery": {
+            "positive": 3186,
+            "negative": 0,
+            "unknown": 55703,
+            "positive_change_from_base": -4
+          },
+          "genre:mystery_suspense": {
+            "positive": 6108,
+            "negative": 0,
+            "unknown": 52781,
+            "positive_change_from_base": -5
+          },
+          "genre:paranormal_fiction": {
+            "positive": 1059,
+            "negative": 0,
+            "unknown": 57830,
+            "positive_change_from_base": -2
+          },
+          "genre:romance": {
+            "positive": 4649,
+            "negative": 0,
+            "unknown": 54240,
+            "positive_change_from_base": -2
+          },
+          "genre:science_fiction": {
+            "positive": 1433,
+            "negative": 0,
+            "unknown": 57456,
+            "positive_change_from_base": -2
+          },
+          "genre:spiritual_fiction": {
+            "positive": 396,
+            "negative": 0,
+            "unknown": 58493,
+            "positive_change_from_base": 0
+          },
+          "genre:suspense_thriller": {
+            "positive": 3547,
+            "negative": 0,
+            "unknown": 55342,
+            "positive_change_from_base": -3
+          },
+          "genre:western": {
+            "positive": 858,
+            "negative": 0,
+            "unknown": 58031,
+            "positive_change_from_base": 0
+          },
+          "topic:arts": {
+            "positive": 2294,
+            "negative": 0,
+            "unknown": 56595,
+            "positive_change_from_base": 0
+          },
+          "topic:business": {
+            "positive": 567,
+            "negative": 0,
+            "unknown": 58322,
+            "positive_change_from_base": 0
+          },
+          "topic:cooking": {
+            "positive": 2028,
+            "negative": 0,
+            "unknown": 56861,
+            "positive_change_from_base": 0
+          },
+          "topic:crafts": {
+            "positive": 605,
+            "negative": 0,
+            "unknown": 58284,
+            "positive_change_from_base": 0
+          },
+          "topic:finance": {
+            "positive": 188,
+            "negative": 0,
+            "unknown": 58701,
+            "positive_change_from_base": 0
+          },
+          "topic:games": {
+            "positive": 274,
+            "negative": 0,
+            "unknown": 58615,
+            "positive_change_from_base": 0
+          },
+          "topic:health": {
+            "positive": 2189,
+            "negative": 0,
+            "unknown": 56700,
+            "positive_change_from_base": 0
+          },
+          "topic:history": {
+            "positive": 3052,
+            "negative": 0,
+            "unknown": 55837,
+            "positive_change_from_base": -1
+          },
+          "topic:language": {
+            "positive": 215,
+            "negative": 0,
+            "unknown": 58674,
+            "positive_change_from_base": 0
+          },
+          "topic:literature": {
+            "positive": 589,
+            "negative": 0,
+            "unknown": 58300,
+            "positive_change_from_base": -1
+          },
+          "topic:parenting": {
+            "positive": 820,
+            "negative": 0,
+            "unknown": 58069,
+            "positive_change_from_base": 0
+          },
+          "topic:pets": {
+            "positive": 162,
+            "negative": 0,
+            "unknown": 58727,
+            "positive_change_from_base": 0
+          },
+          "topic:philosophy": {
+            "positive": 2358,
+            "negative": 0,
+            "unknown": 56531,
+            "positive_change_from_base": -2
+          },
+          "topic:politics": {
+            "positive": 1638,
+            "negative": 0,
+            "unknown": 57251,
+            "positive_change_from_base": 0
+          },
+          "topic:psychology": {
+            "positive": 1253,
+            "negative": 0,
+            "unknown": 57636,
+            "positive_change_from_base": 0
+          },
+          "topic:religion": {
+            "positive": 2968,
+            "negative": 0,
+            "unknown": 55921,
+            "positive_change_from_base": -1
+          },
+          "topic:science": {
+            "positive": 1563,
+            "negative": 0,
+            "unknown": 57326,
+            "positive_change_from_base": 0
+          },
+          "topic:self_development": {
+            "positive": 2439,
+            "negative": 0,
+            "unknown": 56450,
+            "positive_change_from_base": 0
+          },
+          "topic:social_issues": {
+            "positive": 1148,
+            "negative": 0,
+            "unknown": 57741,
+            "positive_change_from_base": 0
+          },
+          "topic:sports": {
+            "positive": 1022,
+            "negative": 0,
+            "unknown": 57867,
+            "positive_change_from_base": 0
+          },
+          "topic:technology": {
+            "positive": 372,
+            "negative": 0,
+            "unknown": 58517,
+            "positive_change_from_base": 0
+          },
+          "topic:test_preparation": {
+            "positive": 219,
+            "negative": 0,
+            "unknown": 58670,
+            "positive_change_from_base": 0
+          },
+          "topic:travel": {
+            "positive": 555,
+            "negative": 0,
+            "unknown": 58334,
+            "positive_change_from_base": 0
+          }
+        },
+        "missing_positive_columns": []
+      },
+      "quarantine": {
+        "records": 49,
+        "labels": {
+          "audience:children": {
+            "positive": 3,
+            "negative": 0,
+            "unknown": 46,
+            "positive_change_from_base": 3
+          },
+          "audience:middle_grade": {
+            "positive": 3,
+            "negative": 0,
+            "unknown": 46,
+            "positive_change_from_base": 3
+          },
+          "audience:teen_young_adult": {
+            "positive": 4,
+            "negative": 0,
+            "unknown": 45,
+            "positive_change_from_base": 4
+          },
+          "form:fiction": {
+            "positive": 31,
+            "negative": 0,
+            "unknown": 18,
+            "positive_change_from_base": 31
+          },
+          "form:graphic_narrative": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "form:life_writing": {
+            "positive": 1,
+            "negative": 0,
+            "unknown": 48,
+            "positive_change_from_base": 1
+          },
+          "form:literary_collection": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "form:nonfiction": {
+            "positive": 8,
+            "negative": 0,
+            "unknown": 41,
+            "positive_change_from_base": 8
+          },
+          "form:poetry": {
+            "positive": 10,
+            "negative": 0,
+            "unknown": 39,
+            "positive_change_from_base": 10
+          },
+          "form:reference": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "genre:adventure": {
+            "positive": 4,
+            "negative": 0,
+            "unknown": 45,
+            "positive_change_from_base": 4
+          },
+          "genre:erotica": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "genre:fantasy": {
+            "positive": 9,
+            "negative": 0,
+            "unknown": 40,
+            "positive_change_from_base": 9
+          },
+          "genre:gothic_horror": {
+            "positive": 4,
+            "negative": 0,
+            "unknown": 45,
+            "positive_change_from_base": 4
+          },
+          "genre:historical_fiction": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "genre:humor": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "genre:literary_fiction": {
+            "positive": 5,
+            "negative": 0,
+            "unknown": 44,
+            "positive_change_from_base": 5
+          },
+          "genre:mystery": {
+            "positive": 4,
+            "negative": 0,
+            "unknown": 45,
+            "positive_change_from_base": 4
+          },
+          "genre:mystery_suspense": {
+            "positive": 12,
+            "negative": 0,
+            "unknown": 37,
+            "positive_change_from_base": 12
+          },
+          "genre:paranormal_fiction": {
+            "positive": 6,
+            "negative": 0,
+            "unknown": 43,
+            "positive_change_from_base": 6
+          },
+          "genre:romance": {
+            "positive": 5,
+            "negative": 0,
+            "unknown": 44,
+            "positive_change_from_base": 5
+          },
+          "genre:science_fiction": {
+            "positive": 6,
+            "negative": 0,
+            "unknown": 43,
+            "positive_change_from_base": 6
+          },
+          "genre:spiritual_fiction": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "genre:suspense_thriller": {
+            "positive": 9,
+            "negative": 0,
+            "unknown": 40,
+            "positive_change_from_base": 9
+          },
+          "genre:western": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:arts": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:business": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:cooking": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:crafts": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:finance": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:games": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:health": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:history": {
+            "positive": 2,
+            "negative": 0,
+            "unknown": 47,
+            "positive_change_from_base": 2
+          },
+          "topic:language": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:literature": {
+            "positive": 1,
+            "negative": 0,
+            "unknown": 48,
+            "positive_change_from_base": 1
+          },
+          "topic:parenting": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:pets": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:philosophy": {
+            "positive": 7,
+            "negative": 0,
+            "unknown": 42,
+            "positive_change_from_base": 7
+          },
+          "topic:politics": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:psychology": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:religion": {
+            "positive": 4,
+            "negative": 0,
+            "unknown": 45,
+            "positive_change_from_base": 4
+          },
+          "topic:science": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:self_development": {
+            "positive": 1,
+            "negative": 0,
+            "unknown": 48,
+            "positive_change_from_base": 1
+          },
+          "topic:social_issues": {
+            "positive": 1,
+            "negative": 0,
+            "unknown": 48,
+            "positive_change_from_base": 1
+          },
+          "topic:sports": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:technology": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:test_preparation": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          },
+          "topic:travel": {
+            "positive": 0,
+            "negative": 0,
+            "unknown": 49,
+            "positive_change_from_base": 0
+          }
+        },
+        "missing_positive_columns": [
+          "form:graphic_narrative",
+          "form:literary_collection",
+          "form:reference",
+          "genre:erotica",
+          "genre:historical_fiction",
+          "genre:humor",
+          "genre:spiritual_fiction",
+          "genre:western",
+          "topic:arts",
+          "topic:business",
+          "topic:cooking",
+          "topic:crafts",
+          "topic:finance",
+          "topic:games",
+          "topic:health",
+          "topic:language",
+          "topic:parenting",
+          "topic:pets",
+          "topic:politics",
+          "topic:psychology",
+          "topic:science",
+          "topic:sports",
+          "topic:technology",
+          "topic:test_preparation",
+          "topic:travel"
+        ]
+      }
+    }
+  },
+  "interpretation": [
+    "Components are conservative leakage constraints, not verified works, human identity adjudications or merged label gold. All candidates remain ineligible for training until separate admission.",
+    "All source rows, labels and historical split files remain unchanged. This sparse versioned overlay contains only identities, references and proposed allocations, never copied blurbs or book text.",
+    "Zero cross-split constraints covers the recorded exact ISBN/provider/title-creator links only. Title-only matches remain unresolved and quarantine both whole connected components; no match does not establish independence.",
+    "Licensed work nodes cover every current and future chapter/page of that work. Source licenses and provenance still govern later use.",
+    "Scope is the pinned BGC, catalogue and four licensed-work inventories. CR4 source-document identities and any other corpus are excluded until separate evidence provides namespaced work constraints; these are not globally finalized splits.",
+    "Overlay hashing is independent of labels and model outputs and is not stratified. Untouched BGC assignments retain the historical proposal; merged components need separate support and admission review."
+  ]
+}

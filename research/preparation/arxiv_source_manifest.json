@@ -196,10 +196,10 @@
     "max_line_bytes": 8000000,
     "max_rows": 1000000,
     "normalization": "article sentences joined by newline, whitespace collapsed, Unicode NFC; case and punctuation retained",
-    "python": "3.14.5",
+    "python": "3.11.15",
     "row_locator": "archive member + 1-based source line + uncompressed byte offset",
-    "script": "scripts/prepare_arxiv_candidate.py",
-    "script_sha256": "f0804f915b8f638f1ae8741f39471c5f6fd1385fbfc2ad696bbed6161b412925",
+    "script": "src/research/builders/arxiv.py",
+    "script_sha256": "7a445fb247766c43f05c95f26ec255c2b709e2015314837a51319cadcf11ab0b",
     "source_splits": [
       "train",
       "val",
@@ -209,7 +209,7 @@
       "validation": "val"
     },
     "split_reassignment": false,
-    "sqlite": "3.53.4",
+    "sqlite": "3.53.1",
     "text_corpus_copied": false
   },
   "remaining_gates": [

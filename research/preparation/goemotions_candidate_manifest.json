@@ -32,14 +32,14 @@
   "revision": "add492243ff905527e67aeb8b80c082af02207c3",
   "config": "simplified",
   "local_candidate_directory": "data/research_candidates/go_emotions/add492243ff905527e67aeb8b80c082af02207c3",
-  "preparation_script_sha256": "239e97a3b745d0f14a9dbb4d20ad16cc05ab5a7f098444292a11e06d88710a60",
+  "preparation_script_sha256": "ee4c32006083acd67600e48179bd9f25a67f94063df6193fbf3385d8e6ff44f4",
   "preparation_helper_sha256": {
     "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
     "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
   },
   "acquisition_receipt_sha256": "f5b90efe31b0a26d072b2e1ad8dcb5cb30162c58ee2204c267b3dcbff0020b42",
   "tooling": {
-    "python_version": "3.14.5",
+    "python_version": "3.11.15",
     "pyarrow_version": "25.0.1",
     "model_or_datasets_imports": false
   },

@@ -1,0 +1,599 @@
+{
+  "schema_version": 1,
+  "candidate_status": "unadmitted",
+  "training_authorized": false,
+  "training_performed": false,
+  "model_inference_performed": false,
+  "configuration": {
+    "policy": "licensed-book-normalized-continuation-v1",
+    "positions_per_work": 8,
+    "context_tokens": 128,
+    "continuation_tokens": 32,
+    "minimum_context_tokens": 8,
+    "minimum_continuation_tokens": 4,
+    "attempts_per_position": 16,
+    "tokenizers_version": "0.23.2",
+    "special_tokens_added": false,
+    "tokenizer_padding_and_truncation": "disabled_for_source_boundary_detection"
+  },
+  "inputs": {
+    "licensed_manifest": {
+      "path": "research/preparation/licensed_books_manifest.json",
+      "bytes": 7753,
+      "sha256": "810f823565504cbf4db8422e7e753f7a52273f2f717842ebedaa3a3910e89053"
+    },
+    "partition_manifest": {
+      "path": "research/preparation/book_partition_manifest.json",
+      "bytes": 41532,
+      "sha256": "c45173e71a2196090f319e77ad4a17eff0a03c3a137f852bf621183dbccf8e73"
+    },
+    "tokenizer": {
+      "path": "artifacts/hf_tokenizer/tokenizer.json",
+      "bytes": 2422234,
+      "sha256": "4d4b21a8cc7c0407dafd8ac6215269cd05c8e49a521c3580479b567879526160"
+    },
+    "components": {
+      "path": "data/research_candidates/book-partitions-v1/components.jsonl",
+      "bytes": 44021,
+      "sha256": "1eff85204e6917944287bca71cf79ae86f57b427f355ce11b09d527ed37f70aa"
+    },
+    "source_inventory": {
+      "path": "research/preparation/licensed_books_sources.json",
+      "bytes": 7705,
+      "sha256": "02dd9de53b398fefd671ab9b12e09c17e3af6cea7dcbe6e2976c70e1e446cfa0"
+    },
+    "work:cory-doctorow-little-brother": {
+      "path": "data/research_candidates/licensed_books/prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/cory-doctorow-little-brother.json",
+      "bytes": 584065,
+      "sha256": "9aa0c4fa7d7cf24ceef4624cc837a8787cd6342b3eb60fc0fdf8fbb2042a0645"
+    },
+    "work:bookdash-little-ants-big-plan": {
+      "path": "data/research_candidates/licensed_books/prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/bookdash-little-ants-big-plan.json",
+      "bytes": 4657,
+      "sha256": "90819cdf883e2a8369e31927f8bb67b04bdfd278201948306e36fd3ac1552d10"
+    },
+    "work:bookdash-sizwes-smile": {
+      "path": "data/research_candidates/licensed_books/prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/bookdash-sizwes-smile.json",
+      "bytes": 7385,
+      "sha256": "9a049066613d28c3392722fcfc50226053521cabcc53b8ebc7df3857b48f036d"
+    },
+    "work:bookdash-why-is-nita-upside-down": {
+      "path": "data/research_candidates/licensed_books/prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/bookdash-why-is-nita-upside-down.json",
+      "bytes": 4828,
+      "sha256": "e5832c7960cfd287fbea3898c4e81b051e1578ae1a8d455f8f063dc03eeba1d4"
+    }
+  },
+  "implementation_sha256": {
+    "src/research/builders/licensed_books.py": "980216bb4f7c0de8fe9573808ebf093b45d2fc22329a7ee65e3eaa2e6bb487b1",
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
+  },
+  "build_key": "6f27d5d7bbae55422410ab01970cc73202ecb6e4f30bd95fe9ffb124bde9c4a0",
+  "continuations": {
+    "path": "data/research_candidates/licensed_books/rpt/6f27d5d7bbae55422410ab01970cc73202ecb6e4f30bd95fe9ffb124bde9c4a0/continuations.jsonl",
+    "bytes": 86061,
+    "sha256": "a3bda53db0aa8a5232fe170c6ce80e0d0f7847e5db78300cdebc2df8bb3d5a87"
+  },
+  "counts": {
+    "records": 32,
+    "by_split": {
+      "train": 24,
+      "test": 8
+    },
+    "works_by_split": {
+      "train": 3,
+      "test": 1
+    },
+    "skipped_non_roundtripping_or_unstable_windows": 22
+  },
+  "works": [
+    {
+      "work_id": "cory-doctorow-little-brother",
+      "work_group": "book-component:2dd27f9349ceec102365f680f101b764bf6ba0e33244471ac303c0205ff9109e",
+      "split": "train",
+      "records": 8,
+      "skipped_windows": 8,
+      "sections": [
+        {
+          "section_id": "chapter-01",
+          "source_text_sha256": "88a3168053678fd32026eaa9d09b26eba1d0711c69712a1bd72bd91156e0c1b0",
+          "normalized_text_sha256": "a7c71c280be3a4be16b0d5c11381eb659d67a2037164a2552dfddacc8af13813",
+          "source_bytes": 22893,
+          "normalized_bytes": 22800,
+          "tokens": 6049
+        },
+        {
+          "section_id": "chapter-02",
+          "source_text_sha256": "ab0dd2a7ed9c5cf33a4e8752b091a7e1a9b19819353aaaf66ee9d8e6003103e6",
+          "normalized_text_sha256": "08d80975ee50e4aa7f5df01460ade59d736afa4bbe58a790063c3b2b80c7c5ba",
+          "source_bytes": 18577,
+          "normalized_bytes": 18490,
+          "tokens": 4981
+        },
+        {
+          "section_id": "chapter-03",
+          "source_text_sha256": "9479ebaa6925cdb1c5e2bcc96cbc69c9f9f222256ca366ab223afdee31781d7f",
+          "normalized_text_sha256": "242295798ad84a795cfd2dc7466b883a701718c1f1b1f0de3094d9d6444adb75",
+          "source_bytes": 25588,
+          "normalized_bytes": 25467,
+          "tokens": 6787
+        },
+        {
+          "section_id": "chapter-04",
+          "source_text_sha256": "25bae9b00c04565d3c5b267a4d80561e20e0c2791a1f2849f4bb62075f9e28f2",
+          "normalized_text_sha256": "6f5b78284af676ab79540a3bcbc61c06f715fb0707365f3b7efcd4cc54e5f47e",
+          "source_bytes": 28333,
+          "normalized_bytes": 28200,
+          "tokens": 7417
+        },
+        {
+          "section_id": "chapter-05",
+          "source_text_sha256": "86bf936d2f0ab913b56c9b5ed2a1baf6c7f54cce813bc95d65b73f8773a7ff75",
+          "normalized_text_sha256": "74728808872103c841e137257189dfdb55894e2af51929e4cd1c8480695553c6",
+          "source_bytes": 36242,
+          "normalized_bytes": 36098,
+          "tokens": 9386
+        },
+        {
+          "section_id": "chapter-06",
+          "source_text_sha256": "1ced72c0262a84e71fe390e39022cb23edc1f2abd756f5493bce1f637e6a2f86",
+          "normalized_text_sha256": "2378ac0777054cb55c51e6e83bae878a32cd40bc2f1361c05ee8f41054213428",
+          "source_bytes": 24946,
+          "normalized_bytes": 24850,
+          "tokens": 6326
+        },
+        {
+          "section_id": "chapter-07",
+          "source_text_sha256": "c853b7d0474ea28632e6c600daa64dcc0859533e8fe66fa9989df1544b3370cf",
+          "normalized_text_sha256": "4a76031c2482fd3b5cee15fa8f3d9917ffecd517c03dc7355b1e67102841d8b3",
+          "source_bytes": 26698,
+          "normalized_bytes": 26551,
+          "tokens": 7090
+        },
+        {
+          "section_id": "chapter-08",
+          "source_text_sha256": "bbc0df5199c011b80f73b5b69da120d2b715c662cccfccd2e8fda808884469f3",
+          "normalized_text_sha256": "c2f81f6f2488e395d3e10f9f6ef83a705c9eaf1dd172cca68def28ce8620a012",
+          "source_bytes": 19481,
+          "normalized_bytes": 19392,
+          "tokens": 5033
+        },
+        {
+          "section_id": "chapter-09",
+          "source_text_sha256": "fcd2c99361bf30d6da59cc1139f7b53e8e300c069c99250113c573901c5179df",
+          "normalized_text_sha256": "707bdf2a66f2559a9d1fbcf92358d36cd236df768113d91123636f4eabd47f2b",
+          "source_bytes": 25718,
+          "normalized_bytes": 25562,
+          "tokens": 6694
+        },
+        {
+          "section_id": "chapter-10",
+          "source_text_sha256": "c9d44a20d8563bbbb6988b0686f6f71bc1ed6d1ec89a9e0d6bad3957b8029031",
+          "normalized_text_sha256": "647e637cfb321523b212d8563b37932fa7540fd5a6ec26dbd01b5520e96f3fa5",
+          "source_bytes": 23859,
+          "normalized_bytes": 23759,
+          "tokens": 6395
+        },
+        {
+          "section_id": "chapter-11",
+          "source_text_sha256": "6b713eae02d46380dea5e86f47065da8c303225287d26cbc29d4354a6d11baf7",
+          "normalized_text_sha256": "714ee2f832ab133371493afbefeed5b27cb115f5f7098648c56885430ff8794f",
+          "source_bytes": 26574,
+          "normalized_bytes": 26437,
+          "tokens": 6982
+        },
+        {
+          "section_id": "chapter-12",
+          "source_text_sha256": "5482dbf70eaa2eea9baa8ba65247a086261dfba67174d2ebb2ad0072fe6b71fa",
+          "normalized_text_sha256": "026d5e049ee08edd3063b8339d5b6bc27849b133b76c575c1ce3e4717aff88e5",
+          "source_bytes": 28046,
+          "normalized_bytes": 27871,
+          "tokens": 7638
+        },
+        {
+          "section_id": "chapter-13",
+          "source_text_sha256": "498fb2955940c858731a0317f69cbe4583834cddb02a926bb5d8e98d18b457b4",
+          "normalized_text_sha256": "a645cd7bb2a317bc7fd5e838ec780c2e27950449a7bdfd6d03cf50a224b0c8f1",
+          "source_bytes": 22298,
+          "normalized_bytes": 22158,
+          "tokens": 5857
+        },
+        {
+          "section_id": "chapter-14",
+          "source_text_sha256": "c482bf1e38a155aeacf07d58c9e6555dd3e1ba13be710682f55a9eff8b513708",
+          "normalized_text_sha256": "059b13eaf2e71a2ae2af5a340484bfeed43b0e5c4fd1d35d6869ce175c8fdf9f",
+          "source_bytes": 27552,
+          "normalized_bytes": 27420,
+          "tokens": 7025
+        },
+        {
+          "section_id": "chapter-15",
+          "source_text_sha256": "86a451c1c27f20f905968cdcf8f35c894500787e3795166e2b2899a229bcad19",
+          "normalized_text_sha256": "40fe03402618e3f4e4309fb770c389197751cf84d4f5a79de645511b673a135e",
+          "source_bytes": 31688,
+          "normalized_bytes": 31493,
+          "tokens": 8613
+        },
+        {
+          "section_id": "chapter-16",
+          "source_text_sha256": "39f2ec186d66f13ced2bc42f884f7306ccec791cf587e72753feaff0e413ea9c",
+          "normalized_text_sha256": "43715233caafd4da10d41d1d106efc48f1b5b3aba1e8de458dd331608c1f9f67",
+          "source_bytes": 23634,
+          "normalized_bytes": 23474,
+          "tokens": 6375
+        },
+        {
+          "section_id": "chapter-17",
+          "source_text_sha256": "53c19a67b9a9deaca31ad7ce2217d434ac389ad233dfbc7ee902e604f4a075b3",
+          "normalized_text_sha256": "4bd1b7cc227e325b7ea955467bf78092ae02492ed4a3f82e2b591de5de53c6f5",
+          "source_bytes": 28153,
+          "normalized_bytes": 27987,
+          "tokens": 7392
+        },
+        {
+          "section_id": "chapter-18",
+          "source_text_sha256": "e1373ca6019f70104b4292ebd217a78f53591d49d30a421b68febaae0882fe54",
+          "normalized_text_sha256": "5ec02d3c63c7576f24dbd1806b083fcd3d93aaf77c162066a27fc0f45a95ae14",
+          "source_bytes": 27014,
+          "normalized_bytes": 26884,
+          "tokens": 7057
+        },
+        {
+          "section_id": "chapter-19",
+          "source_text_sha256": "7a218f9e092af011b67f4371657e77518cfb1d80fd6cf53deddbeeb71a5cd2b1",
+          "normalized_text_sha256": "df2e5dfe7bfc15c650b989c16cd72fced115800cdaadde6cdd9d644f529ecdec",
+          "source_bytes": 32463,
+          "normalized_bytes": 32289,
+          "tokens": 8831
+        },
+        {
+          "section_id": "chapter-20",
+          "source_text_sha256": "9bdc731cc1903477481aaf3228cb62154ee3930d234deeee6cc3965250a51520",
+          "normalized_text_sha256": "f5bb1e431477f8e4fb8ac71bcabb56acf8f8f9d4533ec3171c77ef6feb080c12",
+          "source_bytes": 41439,
+          "normalized_bytes": 41214,
+          "tokens": 11298
+        },
+        {
+          "section_id": "chapter-21",
+          "source_text_sha256": "8362ce0c2ba99cb282417ef20dd5ea315658f1872fdd354a021f38f4224fe668",
+          "normalized_text_sha256": "b930bdef1ec084653ccd55b1b8074aecc0f948c5368c875c1b247b81dfa3bacd",
+          "source_bytes": 15493,
+          "normalized_bytes": 15404,
+          "tokens": 4156
+        },
+        {
+          "section_id": "epilogue",
+          "source_text_sha256": "78f13e141e4f0bab9849dc3143869ac557ac524d11606a12540b7d43d8b8d5b6",
+          "normalized_text_sha256": "e60058d1158f7435fc459d350423321b5eec1f64bdd09f6a378df4f8ddcdf131",
+          "source_bytes": 12750,
+          "normalized_bytes": 12690,
+          "tokens": 3261
+        }
+      ]
+    },
+    {
+      "work_id": "bookdash-little-ants-big-plan",
+      "work_group": "book-component:9e9381e79ba53383bf5ec2a41934ad9f461ee3302add4ece76bc9a32de57af58",
+      "split": "test",
+      "records": 8,
+      "skipped_windows": 6,
+      "sections": [
+        {
+          "section_id": "page-01",
+          "source_text_sha256": "3574822ae30c838966cc6b8640458b60bad0e2a749d21e26b5987b08791a7505",
+          "normalized_text_sha256": "beb9e3331295ad7e41e18b5f58be797ad1a1d73af0d6cd87fc8b6daf6537c67a",
+          "source_bytes": 129,
+          "normalized_bytes": 128,
+          "tokens": 36
+        },
+        {
+          "section_id": "page-02",
+          "source_text_sha256": "8f4272ae6d849feabb950617a55d94821137a2930d76001a3b7776af458cd079",
+          "normalized_text_sha256": "bcb9f3d2168280dbe19d2e08022e9cd6f626da53c512c297587976c89f74b2af",
+          "source_bytes": 135,
+          "normalized_bytes": 134,
+          "tokens": 32
+        },
+        {
+          "section_id": "page-03",
+          "source_text_sha256": "c445d11c808310449badb23700d7862154b2804ba214381cbcf482e216e9567e",
+          "normalized_text_sha256": "c445d11c808310449badb23700d7862154b2804ba214381cbcf482e216e9567e",
+          "source_bytes": 63,
+          "normalized_bytes": 63,
+          "tokens": 15
+        },
+        {
+          "section_id": "page-04",
+          "source_text_sha256": "a9cf24cc678724673e72b111f85aa0032c9e2c2fd4e926d27130e3f72bbd4413",
+          "normalized_text_sha256": "a9cf24cc678724673e72b111f85aa0032c9e2c2fd4e926d27130e3f72bbd4413",
+          "source_bytes": 73,
+          "normalized_bytes": 73,
+          "tokens": 16
+        },
+        {
+          "section_id": "page-05",
+          "source_text_sha256": "410df7ed0e681fe0a2d0bc9ad459bd6be823733710060d6eb1607524b35a84db",
+          "normalized_text_sha256": "410df7ed0e681fe0a2d0bc9ad459bd6be823733710060d6eb1607524b35a84db",
+          "source_bytes": 76,
+          "normalized_bytes": 76,
+          "tokens": 19
+        },
+        {
+          "section_id": "page-06",
+          "source_text_sha256": "2a9cffdf0d5ad9b73e62631af52505772140ce90e9ee53aff9791270745af0e4",
+          "normalized_text_sha256": "e2ea602b075a225b5cd1fe685bde3ea4a73e7f1326f05556d48a20b5063f8b5d",
+          "source_bytes": 158,
+          "normalized_bytes": 156,
+          "tokens": 40
+        },
+        {
+          "section_id": "page-07",
+          "source_text_sha256": "c0bae726babf82daca90facd814d510d00b2d7970e214139ba64ca360be68649",
+          "normalized_text_sha256": "cdcbe5e303129f7037634bcdae3c7420c425d8c5cffcb8eb8c21e1df41605cf3",
+          "source_bytes": 66,
+          "normalized_bytes": 65,
+          "tokens": 17
+        },
+        {
+          "section_id": "page-08",
+          "source_text_sha256": "8b63d3beba609108a0bce3b59d1218261b11e2a1b97cf6af7938816853c71859",
+          "normalized_text_sha256": "8b63d3beba609108a0bce3b59d1218261b11e2a1b97cf6af7938816853c71859",
+          "source_bytes": 45,
+          "normalized_bytes": 45,
+          "tokens": 13
+        },
+        {
+          "section_id": "page-09",
+          "source_text_sha256": "5043be5fe61bd774d732f815e2774d63b001abc1ddc6ceed55049c7f763bc614",
+          "normalized_text_sha256": "5043be5fe61bd774d732f815e2774d63b001abc1ddc6ceed55049c7f763bc614",
+          "source_bytes": 67,
+          "normalized_bytes": 67,
+          "tokens": 21
+        },
+        {
+          "section_id": "page-10",
+          "source_text_sha256": "732d0282baa24141604054bd8570d8f32a63bc259f19e1453c2a3411815e5363",
+          "normalized_text_sha256": "4e270f4b703085eb5b0d5cea7c4586a6b7931512c58f1e629712f7c9b89acceb",
+          "source_bytes": 78,
+          "normalized_bytes": 77,
+          "tokens": 18
+        },
+        {
+          "section_id": "page-11",
+          "source_text_sha256": "f12e7cb0a32b85c2bbbf4eb2681e9d9141e8365cea38d45f2d947bd83b120253",
+          "normalized_text_sha256": "f12e7cb0a32b85c2bbbf4eb2681e9d9141e8365cea38d45f2d947bd83b120253",
+          "source_bytes": 31,
+          "normalized_bytes": 31,
+          "tokens": 9
+        },
+        {
+          "section_id": "page-12",
+          "source_text_sha256": "76adce397dd18ed9fa3b9492b90aa25140bbbb60bab388d7eb3501717a72ea61",
+          "normalized_text_sha256": "44a237badae32f19a20c04353e061f0f2904a41f9c407855e3cb0691f8eda6bb",
+          "source_bytes": 135,
+          "normalized_bytes": 134,
+          "tokens": 35
+        }
+      ]
+    },
+    {
+      "work_id": "bookdash-sizwes-smile",
+      "work_group": "book-component:d62f832065a04d1d57a2219caa1b0f71a444081e1cd88eaa705399b72d41b4c7",
+      "split": "train",
+      "records": 8,
+      "skipped_windows": 3,
+      "sections": [
+        {
+          "section_id": "page-01",
+          "source_text_sha256": "a54e107cf9a3e4d315de84573d8c1333d32005ef4f24b42914d9cbbc864c4688",
+          "normalized_text_sha256": "0a0ee1569451b7923bc2225bae2041efa17dbaafc3f04eb4c8ef7ef443835fb1",
+          "source_bytes": 274,
+          "normalized_bytes": 273,
+          "tokens": 89
+        },
+        {
+          "section_id": "page-02",
+          "source_text_sha256": "684d1c9ffd1e792c0409e85961dc346bfbca2bb5b620c12f2b58d92cde7d20b5",
+          "normalized_text_sha256": "2bf4dea664ad4eedd2fca0641f80fad6358e7857c495bacc0e75ec92bec598ae",
+          "source_bytes": 177,
+          "normalized_bytes": 176,
+          "tokens": 43
+        },
+        {
+          "section_id": "page-03",
+          "source_text_sha256": "2eb531676c0defc5b08409a56687674e4e1fca543e3d6bfa1b924243fbc8b2f1",
+          "normalized_text_sha256": "1c4c5c2ec0463a9a6359a3a8ebab5abca8409198e31855cdf20674f3466f761a",
+          "source_bytes": 343,
+          "normalized_bytes": 341,
+          "tokens": 99
+        },
+        {
+          "section_id": "page-04",
+          "source_text_sha256": "8773a929b96e267e974fe47402c5c8816f27ad1f4444587bc75babffdb5ad19e",
+          "normalized_text_sha256": "7ad5275db25652a25bf340ac3470601af936fdb372a3b72692d042e01413e52f",
+          "source_bytes": 331,
+          "normalized_bytes": 329,
+          "tokens": 94
+        },
+        {
+          "section_id": "page-05",
+          "source_text_sha256": "cc411e2caebaede7be351393995ec0b8f3e9ef2456c183573c55e4747231d849",
+          "normalized_text_sha256": "a5d3842f61843d0ea0c66bedaaa737c742af4534912db7dc7faafc6acb88bb01",
+          "source_bytes": 353,
+          "normalized_bytes": 351,
+          "tokens": 96
+        },
+        {
+          "section_id": "page-06",
+          "source_text_sha256": "6aab1104afd6778c0f9f5acd013fe8bc9e74c8e986cd6d0dc4173eea61e090aa",
+          "normalized_text_sha256": "43bb09f69212e034ed42d247ccab1beb1c37273729e2c43dad2f0341fc2d43d6",
+          "source_bytes": 299,
+          "normalized_bytes": 298,
+          "tokens": 86
+        },
+        {
+          "section_id": "page-07",
+          "source_text_sha256": "7dc5b809b6f8c9ca361cd5dba1ef35ee3c28254d820d9b1a7e9b4589de2b08f7",
+          "normalized_text_sha256": "1c5677b515806c12b75b9e7d29accfccf335d8dcdbcf29e67b5c2992f8455639",
+          "source_bytes": 440,
+          "normalized_bytes": 437,
+          "tokens": 134
+        },
+        {
+          "section_id": "page-08",
+          "source_text_sha256": "f804aae92b3893c323f266db83ca14febc4f3c44d4f1de1d068c964967bdda1f",
+          "normalized_text_sha256": "2f2ea8ae23f569181011666a113f49fa8ec913bacbd23d7674434d5c7e913d7e",
+          "source_bytes": 461,
+          "normalized_bytes": 459,
+          "tokens": 127
+        },
+        {
+          "section_id": "page-09",
+          "source_text_sha256": "9264dbe41f79e5dd88d9ea48a931eaf4a4c580c7381cf580142a636f4db2e326",
+          "normalized_text_sha256": "9b99120de5475bced09a09bf4bbec84d60963dd9b8b4e68618913daf3bb71f21",
+          "source_bytes": 353,
+          "normalized_bytes": 352,
+          "tokens": 96
+        },
+        {
+          "section_id": "page-10",
+          "source_text_sha256": "67d8e0d5360442df1d60c3bb09026ba0070f1ddbf9396d7aefbfead143800734",
+          "normalized_text_sha256": "67d8e0d5360442df1d60c3bb09026ba0070f1ddbf9396d7aefbfead143800734",
+          "source_bytes": 188,
+          "normalized_bytes": 188,
+          "tokens": 55
+        },
+        {
+          "section_id": "page-11",
+          "source_text_sha256": "56276e5064c68ef6f5ce8eed12645c129ba986cd4c81c875ddb63bffbdfca821",
+          "normalized_text_sha256": "37a9df4c2406a344107c430a92d3db0b48e1c19cb0074d941c166ff2d7c089f6",
+          "source_bytes": 125,
+          "normalized_bytes": 121,
+          "tokens": 29
+        },
+        {
+          "section_id": "page-12",
+          "source_text_sha256": "ba1ab7320c396b9db39b40c6cc39d45b77922a67bfee59bdb49faa7f92d73fe9",
+          "normalized_text_sha256": "23aa7dc23d928d52d24b5bbbd0626c3a7bb9e195751343d05a6d2850386066b9",
+          "source_bytes": 452,
+          "normalized_bytes": 449,
+          "tokens": 126
+        }
+      ]
+    },
+    {
+      "work_id": "bookdash-why-is-nita-upside-down",
+      "work_group": "book-component:87db5aefee64a8ce210c6d98ad464e0402ac03581a35ea11a7b4b1a73aa8c408",
+      "split": "train",
+      "records": 8,
+      "skipped_windows": 5,
+      "sections": [
+        {
+          "section_id": "page-01",
+          "source_text_sha256": "2be7db280fedf7b10b1746ee158eaf299114eb3e85c75d79b6e9e27070853831",
+          "normalized_text_sha256": "3d0cc9cb94e6e1c7e20440f715eb63761001f0b024c7452c88e352b33266d0a7",
+          "source_bytes": 133,
+          "normalized_bytes": 132,
+          "tokens": 33
+        },
+        {
+          "section_id": "page-02",
+          "source_text_sha256": "67fe2f6c349aaa1ed2e9660b5f3b506a6758f5b820c2a18d86e10f969a3b2cbc",
+          "normalized_text_sha256": "8c495f5c462d421a81c7d23208056d0849626da61acffe900e22b477656c20f4",
+          "source_bytes": 143,
+          "normalized_bytes": 142,
+          "tokens": 38
+        },
+        {
+          "section_id": "page-03",
+          "source_text_sha256": "d09a6b69a7ef016c2d526704e01926c436f0dfd7b01ea25f5a64adc4ef2ecaf4",
+          "normalized_text_sha256": "8dfbf109f67641c89839bba2adca07c512232cbed34b7ebf24e39b9c63a2b164",
+          "source_bytes": 164,
+          "normalized_bytes": 163,
+          "tokens": 59
+        },
+        {
+          "section_id": "page-04",
+          "source_text_sha256": "8d482fca36bdab16a5f983fc83a5c7a163542126c756caede8ce568a1c03ecce",
+          "normalized_text_sha256": "55079df09d1c10377cfd7c57d9825a5a4cc541e36538575927e5b865a2b21cfa",
+          "source_bytes": 203,
+          "normalized_bytes": 201,
+          "tokens": 51
+        },
+        {
+          "section_id": "page-05",
+          "source_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "normalized_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source_bytes": 0,
+          "normalized_bytes": 0,
+          "tokens": 0
+        },
+        {
+          "section_id": "page-06",
+          "source_text_sha256": "f73037ddab2dad06ae5ada78c18d892b9ad3506bd60b88734052c4095ebf9a4a",
+          "normalized_text_sha256": "f0a2d16eed2c69d289e7a255916c279cbfe89bcc4cab19a63797848ee6d98b22",
+          "source_bytes": 68,
+          "normalized_bytes": 66,
+          "tokens": 23
+        },
+        {
+          "section_id": "page-07",
+          "source_text_sha256": "9bb429b518cb12bb555eeca088a13cb2104f2403605ca26845fa5eafa6dccbb8",
+          "normalized_text_sha256": "9bb429b518cb12bb555eeca088a13cb2104f2403605ca26845fa5eafa6dccbb8",
+          "source_bytes": 20,
+          "normalized_bytes": 20,
+          "tokens": 7
+        },
+        {
+          "section_id": "page-08",
+          "source_text_sha256": "73bd92387f76c32ccbbbfbf27026e8ee11e0bcb731c83471addbccd189836ee8",
+          "normalized_text_sha256": "73bd92387f76c32ccbbbfbf27026e8ee11e0bcb731c83471addbccd189836ee8",
+          "source_bytes": 63,
+          "normalized_bytes": 63,
+          "tokens": 20
+        },
+        {
+          "section_id": "page-09",
+          "source_text_sha256": "c960dec71dd5e18a866ad338b1dc7551c5f5656f806ccfae0504c76affc9df9d",
+          "normalized_text_sha256": "c960dec71dd5e18a866ad338b1dc7551c5f5656f806ccfae0504c76affc9df9d",
+          "source_bytes": 27,
+          "normalized_bytes": 27,
+          "tokens": 10
+        },
+        {
+          "section_id": "page-10",
+          "source_text_sha256": "602ca700ec518ad40926d71c49442cd425abf4235436be9772a735c7f39cd4cd",
+          "normalized_text_sha256": "602ca700ec518ad40926d71c49442cd425abf4235436be9772a735c7f39cd4cd",
+          "source_bytes": 33,
+          "normalized_bytes": 33,
+          "tokens": 8
+        },
+        {
+          "section_id": "page-11",
+          "source_text_sha256": "0e0ca8623c0f33958ef04f72c2376498daa45a8165197e06f2d8a0e3361466e5",
+          "normalized_text_sha256": "a5831c63164a19fdbaad23548dfe48144c2f86a065850d13ea3ed913036255d0",
+          "source_bytes": 224,
+          "normalized_bytes": 221,
+          "tokens": 62
+        },
+        {
+          "section_id": "page-12",
+          "source_text_sha256": "3d07a28240de25b82b21b759e502f24f68bd8fa9665107bf93e398bb7e2a579b",
+          "normalized_text_sha256": "c34dc8be2cfcac0221ce8fa288f628e458941729a4ceada058b3ddbf6ac1bbcc",
+          "source_bytes": 127,
+          "normalized_bytes": 125,
+          "tokens": 32
+        }
+      ]
+    }
+  ],
+  "contract": {
+    "text_basis": "Independent prompt and continuation decode of original section token IDs, without special tokens; encode(decode(ids)) must equal ids. This is explicitly tokenizer-normalized round-trip text, not raw source bytes or guessed raw byte offsets.",
+    "byte_encoding": "UTF-8: encode observed_bytes and each token_bytes string before constructing ContinuationTarget. Concatenated token bytes exactly reconstruct observed bytes. Every nonempty token piece is verified by cumulative decoder prefix extension.",
+    "partition_policy": "Use effective whole-work components only; quarantine emits zero rows. Train/dev/test remain explicit and cannot be pooled for training. All rows still require separate dataset/run admission.",
+    "sampling": "Up to the requested deterministic evenly spaced anchors per work, with at most sixteen subsequent token positions per anchor. Context stays in one section and at most 128 tokens; observed continuation is 4 to 32 tokens. Non-round-tripping, special/unknown-token or unstable-prefix windows are skipped.",
+    "attribution": "Each row retains original creators/source/license. Repository MIT terms do not replace per-work source restrictions.",
+    "scope": "Small book-domain adaptation for future RPT-style prefix verification, not a reproduction of the paper's 14B OmniMATH experiment or evidence of quality gains. No checkpoints, teachers, inference, rollout, optimizer or training is invoked."
+  }
+}

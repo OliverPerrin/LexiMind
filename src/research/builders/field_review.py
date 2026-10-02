@@ -8,16 +8,19 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from scripts.prepare_book_fields import checked, iter_resolved_candidates, jsonl_rows, reference
 from src.catalog.storage import write_json_atomic
 from src.research.book_fields import FACETS
+from src.research.builders.book_fields import (
+    checked,
+    iter_resolved_candidates,
+    jsonl_rows,
+    reference,
+)
 from src.research.candidate_io import create_or_verify, json_bytes
 from src.research.field_reviews import human_reviewed_states, validate_review_record
 from src.research.io import file_hash, read_json
+
+from . import ROOT
 
 MAX_RECORDS = 48
 COVERAGE_LABELS = (
@@ -169,8 +172,8 @@ def prepare_review(root: Path, packet_path: Path, manifest_path: Path, directory
         raise ValueError("Repeated review source record")
     mapping = read_json(checked(root, manifest["mapping"]))
     worksheet, found = [], set()
-    states = {kind: Counter() for kind in ("agent", "human")}
-    reviewed = Counter()
+    states: dict[str, Counter[str]] = {kind: Counter() for kind in ("agent", "human")}
+    reviewed: Counter[str] = Counter()
     source_labels: set[str] = set()
     human_label_count = 0
     for item in iter_resolved_candidates(root, manifest):
@@ -227,7 +230,7 @@ def prepare_review(root: Path, packet_path: Path, manifest_path: Path, directory
         "preparation_helper_sha256": {
             name: file_hash(root / name)
             for name in (
-                "scripts/prepare_book_fields.py",
+                "src/research/builders/book_fields.py",
                 "src/research/field_reviews.py",
                 "src/research/book_fields.py",
                 "src/research/candidate_io.py",
@@ -256,8 +259,7 @@ def prepare_review(root: Path, packet_path: Path, manifest_path: Path, directory
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--fields", type=Path, default=ROOT / "research/preparation/book_field_manifest.json"
     )
@@ -272,7 +274,9 @@ def main() -> int:
         action="store_true",
         help="Create empty review slots once; never overwrite authored reviews",
     )
-    args = parser.parse_args()
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     paths = [args.fields.resolve(), args.packet.resolve(), args.report.resolve()]
     if len(set(paths)) != len(paths) or any(
         not path.is_relative_to(ROOT / "research/preparation") for path in paths
@@ -290,7 +294,3 @@ def main() -> int:
         return 1
     print(json.dumps(report["observed"], ensure_ascii=False))
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

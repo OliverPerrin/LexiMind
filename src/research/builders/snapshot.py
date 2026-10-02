@@ -7,21 +7,21 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-
 from src.research.io import safe_path
 from src.research.manifest import build_manifest
 
+from . import ROOT
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--output", default="research/preparation/manifest.json")
     parser.add_argument(
         "--replace", action="store_true", help="Replace only after reviewing changed evidence"
     )
-    args = parser.parse_args()
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     try:
         target = safe_path(args.root, args.output)
         value = json.dumps(build_manifest(args.root), indent=2, allow_nan=False) + "\n"
@@ -33,7 +33,3 @@ def main() -> int:
         return 1
     print(f"Preparation snapshot written: {target}; no research stage admitted or executed")
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

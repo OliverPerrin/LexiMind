@@ -36,13 +36,13 @@ from ..models.losses import masked_binary_cross_entropy
 from .metrics import (
     MultilabelBatchMetrics,
     ObservedMultilabelMetrics,
-    accuracy,
     calculate_bleu,
     calculate_rouge,
     multilabel_f1,
     rouge_like,
 )
 from .pcgrad import PCGrad
+from .policy import PolicyBatchMetrics, PolicyTask
 
 # --------------- Configuration ---------------
 
@@ -127,6 +127,7 @@ class Trainer:
         config: TrainerConfig,
         device: torch.device,
         tokenizer: Tokenizer,
+        policy_objectives: Dict[str, PolicyTask] | None = None,
     ) -> None:
         self.model = model.to(device)
         self.optimizer = optimizer
@@ -134,6 +135,15 @@ class Trainer:
         self.device = device
         self.tokenizer = tokenizer
         self.global_step = 0
+        self.policy_objectives = dict(policy_objectives or {})
+        if any(
+            not isinstance(name, str)
+            or not name.strip()
+            or name in {"summarization", "emotion", "topic"}
+            or objective.model is not self.model
+            for name, objective in self.policy_objectives.items()
+        ):
+            raise ValueError("Policy objectives need distinct task names and this Trainer's model")
 
         # AMP: bfloat16 on Ampere+ GPUs
         self.use_amp = device.type == "cuda"
@@ -276,13 +286,27 @@ class Trainer:
         *,
         train: bool,
         epoch: int,
+        step_callback: Callable[[], None] | None = None,
     ) -> Dict[str, float]:
         """Run one epoch with configurable task sampling strategy."""
+        if (
+            train
+            and self.policy_objectives.keys() & loaders.keys()
+            and self.config.gradient_accumulation_steps != 1
+        ):
+            raise ValueError(
+                "Policy tasks require gradient_accumulation_steps=1; weighted policy windows are not implemented"
+            )
         self.model.train(train)
         if not loaders or any(len(loader) == 0 for loader in loaders.values()):
             raise ValueError("Every selected task requires a nonempty data loader")
-        metrics: Dict[str, List[float]] = defaultdict(list)
-        metric_weights: Dict[str, List[int]] = defaultdict(list)
+        metric_totals: Dict[str, float] = defaultdict(float)
+        metric_weights: Dict[str, int] = defaultdict(int)
+
+        def record(name: str, value: float, weight: int = 1) -> None:
+            metric_totals[name] += value * weight
+            metric_weights[name] += weight
+
         observed_metrics: Dict[str, ObservedMultilabelMetrics] = {}
         window_has_supervision = False
         diagnostic_batches: Dict[str, Dict] = {}
@@ -293,6 +317,10 @@ class Trainer:
             self.optimizer.zero_grad(set_to_none=True)
 
         phase = "Train" if train else "Val"
+        if not train and self.policy_objectives.keys() & loaders.keys():
+            raise ValueError(
+                "Policy surrogate loss cannot select checkpoints; use separate held-out outcome evaluation"
+            )
         pbar = tqdm(range(max_batches), desc=f"  {phase}", leave=False, file=sys.stderr)
 
         # Temperature-based task sampling: p_i ∝ n_i^alpha.
@@ -322,8 +350,8 @@ class Trainer:
 
         use_pcgrad = train and self.pcgrad is not None
         if use_pcgrad:
-            # Encoder = shared (subject to PCGrad projection).
-            # Decoder + heads = task-specific (grads pass through unchanged).
+            # Project only encoder gradients. Decoder/head gradients are summed,
+            # even when several generative objectives share the same decoder.
             shared_params = [p for p in self.model.encoder.parameters() if p.requires_grad]
             shared_ids = {id(p) for p in shared_params}
             head_params = [
@@ -369,31 +397,40 @@ class Trainer:
                     # Forward with AMP
                     dtype = torch.bfloat16 if self.use_bfloat16 else torch.float16
                     with torch.autocast("cuda", dtype=dtype, enabled=self.use_amp):
-                        loss, task_metrics = self._forward_task(task, batch)
+                        loss, task_metrics = self._forward_task(
+                            task, batch, summarize_metrics=False
+                        )
 
-                    if not torch.isfinite(loss):
+                    # Inspect the already-needed host scalar once, instead of
+                    # synchronizing separately for isfinite and loss.item().
+                    loss_value = loss.item()
+                    if not math.isfinite(loss_value):
                         raise FloatingPointError(
                             f"Non-finite {task} loss at epoch {epoch}, step {step}"
                         )
 
                     # Record metrics
-                    loss_value = loss.item()
-                    metrics[f"{task}_loss"].append(loss_value)
-                    batch_size = len(batch["labels"])
+                    batch_size = (
+                        task_metrics.responses
+                        if isinstance(task_metrics, PolicyBatchMetrics)
+                        else len(batch["labels"])
+                    )
+                    loss_count = 1
                     has_supervision = True
-                    if isinstance(task_metrics, MultilabelBatchMetrics):
+                    if isinstance(task_metrics, PolicyBatchMetrics):
+                        loss_count = task_metrics.loss_weight
+                        has_supervision = task_metrics.has_signal
+                    elif isinstance(task_metrics, MultilabelBatchMetrics):
                         counts = task_metrics.counts
                         loss_count = int(counts.observed.sum())
                         has_supervision = loss_count > 0
-                        metric_weights[f"{task}_loss"].append(loss_count)
                         if task not in observed_metrics:
                             observed_metrics[task] = counts
                         else:
                             observed_metrics[task].merge(counts)
                         # Keep legacy sample F1 for dense emotion labels only.
                         if "f1" in task_metrics:
-                            metrics[f"{task}_f1"].append(task_metrics["f1"])
-                            metric_weights[f"{task}_f1"].append(batch_size)
+                            record(f"{task}_f1", task_metrics["f1"], batch_size)
                     # Validation visits each example once. Loss is token-averaged
                     # for summarization, observed-cell-averaged for multi-label,
                     # and example-averaged for single-label classifiers.
@@ -403,12 +440,10 @@ class Trainer:
                             if task == "summarization"
                             else batch_size
                         )
-                        metric_weights[f"{task}_loss"].append(loss_count)
+                    record(f"{task}_loss", loss_value, loss_count)
                     if not isinstance(task_metrics, MultilabelBatchMetrics):
                         for name, val in task_metrics.items():
-                            metrics[f"{task}_{name}"].append(val)
-                            if not train:
-                                metric_weights[f"{task}_{name}"].append(batch_size)
+                            record(f"{task}_{name}", val, 1 if train else batch_size)
 
                     # Track step loss for both train and val
                     weight = (self.config.task_weights or {}).get(task, 1.0)
@@ -438,7 +473,7 @@ class Trainer:
                     )
 
                     for k, v in pcgrad_stats.items():
-                        metrics[f"pcgrad_{k}"].append(v)
+                        record(f"pcgrad_{k}", v)
                         if self.global_step % 100 == 0:
                             mlflow.log_metric(f"pcgrad_{k}", v, step=self.global_step)
 
@@ -458,7 +493,7 @@ class Trainer:
                 ):
                     conflict_stats = self._compute_gradient_conflicts(diagnostic_batches)
                     for k, v in conflict_stats.items():
-                        metrics[f"grad_{k}"].append(v)
+                        record(f"grad_{k}", v)
                         mlflow.log_metric(f"grad_{k}", v, step=self.global_step)
 
                 # Optimizer step
@@ -476,21 +511,18 @@ class Trainer:
                     self.optimizer.zero_grad(set_to_none=True)
                     window_has_supervision = False
 
-                if train and step_loss > 0:
-                    metrics["total_loss"].append(step_loss)
-                    if train:
-                        pbar.set_postfix({"loss": f"{step_loss:.3f}"})
+                if train:
+                    record("total_loss", step_loss)
+                    pbar.set_postfix({"loss": f"{step_loss:.3f}"})
+                if step_callback is not None:
+                    step_callback()
 
-        # Average metrics
-        averaged = {k: sum(v) / len(v) for k, v in metrics.items() if v}
+        # Constant-memory weighted means preserve each task's reduction policy.
+        averaged = {
+            key: total / metric_weights[key] if metric_weights[key] else 0.0
+            for key, total in metric_totals.items()
+        }
         averaged.setdefault("total_loss", 0.0)
-        for key, weights in metric_weights.items():
-            denominator = sum(weights)
-            averaged[key] = (
-                sum(v * n for v, n in zip(metrics[key], weights, strict=True)) / denominator
-                if denominator
-                else 0.0
-            )
         for task, counts in observed_metrics.items():
             if not train and not counts.observed.any():
                 raise ValueError(
@@ -526,14 +558,21 @@ class Trainer:
             for k, v in batch.items()
         }
 
-    def _forward_task(self, task: str, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
+    def _forward_task(
+        self, task: str, batch: Dict, *, summarize_metrics: bool = True
+    ) -> tuple[torch.Tensor, Dict[str, float]]:
         """Route to task-specific forward pass."""
+        if task in self.policy_objectives:
+            return self.policy_objectives[task](batch)
         if task == "summarization":
             return self._forward_summarization(batch)
-        elif task == "emotion":
-            return self._forward_emotion(batch)
-        elif task == "topic":
-            return self._forward_topic(batch)
+        if task in {"emotion", "topic"}:
+            return self._forward_classification(
+                task,
+                batch,
+                threshold=0.3 if task == "emotion" else 0.5,
+                summarize_metrics=summarize_metrics,
+            )
         raise ValueError(f"Unknown task: {task}")
 
     def _forward_summarization(self, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
@@ -577,16 +616,8 @@ class Trainer:
 
         return loss, metrics
 
-    def _forward_emotion(self, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
-        """Emotion defaults to its existing multi-label contract and 0.3 threshold."""
-        return self._forward_classification("emotion", batch, threshold=0.3)
-
-    def _forward_topic(self, batch: Dict) -> tuple[torch.Tensor, Dict[str, float]]:
-        """Topic mode is explicitly declared by its head; legacy default is CE."""
-        return self._forward_classification("topic", batch, threshold=0.5)
-
     def _forward_classification(
-        self, task: str, batch: Dict, *, threshold: float
+        self, task: str, batch: Dict, *, threshold: float, summarize_metrics: bool = True
     ) -> tuple[torch.Tensor, Dict[str, float]]:
         inputs = {"input_ids": batch["input_ids"]}
         if "attention_mask" in batch:
@@ -603,8 +634,9 @@ class Trainer:
             mask = batch.get("label_mask")
             loss = masked_binary_cross_entropy(logits, labels, mask)
             predictions = logits.detach().sigmoid() > threshold
-            metrics = MultilabelBatchMetrics(ObservedMultilabelMetrics(predictions, labels, mask))
-            if task == "emotion" and (mask is None or bool(mask.all())):
+            counts = ObservedMultilabelMetrics(predictions, labels, mask)
+            metrics = MultilabelBatchMetrics(counts, summarize=summarize_metrics)
+            if task == "emotion" and int(counts.observed.sum()) == counts.total:
                 metrics["f1"] = multilabel_f1(predictions, labels)
             return loss, metrics
         if problem_type != "single_label":
@@ -615,7 +647,7 @@ class Trainer:
             raise ValueError("Single-label classification requires labels with shape B")
         loss = F.cross_entropy(logits, batch["labels"])
         preds = logits.argmax(dim=-1)
-        return loss, {"accuracy": accuracy(preds.tolist(), batch["labels"].tolist())}
+        return loss, {"accuracy": (preds == batch["labels"]).sum().item() / preds.numel()}
 
     def _decode_labels(self, labels: torch.Tensor) -> List[str]:
         """Decode labels, replacing -100 with pad token."""
@@ -680,12 +712,9 @@ class Trainer:
     ) -> Dict[str, float]:
         """Compute inter-task gradient cosine similarity to diagnose conflicts.
 
-        Cosine similarity is computed over the SHARED encoder parameters only,
-        since task-private heads (decoder, emotion head, topic head) only
-        receive gradients from their own task and would produce trivially
-        orthogonal vectors that distort the shared-representation conflict
-        signal. Comparing over the same parameter set across tasks also avoids
-        shape-mismatch errors.
+        Compare the same encoder parameter set across tasks. This excludes
+        private-head geometry and matches the encoder-only PCGrad policy; it
+        does not diagnose decoder conflicts between generative objectives.
 
         Uses the latest already-consumed batch per task: diagnostics neither
         steal training batches nor clear/replace accumulated parameter gradients.
@@ -708,11 +737,11 @@ class Trainer:
             for task, batch in batches.items():
                 dtype = torch.bfloat16 if self.use_bfloat16 else torch.float16
                 with torch.autocast("cuda", dtype=dtype, enabled=self.use_amp):
-                    loss, task_metrics = self._forward_task(task, batch)
+                    loss, task_metrics = self._forward_task(task, batch, summarize_metrics=False)
                 if (
                     isinstance(task_metrics, MultilabelBatchMetrics)
                     and not task_metrics.counts.observed.any()
-                ):
+                ) or (isinstance(task_metrics, PolicyBatchMetrics) and not task_metrics.has_signal):
                     continue
                 if not torch.isfinite(loss):
                     continue

@@ -8,8 +8,8 @@
   "revision": "add492243ff905527e67aeb8b80c082af02207c3",
   "candidate_manifest": {
     "path": "research/preparation/goemotions_candidate_manifest.json",
-    "sha256": "cb9a8ab762c293d4e386ac5df28a88abbd03bbb37165befdf753a16ff98be324",
-    "bytes": 22555
+    "sha256": "1df921fecfdcfd072982b4fcaf9612ec80e87e6ec409b6ee65cb30618ad7b186",
+    "bytes": 22556
   },
   "implementation_sha256": "0d4fd90a268147256c55d0e8106cf8c4bdc437d65f6cb81890a19f5a064168f3",
   "assignments": {

@@ -395,6 +395,7 @@ class TransformerDecoder(nn.Module):
             return logits, attn_list
         return logits
 
+    @torch.no_grad()
     def greedy_decode_naive(
         self,
         memory: torch.Tensor,
@@ -404,23 +405,24 @@ class TransformerDecoder(nn.Module):
         device: Optional[torch.device] = None,
         memory_mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
-        """
-        Naive greedy decoding using full forward pass (O(N^2) but simpler).
-        Used for debugging to verify step() correctness.
-        """
+        """Full-prefix reference for checking cached step decoding."""
+        if type(max_len) is not int or max_len < 1:
+            raise ValueError("max_len must be a positive integer")
         if device is None:
             device = memory.device
         B = memory.size(0)
 
         # Initialize with start token
-        generated = torch.full((B, 1), start_token_id, dtype=torch.long, device=device)
+        generated = torch.empty((B, max_len), dtype=torch.long, device=device)
+        generated[:, 0] = start_token_id
+        length = 1
         finished = torch.zeros(B, dtype=torch.bool, device=device)
 
         for _ in range(max_len - 1):
             # Full forward pass on entire generated sequence
             # skip_padding_mask=True because start_token=pad_token for T5
             logits = self.forward(
-                generated, memory, memory_mask=memory_mask, skip_padding_mask=True
+                generated[:, :length], memory, memory_mask=memory_mask, skip_padding_mask=True
             )
             if isinstance(logits, tuple):
                 logits = logits[0]
@@ -436,14 +438,16 @@ class TransformerDecoder(nn.Module):
                 finished |= next_token.squeeze(-1) == end_token_id
 
             # Append to generated
-            generated = torch.cat([generated, next_token], dim=1)
+            generated[:, length : length + 1] = next_token
+            length += 1
 
             # Check for EOS
             if end_token_id is not None and finished.all():
                 break
 
-        return generated
+        return generated[:, :length].contiguous()
 
+    @torch.no_grad()
     def greedy_decode(
         self,
         memory: torch.Tensor,
@@ -460,18 +464,22 @@ class TransformerDecoder(nn.Module):
         memory_mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         """
-        Greedy decoding with KV caching for O(N) complexity.
+        Incremental greedy decoding with cached self/memory projections.
 
         Args:
             length_penalty: Values > 1.0 encourage shorter sequences by boosting EOS probability
                            as sequence length increases. Default 1.0 (no penalty).
         """
+        if type(max_len) is not int or max_len < 1:
+            raise ValueError("max_len must be a positive integer")
         if device is None:
             device = memory.device
         B = memory.size(0)
 
         # Initialize generated sequence with start token
-        generated = torch.full((B, 1), start_token_id, dtype=torch.long, device=device)
+        generated = torch.empty((B, max_len), dtype=torch.long, device=device)
+        generated[:, 0] = start_token_id
+        length = 1
 
         # Initialize cache
         cache: Dict[str, Any] = {"past_length": 0}
@@ -482,33 +490,41 @@ class TransformerDecoder(nn.Module):
 
         # Keep track of finished sequences
         finished = torch.zeros(B, dtype=torch.bool, device=device)
+        constrained = (
+            repetition_penalty != 1.0
+            or bool(ban_token_ids)
+            or no_repeat_ngram_size > 0
+            or (end_token_id is not None and (min_len > 1 or length_penalty != 1.0))
+        )
+        # Only n-gram blocking needs token history on the host. Transfer each new
+        # token once instead of rescanning/copying the entire prefix every step.
+        histories = [[start_token_id] for _ in range(B)] if no_repeat_ngram_size > 0 else []
+        ngrams: List[Dict[tuple, set]] = [{} for _ in histories]
+        if no_repeat_ngram_size == 1:
+            for seen in ngrams:
+                seen[()] = {start_token_id}
 
         for _ in range(max_len - 1):
             # Use the last generated token for the next step
-            last_token = generated[:, -1:]  # (B, 1)
+            last_token = generated[:, length - 1 : length]  # (B, 1)
 
             # Run one step of the decoder
             logits, cache = self.step(last_token, memory, cache)
             # logits: (B, vocab_size)
 
-            next_step_logits = logits.clone()
+            next_step_logits = logits.clone() if constrained else logits
 
             # Apply repetition penalty
             if repetition_penalty != 1.0:
-                for b in range(B):
-                    if finished[b]:
-                        continue
-                    gen_seq = generated[b]
-                    unique_tokens = torch.unique(gen_seq)
-                    current_logits = next_step_logits[b, unique_tokens]
-                    next_step_logits[b, unique_tokens] = torch.where(
-                        current_logits < 0,
-                        current_logits * repetition_penalty,
-                        current_logits / repetition_penalty,
-                    )
+                prefix = generated[:, :length]
+                values = next_step_logits.gather(1, prefix)
+                adjusted = torch.where(
+                    values < 0, values * repetition_penalty, values / repetition_penalty
+                )
+                next_step_logits.scatter_(1, prefix, adjusted)
 
             # Apply constraints
-            if end_token_id is not None and generated.size(1) < max(1, min_len):
+            if end_token_id is not None and length < max(1, min_len):
                 next_step_logits[:, end_token_id] = float("-inf")
 
             if ban_token_ids:
@@ -516,33 +532,24 @@ class TransformerDecoder(nn.Module):
 
             # N-gram repetition blocking
             if no_repeat_ngram_size > 0:
-                for b in range(B):
-                    if finished[b]:
-                        continue
-                    gen_seq = generated[b].tolist()
-                    if len(gen_seq) < no_repeat_ngram_size - 1:
-                        continue
-
-                    prefix = (
-                        tuple(gen_seq[-(no_repeat_ngram_size - 1) :])
+                rows: List[int] = []
+                columns: List[int] = []
+                for b, history in enumerate(histories):
+                    prefix_key = (
+                        tuple(history[-(no_repeat_ngram_size - 1) :])
                         if no_repeat_ngram_size > 1
                         else ()
                     )
-                    banned_for_this_batch = set()
-
-                    for i in range(len(gen_seq) - no_repeat_ngram_size + 1):
-                        window = tuple(gen_seq[i : i + no_repeat_ngram_size - 1])
-                        if window == prefix:
-                            if i + no_repeat_ngram_size - 1 < len(gen_seq):
-                                banned_for_this_batch.add(gen_seq[i + no_repeat_ngram_size - 1])
-
-                    if banned_for_this_batch:
-                        next_step_logits[b, list(banned_for_this_batch)] = float("-inf")
+                    banned = ngrams[b].get(prefix_key, ())
+                    rows.extend([b] * len(banned))
+                    columns.extend(banned)
+                if columns:
+                    next_step_logits[rows, columns] = float("-inf")
 
             # Length penalty to boost EOS probability as sequence grows (encourages shorter outputs)
-            if length_penalty != 1.0 and end_token_id is not None and generated.size(1) >= min_len:
+            if length_penalty != 1.0 and end_token_id is not None and length >= min_len:
                 # Scale EOS logit based on current length relative to max
-                length_ratio = generated.size(1) / max_len
+                length_ratio = length / max_len
                 eos_boost = length_penalty * length_ratio  # Grows as we approach max_len
                 next_step_logits[:, end_token_id] = next_step_logits[:, end_token_id] + eos_boost
 
@@ -554,16 +561,24 @@ class TransformerDecoder(nn.Module):
                 next_token = next_token.masked_fill(finished.unsqueeze(-1), end_token_id)
 
             # Update generated sequence
-            generated = torch.cat([generated, next_token], dim=1)
+            generated[:, length : length + 1] = next_token
+            length += 1
+            if histories:
+                for b, token in enumerate(next_token.squeeze(-1).tolist()):
+                    history = histories[b]
+                    history.append(token)
+                    if len(history) >= no_repeat_ngram_size:
+                        window = history[-no_repeat_ngram_size:]
+                        ngrams[b].setdefault(tuple(window[:-1]), set()).add(window[-1])
 
             # Check for completion
             if end_token_id is not None:
                 is_end = next_token.squeeze(-1) == end_token_id
                 finished = finished | is_end
-                if finished.all() and generated.size(1) >= max(1, min_len):
+                if finished.all() and length >= max(1, min_len):
                     break
 
-        return generated
+        return generated[:, :length].contiguous()
 
     # -----------------------------
     # Incremental single-step API
@@ -664,9 +679,9 @@ class TransformerDecoder(nn.Module):
             x_norm = layer.norm1(layer_input)  # (B,1,d)
 
             # Project Q,K,V for the new token
-            Q_new = layer.self_attn.W_Q(x_norm)  # (B,1,d_model)
+            Q_new = layer.self_attn.project_query(x_norm)  # (B,1,d_model)
             K_new = layer.self_attn.W_K(x_norm)
-            V_new = layer.self_attn.W_V(x_norm)
+            V_new = layer.self_attn.project_value(x_norm)
 
             # Reshape into heads: (B, num_heads, 1, d_k)
             B_, Lq, _ = Q_new.shape
@@ -691,12 +706,9 @@ class TransformerDecoder(nn.Module):
             new_cache[f"self_k_{i}"] = K_all
             new_cache[f"self_v_{i}"] = V_all
 
-            # Compute attention for the new token: Query length = 1, Key length = K_all.size(2)
-            # Explicitly create mask for consistency with forward pass (though None should work)
-            # mask=True means attend.
-            step_mask = torch.ones(B_, 1, 1, K_all.size(2), dtype=torch.bool, device=device)
+            # Only past/current keys are cached, so every key is visible.
             attn_out_heads, self_attn_w = layer.self_attn.attention(
-                Qh, K_all, V_all, mask=step_mask, position_bias=self_position_bias
+                Qh, K_all, V_all, position_bias=self_position_bias
             )
             # attn_out_heads: (B, H, 1, d_k)
             # concat heads, project out
@@ -716,7 +728,7 @@ class TransformerDecoder(nn.Module):
                 # project memory once for this layer and cache it
                 # memory: (B, S, d_model)
                 MK = layer.cross_attn.W_K(memory)  # (B, S, d_model)
-                MV = layer.cross_attn.W_V(memory)
+                MV = layer.cross_attn.project_value(memory)
                 Bm, S, _ = MK.shape
                 MKh = MK.view(Bm, S, layer.cross_attn.num_heads, layer.cross_attn.d_k).transpose(
                     1, 2
@@ -732,7 +744,7 @@ class TransformerDecoder(nn.Module):
                 mem_k = mem_k.to(device)
                 mem_v = mem_v.to(device)
 
-            Qc = layer.cross_attn.W_Q(x_norm2)  # (B,1,d_model)
+            Qc = layer.cross_attn.project_query(x_norm2)  # (B,1,d_model)
             Qch = Qc.view(B, 1, layer.cross_attn.num_heads, layer.cross_attn.d_k).transpose(
                 1, 2
             )  # (B,H,1,d_k)

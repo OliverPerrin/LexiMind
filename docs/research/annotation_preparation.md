@@ -10,11 +10,11 @@ Future collection uses the [relevance](../recommendation_judgments.md) and
 
 ```sh
 # Deterministic read-only plan; no collection or scoring.
-python3 scripts/prepare_annotation_packet.py
+python3 scripts/research.py annotation
 # Explicit, previously nonexistent destination; parent must already exist.
-python3 scripts/prepare_annotation_packet.py --mode create --output /path/to/new-packet.json
+python3 scripts/research.py annotation --mode create --output /path/to/new-packet.json
 # Read-only verification against the actual catalogue and rubric files.
-python3 scripts/prepare_annotation_packet.py --mode validate --packet research/preparation/annotation_packet.json
+python3 scripts/research.py annotation --mode validate --packet research/preparation/annotation_packet.json
 python3 -m unittest discover -s tests/test_research -p test_annotation_packet.py
 ```
 

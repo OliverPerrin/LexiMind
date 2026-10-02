@@ -5,17 +5,20 @@ import pickle
 from pathlib import Path
 from unittest.mock import Mock
 
+import numpy as np
 import pytest
 import torch
 from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
 from torch.utils.data import DataLoader
 
-from src.data.dataloader import build_task_dataloaders
+from src.data.dataloader import EmotionCollator, TopicCollator, build_task_dataloaders
 from src.data.dataset import (
     EmotionDataset,
+    EmotionExample,
     IndexedJsonl,
     SummarizationDataset,
     TopicDataset,
+    TopicExample,
     load_emotion_jsonl,
     load_splits,
     load_summarization_jsonl,
@@ -148,6 +151,72 @@ def test_index_refuses_stale_offsets(tmp_path):
     path.write_text('{"text":"replacement with different size","topic":"a"}\n')
     with pytest.raises(RuntimeError, match="changed after indexing"):
         indexed[0]
+
+
+def test_index_subsets_preserve_order_duplicates_pickle_and_source_guard(tmp_path):
+    path = write_rows(tmp_path / "rows.jsonl", [{"text": str(i), "topic": "a"} for i in range(5)])
+    indexed = load_topic_jsonl(path, lazy=True)
+    subset = indexed.subset([4, 1, 4]).subset([2, 1, 0])
+    expected = [indexed[4], indexed[1], indexed[4]]
+    assert list(subset) == expected
+    assert subset.read_many([1, 0]) == [expected[1], expected[0]]
+    assert list(pickle.loads(pickle.dumps(subset))) == expected
+    path.write_text('{"text":"changed","topic":"a"}\n')
+    with pytest.raises(RuntimeError, match="changed after indexing"):
+        list(subset)
+
+
+def test_emotion_partition_stays_lazy_and_never_decodes_calibration(tmp_path):
+    path = write_rows(
+        tmp_path / "validation.jsonl",
+        [{"text": str(i), "emotions": ["joy"]} for i in range(101)],
+    )
+    eager_selection, eager_calibration = split_emotion_val(load_emotion_jsonl(path))
+    indexed = load_emotion_jsonl(path, lazy=True)
+    constructor = Mock(wraps=indexed.constructor)
+    indexed.constructor = constructor
+    selection, calibration = split_emotion_val(indexed)
+    constructor.assert_not_called()
+    assert isinstance(selection, IndexedJsonl) and isinstance(calibration, IndexedJsonl)
+    assert list(selection) == eager_selection
+    assert constructor.call_count == len(selection)
+    assert list(calibration) == eager_calibration
+    assert constructor.call_count == len(indexed)
+
+
+def test_capped_emotion_validation_does_not_decode_unselected_rows(tmp_path):
+    write_rows(tmp_path / "train.jsonl", [{"text": "training", "emotions": ["joy"]}])
+    (tmp_path / "labels.json").write_text('["joy"]')
+    validation = [{"text": str(i), "emotions": ["joy"]} for i in range(20)]
+    write_rows(tmp_path / "val.jsonl", validation)
+    # Index creation must not decode any text, including held-out calibration rows.
+    (tmp_path / "val.jsonl").write_text("\n".join("invalid JSON" for _ in validation))
+    _, val = load_training_datasets({"emotion": tmp_path}, ["emotion"], max_val_samples=2)
+    assert isinstance(val["emotion"]._examples, IndexedJsonl)
+    assert len(val["emotion"]) == 2
+    with pytest.raises(ValueError, match="Failed to parse JSON"):
+        val["emotion"][0]
+
+
+def test_dense_labels_match_sklearn_for_ordered_columns_empty_and_duplicate_emotions():
+    vocabulary = ["joy", "sad", "anger"]
+    emotions = [
+        EmotionExample("first", ["sad", "sad"]),
+        EmotionExample("second", []),
+        EmotionExample("third", ["anger", "joy"]),
+    ]
+    binarizer = MultiLabelBinarizer(classes=vocabulary).fit([])
+    dataset = EmotionDataset(emotions, binarizer=binarizer)
+    result = EmotionCollator(SyntheticTokenizer(), dataset)(emotions)["labels"]
+    assert result.dtype == torch.float32 and result.is_contiguous()
+    assert result.tolist() == binarizer.transform([row.emotions for row in emotions]).tolist()
+    topics = [TopicExample("first", "sad"), TopicExample("second", "joy")]
+    encoder = LabelEncoder()
+    encoder.classes_ = np.asarray(vocabulary, dtype=object)
+    topic_dataset = TopicDataset(topics, encoder=encoder)
+    result = TopicCollator(SyntheticTokenizer(), topic_dataset)(topics)["labels"]
+    assert result.dtype == torch.long
+    assert result.tolist() == encoder.transform([row.topic for row in topics]).tolist()
 
 
 def test_provided_label_tools_do_not_decode_validation_rows(tmp_path):

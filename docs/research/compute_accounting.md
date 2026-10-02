@@ -5,9 +5,9 @@ unobserved: runs, events and recipes are empty. The chosen budget boundary and
 unresolved numeric allowance are in [study_decisions.md](study_decisions.md).
 
 ```sh
-python3 scripts/validate_compute_ledger.py
-python3 scripts/validate_compute_ledger.py --require-observed
-python3 scripts/validate_compute_ledger.py path/to/observed-ledger.json --report path/to/report.json --require-observed
+python3 scripts/research.py ledger
+python3 scripts/research.py ledger --require-observed
+python3 scripts/research.py ledger path/to/observed-ledger.json --report path/to/report.json --require-observed
 python3 -m pytest tests/test_research/test_compute_ledger.py -q
 ```
 

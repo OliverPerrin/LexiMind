@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-09-27",
+  "checked_at": "2026-10-02",
   "scope": "Primary-source review and local book-data preparation; no model, teacher or training run",
   "sources": [
     {
@@ -34,7 +34,8 @@
         "field_mapping": "research/preparation/book_field_mapping.json",
         "field_candidates": "research/preparation/book_field_manifest.json",
         "group_review": "research/preparation/book_group_review.json",
-        "field_review": "research/preparation/book_field_review_manifest.json"
+        "field_review": "research/preparation/book_field_review_manifest.json",
+        "effective_partitions": "research/preparation/book_partition_manifest.json"
       }
     },
     {
@@ -59,7 +60,8 @@
       "paper_passages": 43713,
       "paper_annotations": 207721,
       "role": "preferred narrative-affect auxiliary",
-      "limit": "character emotion, affect-enriched sampling and excluded dialogue; not reader or whole-book mood. Keep raw t1 human labels separate from computational mappings."
+      "limit": "Raw t0 is character-validity judgment and raw t1 is free text, not a ready-made categorical target. Preserve blanks/NA, source documents, highlighted surface form and disagreement; missing highlight offsets and book identities require review. Corrected/unified labels include LLM-assisted cleaning, while NRC/NRCBERT/EMO are derived. Not reader or whole-book mood.",
+      "local_audit": "research/preparation/cr4_candidate_manifest.json"
     },
     {
       "id": "cmu",
@@ -243,7 +245,8 @@
         }
       }
     ],
-    "scope": "Provider metadata, README and DDI schema only. No annotation table downloaded. Dataset-level license is a provider declaration, not per-excerpt rights verification."
+    "scope": "Historical metadata/README/DDI inspection; original CSV subsequently acquired and verified, see local audit. Dataset CC0 is a provider declaration, not independent per-excerpt rights clearance.",
+    "local_audit": "research/preparation/cr4_candidate_manifest.json"
   },
   "not_selected": [
     {

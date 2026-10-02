@@ -6,7 +6,7 @@ import zipfile
 
 import pytest
 
-from scripts import prepare_bgc_candidate as prep
+from src.research.builders import bgc_source as prep
 
 
 def book(

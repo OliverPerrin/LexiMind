@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts import audit_research_data as auditor
+from src.research.builders import data_audit as auditor
 
 
 def write_task(root, task, rows, labels=None):
@@ -194,7 +194,8 @@ def test_even_clean_mechanical_checks_cannot_authorize_training(tmp_path):
     assert audit["training_authorized"] is False
     command = [
         sys.executable,
-        str(Path(auditor.__file__)),
+        str(Path(__file__).resolve().parents[2] / "scripts/research.py"),
+        "data-audit",
         "--input-dir",
         str(root),
         "--inventory",
@@ -218,7 +219,8 @@ def test_report_cli_cannot_overwrite_read_only_inputs(tmp_path):
     result = subprocess.run(
         [
             sys.executable,
-            str(Path(auditor.__file__)),
+            str(Path(__file__).resolve().parents[2] / "scripts/research.py"),
+            "data-audit",
             "--input-dir",
             str(root),
             "--inventory",

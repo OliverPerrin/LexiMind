@@ -3,7 +3,6 @@
 -r requirements-quality.txt
 numpy==2.2.6
 transformers==5.17.0
-tokenizers==0.23.2
 huggingface-hub==1.32.0
 scikit-learn==1.7.2
 nltk==3.10.3

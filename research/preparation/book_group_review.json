@@ -7,8 +7,8 @@
   "inputs": {
     "groups": {
       "path": "research/preparation/bgc_group_manifest.json",
-      "bytes": 6378,
-      "sha256": "318df901615055ab188ceaf3e91e9d3a70d6005c511108b223dbcdb9cd57f8dc"
+      "bytes": 6381,
+      "sha256": "e33d8d063060a96b02fb87a6f1c7d1bc1278f7a55d8b4bccd8b7df96e82f8abf"
     },
     "catalogue": {
       "path": "web/data/books.json",
@@ -22,8 +22,8 @@
     },
     "licensed_manifest": {
       "path": "research/preparation/licensed_books_manifest.json",
-      "bytes": 7747,
-      "sha256": "79f8d4a044ef621b26c031683bb56239e59ebf0b16640cf4dbf355efd2de1467"
+      "bytes": 7753,
+      "sha256": "810f823565504cbf4db8422e7e753f7a52273f2f717842ebedaa3a3910e89053"
     },
     "archive": {
       "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
@@ -33,7 +33,7 @@
     "candidate_manifest": {
       "path": "research/preparation/bgc_candidate_manifest.json",
       "bytes": 18995,
-      "sha256": "da087d041a319c18f5b1fcdfaf97dcdbb65cc8feb6808928926a7fb82d53835d"
+      "sha256": "be54f692cdfa0cad29ff03de57009ed376fc41e04ff9805806d5817eb6a02dee"
     },
     "assignments": {
       "bytes": 19176017,
@@ -47,8 +47,8 @@
     }
   },
   "implementation_sha256": {
-    "scripts/review_book_groups.py": "8f5e98d0484926c93f22f4e07253be42161b7bd687eee9706dadc37296e1f0a0",
-    "scripts/prepare_bgc_candidate.py": "06200e23523ea5c6a7f73cdf0895855e2fd7d4c546ebb5bbbad89ba1e1ead4f0",
+    "src/research/builders/book_groups_review.py": "0bcea09cc278d924b1c4a76af716400ef712cb5c5c3792367c48d65f7dbea435",
+    "src/research/builders/bgc_source.py": "fa987b2837097e68db3a02779295e4516524797af033cf009f8c19a0ea54d50e",
     "src/research/book_groups.py": "5ce2497ba51bf753c8653a4b5117ca2b41540cf15625f516f515f9595cd8a294",
     "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
     "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"

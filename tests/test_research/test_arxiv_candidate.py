@@ -14,7 +14,7 @@ import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
-from scripts import prepare_arxiv_candidate as arxiv
+from src.research.builders import arxiv as arxiv
 
 
 def fixture(

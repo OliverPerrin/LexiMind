@@ -6,9 +6,9 @@
       "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
     },
     "field_manifest": {
-      "bytes": 6425,
       "path": "research/preparation/book_field_manifest.json",
-      "sha256": "a6222ae9215dc3e545c02e5e670fb9e56b6cb5995d971b017c78819c1b5e7f34"
+      "bytes": 6428,
+      "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
     },
     "field_references": {
       "bytes": 14336341,

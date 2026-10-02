@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "draft",
   "paused_by_user": true,
-  "as_of": "2026-09-27",
+  "as_of": "2026-10-02",
   "instruction": "Training, model execution/evaluation, research scoring and paid calls remain paused. Literature review, source/data preparation and software contract tests continue under the current user request.",
   "paid_spend_authorized": false,
   "hardware_available": false,
@@ -15,7 +15,7 @@
     "backbone_feasibility_runs",
     "distillation",
     "teacher_api_generation",
-    "rl",
+    "rl_execution",
     "all_training",
     "all_model_evaluation"
   ],
@@ -25,8 +25,8 @@
       "evidence": [
         {
           "path": "docs/research/model_recipe_review.md",
-          "bytes": 3780,
-          "sha256": "f2c4bd51832b0e240b8209b0e1fc77235e021cb419d6641c476729b2b1ad48dd"
+          "bytes": 5691,
+          "sha256": "f401fdf15a208d0ccf49098e70f51154d6cee6c9aa7a196b5affd620348f2ba2"
         },
         {
           "path": "docs/research/book_discovery_review.md",
@@ -35,20 +35,25 @@
         },
         {
           "path": "research/preparation/book_field_sources.json",
-          "bytes": 14644,
-          "sha256": "a2f0ef8262fc3390414bbb8eb9bac2487878806db5a93813e3cbf7fb4d111aea"
+          "bytes": 15106,
+          "sha256": "8b0415c2dd69306ba193a21f5e0a98ee1a1170feb711888ede5503722572c468"
+        },
+        {
+          "path": "research/preparation/rl_methods.json",
+          "bytes": 21323,
+          "sha256": "f8f897faf626d378ace2642c3c6927cdf250956e6a64a59bce08eeca197acd9a"
         }
       ],
       "draft_path": "docs/research/README.md",
-      "note": "Framing chosen as a controlled replication/application after methods review; no systematic novelty or exhaustive-coverage claim."
+      "note": "Controlled replication/application retained. RL source versions reviewed through 2026-10-02; no exhaustive novelty or model-quality claim."
     },
     "protocol": {
       "status": "specified_draft",
       "evidence": [
         {
           "path": "configs/research/study_design.json",
-          "bytes": 12296,
-          "sha256": "e213fc91d1cafb32da10d6f4eb1dcf3545f888a4c0e6747a9a20b7a19731cdfd"
+          "bytes": 13865,
+          "sha256": "a9c26c3ebe77e291f96722747ec93e0b947353b26f144f4c0254cf128e986bf5"
         },
         {
           "path": "docs/research/study_decisions.md",
@@ -60,17 +65,17 @@
       "note": "Comparison interfaces, cost boundary and applied metric choices are proposed; protocol not frozen."
     },
     "dataset_manifest": {
-      "status": "field_review_candidates_and_runtime_prepared_human_labels_pending",
+      "status": "cr4_rpt_and_human_review_tooling_prepared_labels_pending",
       "evidence": [
         {
           "path": "research/preparation/book_field_sources.json",
-          "bytes": 14644,
-          "sha256": "a2f0ef8262fc3390414bbb8eb9bac2487878806db5a93813e3cbf7fb4d111aea"
+          "bytes": 15106,
+          "sha256": "8b0415c2dd69306ba193a21f5e0a98ee1a1170feb711888ede5503722572c468"
         },
         {
           "path": "research/preparation/bgc_candidate_manifest.json",
           "bytes": 18995,
-          "sha256": "da087d041a319c18f5b1fcdfaf97dcdbb65cc8feb6808928926a7fb82d53835d"
+          "sha256": "be54f692cdfa0cad29ff03de57009ed376fc41e04ff9805806d5817eb6a02dee"
         },
         {
           "path": "research/preparation/book_field_mapping.json",
@@ -79,42 +84,57 @@
         },
         {
           "path": "research/preparation/book_field_manifest.json",
-          "bytes": 6425,
-          "sha256": "a6222ae9215dc3e545c02e5e670fb9e56b6cb5995d971b017c78819c1b5e7f34"
+          "bytes": 6428,
+          "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
         },
         {
           "path": "research/preparation/licensed_books_manifest.json",
-          "bytes": 7747,
-          "sha256": "79f8d4a044ef621b26c031683bb56239e59ebf0b16640cf4dbf355efd2de1467"
+          "bytes": 7753,
+          "sha256": "810f823565504cbf4db8422e7e753f7a52273f2f717842ebedaa3a3910e89053"
         },
         {
           "path": "research/preparation/book_field_review_manifest.json",
-          "bytes": 3309,
-          "sha256": "90715b042d4850b3c0d7a1fdd1b749fefa706b1c96fcb366f4caa09efe33458a"
+          "bytes": 3315,
+          "sha256": "63ef5459a0999dee4c1652e3d7a1d7d868ef03d38b687678b0024318ed48d7a6"
         },
         {
           "path": "research/preparation/book_field_review.json",
           "bytes": 46288,
-          "sha256": "f2fab3d1768b4b33d4952431fc3de0d981ef6532f994d0a40fbf98b151959183"
+          "sha256": "52ddb4bb7e22587f4badcf4c94ea742ea09706d0995dfd2658a43527c2062360"
+        },
+        {
+          "path": "research/preparation/cr4_candidate_manifest.json",
+          "bytes": 11121,
+          "sha256": "26013f59f6defe2fef877859df76fd5920b0ca66dc1e4415537db1fa8207ef01"
+        },
+        {
+          "path": "research/preparation/rpt_candidate_manifest.json",
+          "bytes": 26768,
+          "sha256": "627f6c0f6ec83e07fd694791483685083fac19a5b45c37e6eadd9a7bb37bf4c7"
         }
       ],
-      "note": "32 records have agent-only field suggestions; human review is empty. Explicit loss/mask/checkpoint/output contracts pass software tests, but no dataset or model run is admitted."
+      "note": "Raw CR4 conditions/responses audited; 32 licensed-work continuation examples prepared. Field suggestions remain agent-only; no real human judgments, dataset admission or model execution."
     },
     "group_split_audit": {
-      "status": "bounded_group_and_cross_source_review_prepared",
+      "status": "cross_source_partition_overlay_prepared_not_frozen",
       "evidence": [
         {
           "path": "research/preparation/bgc_group_manifest.json",
-          "bytes": 6378,
-          "sha256": "318df901615055ab188ceaf3e91e9d3a70d6005c511108b223dbcdb9cd57f8dc"
+          "bytes": 6381,
+          "sha256": "e33d8d063060a96b02fb87a6f1c7d1bc1278f7a55d8b4bccd8b7df96e82f8abf"
         },
         {
           "path": "research/preparation/book_group_review.json",
-          "bytes": 26372,
-          "sha256": "810f93e27de5f43fc2e646a0b0693e0830452cb00bb05dbbeb0a559aea5800c2"
+          "bytes": 26389,
+          "sha256": "8c6f8fb7e38ffddba360edf5134eb95776a2b3b51e43ae49c95eb16b47d7797c"
+        },
+        {
+          "path": "research/preparation/book_partition_manifest.json",
+          "bytes": 41532,
+          "sha256": "c45173e71a2196090f319e77ad4a17eff0a03c3a137f852bf621183dbccf8e73"
         }
       ],
-      "note": "Seven components/113rows reviewed without relabeling or split changes. Snapshot matching links21catalogue works and licensed Little Brother to BGC;44 title-only pairs stay unmerged. Complete work/series reconciliation remains open."
+      "note": "24 strong candidate links retained; unresolved components quarantined. Effective BGC rows: 58889 train, 14630 dev, 18326 test, 49 quarantine. Work/series identity review and split freeze remain open."
     },
     "backbone_revision": {
       "status": "metadata_reviewed_unselected",
@@ -137,8 +157,8 @@
         },
         {
           "path": "docs/research/compute_accounting.md",
-          "bytes": 3162,
-          "sha256": "5cff9b4de1e63344ea26a519a7763db7d8dd684303c9e4afc1913e25ee472d49"
+          "bytes": 3138,
+          "sha256": "2cfb6e516cecb5d81d6dc840cb87e9c99dbedacaa66f6ce3c67b0a90c56ababc"
         }
       ],
       "note": "Unobserved ledger and cost-reuse accounting prepared; B/hardware/stopping policy unset."
@@ -153,6 +173,32 @@
         }
       ],
       "note": "120 source-linked work references; packet remains empty with no queries, human judgments or gold."
+    },
+    "runtime_preparation": {
+      "status": "synthetic_software_checks_only",
+      "evidence": [
+        {
+          "path": "src/models/adapters.py",
+          "bytes": 22058,
+          "sha256": "04026d30b3379258f86801c5a94844402fd351e7a97f3e70c108bd8c085321a1"
+        },
+        {
+          "path": "src/training/rl.py",
+          "bytes": 21126,
+          "sha256": "5b4e4e43f609807c125dba3b69e1f60e8ba50ff6143f1944326f3cf1c454d9d9"
+        },
+        {
+          "path": "src/training/policy.py",
+          "bytes": 24388,
+          "sha256": "4ea816a186adfaa3866c98063fed82c3ac4ad40ced4074a5a20c86d7ae921d57"
+        },
+        {
+          "path": "src/training/trainer.py",
+          "bytes": 34236,
+          "sha256": "fdb0c9272e9fbf084bc8bf013055041aeaef4c2d3374e6964df3af02cd34f26a"
+        }
+      ],
+      "note": "Native LoRA/effective-delta merging and policy objectives share the existing transformer/trainer. No real checkpoint, GPU feasibility, training or quality evaluation."
     }
   },
   "study_design": "configs/research/study_design.json",

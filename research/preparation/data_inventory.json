@@ -2,7 +2,7 @@
   "schema_version": 1,
   "audit_version": "data-readiness/v1",
   "input_root": "data/processed",
-  "audit_script_sha256": "d76602a2a8efbf8c5d5943576023e92216ce0df26c2e3dbe5eedff297cc702c8",
+  "audit_script_sha256": "c25ada4e9ac1fe490150576951f654da34d2621c033483802376f5b08ad8a1c8",
   "records": 156796,
   "bytes": 384924784,
   "files": [

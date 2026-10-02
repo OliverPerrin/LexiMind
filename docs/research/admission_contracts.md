@@ -6,7 +6,7 @@ book relevance is a separate admission path. Current choices are in
 [study_decisions.md](study_decisions.md), not this schema reference.
 
 ```sh
-python scripts/audit_research_preparation.py --target model_study --require-ready
+python scripts/research.py status --target model_study --require-ready
 python -m pytest tests/test_research/test_model_admission.py -q
 ```
 

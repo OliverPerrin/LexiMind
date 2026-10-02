@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from scripts import prepare_ag_news_candidate as prep
+from src.research.builders import ag_news as prep
 from src.research.candidate_io import create_or_verify
 
 

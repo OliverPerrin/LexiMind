@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -343,6 +344,91 @@ def _inspect_book_reviews(files: dict[str, Path]) -> list[str]:
     return errors
 
 
+def _inspect_extensions(files: dict[str, Path], plan: dict[str, Any]) -> list[str]:
+    """Validate new source/objective receipts without requiring local corpora in CI."""
+    errors: list[str] = []
+
+    def ref(key):
+        raw = files[key].read_bytes()
+        return {
+            "path": ARTIFACTS[key][1],
+            "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        }
+
+    def hashes(keys):
+        return {ARTIFACTS[key][1]: ref(key)["sha256"] for key in keys}
+
+    cr4 = _object(read_json(files["cr4_candidate"]), "CR4 source audit")
+    if cr4.get("preparation_script_sha256") != ref("cr4_builder")["sha256"] or cr4.get(
+        "preparation_helper_sha256"
+    ) != hashes(("candidate_io", "file_integrity_contract", "cr4_contract")):
+        errors.append("CR4 audit does not bind its current parser and helpers")
+    parts = _object(read_json(files["book_partitions"]), "book partitions")
+    review = _object(read_json(files["book_group_review"]), "book group review")
+    fields = _object(read_json(files["book_fields"]), "book fields")
+    expected = {
+        "review": ref("book_group_review"),
+        **review["inputs"],
+        "packet": review["packet"],
+        "fields": ref("book_fields"),
+        "field_mapping": ref("book_field_mapping"),
+        "field_references": fields["field_references"],
+    }
+    if parts.get("inputs") != expected:
+        errors.append("Book partitions do not bind the current review and field references")
+    if parts.get("implementation_sha256") != hashes(
+        (
+            "book_partition_builder",
+            "book_group_reviewer",
+            "bgc_builder",
+            "book_partition_contract",
+            "catalogue_storage",
+            "candidate_io",
+            "file_integrity_contract",
+        )
+    ):
+        errors.append("Book partitions used a different implementation")
+    rpt = _object(read_json(files["rpt_candidate"]), "RPT candidate")
+    licensed = _object(read_json(files["licensed_books"]), "licensed source")
+    rpt_inputs = _object(rpt.get("inputs"), "RPT input bindings")
+    for key, expected in {
+        "licensed_manifest": ref("licensed_books"),
+        "partition_manifest": ref("book_partitions"),
+        "tokenizer": ref("rpt_tokenizer"),
+        "source_inventory": ref("licensed_book_sources"),
+        "components": parts["components"],
+        **{
+            f"work:{row['work_id']}": {
+                **row["artifact"],
+                "path": f"{licensed['cache_root']}/{row['artifact']['path']}",
+            }
+            for row in licensed["books"]
+        },
+    }.items():
+        if rpt_inputs.get(key) != expected:
+            errors.append(f"RPT candidate does not bind current {key}")
+    if rpt.get("implementation_sha256") != hashes(
+        ("licensed_book_builder", "candidate_io", "file_integrity_contract")
+    ):
+        errors.append("RPT candidate used a different tokenizer-preparation implementation")
+    methods = _object(read_json(files["rl_methods"]), "RL source register")
+    cutoff = date.fromisoformat(methods["as_of"])
+    for source in _rows(methods.get("sources"), "RL sources"):
+        if (
+            not date.fromisoformat(source["first_submitted"])
+            <= date.fromisoformat(source["version_date"])
+            <= cutoff
+        ):
+            errors.append("RL source version lies outside the declared literature cutoff")
+    if any(report.get("training_authorized") is not False for report in (cr4, parts, rpt, methods)):
+        errors.append("Source and RL preparation reports cannot authorize training")
+    extension = _object(plan.get("rl_extension"), "RL extension")
+    if extension.get("enabled") is not False or extension.get("training_authorized") is not False:
+        errors.append("RL preparation remains disabled until a separately admitted experiment")
+    return errors
+
+
 def inspect_preparation(
     root: Path, manifest_path: Path, target: str, *, check_archive: bool = False
 ) -> dict[str, Any]:
@@ -417,6 +503,7 @@ def inspect_preparation(
                     errors.append("BGC audit does not bind current preparation helpers")
                 errors.extend(_inspect_book_candidates(files, bgc))
                 errors.extend(_inspect_book_reviews(files))
+                errors.extend(_inspect_extensions(files, plan))
                 validate_ledger(read_json(files["compute_ledger_template"]))
                 blockers.extend(validate_model_admission(root, plan))
             else:

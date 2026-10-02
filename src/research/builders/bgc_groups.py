@@ -9,15 +9,13 @@ import sys
 import zipfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from scripts import prepare_bgc_candidate as source
 from src.catalog.storage import write_json_atomic
 from src.research.book_groups import POLICY, BookGroupRecord, prepare_book_groups, text_keys
+from src.research.builders import bgc_source as source
 from src.research.candidate_io import helper_hashes
 from src.research.io import check_file, file_hash, read_json, safe_path
+
+from . import ROOT
 
 
 def grouping_record(row, split, number):
@@ -53,10 +51,10 @@ def prepare(candidate_manifest: Path, output: Path) -> dict:
     dependencies = {
         **helper_hashes(ROOT),
         "src/research/book_groups.py": file_hash(ROOT / "src/research/book_groups.py"),
-        "scripts/prepare_bgc_candidate.py": file_hash(Path(source.__file__)),
+        "src/research/builders/bgc_source.py": file_hash(Path(source.__file__)),
     }
     if manifest["preparation_script_sha256"] != dependencies[
-        "scripts/prepare_bgc_candidate.py"
+        "src/research/builders/bgc_source.py"
     ] or manifest["preparation_helper_sha256"] != helper_hashes(ROOT):
         raise ValueError("BGC candidate audit dependencies changed")
     errors = check_file(ROOT, archive_ref)
@@ -105,8 +103,7 @@ def prepare(candidate_manifest: Path, output: Path) -> dict:
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--candidate-manifest",
         type=Path,
@@ -120,7 +117,9 @@ def main() -> int:
     parser.add_argument(
         "--report", type=Path, default=ROOT / "research/preparation/bgc_group_manifest.json"
     )
-    args = parser.parse_args()
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if (
         not args.report.resolve().is_relative_to(ROOT / "research/preparation")
         or args.report.resolve() == args.candidate_manifest.resolve()
@@ -134,7 +133,3 @@ def main() -> int:
         return 1
     print(json.dumps({"status": report["status"], **report["counts"]}))
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

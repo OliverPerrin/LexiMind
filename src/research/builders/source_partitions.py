@@ -7,19 +7,19 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-
 from src.catalog.storage import write_json_atomic
 from src.research.partitions import prepare_partitions
 
+from . import ROOT
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("candidate_manifest", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
-    args = parser.parse_args()
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     candidate_root = ROOT / "data/research_candidates"
     if not args.output_dir.resolve().is_relative_to(candidate_root):
         parser.error("Assignment indices must remain in ignored data/research_candidates")
@@ -44,7 +44,3 @@ def main() -> int:
         )
     )
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

@@ -5,8 +5,8 @@ from dataclasses import replace
 
 import pytest
 
-from scripts.prepare_bgc_groups import grouping_record
 from src.research.book_groups import BookGroupRecord, prepare_book_groups, text_keys
+from src.research.builders.bgc_groups import grouping_record
 
 
 def record(

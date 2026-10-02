@@ -21,11 +21,10 @@ from pathlib import Path
 from typing import Any, TypeGuard
 from urllib.parse import urlsplit
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-
 from src.catalog.identity import author_identity, normalize_title
 from src.catalog.storage import write_json_atomic
+
+from . import ROOT
 
 VERSION = "data-readiness/v1"
 TASKS = {"books", "emotion", "summarization", "topic"}
@@ -593,8 +592,7 @@ def audit_data(
     return inventory, audit
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--input-dir", type=Path, default=ROOT / "data/processed")
     parser.add_argument(
         "--inventory", type=Path, default=ROOT / "research/preparation/data_inventory.json"
@@ -607,7 +605,9 @@ def main() -> int:
     )
     parser.add_argument("--sample-limit", type=int, default=4)
     parser.add_argument("--require-ready", action="store_true")
-    args = parser.parse_args()
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     destinations = (args.inventory.resolve(), args.audit.resolve())
     if destinations[0] == destinations[1] or any(
         path.is_relative_to(args.input_dir.resolve()) for path in destinations
@@ -633,7 +633,3 @@ def main() -> int:
         )
     )
     return 2 if args.require_ready else 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

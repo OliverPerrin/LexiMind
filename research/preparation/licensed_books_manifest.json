@@ -3,8 +3,8 @@
   "candidate_status": "unadmitted",
   "training_performed": false,
   "training_authorized": false,
-  "preparation_script": "scripts/prepare_licensed_books.py",
-  "preparation_script_sha256": "2bffdd47083e07551b66eae7c95c874c98eaaa693653e1fb801eeb665b44bcc4",
+  "preparation_script": "src/research/builders/licensed_books.py",
+  "preparation_script_sha256": "980216bb4f7c0de8fe9573808ebf093b45d2fc22329a7ee65e3eaa2e6bb487b1",
   "preparation_helper_sha256": {
     "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
     "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
@@ -15,7 +15,7 @@
     "sha256": "02dd9de53b398fefd671ab9b12e09c17e3af6cea7dcbe6e2976c70e1e446cfa0"
   },
   "cache_root": "data/research_candidates/licensed_books",
-  "build_key": "0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a",
+  "build_key": "382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e",
   "sources": {
     "little-brother.txt": {
       "path": "sources/24ac213b5bd7840df63f3bf970fee9bcdaec19a0dc994a4eb66e72ae56d3aa66/little-brother.txt",
@@ -81,7 +81,7 @@
       "whitespace_words": 105338,
       "body_utf8_bytes": 569439,
       "artifact": {
-        "path": "prepared/0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a/cory-doctorow-little-brother.json",
+        "path": "prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/cory-doctorow-little-brother.json",
         "bytes": 584065,
         "sha256": "9aa0c4fa7d7cf24ceef4624cc837a8787cd6342b3eb60fc0fdf8fbb2042a0645"
       }
@@ -98,7 +98,7 @@
       "whitespace_words": 203,
       "body_utf8_bytes": 1056,
       "artifact": {
-        "path": "prepared/0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a/bookdash-little-ants-big-plan.json",
+        "path": "prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/bookdash-little-ants-big-plan.json",
         "bytes": 4657,
         "sha256": "90819cdf883e2a8369e31927f8bb67b04bdfd278201948306e36fd3ac1552d10"
       }
@@ -115,7 +115,7 @@
       "whitespace_words": 685,
       "body_utf8_bytes": 3796,
       "artifact": {
-        "path": "prepared/0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a/bookdash-sizwes-smile.json",
+        "path": "prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/bookdash-sizwes-smile.json",
         "bytes": 7385,
         "sha256": "9a049066613d28c3392722fcfc50226053521cabcc53b8ebc7df3857b48f036d"
       }
@@ -134,7 +134,7 @@
       "whitespace_words": 219,
       "body_utf8_bytes": 1205,
       "artifact": {
-        "path": "prepared/0e4bf8acce1d40d329ad41777ed945ec8c85c2daf197c2c45ec616392f66b59a/bookdash-why-is-nita-upside-down.json",
+        "path": "prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/bookdash-why-is-nita-upside-down.json",
         "bytes": 4828,
         "sha256": "e5832c7960cfd287fbea3898c4e81b051e1578ae1a8d455f8f063dc03eeba1d4"
       }

@@ -6,19 +6,19 @@
   "candidate_manifest": {
     "path": "research/preparation/bgc_candidate_manifest.json",
     "bytes": 18995,
-    "sha256": "da087d041a319c18f5b1fcdfaf97dcdbb65cc8feb6808928926a7fb82d53835d"
+    "sha256": "be54f692cdfa0cad29ff03de57009ed376fc41e04ff9805806d5817eb6a02dee"
   },
   "archive": {
     "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
     "bytes": 48690771,
     "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
   },
-  "preparation_script_sha256": "ac8156b1874c65828e7bc6e2b4b9b8b8701769156bdde15ff99da9a46d7cd1b6",
+  "preparation_script_sha256": "13e7d3083a1d53ca7dd084d06848668eba7ee17a364377c00ef4e8302c72a0fd",
   "preparation_helper_sha256": {
     "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
     "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433",
     "src/research/book_groups.py": "5ce2497ba51bf753c8653a4b5117ca2b41540cf15625f516f515f9595cd8a294",
-    "scripts/prepare_bgc_candidate.py": "06200e23523ea5c6a7f73cdf0895855e2fd7d4c546ebb5bbbad89ba1e1ead4f0"
+    "src/research/builders/bgc_source.py": "fa987b2837097e68db3a02779295e4516524797af033cf009f8c19a0ea54d50e"
   },
   "split_policy": {
     "train": 0.64,

@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from scripts import prepare_book_fields as fields
-from scripts import prepare_field_review as prep
 from src.research.book_fields import FACETS, input_hash, label_state
+from src.research.builders import book_fields as fields
+from src.research.builders import field_review as prep
 from src.research.candidate_io import json_bytes
 from src.research.field_reviews import evidence_span, human_reviewed_states, validate_review_record
 from src.research.io import read_json
@@ -219,7 +219,7 @@ def prepared_review(prepared_source):
     manifest = fields.prepare_fields(*prepared_source)
     manifest_path = root / "research/preparation/book_field_manifest.json"
     manifest_path.write_bytes(json_bytes(manifest))
-    for name in ("scripts/prepare_book_fields.py", "src/research/field_reviews.py"):
+    for name in ("src/research/builders/book_fields.py", "src/research/field_reviews.py"):
         target = root / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("synthetic: " + name)

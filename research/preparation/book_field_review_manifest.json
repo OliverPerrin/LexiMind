@@ -6,7 +6,7 @@
   "review_packet": {
     "path": "research/preparation/book_field_review.json",
     "bytes": 46288,
-    "sha256": "f2fab3d1768b4b33d4952431fc3de0d981ef6532f994d0a40fbf98b151959183"
+    "sha256": "52ddb4bb7e22587f4badcf4c94ea742ea09706d0995dfd2658a43527c2062360"
   },
   "bindings": {
     "archive": {
@@ -15,9 +15,9 @@
       "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
     },
     "field_manifest": {
-      "bytes": 6425,
       "path": "research/preparation/book_field_manifest.json",
-      "sha256": "a6222ae9215dc3e545c02e5e670fb9e56b6cb5995d971b017c78819c1b5e7f34"
+      "bytes": 6428,
+      "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
     },
     "field_references": {
       "bytes": 14336341,
@@ -31,13 +31,13 @@
     }
   },
   "local_worksheet": {
-    "path": "data/research_candidates/bgc/field-review-f2fab3d1768b4b33/review_worksheet.json",
+    "path": "data/research_candidates/bgc/field-review-52ddb4bb7e22587f/review_worksheet.json",
     "bytes": 122260,
     "sha256": "95fa9d65bf5b7e0e7a79140934b20f7b03e27729eb1df6ce67e994fac941062d"
   },
-  "preparation_script_sha256": "a2f7352fe0281c9a15bf7d84d1c3c06ac63c42f1067d6ee445474857e93b2466",
+  "preparation_script_sha256": "e6f27170fe62e6445bdb2deb82b5aad52be48e479a0f57377ea589a9432c8720",
   "preparation_helper_sha256": {
-    "scripts/prepare_book_fields.py": "68544b311d919bf5adf009106b68553a443b29b7f9df797c1cb1608b2d1e66ea",
+    "src/research/builders/book_fields.py": "6a6b99f3d3da73abcbc269e41deb6c6e0e5ebf6415597e3e4c20cf26ba58d298",
     "src/research/field_reviews.py": "e2bba4baae378bb51072dbc4c284f649689dff39575904756c746606b61c25a0",
     "src/research/book_fields.py": "4177ce85b4d146be8cfb18e5d4ea74c0f37a9dead20f6e0380bb9bfdf75d3536",
     "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",

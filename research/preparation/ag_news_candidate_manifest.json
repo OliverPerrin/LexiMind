@@ -11,7 +11,7 @@
   "row_identity_field": "record_id",
   "upstream_article_ids_available": false,
   "row_provenance": "record_id encodes the immutable source-file SHA256 and one-based source_row. provider_split resolves acquisition.files; these are row references, not invented article/document IDs.",
-  "preparation_script_sha256": "84dad583363256b4b826de41dc33787fef6d4afad05164abbbcfcf01f066286e",
+  "preparation_script_sha256": "b99c27711ae7d3bc03911ea2dffbbab0d223e350f9f9e5e14f51d965660cf3d5",
   "preparation_helper_sha256": {
     "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
     "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
@@ -218,7 +218,7 @@
   },
   "provider_validation_split_available": false,
   "tooling": {
-    "python_version": "3.14.5",
+    "python_version": "3.11.15",
     "pyarrow_version": "25.0.1",
     "model_execution": false
   },

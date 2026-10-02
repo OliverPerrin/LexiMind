@@ -22,7 +22,7 @@ from src.research.annotations import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-CLI = ROOT / "scripts/prepare_annotation_packet.py"
+CLI = ROOT / "scripts/research.py"
 
 
 class AnnotationPreparationTests(unittest.TestCase):
@@ -152,6 +152,7 @@ class AnnotationPreparationTests(unittest.TestCase):
             [
                 sys.executable,
                 str(CLI),
+                "annotation",
                 "--catalog",
                 str(self.catalog),
                 "--recommendation-rubric",

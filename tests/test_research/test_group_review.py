@@ -4,7 +4,13 @@ import json
 
 import pytest
 
-from scripts.review_book_groups import external_records, identity_keys, lines, scan, select_groups
+from src.research.builders.book_groups_review import (
+    external_records,
+    identity_keys,
+    lines,
+    scan,
+    select_groups,
+)
 
 
 def row(title="Title", author="Writer", body="Original source text", **changes):

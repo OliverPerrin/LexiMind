@@ -11,8 +11,6 @@ from pathlib import Path
 
 import pytest
 
-from scripts import prepare_bgc_candidate as bgc
-from scripts import prepare_book_fields as prep
 from src.research.book_fields import (
     FACETS,
     input_hash,
@@ -22,6 +20,8 @@ from src.research.book_fields import (
     validate_mapping,
     validate_states,
 )
+from src.research.builders import bgc_source as bgc
+from src.research.builders import book_fields as prep
 from src.research.candidate_io import helper_hashes
 from src.research.io import file_hash, read_json
 from tests.test_research.test_bgc_candidate import archive, book
@@ -141,8 +141,8 @@ def prepared_source(tmp_path, mapping, monkeypatch):
         "src/research/book_fields.py",
         "src/research/book_groups.py",
         "src/catalog/storage.py",
-        "scripts/prepare_bgc_candidate.py",
-        "scripts/prepare_bgc_groups.py",
+        "src/research/builders/bgc_source.py",
+        "src/research/builders/bgc_groups.py",
     ]:
         target = tmp_path / name
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -158,7 +158,7 @@ def prepared_source(tmp_path, mapping, monkeypatch):
         "archive": prep.reference(tmp_path, source),
         "observed": bgc.audit_archive(source),
         "source_declared_license": "CC BY-NC 4.0; synthetic fixture attribution",
-        "preparation_script_sha256": file_hash(tmp_path / "scripts/prepare_bgc_candidate.py"),
+        "preparation_script_sha256": file_hash(tmp_path / "src/research/builders/bgc_source.py"),
         "preparation_helper_sha256": helper_hashes(tmp_path),
     }
     audit_path = tmp_path / "research/preparation/bgc_candidate_manifest.json"
@@ -189,12 +189,12 @@ def prepared_source(tmp_path, mapping, monkeypatch):
         "archive": audit["archive"],
         "candidate_manifest": prep.reference(tmp_path, audit_path),
         "assignments": prep.reference(tmp_path, assignments),
-        "preparation_script_sha256": file_hash(tmp_path / "scripts/prepare_bgc_groups.py"),
+        "preparation_script_sha256": file_hash(tmp_path / "src/research/builders/bgc_groups.py"),
         "preparation_helper_sha256": {
             **helper_hashes(tmp_path),
             "src/research/book_groups.py": file_hash(tmp_path / "src/research/book_groups.py"),
-            "scripts/prepare_bgc_candidate.py": file_hash(
-                tmp_path / "scripts/prepare_bgc_candidate.py"
+            "src/research/builders/bgc_source.py": file_hash(
+                tmp_path / "src/research/builders/bgc_source.py"
             ),
         },
     }
@@ -251,7 +251,7 @@ def test_stale_or_incomplete_grouping_never_publishes(prepared_source, what):
     root, _, group_path, output = prepared_source
     groups = read_json(group_path)
     if what == "audit":
-        (root / "scripts/prepare_bgc_candidate.py").write_text("changed")
+        (root / "src/research/builders/bgc_source.py").write_text("changed")
     elif what == "group_binding":
         groups["candidate_manifest"]["sha256"] = "0" * 64
     elif what == "group_builder":

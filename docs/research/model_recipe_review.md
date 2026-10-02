@@ -46,3 +46,23 @@ or reader atmosphere, and book judgments are not required to run the independent
 model comparison. Existing-expert reuse is a different cost regime from creating
 all experts for this study. Detailed source-specific qualifications remain in the
 [JSON evidence register](../../research/preparation/model_literature.json).
+
+## RL extension: reviewed through 2 October 2026
+
+The [18-source register](../../research/preparation/rl_methods.json) records exact
+versions, reading scope and implementation limits. RL is a separate, disabled
+extension; the four supervised/merge controls remain the first comparison.
+
+| Direction | Decision |
+| --- | --- |
+| Post-training | Start with [Dr. GRPO](https://arxiv.org/html/2503.20783v2) and independently checked rewards. DAPO-style token reduction and GSPO are optional loss variants. [September BPO](https://arxiv.org/html/2609.15987v1) is experimental, with explicit clipping settings. |
+| Offline preferences | DPO is implemented for genuine chosen/rejected pairs. CR4 disagreement and missing book labels are not preference pairs. |
+| Continued pretraining | Prepare [RPT](https://arxiv.org/html/2506.08007v1) token-boundary prefix verification and [RLP](https://arxiv.org/html/2510.01265v2) information-gain/EMA primitives. Neither establishes that RL should replace initial cross-entropy training for this small encoder-decoder. |
+| Recent evidence | [June RL excursions](https://arxiv.org/html/2606.04272v1), [July/August pretraining-to-RL analysis](https://arxiv.org/html/2607.16097v2), and [September initialization work](https://arxiv.org/html/2609.28145v2) make pretrained capability, initialization and total compute explicit controls. Their domains and scales differ from book fields. |
+
+The native rollout/scoring adapter uses the existing trainer; no parallel training
+framework or launch scripts were added. Reward/tokenizer/behavior-policy revisions,
+EOS masks and complete-label requirements are checked. Uniform-reward or fully
+clipped batches skip optimizer updates. Replay, asynchronous critics and learned
+semantic graders remain deferred. GPU memory/throughput, reward validity and model
+quality remain unmeasured; recent papers do not establish a LexiMind improvement.
