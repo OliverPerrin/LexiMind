@@ -56,12 +56,20 @@ The [field mapping](../../research/preparation/book_field_mapping.json) separate
 genre/topic/form/audience, preserves composite genre umbrellas, and supplies only
 weak positives; omissions stay unknown. Text remains in the original ZIP.
 
-Next: review ambiguous groups and cross-source/series identities; review the mapping
-and collect negative or complete-label seed evidence. Then implement partial-label
-loss/output handling and audit CR4's character-conditioned input. The existing
-`topic` runtime is still single-label. The custom transformer, four recipe arms and
-independent book-relevance study remain; training and model evaluation stay paused.
-Optional corpora and later mood work need not block the genre/topic track.
+The [bounded group review](../../research/preparation/book_group_review.json) covers
+7 components / 113 rows and screens the 120-book catalogue plus four licensed texts.
+It finds 24 identity-candidate pairs, including Little Brother in BGC; those texts
+cannot become independent holdouts without reconciliation. No labels or splits changed.
+The [32-record field review](../../research/preparation/book_field_review.json) contains
+29 agent positive suggestions, one explicit negative candidate and 17 abstentions.
+Human review is empty; these suggestions do not enter training labels or gold.
+
+Partial-label loss, data masks, observed-only diagnostics and sigmoid field output
+are implemented and tested on synthetic inputs; see [runtime contracts](../architecture.md).
+Legacy topic CE remains the default. Next: human/source conflict adjudication,
+representative negative or complete-label evidence, cross-source split freeze and
+CR4's character-conditioned input. The custom transformer and four recipe arms stay;
+training and model evaluation remain paused. Optional corpora need not block this track.
 
 ## Modern books beyond Gutenberg
 

@@ -59,6 +59,7 @@ class ClassificationHead(nn.Module):
         pooler: one of 'mean', 'cls', 'max', 'attention' - how to pool the sequence
         dropout: dropout probability before final linear layer
         hidden_dim: optional intermediate dimension for 2-layer MLP (improves capacity)
+        problem_type: explicit loss/output interpretation; adds no checkpoint parameters
     """
 
     def __init__(
@@ -68,8 +69,12 @@ class ClassificationHead(nn.Module):
         pooler: Literal["mean", "cls", "max", "attention"] = "mean",
         dropout: float = 0.1,
         hidden_dim: Optional[int] = None,
+        problem_type: Literal["single_label", "multi_label"] = "single_label",
     ):
         super().__init__()
+        if problem_type not in {"single_label", "multi_label"}:
+            raise ValueError("problem_type must be 'single_label' or 'multi_label'")
+        self.problem_type = problem_type
         assert pooler in ("mean", "cls", "max", "attention"), (
             "pooler must be 'mean'|'cls'|'max'|'attention'"
         )

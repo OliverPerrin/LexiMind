@@ -21,6 +21,8 @@ Rebuild prepared book candidates offline from the preserved source cache:
 python scripts/prepare_bgc_groups.py
 python scripts/prepare_book_fields.py
 python scripts/prepare_licensed_books.py
+python scripts/review_book_groups.py
+python scripts/prepare_field_review.py
 ```
 
 Only the licensed-book command has an explicit `--fetch` option for missing pinned

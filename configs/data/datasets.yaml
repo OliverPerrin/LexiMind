@@ -6,6 +6,9 @@ processed:
   emotion: null
   topic: null
 
+# Opt in only with separate reviewed title/description + positive/negative splits.
+topic_problem_type: single_label
+
 tokenizer:
   pretrained_model_name: google/flan-t5-base
   max_length: 512

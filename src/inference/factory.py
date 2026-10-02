@@ -39,6 +39,9 @@ def create_inference_pipeline(
         raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
 
     labels = load_label_metadata(labels_path)
+    paired_labels = checkpoint.parent / "labels.json"
+    if paired_labels.exists() and load_label_metadata(paired_labels) != labels:
+        raise ValueError("Supplied labels differ from the checkpoint directory's label contract")
 
     resolved_tokenizer_config = tokenizer_config
     if resolved_tokenizer_config is None:
@@ -71,6 +74,7 @@ def create_inference_pipeline(
         num_topics=labels.topic_size,
         config=model_config,
         load_pretrained=False,
+        topic_problem_type=labels.topic_problem_type,
     )
 
     # Load checkpoint - weights will load separately since factory doesn't tie them
@@ -92,6 +96,8 @@ def create_inference_pipeline(
         config=pipeline_config,
         emotion_labels=labels.emotion,
         topic_labels=labels.topic,
+        topic_problem_type=labels.topic_problem_type,
+        topic_input_format=labels.topic_input_format,
         device=device,
     )
     return pipeline, labels

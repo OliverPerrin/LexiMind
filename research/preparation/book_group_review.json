@@ -1,0 +1,950 @@
+{
+  "schema_version": 1,
+  "policy": "book-group-evidence-review-v1",
+  "status": "bounded_evidence_review_not_human_gold",
+  "training_authorized": false,
+  "training_performed": false,
+  "inputs": {
+    "groups": {
+      "path": "research/preparation/bgc_group_manifest.json",
+      "bytes": 6378,
+      "sha256": "318df901615055ab188ceaf3e91e9d3a70d6005c511108b223dbcdb9cd57f8dc"
+    },
+    "catalogue": {
+      "path": "web/data/books.json",
+      "bytes": 246566,
+      "sha256": "2adb8d4bdeb13cf367b76ea1fcbd8a4cccacad72699eb356b168974db221d777"
+    },
+    "licensed_sources": {
+      "path": "research/preparation/licensed_books_sources.json",
+      "bytes": 7705,
+      "sha256": "02dd9de53b398fefd671ab9b12e09c17e3af6cea7dcbe6e2976c70e1e446cfa0"
+    },
+    "licensed_manifest": {
+      "path": "research/preparation/licensed_books_manifest.json",
+      "bytes": 7747,
+      "sha256": "79f8d4a044ef621b26c031683bb56239e59ebf0b16640cf4dbf355efd2de1467"
+    },
+    "archive": {
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+      "bytes": 48690771,
+      "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+    },
+    "candidate_manifest": {
+      "path": "research/preparation/bgc_candidate_manifest.json",
+      "bytes": 18995,
+      "sha256": "da087d041a319c18f5b1fcdfaf97dcdbb65cc8feb6808928926a7fb82d53835d"
+    },
+    "assignments": {
+      "bytes": 19176017,
+      "sha256": "df8484993cf99d85b5646f1ba2fa863c39f0f8df4259ae0f7a5f094b9be4ed69",
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/assignments.jsonl"
+    },
+    "review_groups": {
+      "bytes": 998113,
+      "sha256": "fcb423e1d41f3348a1e4f3f6794460d4890146457247a0d505660982faf558d2",
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/review_groups.jsonl"
+    }
+  },
+  "implementation_sha256": {
+    "scripts/review_book_groups.py": "8f5e98d0484926c93f22f4e07253be42161b7bd687eee9706dadc37296e1f0a0",
+    "scripts/prepare_bgc_candidate.py": "06200e23523ea5c6a7f73cdf0895855e2fd7d4c546ebb5bbbad89ba1e1ead4f0",
+    "src/research/book_groups.py": "5ce2497ba51bf753c8653a4b5117ca2b41540cf15625f516f515f9595cd8a294",
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"
+  },
+  "counts": {
+    "bgc_records_scanned": 91894,
+    "available_multi_record_groups": 1439,
+    "selected_groups": 7,
+    "selected_records": 113,
+    "external_records": {
+      "catalogue": 120,
+      "licensed_text": 4
+    },
+    "external_records_with_identity_candidates": 22,
+    "external_records_with_title_only_candidates": 17,
+    "identity_candidate_pairs": 24,
+    "title_only_pairs": 44
+  },
+  "selection_policy": "All direct identity conflicts; top three groups by size; top three connected only by exact normalized title-author; deterministic group-id tie break. Overlap selected once.",
+  "reviewed_groups": [
+    {
+      "group_id": "bgc-group:013c2521eaf6d9833ef0d81ad3dafa865d3218772daa36317800c2a74072bfa9",
+      "selection": [
+        "largest_title_author_only_component"
+      ],
+      "dispositions": [
+        "keep_constraint",
+        "review_identity"
+      ],
+      "records": 8,
+      "distinct_titles": 1,
+      "title_examples": [
+        "The Canterbury Tales"
+      ],
+      "distinct_authors": 1,
+      "distinct_isbn13": 8,
+      "distinct_normalized_blurbs": 8,
+      "distinct_source_label_sets": 7,
+      "labels_varying_between_members": [
+        [
+          0,
+          "Children’s Books"
+        ],
+        [
+          0,
+          "Classics"
+        ],
+        [
+          0,
+          "Fiction"
+        ],
+        [
+          0,
+          "Poetry"
+        ],
+        [
+          1,
+          "Children’s Middle Grade Books"
+        ],
+        [
+          1,
+          "Fiction Classics"
+        ],
+        [
+          1,
+          "Historical Fiction"
+        ],
+        [
+          1,
+          "Literary Collections"
+        ],
+        [
+          1,
+          "Literary Criticism"
+        ],
+        [
+          1,
+          "Literary Fiction"
+        ],
+        [
+          2,
+          "Children’s Middle Grade Historical Books"
+        ]
+      ],
+      "identity_label_conflicts": [],
+      "distinct_title_shared_blurb_clusters": 0,
+      "shared_key_counts": {
+        "normalized_title_author_candidate": 1
+      },
+      "proposed_split_unchanged": "dev",
+      "evidence_record_ids": [
+        "bgc:test:283",
+        "bgc:test:2859",
+        "bgc:train:23529"
+      ]
+    },
+    {
+      "group_id": "bgc-group:026ad81d0adba889ee2ab3b481bb6db68590cb7c32493aa7f93f5186c7519b19",
+      "selection": [
+        "direct_identity_label_conflict"
+      ],
+      "dispositions": [
+        "keep_constraint",
+        "review_identity"
+      ],
+      "records": 2,
+      "distinct_titles": 1,
+      "title_examples": [
+        "Holy Bible"
+      ],
+      "distinct_authors": 1,
+      "distinct_isbn13": 1,
+      "distinct_normalized_blurbs": 1,
+      "distinct_source_label_sets": 2,
+      "labels_varying_between_members": [
+        [
+          2,
+          "Bibles"
+        ]
+      ],
+      "identity_label_conflicts": [
+        {
+          "kind": "isbn13",
+          "value": "9780452006478"
+        },
+        {
+          "kind": "provider_book_id",
+          "value": "326977"
+        }
+      ],
+      "distinct_title_shared_blurb_clusters": 0,
+      "shared_key_counts": {
+        "exact_blurb": 1,
+        "isbn13": 1,
+        "normalized_blurb": 1,
+        "normalized_title_author_candidate": 1,
+        "provider_book_id": 1
+      },
+      "proposed_split_unchanged": "train",
+      "evidence_record_ids": [
+        "bgc:dev:4451",
+        "bgc:train:11630"
+      ]
+    },
+    {
+      "group_id": "bgc-group:37cfe002661ad65bf0e40d1d134a236f60fa8db9c337b0d0c9d13d5552d03814",
+      "selection": [
+        "direct_identity_label_conflict"
+      ],
+      "dispositions": [
+        "keep_constraint",
+        "review_identity"
+      ],
+      "records": 2,
+      "distinct_titles": 1,
+      "title_examples": [
+        "The Jerusalem Bible"
+      ],
+      "distinct_authors": 1,
+      "distinct_isbn13": 1,
+      "distinct_normalized_blurbs": 1,
+      "distinct_source_label_sets": 2,
+      "labels_varying_between_members": [
+        [
+          2,
+          "Bibles"
+        ]
+      ],
+      "identity_label_conflicts": [
+        {
+          "kind": "isbn13",
+          "value": "9780385499187"
+        },
+        {
+          "kind": "provider_book_id",
+          "value": "88210"
+        }
+      ],
+      "distinct_title_shared_blurb_clusters": 0,
+      "shared_key_counts": {
+        "exact_blurb": 1,
+        "isbn13": 1,
+        "normalized_blurb": 1,
+        "provider_book_id": 1
+      },
+      "proposed_split_unchanged": "train",
+      "evidence_record_ids": [
+        "bgc:test:14009",
+        "bgc:train:7507"
+      ]
+    },
+    {
+      "group_id": "bgc-group:3f4c6749c6fff655807b07410e89d64617ce238847f0d9a7322aa25281304600",
+      "selection": [
+        "largest_component"
+      ],
+      "dispositions": [
+        "keep_constraint",
+        "review_identity",
+        "distinct_titles_share_text"
+      ],
+      "records": 17,
+      "distinct_titles": 16,
+      "title_examples": [
+        "Coloring Book",
+        "Coloring Book Art Nouveau",
+        "Coloring Book Chagall",
+        "Coloring Book Dali",
+        "Coloring Book Frida Kahlo"
+      ],
+      "distinct_authors": 4,
+      "distinct_isbn13": 17,
+      "distinct_normalized_blurbs": 1,
+      "distinct_source_label_sets": 1,
+      "labels_varying_between_members": [],
+      "identity_label_conflicts": [],
+      "distinct_title_shared_blurb_clusters": 1,
+      "shared_key_counts": {
+        "exact_blurb": 1,
+        "normalized_blurb": 1
+      },
+      "proposed_split_unchanged": "train",
+      "evidence_record_ids": [
+        "bgc:dev:5257",
+        "bgc:dev:6389",
+        "bgc:dev:8576"
+      ]
+    },
+    {
+      "group_id": "bgc-group:7cf27c796bfe95bf39da72e277fdff00500fa080044f4e45f57317fa584840b1",
+      "selection": [
+        "largest_title_author_only_component"
+      ],
+      "dispositions": [
+        "keep_constraint",
+        "review_identity"
+      ],
+      "records": 10,
+      "distinct_titles": 1,
+      "title_examples": [
+        "Frankenstein"
+      ],
+      "distinct_authors": 1,
+      "distinct_isbn13": 10,
+      "distinct_normalized_blurbs": 10,
+      "distinct_source_label_sets": 6,
+      "labels_varying_between_members": [
+        [
+          0,
+          "Children’s Books"
+        ],
+        [
+          0,
+          "Classics"
+        ],
+        [
+          0,
+          "Fiction"
+        ],
+        [
+          0,
+          "Teen & Young Adult"
+        ],
+        [
+          1,
+          "Children’s Middle Grade Books"
+        ],
+        [
+          1,
+          "Fiction Classics"
+        ],
+        [
+          1,
+          "Gothic & Horror"
+        ],
+        [
+          1,
+          "Literary Fiction"
+        ],
+        [
+          1,
+          "Science Fiction"
+        ],
+        [
+          1,
+          "Teen & Young Adult Fiction"
+        ],
+        [
+          1,
+          "Teen & Young Adult Mystery & Suspense"
+        ]
+      ],
+      "identity_label_conflicts": [],
+      "distinct_title_shared_blurb_clusters": 0,
+      "shared_key_counts": {
+        "normalized_title_author_candidate": 1
+      },
+      "proposed_split_unchanged": "dev",
+      "evidence_record_ids": [
+        "bgc:test:139",
+        "bgc:test:14203",
+        "bgc:test:5078"
+      ]
+    },
+    {
+      "group_id": "bgc-group:b1376165c87c42c190a4e70f8f5fe84025441d448840b1133ef34858d16d652e",
+      "selection": [
+        "largest_component"
+      ],
+      "dispositions": [
+        "keep_constraint",
+        "review_identity",
+        "distinct_titles_share_text"
+      ],
+      "records": 61,
+      "distinct_titles": 23,
+      "title_examples": [
+        "All's Well That Ends Well",
+        "Antony and Cleopatra",
+        "As You Like It",
+        "Coriolanus",
+        "Henry IV, Part 2"
+      ],
+      "distinct_authors": 1,
+      "distinct_isbn13": 61,
+      "distinct_normalized_blurbs": 31,
+      "distinct_source_label_sets": 8,
+      "labels_varying_between_members": [
+        [
+          0,
+          "Fiction"
+        ],
+        [
+          0,
+          "Nonfiction"
+        ],
+        [
+          0,
+          "Poetry"
+        ],
+        [
+          1,
+          "Arts & Entertainment"
+        ],
+        [
+          1,
+          "Fiction Classics"
+        ],
+        [
+          1,
+          "History"
+        ],
+        [
+          1,
+          "Literary Collections"
+        ],
+        [
+          1,
+          "Literary Criticism"
+        ],
+        [
+          1,
+          "Nonfiction Classics"
+        ],
+        [
+          2,
+          "Performing Arts"
+        ],
+        [
+          2,
+          "World History"
+        ],
+        [
+          3,
+          "European World History"
+        ]
+      ],
+      "identity_label_conflicts": [],
+      "distinct_title_shared_blurb_clusters": 2,
+      "shared_key_counts": {
+        "exact_blurb": 3,
+        "normalized_blurb": 3,
+        "normalized_title_author_candidate": 18
+      },
+      "proposed_split_unchanged": "train",
+      "evidence_record_ids": [
+        "bgc:dev:11284",
+        "bgc:dev:11961",
+        "bgc:dev:13640"
+      ]
+    },
+    {
+      "group_id": "bgc-group:c23cc0c3a9a326bcbc6384620a401dc764c0cdebc0f999070854a9ab90a38fd3",
+      "selection": [
+        "largest_component",
+        "largest_title_author_only_component"
+      ],
+      "dispositions": [
+        "keep_constraint",
+        "review_identity"
+      ],
+      "records": 13,
+      "distinct_titles": 1,
+      "title_examples": [
+        "Dracula"
+      ],
+      "distinct_authors": 1,
+      "distinct_isbn13": 13,
+      "distinct_normalized_blurbs": 13,
+      "distinct_source_label_sets": 6,
+      "labels_varying_between_members": [
+        [
+          0,
+          "Children’s Books"
+        ],
+        [
+          0,
+          "Classics"
+        ],
+        [
+          0,
+          "Fiction"
+        ],
+        [
+          0,
+          "Teen & Young Adult"
+        ],
+        [
+          1,
+          "Children’s Middle Grade Books"
+        ],
+        [
+          1,
+          "Fiction Classics"
+        ],
+        [
+          1,
+          "Gothic & Horror"
+        ],
+        [
+          1,
+          "Literary Fiction"
+        ],
+        [
+          1,
+          "Teen & Young Adult Fantasy Fiction"
+        ],
+        [
+          1,
+          "Teen & Young Adult Fiction"
+        ],
+        [
+          1,
+          "Teen & Young Adult Mystery & Suspense"
+        ]
+      ],
+      "identity_label_conflicts": [],
+      "distinct_title_shared_blurb_clusters": 0,
+      "shared_key_counts": {
+        "normalized_title_author_candidate": 1
+      },
+      "proposed_split_unchanged": "test",
+      "evidence_record_ids": [
+        "bgc:dev:3407",
+        "bgc:test:9049",
+        "bgc:test:9146"
+      ]
+    }
+  ],
+  "cross_source_candidates": [
+    {
+      "source": "catalogue",
+      "id": "OL1317211W",
+      "title": "Meditations",
+      "identity_candidate_rows": 3,
+      "title_only_rows": 1,
+      "identity_candidate_group_ids": [
+        "bgc-group:453db40af4cbf7f0ddd64423beacd32b814e2073b6ca0f491d2cd1f0c1d3df79"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL15400582W",
+      "title": "The Big Sleep",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:c48affa897f9f41a9f3b800eeb71b2119bea3d7aec40b4baec5aebb6ebc87b40"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL16239762W",
+      "title": "Gone Girl",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:6b03ed347be7a3a6796cc167798ba9a6318b0dcdbebca47ddf939186f6f46309"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL17619932W",
+      "title": "The Underground Railroad",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:04312cd34cee237695128aa788a8cc5d2637734280d501c92977efaa95d9ced7"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL17795349W",
+      "title": "Homegoing",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:a2ccf0fcccc2e8effa087a3270ffe9fc368f545cf64afa2ccc7e4f7f5f0ef0ed"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL17797130W",
+      "title": "A Gentleman in Moscow",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:a928dcb025e0064a7ab3d0fff54a5fe246e15405b07164481c02e9799df57cdd"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL17837968W",
+      "title": "Artemis",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:e445aa1729c517f104161c212e6797dd5d07711cf099944d1ce211e3756a217b"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate",
+        "provider_book_id"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL18139176W",
+      "title": "Educated",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:a84c79e0387f5dffec0756dc0e5b7e89c923e346b7c57bda5aa4da96aa60a628"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL1963251W",
+      "title": "The Fall of Hyperion",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:147d67820cad9f4b1203ca71d82b1ce706f91bc9d5d8622d2081005bab983f07"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL21435W",
+      "title": "Redeeming Love",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:1bf1eb1f68b2b751200b67b1c508d048ac9d918cc0fe64bde40af9dfa95fafa7"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL257788W",
+      "title": "Cabal",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 1,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL262496W",
+      "title": "A Study in Scarlet",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 2,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL26446888W",
+      "title": "The Odyssey",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 8,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL266158W",
+      "title": "The Wisdom of Insecurity",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 1,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL2746369W",
+      "title": "The Clan of the Cave Bear",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:cbf0667ff2642645ab27bc580bf14d654b2bcfd3af8145240e3d9f6641291ec5"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL318900W",
+      "title": "The Prophet",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 1,
+      "identity_candidate_group_ids": [
+        "bgc-group:42e7a5220af1eb68ae99f86c975e1fd37e9dfdb2339631ebac25b0a143df708e"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL32195W",
+      "title": "House of Leaves",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:2e3ce023e6d15533e37bee08276600fb72098b86fb1f48ac24455d056450b686"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL3518640W",
+      "title": "Hostage",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 4,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL38495W",
+      "title": "Quicksilver",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 2,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL38847W",
+      "title": "Poems",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 5,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL40879W",
+      "title": "Blood Meridian",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:e9feb717b429b8840976586019db297229d9eef144fb28f65e98d124b44d7e5f"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL41081W",
+      "title": "The Raven",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 1,
+      "identity_candidate_group_ids": [
+        "bgc-group:7502a45a966653ae90f6f27eeb9b27f770aac06dfa1454fc6573b54e38389004"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL45499W",
+      "title": "Tao te Ching",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 1,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL457175W",
+      "title": "The Satanic Verses",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:007cae3d57a1003b3ace029f08efc947635c2bc4e0156e26ec19f385fd172d8e"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL46374W",
+      "title": "Nightfall",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 4,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL46398W",
+      "title": "The Naked Sun",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:f9f4f035318d624e084846a77bd7f074f2414280020cd00eda8607aab306d733"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL46401W",
+      "title": "The Caves of Steel",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:a93cab2ecf1625262530def0991684f3c08aa396940fee8b6a37332ebcbb4f54"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL52266W",
+      "title": "The Invisible Man",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 4,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL5731542W",
+      "title": "Half of a Yellow Sun",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:ce513d429f1d7c89236d5ef05794a8136695d20b34ef1f2f11e34ece195ab213"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL72282W",
+      "title": "Haunted",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 6,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL7967812W",
+      "title": "Roadside Picnic",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 1,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL81597W",
+      "title": "Cell",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 1,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "catalogue",
+      "id": "OL8369445W",
+      "title": "The Lies of Locke Lamora",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:1ad5bd1f8cb78e054d6748acf8def63b0fce50097d7fa6f5fc8883637f64cccb"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL94858W",
+      "title": "Skinny Legs and All",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:68426bb73b6183d893c850615b0bae6ba3804912d031db2211259b1fed15734f"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    },
+    {
+      "source": "catalogue",
+      "id": "OL9973101W",
+      "title": "The Long Walk",
+      "identity_candidate_rows": 0,
+      "title_only_rows": 1,
+      "identity_candidate_group_ids": [],
+      "matching_keys": []
+    },
+    {
+      "source": "licensed_text",
+      "id": "cory-doctorow-little-brother",
+      "title": "Little Brother",
+      "identity_candidate_rows": 1,
+      "title_only_rows": 0,
+      "identity_candidate_group_ids": [
+        "bgc-group:b620625dee8e8894f7995a903fb13b2fbeb86443960449368f0701db7a4f32f0"
+      ],
+      "matching_keys": [
+        "normalized_title_creator_candidate"
+      ]
+    }
+  ],
+  "packet": {
+    "bytes": 160645,
+    "sha256": "63139b5c6ec871e1c66f260efe03a211fa7807c33d4c0e6d5c2c587db8f9e7e4",
+    "path": "data/research_candidates/book-group-review-v1/review.jsonl"
+  },
+  "interpretation": [
+    "Dispositions are reproducible evidence rules inspected during preparation, not human identity or label gold. Source labels and proposed splits are unchanged.",
+    "Keep every selected leakage constraint, including distinct titles sharing blurbs. Do not collapse those rows into a single literary work or union their labels.",
+    "Same title/creator is only a candidate: editions, adaptations and translations can differ in audience and form. Shared ISBN/provider syntax is not independent identity confirmation.",
+    "Cross-source keys use NFC and whitespace collapse, preserving case/punctuation. Title-only collisions never establish identity; author spelling and edition variants can remain undetected.",
+    "Licensed creator lists include credited non-authors. Book Dash UUIDs and Open Library work IDs are not comparable with Penguin Random House book IDs.",
+    "Coordinate all recorded cross-source identity candidate groups before admitting catalogue or licensed-text holdouts; this pass does not reserve or move any splits. No match does not establish independence.",
+    "Review packets contain references, source metadata, labels and text hashes only; resolve archive member and 1-based source row for the original blurb."
+  ]
+}

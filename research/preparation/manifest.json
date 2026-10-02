@@ -6,22 +6,22 @@
       "id": "study_design",
       "scope": "common",
       "path": "configs/research/study_design.json",
-      "bytes": 11816,
-      "sha256": "fe58e119765e983b97874b6f1d0d6cc04ea4e14160d94b151810e4b6e7bb4c54"
+      "bytes": 12296,
+      "sha256": "e213fc91d1cafb32da10d6f4eb1dcf3545f888a4c0e6747a9a20b7a19731cdfd"
     },
     {
       "id": "preparation_status",
       "scope": "common",
       "path": "configs/research/preparation.json",
-      "bytes": 5999,
-      "sha256": "68fe34f8c2fbddcd9530b39aae16b3a291324474986a40bc7b260c83cb2d1e8e"
+      "bytes": 6550,
+      "sha256": "dc43053e07f6e91b450eabba8f203991ecdbf1beccfafdc719853a783db0f115"
     },
     {
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 2952,
-      "sha256": "a22fa63b7cd2f971169fbdd7438332e90d1adb8273a0de1cb82f059944d4b129"
+      "bytes": 3028,
+      "sha256": "cf8a174af2ede19a11b924055ab28992a811f011b91ac45373aa2674d1af9ead"
     },
     {
       "id": "study_decisions",
@@ -41,8 +41,8 @@
       "id": "preflight_contract",
       "scope": "common",
       "path": "src/research/preparation.py",
-      "bytes": 20994,
-      "sha256": "32418746018a3122fcdf05c77a16f70364702cf58cb2ea1f13f0314610f24e58"
+      "bytes": 24369,
+      "sha256": "0f3398858f8bfa4165d4958b7cd277c85586d4085edd03a83ac10d13e0d3c229"
     },
     {
       "id": "file_integrity_contract",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 5659,
-      "sha256": "db1e6319762bea1f78d25038715dc0dd180efa7dddbee081060ca71f208e0f34"
+      "bytes": 7083,
+      "sha256": "7c9a68002fe97856c5c3626e30d111f8ac9b4cd34ca9b06fd9a1a9100d8d7c8b"
     },
     {
       "id": "model_literature",
@@ -178,6 +178,139 @@
       "sha256": "4177ce85b4d146be8cfb18e5d4ea74c0f37a9dead20f6e0380bb9bfdf75d3536"
     },
     {
+      "id": "book_group_review",
+      "scope": "model_study",
+      "path": "research/preparation/book_group_review.json",
+      "bytes": 26372,
+      "sha256": "810f93e27de5f43fc2e646a0b0693e0830452cb00bb05dbbeb0a559aea5800c2"
+    },
+    {
+      "id": "book_group_reviewer",
+      "scope": "model_study",
+      "path": "scripts/review_book_groups.py",
+      "bytes": 17986,
+      "sha256": "8f5e98d0484926c93f22f4e07253be42161b7bd687eee9706dadc37296e1f0a0"
+    },
+    {
+      "id": "book_field_review",
+      "scope": "model_study",
+      "path": "research/preparation/book_field_review.json",
+      "bytes": 46288,
+      "sha256": "f2fab3d1768b4b33d4952431fc3de0d981ef6532f994d0a40fbf98b151959183"
+    },
+    {
+      "id": "book_field_review_report",
+      "scope": "model_study",
+      "path": "research/preparation/book_field_review_manifest.json",
+      "bytes": 3309,
+      "sha256": "90715b042d4850b3c0d7a1fdd1b749fefa706b1c96fcb366f4caa09efe33458a"
+    },
+    {
+      "id": "book_field_reviewer",
+      "scope": "model_study",
+      "path": "scripts/prepare_field_review.py",
+      "bytes": 12329,
+      "sha256": "a2f7352fe0281c9a15bf7d84d1c3c06ac63c42f1067d6ee445474857e93b2466"
+    },
+    {
+      "id": "book_field_review_contract",
+      "scope": "model_study",
+      "path": "src/research/field_reviews.py",
+      "bytes": 6413,
+      "sha256": "e2bba4baae378bb51072dbc4c284f649689dff39575904756c746606b61c25a0"
+    },
+    {
+      "id": "partial_label_loss",
+      "scope": "model_study",
+      "path": "src/models/losses.py",
+      "bytes": 2140,
+      "sha256": "b09d765dcff80e8d2ffde61be71a08e78477dc4bad22fb778da0f6b2dffb1106"
+    },
+    {
+      "id": "classification_heads",
+      "scope": "model_study",
+      "path": "src/models/heads.py",
+      "bytes": 8428,
+      "sha256": "83c5ad8768ff1261a2b1cbb9b0cfe32eeab40039d520b6987a0e68c6bcb94aa5"
+    },
+    {
+      "id": "multitask_runtime",
+      "scope": "model_study",
+      "path": "src/models/multitask.py",
+      "bytes": 11052,
+      "sha256": "56dc69ab3977d1d3fd81c91ff37ebee99ca22c4360a1ac261ee9632b9dbc232e"
+    },
+    {
+      "id": "model_factory",
+      "scope": "model_study",
+      "path": "src/models/factory.py",
+      "bytes": 27085,
+      "sha256": "c10cef118a63cc49c5af5f1f4491cbfe6b53bb12cdec38d49168f742e7a1c833"
+    },
+    {
+      "id": "trainer_runtime",
+      "scope": "model_study",
+      "path": "src/training/trainer.py",
+      "bytes": 32946,
+      "sha256": "f7235ef35cbce027a91ef1687d378e73f8ebd22c9ba660b3fac1fc49ce0bf674"
+    },
+    {
+      "id": "training_metrics",
+      "scope": "model_study",
+      "path": "src/training/metrics.py",
+      "bytes": 17263,
+      "sha256": "b817c0a094209f732b9a98e3321bde055dde72c4575cfa86c417c94cdc34995a"
+    },
+    {
+      "id": "training_entry",
+      "scope": "model_study",
+      "path": "scripts/train.py",
+      "bytes": 16302,
+      "sha256": "ebb83126f1ac2b854eab108e6b88815a407323f98af7d00e0afaac8e5b111d2b"
+    },
+    {
+      "id": "profile_entry",
+      "scope": "model_study",
+      "path": "scripts/profile_training.py",
+      "bytes": 11060,
+      "sha256": "cd6a0c1500ad9a5901be3cb5c90859301e0d62890bd44915180388d96f1f52b8"
+    },
+    {
+      "id": "training_data_contract",
+      "scope": "model_study",
+      "path": "src/data/dataset.py",
+      "bytes": 24185,
+      "sha256": "9de5b8c33d144a29776754a952292a3aa564499f35e156d20540cf20000b1d4f"
+    },
+    {
+      "id": "batch_contract",
+      "scope": "model_study",
+      "path": "src/data/dataloader.py",
+      "bytes": 10787,
+      "sha256": "9e523ea850a48dac1bf825062dbe497f7bf60e1b6e3c9ad47c87e8fb573d3bf6"
+    },
+    {
+      "id": "label_metadata_contract",
+      "scope": "model_study",
+      "path": "src/utils/labels.py",
+      "bytes": 5346,
+      "sha256": "a323775f1284a08ec8ef611706328673e707b0636bfdb8b51fb93fc90018e9ea"
+    },
+    {
+      "id": "inference_contract",
+      "scope": "model_study",
+      "path": "src/inference/pipeline.py",
+      "bytes": 15336,
+      "sha256": "38edd1191e8835b9801f66c1340fd6d60f0e644210e4d50816cf4602325f4957"
+    },
+    {
+      "id": "inference_factory",
+      "scope": "model_study",
+      "path": "src/inference/factory.py",
+      "bytes": 3757,
+      "sha256": "44368798a05aa0022d373e043b9e384512d4174f72b571660ab54fa5c2482e4a"
+    },
+    {
       "id": "licensed_books",
       "scope": "model_study",
       "path": "research/preparation/licensed_books_manifest.json",
@@ -202,8 +335,8 @@
       "id": "book_field_sources",
       "scope": "model_study",
       "path": "research/preparation/book_field_sources.json",
-      "bytes": 14465,
-      "sha256": "6b1741cab6bc11b3abbbe1bf2fc8df87bef103cebcf15b6d83618c7625a2a8b6"
+      "bytes": 14644,
+      "sha256": "a2f0ef8262fc3390414bbb8eb9bac2487878806db5a93813e3cbf7fb4d111aea"
     },
     {
       "id": "source_archive",
@@ -216,8 +349,8 @@
       "id": "dataset_decisions",
       "scope": "model_study",
       "path": "docs/research/dataset_decisions.md",
-      "bytes": 6182,
-      "sha256": "cbe3fae01b1a1073605008397f2f29a32cc5cb153339c58c9661639371525cc8"
+      "bytes": 6796,
+      "sha256": "1c1a9d075644ae877405286fa7a0caaa29ad320598f56a81177f5a8e779e9758"
     },
     {
       "id": "goemotions_candidate",

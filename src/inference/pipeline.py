@@ -10,6 +10,7 @@ Date: December 2025
 
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Sequence, cast
@@ -18,6 +19,12 @@ import torch
 import torch.nn.functional as F
 
 from ..data.tokenization import Tokenizer
+from ..utils.labels import (
+    BOOK_FIELDS,
+    BOOK_INPUT_FORMAT,
+    format_book_input,
+    validate_book_field_labels,
+)
 
 # --------------- Text Formatting ---------------
 
@@ -86,6 +93,12 @@ class TopicPrediction:
     confidence: float
 
 
+@dataclass
+class BookFieldPrediction:
+    fields: Dict[str, List[str]]
+    scores: Dict[str, float]
+
+
 # --------------- Pipeline ---------------
 
 
@@ -99,6 +112,8 @@ class InferencePipeline:
         *,
         emotion_labels: Sequence[str] | None = None,
         topic_labels: Sequence[str] | None = None,
+        topic_problem_type: str = "single_label",
+        topic_input_format: str = "text",
         config: InferenceConfig | None = None,
         device: torch.device | str | None = None,
     ) -> None:
@@ -125,6 +140,22 @@ class InferencePipeline:
 
         self.emotion_labels = list(emotion_labels) if emotion_labels else None
         self.topic_labels = list(topic_labels) if topic_labels else None
+        if topic_problem_type not in {"single_label", "multi_label"}:
+            raise ValueError("Invalid topic problem type")
+        expected_format = BOOK_INPUT_FORMAT if topic_problem_type == "multi_label" else "text"
+        if topic_input_format != expected_format:
+            raise ValueError("Topic input format does not match the declared problem type")
+        if topic_problem_type == "multi_label":
+            validate_book_field_labels(self.topic_labels)
+        model_head = getattr(model, "heads", {}).get("topic")
+        model_head = getattr(model_head, "_orig_mod", model_head)
+        if (
+            model_head is not None
+            and getattr(model_head, "problem_type", "single_label") != topic_problem_type
+        ):
+            raise ValueError("Topic head mode does not match supplied label metadata")
+        self.topic_problem_type = topic_problem_type
+        self.topic_input_format = topic_input_format
 
     # --------------- Summarization ---------------
 
@@ -237,6 +268,10 @@ class InferencePipeline:
 
     def predict_topics(self, texts: Sequence[str]) -> List[TopicPrediction]:
         """Predict topic for input texts."""
+        if self.topic_problem_type != "single_label":
+            raise ValueError(
+                "Use predict_book_fields with explicit thresholds for multi-label topics"
+            )
         if not texts:
             return []
         if not self.topic_labels:
@@ -252,6 +287,8 @@ class InferencePipeline:
             return self._topic_predictions(logits)
 
     def _topic_predictions(self, logits: torch.Tensor) -> List[TopicPrediction]:
+        if self.topic_problem_type != "single_label":
+            raise ValueError("Multi-label book fields cannot use single-label softmax")
         if logits.ndim != 2 or logits.shape[-1] != len(self.topic_labels or []):
             raise ValueError("Topic logits do not match the supplied label order")
         probs = F.softmax(logits, dim=-1)
@@ -267,10 +304,69 @@ class InferencePipeline:
             )
         return results
 
+    def predict_book_fields(
+        self,
+        books: Sequence[dict[str, str]],
+        *,
+        thresholds: float | Dict[str, float],
+    ) -> List[BookFieldPrediction]:
+        """Return independent field scores using an explicit threshold policy.
+
+        No default threshold or argmax fallback is supplied. Thresholding a score
+        does not establish calibrated confidence or a source-backed book fact.
+        """
+        if self.topic_problem_type != "multi_label":
+            raise ValueError("Book field prediction requires an explicit multi-label checkpoint")
+        labels = self.topic_labels or []
+        limits = (
+            {label: thresholds for label in labels}
+            if isinstance(thresholds, (int, float))
+            else thresholds
+        )
+        if (
+            not isinstance(limits, dict)
+            or set(limits) != set(labels)
+            or any(
+                type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1
+                for value in limits.values()
+            )
+        ):
+            raise ValueError("Provide finite thresholds in [0, 1] for every book field")
+        texts = []
+        for book in books:
+            if not isinstance(book, dict) or set(book) != {"title", "description"}:
+                raise ValueError("Book inputs must contain only title and description")
+            texts.append(format_book_input(book["title"], book["description"]))
+        if not texts:
+            return []
+        encoded = self.tokenizer.batch_encode(texts)
+        inputs = {key: encoded[key].to(self.device) for key in ("input_ids", "attention_mask")}
+        with torch.inference_mode():
+            logits = self.model.forward("topic", inputs)
+            if (
+                logits.ndim != 2
+                or logits.shape != (len(books), len(labels))
+                or not torch.isfinite(logits).all()
+            ):
+                raise ValueError("Book field logits do not match the finite label columns")
+            probabilities = torch.sigmoid(logits.float()).cpu().tolist()
+        results = []
+        for row in probabilities:
+            fields: Dict[str, List[str]] = {field: [] for field in BOOK_FIELDS}
+            scores = dict(zip(labels, row, strict=True))
+            for label, score in scores.items():
+                if score >= limits[label]:
+                    field, name = label.split(":", 1)
+                    fields[field].append(name)
+            results.append(BookFieldPrediction(fields=fields, scores=scores))
+        return results
+
     # --------------- Batch Prediction ---------------
 
     def batch_predict(self, texts: Sequence[str]) -> Dict[str, Any]:
         """Run all three tasks on input texts."""
+        if self.topic_problem_type != "single_label":
+            raise ValueError("Use predict_book_fields for the separate book input/output contract")
         if not self.emotion_labels or not self.topic_labels:
             raise RuntimeError("Both emotion_labels and topic_labels required")
 

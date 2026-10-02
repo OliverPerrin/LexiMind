@@ -271,6 +271,78 @@ def _inspect_book_candidates(files: dict[str, Path], bgc: dict[str, Any]) -> lis
     return errors
 
 
+def _inspect_book_reviews(files: dict[str, Path]) -> list[str]:
+    """Bind bounded review evidence; a historical catalogue screen is not admission."""
+    errors: list[str] = []
+
+    def reference(key):
+        return {
+            "path": ARTIFACTS[key][1],
+            "bytes": files[key].stat().st_size,
+            "sha256": hashlib.sha256(files[key].read_bytes()).hexdigest(),
+        }
+
+    def hashes(keys):
+        return {ARTIFACTS[key][1]: reference(key)["sha256"] for key in keys}
+
+    fields = _object(read_json(files["book_fields"]), "book fields")
+    groups = _object(read_json(files["bgc_groups"]), "book groups")
+    review = _object(read_json(files["book_field_review_report"]), "field review report")
+    packet = _object(read_json(files["book_field_review"]), "field review packet")
+    expected_bindings = {
+        "archive": fields["archive"],
+        "field_manifest": reference("book_fields"),
+        "field_references": fields["field_references"],
+        "mapping": reference("book_field_mapping"),
+    }
+    if review.get("bindings") != expected_bindings or packet.get("bindings") != expected_bindings:
+        errors.append("Field review does not bind current source, fields and mapping")
+    if review.get("review_packet") != reference("book_field_review"):
+        errors.append("Field review report refers to a different review packet")
+    if review.get("preparation_script_sha256") != reference("book_field_reviewer")["sha256"]:
+        errors.append("Field review used a different reviewer script")
+    if review.get("preparation_helper_sha256") != hashes(
+        (
+            "book_field_builder",
+            "book_field_review_contract",
+            "book_field_contract",
+            "candidate_io",
+            "file_integrity_contract",
+            "catalogue_storage",
+        )
+    ):
+        errors.append("Field review does not bind current reviewer helpers")
+    group_review = _object(read_json(files["book_group_review"]), "group review")
+    if group_review.get("implementation_sha256") != hashes(
+        (
+            "book_group_reviewer",
+            "bgc_builder",
+            "book_group_contract",
+            "candidate_io",
+            "file_integrity_contract",
+        )
+    ):
+        errors.append("Group review does not bind current reviewer implementation")
+    inputs = _object(group_review.get("inputs"), "group review inputs")
+    # Catalogue matching describes the pinned snapshot recorded by the reviewer.
+    # A later catalogue edit must not invalidate the independent model-study packet;
+    # new candidate admission must refresh its own cross-source population screen.
+    for key, expected in {
+        "groups": reference("bgc_groups"),
+        "licensed_sources": reference("licensed_book_sources"),
+        "licensed_manifest": reference("licensed_books"),
+        "candidate_manifest": reference("bgc_candidate"),
+        **{key: groups[key] for key in ("archive", "assignments", "review_groups")},
+    }.items():
+        if inputs.get(key) != expected:
+            errors.append(f"Group review does not bind current {key}")
+    if any(
+        value.get("training_authorized") is not False for value in (review, packet, group_review)
+    ):
+        errors.append("Review preparation cannot authorize training")
+    return errors
+
+
 def inspect_preparation(
     root: Path, manifest_path: Path, target: str, *, check_archive: bool = False
 ) -> dict[str, Any]:
@@ -344,6 +416,7 @@ def inspect_preparation(
                 if bgc.get("preparation_helper_sha256") != expected_helpers:
                     errors.append("BGC audit does not bind current preparation helpers")
                 errors.extend(_inspect_book_candidates(files, bgc))
+                errors.extend(_inspect_book_reviews(files))
                 validate_ledger(read_json(files["compute_ledger_template"]))
                 blockers.extend(validate_model_admission(root, plan))
             else:

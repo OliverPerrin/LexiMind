@@ -467,6 +467,7 @@ def build_multitask_model(
     num_topics: int,
     config: ModelConfig | None = None,
     load_pretrained: bool | None = None,
+    topic_problem_type: Literal["single_label", "multi_label"] = "single_label",
 ) -> MultiTaskModel:
     """Construct the multitask transformer with heads for the three tasks.
 
@@ -476,9 +477,12 @@ def build_multitask_model(
         num_topics: Number of topic classes; zero omits this inactive head
         config: Model architecture configuration
         load_pretrained: Override config.use_pretrained (for inference to skip loading)
+        topic_problem_type: Explicit topic target contract; defaults to legacy single-label CE
     """
 
     cfg = config or ModelConfig()
+    if topic_problem_type not in {"single_label", "multi_label"}:
+        raise ValueError("topic_problem_type must be 'single_label' or 'multi_label'")
     if isinstance(num_emotions, bool) or not isinstance(num_emotions, int) or num_emotions < 0:
         raise ValueError("num_emotions must be a nonnegative integer")
     if isinstance(num_topics, bool) or not isinstance(num_topics, int) or num_topics < 0:
@@ -567,13 +571,18 @@ def build_multitask_model(
                 pooler="attention",
                 dropout=cfg.dropout,
                 hidden_dim=cfg.d_model // 2,  # 384-dim hidden layer
+                problem_type="multi_label",
             ),
         )
     if num_topics:
         model.add_head(
             "topic",
             ClassificationHead(
-                d_model=cfg.d_model, num_labels=num_topics, pooler="mean", dropout=cfg.dropout
+                d_model=cfg.d_model,
+                num_labels=num_topics,
+                pooler="mean",
+                dropout=cfg.dropout,
+                problem_type=topic_problem_type,
             ),
         )
     return model

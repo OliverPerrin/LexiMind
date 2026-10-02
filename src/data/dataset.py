@@ -18,6 +18,8 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
 from torch.utils.data import Dataset
 
+from src.utils.labels import BOOK_INPUT_FORMAT, LabelMetadata, format_book_input
+
 T = TypeVar("T")
 TASK_NAMES = ("summarization", "emotion", "topic")
 
@@ -39,6 +41,18 @@ class EmotionExample:
 class TopicExample:
     text: str
     topic: str
+
+
+@dataclass(slots=True)
+class PartialTopicExample:
+    title: str
+    description: str
+    positive: Sequence[str]
+    negative: Sequence[str]
+
+    @property
+    def text(self) -> str:
+        return format_book_input(self.title, self.description)
 
 
 def _validate_limit(limit: int | None) -> None:
@@ -212,6 +226,10 @@ class EmotionDataset(_ExampleDataset[EmotionExample]):
 
 
 class TopicDataset(_ExampleDataset[TopicExample]):
+    topic_problem_type = "single_label"
+    topic_input_format = "text"
+    topic_mapping_sha256 = None
+
     def __init__(
         self, examples: Iterable[TopicExample], *, encoder: LabelEncoder | None = None
     ) -> None:
@@ -234,6 +252,21 @@ class TopicDataset(_ExampleDataset[TopicExample]):
     @property
     def topic_classes(self) -> list[str]:
         return list(self._encoder.classes_)
+
+
+class PartialTopicDataset(_ExampleDataset[PartialTopicExample]):
+    """Explicit partial targets; omitted columns stay unknown, never negative."""
+
+    topic_problem_type = "multi_label"
+    topic_input_format = BOOK_INPUT_FORMAT
+
+    def __init__(
+        self, examples: Iterable[PartialTopicExample], *, labels: list[str], mapping_sha256: str
+    ) -> None:
+        super().__init__(examples)
+        metadata = LabelMetadata([], labels, "multi_label", BOOK_INPUT_FORMAT, mapping_sha256)
+        self.topic_classes = metadata.topic
+        self.topic_mapping_sha256 = metadata.topic_mapping_sha256
 
 
 # --------------- Calibration Split ---------------
@@ -350,6 +383,23 @@ def _topic(payload: dict) -> TopicExample:
     return TopicExample(payload["text"], payload["topic"])
 
 
+def _partial_topic(payload: dict) -> PartialTopicExample:
+    example = PartialTopicExample(
+        payload["title"], payload["description"], payload["positive"], payload["negative"]
+    )
+    format_book_input(example.title, example.description)
+    for values in (example.positive, example.negative):
+        if (
+            not isinstance(values, list)
+            or any(not isinstance(label, str) or not label.strip() for label in values)
+            or len(set(values)) != len(values)
+        ):
+            raise ValueError("Partial book labels require unique string lists")
+    if set(example.positive) & set(example.negative):
+        raise ValueError("A book field cannot be both positive and negative")
+    return example
+
+
 def load_summarization_jsonl(
     path: str | Path, *, limit: int | None = None, lazy: bool = False
 ) -> Sequence[SummarizationExample]:
@@ -366,6 +416,18 @@ def load_topic_jsonl(
     path: str | Path, *, limit: int | None = None, lazy: bool = False
 ) -> Sequence[TopicExample]:
     return _load_jsonl_generic(path, _topic, ("text", "topic"), limit=limit, lazy=lazy)
+
+
+def load_partial_topic_jsonl(
+    path: str | Path, *, limit: int | None = None, lazy: bool = False
+) -> Sequence[PartialTopicExample]:
+    return _load_jsonl_generic(
+        path,
+        _partial_topic,
+        ("title", "description", "positive", "negative"),
+        limit=limit,
+        lazy=lazy,
+    )
 
 
 def resolve_split_path(directory: Path, split: str) -> Path | None:
@@ -491,6 +553,7 @@ def load_training_datasets(
     max_train_samples: int | None = None,
     max_val_samples: int | None = None,
     include_validation: bool = True,
+    topic_problem_type: str = "single_label",
 ) -> tuple[dict[str, Dataset], dict[str, Dataset]]:
     """Prepare active task datasets once, retaining lazy training/validation text.
 
@@ -501,11 +564,15 @@ def load_training_datasets(
     """
     _validate_limit(max_train_samples)
     _validate_limit(max_val_samples)
+    if topic_problem_type not in {"single_label", "multi_label"}:
+        raise ValueError("topic_problem_type must be single_label or multi_label")
     directories = validate_task_directories(processed, tasks)
     loaders = {
         "summarization": load_summarization_jsonl,
         "emotion": load_emotion_jsonl,
-        "topic": load_topic_jsonl,
+        "topic": load_partial_topic_jsonl
+        if topic_problem_type == "multi_label"
+        else load_topic_jsonl,
     }
     train: dict[str, Dataset] = {}
     validation: dict[str, Dataset] = {}
@@ -525,6 +592,26 @@ def load_training_datasets(
                 f"Training split for '{task}' is empty; choose a nonempty reviewed split and positive sample limit"
             )
         val = splits.get("val", [])
+        if task == "topic" and topic_problem_type == "multi_label":
+            # Candidates are never selected or exported implicitly. A caller must
+            # supply separate reviewed split files and an exact ordered schema.
+            with (directory / "labels.json").open(encoding="utf-8") as handle:
+                schema = json.load(handle)
+            if (
+                not isinstance(schema, dict)
+                or type(schema.get("schema_version")) is not int
+                or schema["schema_version"] != 1
+                or schema.get("problem_type") != "multi_label"
+                or schema.get("input_format") != BOOK_INPUT_FORMAT
+            ):
+                raise ValueError("Partial book datasets require an explicit labels.json schema")
+            options: dict[str, Any] = {
+                "labels": schema.get("labels"),
+                "mapping_sha256": schema.get("mapping_sha256"),
+            }
+            train[task] = PartialTopicDataset(splits["train"], **options)
+            validation[task] = PartialTopicDataset(val, **options)
+            continue
         vocabulary: list[str] = []
         if task != "summarization":
             vocabulary = _training_vocabulary(
