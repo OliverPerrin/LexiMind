@@ -135,3 +135,63 @@ def test_subset_checkpoint_and_empty_labels_reconstruct_through_inference_factor
     assert all(torch.equal(actual[key], value) for key, value in expected.items())
     with pytest.raises(RuntimeError, match="emotion_labels required"):
         pipeline.predict_emotions(["synthetic text"])
+
+
+def test_explicit_flan_activation_matches_tiny_upstream_logits_without_download(monkeypatch):
+    from transformers import T5Config, T5ForConditionalGeneration
+
+    from src.models import factory
+
+    # Random tiny weights exercise the complete transfer and native architecture.
+    # No pretrained weights, checkpoint, tokenizer or network access is needed.
+    upstream = T5ForConditionalGeneration(
+        T5Config(
+            vocab_size=23,
+            d_model=16,
+            d_kv=4,
+            d_ff=32,
+            num_layers=2,
+            num_decoder_layers=2,
+            num_heads=4,
+            dropout_rate=0.0,
+            feed_forward_proj="gated-gelu",
+            tie_word_embeddings=False,
+            decoder_start_token_id=0,
+            pad_token_id=0,
+            eos_token_id=1,
+        )
+    ).eval()
+    monkeypatch.setattr(
+        factory.T5ForConditionalGeneration, "from_pretrained", lambda *args, **kwargs: upstream
+    )
+    tokenizer = SimpleNamespace(vocab_size=23, pad_token_id=0, config=SimpleNamespace(max_length=8))
+    native = build_multitask_model(
+        tokenizer,
+        num_emotions=0,
+        num_topics=0,
+        config=ModelConfig(
+            d_model=16,
+            num_encoder_layers=2,
+            num_decoder_layers=2,
+            num_attention_heads=4,
+            ffn_dim=32,
+            dropout=0.0,
+            activation="gated-gelu-tanh",
+            use_relative_position_bias=True,
+            use_pretrained=True,
+            pretrained_model_name="synthetic-flan-t5",
+        ),
+    ).eval()
+    source = torch.tensor([[2, 3, 4, 0], [5, 6, 0, 0]])
+    source_mask = source != 0
+    target = torch.tensor([[0, 7, 8], [0, 9, 10]])
+    with torch.no_grad():
+        expected = upstream(
+            input_ids=source,
+            attention_mask=source_mask,
+            decoder_input_ids=target,
+            use_cache=False,
+        ).logits
+        memory = native.encoder(source, mask=source_mask[:, None, None, :])
+        actual = native.decoder(target, memory, memory_mask=source_mask, skip_padding_mask=True)
+    torch.testing.assert_close(actual, expected, atol=2e-5, rtol=2e-5)

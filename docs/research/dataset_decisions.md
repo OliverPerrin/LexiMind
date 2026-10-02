@@ -83,7 +83,9 @@ Legacy topic CE remains the default. Next: human/source conflict adjudication,
 representative negative or complete-label evidence, and work-level split freeze.
 CR4 needs a character-conditioned target decision before label conversion.
 The custom transformer and four recipe arms stay;
-training and model evaluation remain paused. Optional corpora need not block this track.
+formal field training still needs reviewed data. The separately recorded local
+continuation pilot establishes execution feasibility only. Optional corpora need
+not block this track.
 
 ## Modern books beyond Gutenberg
 
@@ -93,7 +95,8 @@ now preserves the official [Little Brother](https://craphound.com/littlebrother/
 text and three [Book Dash](https://bookdash.org/re-using-the-book-dash-content/)
 English books, with source hashes, per-work licences, attribution and section boundaries.
 Little Brother's NC/SA conditions remain separate from Book Dash's CC BY terms.
-One YA novel dominates the text; picture books omit visual context. No model ran.
+One YA novel dominates the text; picture books omit visual context. No field model
+has been trained from these texts.
 [OAPEN](https://www.oapen.org/article/metadata) nonfiction and
 [Green Comet](https://greencomet.org/welcome/) remain expansion candidates. Reconcile
 work identities before admitting full-text splits. Free access is not blanket

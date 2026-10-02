@@ -413,6 +413,14 @@ def _inspect_extensions(files: dict[str, Path], plan: dict[str, Any]) -> list[st
     ):
         errors.append("RPT candidate used a different tokenizer-preparation implementation")
     methods = _object(read_json(files["rl_methods"]), "RL source register")
+    pilot = _object(read_json(files["pilot_observations"]), "Local pilot observations")
+    if (
+        pilot.get("kind") != "local_macbook_training_observations"
+        or pilot["protocol"].get("baseline_config") != ref("pilot_config")
+        or pilot["data"].get("rpt_manifest") != ref("rpt_candidate")
+        or pilot["data"].get("global_test_used") is not False
+    ):
+        errors.append("Local pilot does not bind its scoped configuration and training-only data")
     cutoff = date.fromisoformat(methods["as_of"])
     for source in _rows(methods.get("sources"), "RL sources"):
         if (

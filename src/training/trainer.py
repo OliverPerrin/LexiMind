@@ -58,6 +58,7 @@ class TrainerConfig:
     validation_max_length: int = 128
     label_smoothing: float = 0.1
     gradient_accumulation_steps: int = 1
+    generation_metrics: bool = True
 
     # LR scheduler
     scheduler_type: str = "cosine"
@@ -84,6 +85,7 @@ class TrainerConfig:
     # MLflow
     experiment_name: str = "LexiMind"
     run_name: str | None = None
+    tracking_uri: str = "sqlite:///mlruns.db"
 
     def __post_init__(self) -> None:
         if self.gradient_accumulation_steps < 1:
@@ -155,7 +157,7 @@ class Trainer:
             self.early_stopping = EarlyStopping(patience=config.early_stopping_patience)
 
         # MLflow - use SQLite backend to avoid deprecation warning
-        mlflow.set_tracking_uri("sqlite:///mlruns.db")
+        mlflow.set_tracking_uri(config.tracking_uri)
         mlflow.set_experiment(config.experiment_name)
 
         # PCGrad
@@ -598,6 +600,9 @@ class Trainer:
             label_smoothing=self.config.label_smoothing,
         )
 
+        if not self.config.generation_metrics:
+            return loss, {}
+
         preds = self.tokenizer.decode_batch(logits.argmax(dim=-1).tolist())
         refs = self._decode_labels(batch["labels"])
 
@@ -718,7 +723,7 @@ class Trainer:
 
         Uses the latest already-consumed batch per task: diagnostics neither
         steal training batches nor clear/replace accumulated parameter gradients.
-        CPU/CUDA RNG state is restored after probes, including training-mode dropout.
+        CPU and active CUDA/MPS RNG state is restored, including training-mode dropout.
 
         Returns cosine similarity between encoder-gradient vectors for each
         task pair. Negative values indicate conflicting gradients on the
@@ -728,12 +733,16 @@ class Trainer:
         if not shared_params:
             return {}
         task_grads: Dict[str, torch.Tensor] = {}
-        devices = (
-            [self.device.index if self.device.index is not None else torch.cuda.current_device()]
-            if self.device.type == "cuda"
-            else []
-        )
-        with torch.random.fork_rng(devices=devices):
+        devices = []
+        if self.device.type == "cuda":
+            devices = [
+                self.device.index if self.device.index is not None else torch.cuda.current_device()
+            ]
+        elif self.device.type == "mps":
+            devices = [0]
+        with torch.random.fork_rng(
+            devices=devices, device_type="mps" if self.device.type == "mps" else "cuda"
+        ):
             for task, batch in batches.items():
                 dtype = torch.bfloat16 if self.use_bfloat16 else torch.float16
                 with torch.autocast("cuda", dtype=dtype, enabled=self.use_amp):

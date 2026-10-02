@@ -1,23 +1,21 @@
 {
   "schema_version": 1,
   "status": "draft",
-  "paused_by_user": true,
+  "paused_by_user": false,
   "as_of": "2026-10-02",
-  "instruction": "Training, model execution/evaluation, research scoring and paid calls remain paused. Literature review, source/data preparation and software contract tests continue under the current user request.",
+  "instruction": "User authorized bounded local MacBook training and evaluation on 2026-10-02. Apple M5/16GB is available; RTX4070 remains unavailable for several days. Formal MTL/book studies still need their declared data/protocol evidence. Paid calls and remote compute are not authorized.",
   "paid_spend_authorized": false,
-  "hardware_available": false,
+  "hardware_available": true,
   "proposed_first_comparison": [
     "joint_sft",
     "budget_matched_task_specialists",
     "merged_task_adapters"
   ],
   "deferred": [
-    "backbone_feasibility_runs",
-    "distillation",
+    "formal_mtl_comparison",
     "teacher_api_generation",
-    "rl_execution",
-    "all_training",
-    "all_model_evaluation"
+    "paid_compute",
+    "rtx4070_execution"
   ],
   "gates": {
     "literature_gate": {
@@ -25,8 +23,8 @@
       "evidence": [
         {
           "path": "docs/research/model_recipe_review.md",
-          "bytes": 5691,
-          "sha256": "f401fdf15a208d0ccf49098e70f51154d6cee6c9aa7a196b5affd620348f2ba2"
+          "bytes": 5819,
+          "sha256": "b11e258643eb140a35a524133847d6b7b675df4c9f48a08eea0a5813e7e16657"
         },
         {
           "path": "docs/research/book_discovery_review.md",
@@ -40,8 +38,8 @@
         },
         {
           "path": "research/preparation/rl_methods.json",
-          "bytes": 21323,
-          "sha256": "f8f897faf626d378ace2642c3c6927cdf250956e6a64a59bce08eeca197acd9a"
+          "bytes": 21417,
+          "sha256": "8f1fcce72d1785a9a61f15c13e4d5f4e5d9b19b757531b133da6d8fd5c5316ec"
         }
       ],
       "draft_path": "docs/research/README.md",
@@ -52,8 +50,8 @@
       "evidence": [
         {
           "path": "configs/research/study_design.json",
-          "bytes": 13865,
-          "sha256": "a9c26c3ebe77e291f96722747ec93e0b947353b26f144f4c0254cf128e986bf5"
+          "bytes": 14036,
+          "sha256": "93a2117b67453684c8721b05d6c7938b26853b01955a3102370543a350b2ef21"
         },
         {
           "path": "docs/research/study_decisions.md",
@@ -145,7 +143,7 @@
           "sha256": "f1bf116a1c9b988383e29bf7421a6e70e4639f78b057687bdedadf1a75340c9b"
         }
       ],
-      "note": "Three pinned config candidates inspected without instantiation; runtime/integration/feasibility unresolved."
+      "note": "Cached FLAN-T5-base was used for a bounded M5 continuation pilot; the formal comparative-study backbone remains unselected."
     },
     "budget_definition": {
       "status": "ledger_schema_prepared_no_observations",
@@ -175,7 +173,7 @@
       "note": "120 source-linked work references; packet remains empty with no queries, human judgments or gold."
     },
     "runtime_preparation": {
-      "status": "synthetic_software_checks_only",
+      "status": "bounded_m5_feasibility_observed",
       "evidence": [
         {
           "path": "src/models/adapters.py",
@@ -194,15 +192,21 @@
         },
         {
           "path": "src/training/trainer.py",
-          "bytes": 34236,
-          "sha256": "fdb0c9272e9fbf084bc8bf013055041aeaef4c2d3374e6964df3af02cd34f26a"
+          "bytes": 34550,
+          "sha256": "37f599517db69002e01af804c56358cbf8f2fe6305140e8c27911e136b65ab29"
+        },
+        {
+          "path": "research/results/macbook_pilot_20261002.json",
+          "bytes": 10907,
+          "sha256": "7ce39eb1cc6a72521b3b3ae17bdd8c343acd198acc7d8fd181395e89d9be072d"
         }
       ],
-      "note": "Native LoRA/effective-delta merging and policy objectives share the existing transformer/trainer. No real checkpoint, GPU feasibility, training or quality evaluation."
+      "note": "Native FLAN GELU parity corrected explicitly; local rank-four LoRA CE and one sparse-reward RL update observed. Real adapter reload verified. Formal book-field quality and CUDA feasibility remain unresolved."
     }
   },
   "study_design": "configs/research/study_design.json",
   "preparation_manifest": "research/preparation/manifest.json",
   "scope_decision": "Book-domain field supervision first; accepted joint/specialist/merge comparison retained. Generic corpora are optional controls, not product label truth.",
-  "source_decisions": "research/preparation/book_field_sources.json"
+  "source_decisions": "research/preparation/book_field_sources.json",
+  "local_pilot": "configs/research/macbook_pilot.json"
 }

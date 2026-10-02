@@ -14,6 +14,8 @@ import torch
 import torch.nn as nn
 import torch.nn.init as init
 
+ActivationType = Literal["gelu", "relu", "swiglu", "gated-gelu", "gated-gelu-tanh"]
+
 
 class FeedForward(nn.Module):
     """
@@ -21,7 +23,8 @@ class FeedForward(nn.Module):
 
     Or with GELU: FFN(x) = GELU(xW₁ + b₁)W₂ + b₂
     Or with SwiGLU: FFN(x) = (Swish(xW_gate) * xW_up)W_down
-    Or with gated-gelu: FFN(x) = (GELU(xW_gate) * xW_up)W_down  (T5/FLAN-T5 style)
+    Or with gated-gelu: FFN(x) = (GELU(xW_gate) * xW_up)W_down.
+    gated-gelu preserves the legacy exact GELU; gated-gelu-tanh matches FLAN-T5.
     """
 
     def __init__(
@@ -29,7 +32,7 @@ class FeedForward(nn.Module):
         d_model: int,
         d_ff: int,
         dropout: float = 0.1,
-        activation: Literal["gelu", "relu", "swiglu", "gated-gelu"] = "gelu",
+        activation: ActivationType = "gelu",
         quantization: Optional[str] = None,
     ):
         super().__init__()
@@ -54,20 +57,20 @@ class FeedForward(nn.Module):
             except (ImportError, AttributeError):
                 print("bitsandbytes not installed or incompatible, falling back to nn.Linear")
 
-        if activation in ("swiglu", "gated-gelu"):
+        if activation in ("swiglu", "gated-gelu", "gated-gelu-tanh"):
             # Gated FFN requires 3 linear layers: Gate, Up, Down
             # - swiglu uses SiLU (Swish) activation (LLaMA style)
-            # - gated-gelu uses GELU activation (T5/FLAN-T5 style)
+            # - gated-gelu-tanh uses the tanh approximation in FLAN-T5's gelu_new
             self.linear_gate = Linear(d_model, d_ff, **kwargs)  # Gate projection (wi_0)
             self.linear1 = Linear(d_model, d_ff, **kwargs)  # Up projection (wi_1)
             self.linear2 = Linear(d_ff, d_model, **kwargs)  # Down projection (wo)
 
             if activation == "swiglu":
                 self.activation = nn.SiLU()  # Swish activation
-            else:  # gated-gelu
-                self.activation = (
-                    nn.GELU()
-                )  # GELU activation (T5 uses gelu_new which is very close)
+            else:
+                self.activation = nn.GELU(
+                    approximate="tanh" if activation == "gated-gelu-tanh" else "none"
+                )
 
             # Init gate
             if not quantization:
@@ -92,7 +95,7 @@ class FeedForward(nn.Module):
         x: (batch, seq_len, d_model)
         returns: (batch, seq_len, d_model)
         """
-        if self.activation_type in ("swiglu", "gated-gelu"):
+        if self.activation_type in ("swiglu", "gated-gelu", "gated-gelu-tanh"):
             # Gated FFN: (activation(xW_gate) * xW_up) W_down
             gate = self.activation(self.linear_gate(x))
             up = self.linear1(x)

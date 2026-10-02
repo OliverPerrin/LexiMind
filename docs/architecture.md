@@ -54,6 +54,8 @@ taxonomy.
 | Construction | `factory.py`: configuration validation, module assembly and layer-by-layer pretrained-weight transfer |
 
 The FLAN path preserves T5-specific attention scaling and positional treatment.
+New FLAN runs can select `gated-gelu-tanh` for upstream `gelu_new` parity. Existing
+`gated-gelu` configurations retain their exact-GELU behavior and checkpoint keys.
 Emotion classification uses learned attention pooling and an MLP; topic
 classification uses masked mean pooling and a linear output. These are task
 interfaces, not evidence that either pooling choice is universally superior.
@@ -74,6 +76,8 @@ projection on the encoder; decoder/head gradients are summed even when generativ
 objectives share them. Metrics and calibration utilities remain separate from model layers.
 The profiler calls the same epoch loop. Metrics accumulate fixed-size summaries;
 threshold calibration vectorizes classes, and PCGrad reuses reference norms.
+`generation_metrics=false` skips teacher-forced text decoding/ROUGE during
+loss-only runs; tracking can use a separate local database for each experiment.
 
 Classification heads explicitly select single-label CE or multi-label BCE. Book
 fields opt in through `data.topic_problem_type=multi_label`; legacy topic CE and
@@ -111,8 +115,8 @@ specified experiment are still required.
 
 The book site has no dependency on that runtime. Research outputs must pass their
 own source, domain and evaluation review before becoming catalogue features.
-Training and experiments are currently paused; see
-[current research preparation](research/README.md) for the proposed studies and
+Bounded local MacBook pilots are authorized; see
+[current research preparation](research/README.md) for observations, proposed studies and
 remaining data, interface, budget and evaluation decisions.
 
 ## Dataset loading

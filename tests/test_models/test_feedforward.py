@@ -1,6 +1,45 @@
+import copy
+
+import pytest
 import torch
+from transformers.activations import ACT2FN
 
 from src.models.feedforward import FeedForward
+
+
+@pytest.mark.parametrize("dtype", [torch.float32, torch.float64])
+def test_flan_tanh_gelu_matches_upstream_outputs_and_gradients(dtype):
+    native = FeedForward(8, 16, dropout=0.0, activation="gated-gelu-tanh").to(dtype)
+    reference = copy.deepcopy(native)
+    reference.activation = ACT2FN["gelu_new"]
+    inputs = torch.linspace(-4, 4, 48, dtype=dtype).reshape(2, 3, 8).requires_grad_()
+    reference_inputs = inputs.detach().clone().requires_grad_()
+    actual, expected = native(inputs), reference(reference_inputs)
+    tolerance = 2e-5 if dtype == torch.float32 else 1e-12
+    torch.testing.assert_close(actual, expected, atol=tolerance, rtol=tolerance)
+    weights = torch.linspace(-1, 1, actual.numel(), dtype=dtype).reshape_as(actual)
+    (actual * weights).sum().backward()
+    (expected * weights).sum().backward()
+    torch.testing.assert_close(inputs.grad, reference_inputs.grad, atol=tolerance, rtol=tolerance)
+    for native_parameter, reference_parameter in zip(
+        native.parameters(), reference.parameters(), strict=True
+    ):
+        torch.testing.assert_close(
+            native_parameter.grad, reference_parameter.grad, atol=tolerance, rtol=tolerance
+        )
+
+
+def test_legacy_gated_gelu_preserves_exact_activation_and_state_layout():
+    legacy = FeedForward(2, 4, dropout=0.0, activation="gated-gelu")
+    upgraded = FeedForward(2, 4, dropout=0.0, activation="gated-gelu-tanh")
+    upgraded.load_state_dict(legacy.state_dict(), strict=True)
+    assert legacy.activation.approximate == "none"
+    assert upgraded.activation.approximate == "tanh"
+    values = torch.linspace(-3, 3, 31)
+    torch.testing.assert_close(
+        legacy.activation(values), torch.nn.functional.gelu(values), atol=0, rtol=0
+    )
+    assert not torch.equal(legacy.activation(values), upgraded.activation(values))
 
 
 class TestFeedForward:

@@ -1,7 +1,8 @@
 # Research: current work
 
-**Training and research experiments remain paused.** Source research, preparation
-and software checks continue. The Gradio demo and custom FLAN/T5 implementation stay.
+**Bounded local MacBook training is authorized.** The formal MTL and book studies
+still need their data/protocol evidence; paid calls and remote compute remain
+unapproved. The Gradio demo and custom FLAN/T5 implementation stay.
 
 Read [dataset decisions](dataset_decisions.md) for the current direction and next
 actions. The priority is book-aligned genre/topic supervision, with narrative
@@ -14,6 +15,24 @@ adaptation, specialists, task arithmetic and TIES under comparable training budg
 Book recommendation relevance is evaluated separately from model-task accuracy.
 
 ## Working commands
+
+The bounded local continuation pilot reuses the training entry point. It preserves
+the global test set and writes to a fresh ignored directory:
+
+```sh
+python scripts/train.py --pilot configs/research/macbook_pilot.json --output outputs/macbook-pilot --prepare-only
+# Use another fresh output directory and omit --prepare-only to execute locally.
+```
+
+The configuration limits steps, wall time and MPS memory. Its three-work sample is
+a feasibility/overfit check; the diagnostic work remains a global training work.
+The prefix reward adds a four-canonical-token minimum and is not original RPT scoring.
+
+The [M5 observations](../../research/results/macbook_pilot_20261002.json) record
+two 64-update LoRA continuation pilots: 12–16 seconds for supervised updates and
+about 2.32 GB maximum observed MPS driver memory. The 32-token RL probe had no
+reward signal; a separately declared eight-token probe made one RL update, with
+no diagnostic improvement. These tiny runs establish local execution feasibility.
 
 Rebuild prepared book candidates offline from the preserved source cache:
 

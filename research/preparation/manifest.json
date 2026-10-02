@@ -6,22 +6,22 @@
       "id": "study_design",
       "scope": "common",
       "path": "configs/research/study_design.json",
-      "bytes": 13865,
-      "sha256": "a9c26c3ebe77e291f96722747ec93e0b947353b26f144f4c0254cf128e986bf5"
+      "bytes": 14036,
+      "sha256": "93a2117b67453684c8721b05d6c7938b26853b01955a3102370543a350b2ef21"
     },
     {
       "id": "preparation_status",
       "scope": "common",
       "path": "configs/research/preparation.json",
-      "bytes": 8353,
-      "sha256": "acaee36e20092e974f08749920ab6bb570f9049e8933e1563fc7a5417db1b903"
+      "bytes": 8698,
+      "sha256": "9851af832539df1491b225e2a5198abbfa398db1aac598c8d97cb8f1f4fc5717"
     },
     {
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 3840,
-      "sha256": "b653d2b3e04f2044422ccb94f8f0344a4966d32ec6d9a6a3488a63008cd8e1a2"
+      "bytes": 4909,
+      "sha256": "51a97aed7ca0b35743df6bf094bff77179c2c20bb063d24ae7273b37e8a1db67"
     },
     {
       "id": "study_decisions",
@@ -41,8 +41,8 @@
       "id": "preflight_contract",
       "scope": "common",
       "path": "src/research/preparation.py",
-      "bytes": 28340,
-      "sha256": "e334c37722bf619216ab4787facc1e83822a8d599f9d9b96ced57ff45383d6df"
+      "bytes": 28816,
+      "sha256": "2c38f0d7123a16e9f158c209470b3189a3943e34a513bdbd5134277ff66cf7b0"
     },
     {
       "id": "file_integrity_contract",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 8445,
-      "sha256": "9dd7ef2fa7cb8504c94229199a97d39906010ae85c74d8e57d381ac3c2320063"
+      "bytes": 8813,
+      "sha256": "e99158b7dedbba438de207cddb5ad22dd6abfeac2a124f483b41543b252e5ca7"
     },
     {
       "id": "research_entry",
@@ -83,8 +83,8 @@
       "id": "model_methods_review",
       "scope": "model_study",
       "path": "docs/research/model_recipe_review.md",
-      "bytes": 5691,
-      "sha256": "f401fdf15a208d0ccf49098e70f51154d6cee6c9aa7a196b5affd620348f2ba2"
+      "bytes": 5819,
+      "sha256": "b11e258643eb140a35a524133847d6b7b675df4c9f48a08eea0a5813e7e16657"
     },
     {
       "id": "backbone_candidates",
@@ -300,8 +300,8 @@
       "id": "rl_methods",
       "scope": "model_study",
       "path": "research/preparation/rl_methods.json",
-      "bytes": 21323,
-      "sha256": "f8f897faf626d378ace2642c3c6927cdf250956e6a64a59bce08eeca197acd9a"
+      "bytes": 21417,
+      "sha256": "8f1fcce72d1785a9a61f15c13e4d5f4e5d9b19b757531b133da6d8fd5c5316ec"
     },
     {
       "id": "rl_objectives",
@@ -325,11 +325,46 @@
       "sha256": "04026d30b3379258f86801c5a94844402fd351e7a97f3e70c108bd8c085321a1"
     },
     {
+      "id": "pilot_runtime",
+      "scope": "model_study",
+      "path": "src/training/pilot.py",
+      "bytes": 29697,
+      "sha256": "49711a8aed368d711d28481d3c05c66549ca0a6ae1f6040769e7ba3da5747063"
+    },
+    {
+      "id": "pilot_config",
+      "scope": "model_study",
+      "path": "configs/research/macbook_pilot.json",
+      "bytes": 2174,
+      "sha256": "32c5e890a4815ee870482d47d43ff424441ce298b50365d601070b42ec09258e"
+    },
+    {
+      "id": "pilot_observations",
+      "scope": "model_study",
+      "path": "research/results/macbook_pilot_20261002.json",
+      "bytes": 10907,
+      "sha256": "7ce39eb1cc6a72521b3b3ae17bdd8c343acd198acc7d8fd181395e89d9be072d"
+    },
+    {
+      "id": "encoder_runtime",
+      "scope": "model_study",
+      "path": "src/models/encoder.py",
+      "bytes": 12541,
+      "sha256": "ddc32605184bd733966d39759a286155073c8320e596ca34e820cbc7da6e4b9b"
+    },
+    {
+      "id": "feedforward_runtime",
+      "scope": "model_study",
+      "path": "src/models/feedforward.py",
+      "bytes": 4111,
+      "sha256": "3a0ec1903620b3e51645b178c3c63c57fc2bb26efb1faa17155eff4128d4b94d"
+    },
+    {
       "id": "runtime_architecture",
       "scope": "model_study",
       "path": "docs/architecture.md",
-      "bytes": 9805,
-      "sha256": "8dd8046eedca86317b6e962e22e5acb38bc7885a97f16904da0b3b5a9adb18d4"
+      "bytes": 10134,
+      "sha256": "93be7483229f6710e7f972b038a7ee57b629896165cc19d32aa3949a1dc6db41"
     },
     {
       "id": "attention_runtime",
@@ -342,8 +377,8 @@
       "id": "decoder_runtime",
       "scope": "model_study",
       "path": "src/models/decoder.py",
-      "bytes": 33413,
-      "sha256": "6947aacd4f0aaeb1a6efa7ae828540f31c93fb35d6906a228c9df1780bceafcc"
+      "bytes": 33354,
+      "sha256": "39adbf8d1c2f81d5a3d5ee4c1914e45522db78bdec66a99f417239b97cc6c905"
     },
     {
       "id": "partial_label_loss",
@@ -370,15 +405,15 @@
       "id": "model_factory",
       "scope": "model_study",
       "path": "src/models/factory.py",
-      "bytes": 27085,
-      "sha256": "c10cef118a63cc49c5af5f1f4491cbfe6b53bb12cdec38d49168f742e7a1c833"
+      "bytes": 27013,
+      "sha256": "914d02d01a501a934ca720e5f89045cc25bbfaf59e2131ebae53c4636fb2514b"
     },
     {
       "id": "trainer_runtime",
       "scope": "model_study",
       "path": "src/training/trainer.py",
-      "bytes": 34236,
-      "sha256": "fdb0c9272e9fbf084bc8bf013055041aeaef4c2d3374e6964df3af02cd34f26a"
+      "bytes": 34550,
+      "sha256": "37f599517db69002e01af804c56358cbf8f2fe6305140e8c27911e136b65ab29"
     },
     {
       "id": "training_metrics",
@@ -391,8 +426,8 @@
       "id": "training_entry",
       "scope": "model_study",
       "path": "scripts/train.py",
-      "bytes": 16302,
-      "sha256": "ebb83126f1ac2b854eab108e6b88815a407323f98af7d00e0afaac8e5b111d2b"
+      "bytes": 16854,
+      "sha256": "63f3ef48e7e47b19840f1f9e7f26d31218469733b1a26b53fda116b19f407eb7"
     },
     {
       "id": "profile_entry",
@@ -475,8 +510,8 @@
       "id": "dataset_decisions",
       "scope": "model_study",
       "path": "docs/research/dataset_decisions.md",
-      "bytes": 8129,
-      "sha256": "791f935f481e999e99ff110c5d6b356d21e1c69720147433f4dde70fc0583223"
+      "bytes": 8258,
+      "sha256": "208b5402b34289d15f187ba10c7260e1fff3460492d37efab8f5772f8d73215e"
     },
     {
       "id": "goemotions_candidate",

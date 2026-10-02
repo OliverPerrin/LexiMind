@@ -275,6 +275,6 @@
     "objectives": "src/training/rl.py",
     "native_adapter_and_verifiers": "src/training/policy.py",
     "continuation_pilot": "research/preparation/rpt_candidate_manifest.json",
-    "execution": "disabled; no training or model-quality evaluation"
+    "execution": "Formal extension remains unadmitted; bounded local M5 CE/RL feasibility is recorded separately in research/results/macbook_pilot_20261002.json."
   }
 }
