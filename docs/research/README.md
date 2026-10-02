@@ -34,12 +34,21 @@ about 2.32 GB maximum observed MPS driver memory. The 32-token RL probe had no
 reward signal; a separately declared eight-token probe made one RL update, with
 no diagnostic improvement. These tiny runs establish local execution feasibility.
 
+The [expanded Book Dash cohort](../../research/preparation/bookdash_manifest.json)
+adds 35 pinned works: 23 train, five validation, five test, two quarantined. The
+[paired infilling comparison](../../research/results/book_denoising_20261002.json)
+uses 179 training/36 validation examples. Across two seeds, continued CE reduced
+validation target loss more than RL; exact recovery stayed low and only eight of
+128 RL groups produced updates. Test narratives remained excluded. Reproduce via
+`train.py --pilot configs/research/book_denoising.json --output outputs/new-run`.
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh
 python scripts/research.py bgc-groups
 python scripts/research.py book-fields
 python scripts/research.py licensed-books
+python scripts/research.py bookdash
 python scripts/research.py book-groups-review
 python scripts/research.py field-review
 python scripts/research.py book-partitions
@@ -47,7 +56,7 @@ python scripts/research.py cr4
 python scripts/research.py review build --output data/research_candidates/human-review/index.html
 ```
 
-The source builders are offline by default; licensed-books and cr4 expose an
+The source builders are offline by default; licensed-books, bookdash and cr4 expose an
 explicit `--fetch` for missing pinned public files. Open the generated HTML locally
 to review labels, export a draft, then use `review import --help` to import it into
 a new candidate packet. No human judgments are filled automatically.

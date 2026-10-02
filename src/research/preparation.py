@@ -415,6 +415,7 @@ def _inspect_extensions(files: dict[str, Path], plan: dict[str, Any]) -> list[st
     methods = _object(read_json(files["rl_methods"]), "RL source register")
     cohort = _object(read_json(files["bookdash_candidate"]), "Book Dash cohort")
     comparison = _object(read_json(files["denoising_config"]), "Denoising comparison")
+    findings = _object(read_json(files["denoising_observations"]), "Denoising observations")
     if (
         cohort["inputs"].get("registry") != ref("bookdash_sources")
         or cohort["inputs"].get("legacy_manifest") != ref("licensed_books")
@@ -433,6 +434,10 @@ def _inspect_extensions(files: dict[str, Path], plan: dict[str, Any]) -> list[st
         or comparison.get("base_runtime") != ref("pilot_config")
         or comparison.get("tokenizer") != ref("rpt_tokenizer")
         or comparison.get("promote") is not False
+        or findings.get("protocol") != ref("denoising_config")
+        or findings.get("source_cohort") != ref("bookdash_candidate")
+        or findings.get("global_test_used") is not False
+        or findings.get("promoted") is not False
     ):
         errors.append("Book denoising comparison does not bind its source, runtime and local scope")
     pilot = _object(read_json(files["pilot_observations"]), "Local pilot observations")

@@ -66,6 +66,7 @@ ARTIFACTS: dict[str, tuple[str, str]] = {
     "bookdash_builder": ("model_study", "src/research/builders/bookdash.py"),
     "denoising_runtime": ("model_study", "src/training/denoising.py"),
     "denoising_config": ("model_study", "configs/research/book_denoising.json"),
+    "denoising_observations": ("model_study", "research/results/book_denoising_20261002.json"),
     "pilot_observations": ("model_study", "research/results/macbook_pilot_20261002.json"),
     "encoder_runtime": ("model_study", "src/models/encoder.py"),
     "feedforward_runtime": ("model_study", "src/models/feedforward.py"),

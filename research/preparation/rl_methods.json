@@ -275,6 +275,7 @@
     "objectives": "src/training/rl.py",
     "native_adapter_and_verifiers": "src/training/policy.py",
     "continuation_pilot": "research/preparation/rpt_candidate_manifest.json",
-    "execution": "Formal extension remains unadmitted; bounded local M5 CE/RL feasibility is recorded separately in research/results/macbook_pilot_20261002.json."
+    "execution": "Bounded M5 continuation and two-seed book infilling comparisons recorded in research/results; formal field/MTL studies remain unadmitted and no model was promoted.",
+    "book_denoising_comparison": "configs/research/book_denoising.json"
   }
 }

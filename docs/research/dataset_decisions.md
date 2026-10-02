@@ -102,6 +102,12 @@ has been trained from these texts.
 work identities before admitting full-text splits. Free access is not blanket
 training permission; see the source register for provider-specific limits.
 
+A [separate Book Dash expansion](../../research/preparation/bookdash_manifest.json)
+now preserves 35 additional English works and 12,541 narrative words. Two BGC
+title ambiguities are quarantined; the remaining 33 have fixed work-level
+train/validation/test roles. The original four-work pilot stays unchanged. These
+are children's texts with omitted illustrations, not broad fiction coverage.
+
 The optional [RPT preparation](../../research/preparation/rpt_candidate_manifest.json)
 contains 32 token-boundary continuation examples from those four works (24 train,
 8 test, no dev). Targets use standalone tokenizer-normalized text with verified
