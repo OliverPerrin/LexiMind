@@ -14,9 +14,9 @@ Implementation notes:
 - Per-task gradients are computed in a single ``torch.autograd.grad`` call
   over both shared (encoder) and head/decoder parameters, avoiding a
   second full backward pass through the graph.
-- Projection is applied only to the shared-parameter portion; head grads
-  are passed through unchanged (a head only receives gradient from its
-  own task so there is nothing to project).
+- Projection is applied only to the selected shared-parameter portion;
+  remaining gradients are summed without projection, including a decoder
+  shared by multiple generative objectives.
 
 Usage:
     pcgrad = PCGrad()
@@ -77,7 +77,7 @@ class PCGrad:
             task_losses: Dict mapping task name -> scalar loss tensor.
             shared_params: Parameters subject to PCGrad projection
                 (typically the encoder).
-            head_params: Parameters that are task-specific (decoder + heads).
+            head_params: Parameters outside projection scope (decoder + heads).
                 Their grads are summed across tasks without projection.
                 Defaults to an empty list.
             task_weights: Optional per-task loss weights.
@@ -126,8 +126,9 @@ class PCGrad:
 
         stats = self._project_conflicting_gradients(task_grads, list(task_losses)) if shared else {}
         divisor = len(task_losses) if self.reduction == "mean" else 1
+        gradient_lists = list(task_grads.values())
         combined: List[torch.Tensor | None] = [
-            sum((grads[i] for grads in task_grads.values()), torch.zeros_like(param))
+            sum((grads[i] for grads in gradient_lists[1:]), gradient_lists[0][i])
             if shared_used[i]
             else None
             for i, param in enumerate(shared)
@@ -135,7 +136,8 @@ class PCGrad:
         for param, grad in zip(all_params, combined, strict=True):
             if grad is None:
                 continue
-            grad = grad / divisor
+            if divisor != 1:
+                grad = grad / divisor
             if param.grad is None:
                 param.grad = grad
             else:
@@ -156,11 +158,17 @@ class PCGrad:
         originals = {
             name: torch.cat([g.flatten() for g in task_grads[name]]) for name in task_names
         }
+        norm_squares = {name: torch.dot(grad, grad) for name, grad in originals.items()}
         # Report symmetric conflicts from original gradients, not from whichever
         # partially projected pair happened to be visited first.
-        for i, first in enumerate(task_names):
-            for second in task_names[i + 1 :]:
-                cosine = F.cosine_similarity(originals[first][None], originals[second][None]).item()
+        pairs = [
+            (first, second) for i, first in enumerate(task_names) for second in task_names[i + 1 :]
+        ]
+        if pairs:
+            cosines = torch.cat(
+                [F.cosine_similarity(originals[a][None], originals[b][None]) for a, b in pairs]
+            ).tolist()
+            for (first, second), cosine in zip(pairs, cosines, strict=True):
                 key = "_".join(sorted([first, second]))
                 stats[f"cos_sim_{key}"] = cosine
                 stats[f"conflict_{key}"] = float(cosine < 0)
@@ -174,9 +182,13 @@ class PCGrad:
             for other in others:
                 reference = originals[other]
                 dot = torch.dot(projected, reference)
-                norm_sq = torch.dot(reference, reference)
-                if dot < 0 and norm_sq > 1e-12:
-                    projected = projected - dot / norm_sq * reference
+                norm_sq = norm_squares[other]
+                # Keep the conflict decision on the device. Python conditionals
+                # here forced a CUDA synchronization for each directed pair.
+                scale = torch.where(
+                    (dot < 0) & (norm_sq > 1e-12), dot / norm_sq.clamp(min=1e-12), 0
+                )
+                projected.addcmul_(reference, -scale)
             offset = 0
             for i, grad in enumerate(task_grads[name]):
                 size = grad.numel()

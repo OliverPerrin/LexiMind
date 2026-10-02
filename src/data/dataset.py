@@ -10,6 +10,7 @@ import json
 import operator
 from array import array
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
+from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Generic, TypeVar, cast, overload
@@ -138,18 +139,33 @@ class IndexedJsonl(Sequence[T], Generic[T]):
         return index
 
     def read_many(self, indices: Iterable[int]) -> list[T]:
+        return list(self._read_rows(self._index(index) for index in indices))
+
+    def _read_rows(self, indices: Iterable[int]) -> Iterator[T]:
         self._check_source()
         with self.path.open("rb") as handle:
-            result = []
-            for requested in indices:
-                index = self._index(requested)
-                handle.seek(self._offsets[index])
-                payload = _parse_record(
-                    handle.readline(), self.path, self._lines[index], self.required
-                )
-                result.append(self.constructor(payload))
+            position = 0
+            for index in indices:
+                offset = self._offsets[index]
+                if position != offset:
+                    handle.seek(offset)
+                raw = handle.readline()
+                position = offset + len(raw)
+                payload = _parse_record(raw, self.path, self._lines[index], self.required)
+                yield self.constructor(payload)
         self._check_source()
-        return result
+
+    def subset(self, indices: Iterable[int]) -> IndexedJsonl[T]:
+        """Copy only selected offsets, retaining source guards and lazy batch reads."""
+        self._check_source()
+        selected = copy(self)
+        selected._offsets = array("Q")
+        selected._lines = array("Q")
+        for requested in indices:
+            index = self._index(requested)
+            selected._offsets.append(self._offsets[index])
+            selected._lines.append(self._lines[index])
+        return selected
 
     @overload
     def __getitem__(self, index: int) -> T: ...
@@ -163,19 +179,7 @@ class IndexedJsonl(Sequence[T], Generic[T]):
         return self.read_many([index])[0]
 
     def __iter__(self) -> Iterator[T]:
-        self._check_source()
-        remaining = len(self)
-        with self.path.open("rb") as handle:
-            line = 0
-            while remaining:
-                raw = handle.readline()
-                if not raw:
-                    break
-                line += 1
-                if raw.strip():
-                    yield self.constructor(_parse_record(raw, self.path, line, self.required))
-                    remaining -= 1
-        self._check_source()
+        return self._read_rows(range(len(self)))
 
 
 class _ExampleDataset(Dataset[T], Generic[T]):
@@ -289,7 +293,7 @@ def split_emotion_val(
     *,
     seed: int = EMOTION_CALIBRATION_SPLIT_SEED,
     calibration_fraction: float = 0.5,
-) -> tuple[list[EmotionExample], list[EmotionExample]]:
+) -> tuple[Sequence[EmotionExample], Sequence[EmotionExample]]:
     """Deterministically split val examples into (model_selection, calibration).
 
     Both training (early stopping) and evaluation (threshold tuning) must
@@ -312,6 +316,11 @@ def split_emotion_val(
     rng.shuffle(indices)
     n_calib = int(round(len(examples) * calibration_fraction))
     calib_idx = set(indices[:n_calib])
+    if isinstance(examples, IndexedJsonl):
+        return (
+            examples.subset(i for i in range(len(examples)) if i not in calib_idx),
+            examples.subset(i for i in range(len(examples)) if i in calib_idx),
+        )
     model_sel: list[EmotionExample] = []
     calib: list[EmotionExample] = []
     for i, ex in enumerate(examples):
@@ -620,7 +629,11 @@ def load_training_datasets(
         if task == "emotion":
             val, _ = split_emotion_val(val)
             if max_val_samples is not None:
-                val = val[:max_val_samples]
+                val = (
+                    val.subset(range(min(len(val), max_val_samples)))
+                    if isinstance(val, IndexedJsonl)
+                    else val[:max_val_samples]
+                )
             binarizer = MultiLabelBinarizer(classes=vocabulary).fit([])
             emotion_train = EmotionDataset(splits["train"], binarizer=binarizer)
             train[task] = emotion_train

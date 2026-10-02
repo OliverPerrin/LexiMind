@@ -10,7 +10,7 @@
     "bytes": 48690771,
     "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
   },
-  "preparation_script_sha256": "06200e23523ea5c6a7f73cdf0895855e2fd7d4c546ebb5bbbad89ba1e1ead4f0",
+  "preparation_script_sha256": "fa987b2837097e68db3a02779295e4516524797af033cf009f8c19a0ea54d50e",
   "preparation_helper_sha256": {
     "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
     "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433"

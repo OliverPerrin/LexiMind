@@ -8,15 +8,12 @@ import os
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
 from src.research.annotations import build_annotation_packet, read_json, validate_packet
 
+from . import ROOT
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--mode", choices=["plan", "create", "validate"], default="plan")
     parser.add_argument("--catalog", type=Path, default=ROOT / "web/data/books.json")
     parser.add_argument(
@@ -27,7 +24,9 @@ def main(argv: list[str] | None = None) -> int:
         "--output", type=Path, help="Required for create; destination must not exist"
     )
     parser.add_argument("--packet", type=Path, help="Required for validate; read-only")
-    args = parser.parse_args(argv)
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if args.mode == "create" and args.output is None:
         parser.error("create requires an explicit --output")
     if args.mode == "validate" and args.packet is None:
@@ -62,7 +61,3 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Annotation preparation failed: {exc}", file=sys.stderr)
         return 1
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

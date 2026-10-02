@@ -11,12 +11,12 @@
   "candidate_manifest": {
     "path": "research/preparation/bgc_candidate_manifest.json",
     "bytes": 18995,
-    "sha256": "da087d041a319c18f5b1fcdfaf97dcdbb65cc8feb6808928926a7fb82d53835d"
+    "sha256": "be54f692cdfa0cad29ff03de57009ed376fc41e04ff9805806d5817eb6a02dee"
   },
   "grouping_manifest": {
     "path": "research/preparation/bgc_group_manifest.json",
-    "bytes": 6378,
-    "sha256": "318df901615055ab188ceaf3e91e9d3a70d6005c511108b223dbcdb9cd57f8dc"
+    "bytes": 6381,
+    "sha256": "e33d8d063060a96b02fb87a6f1c7d1bc1278f7a55d8b4bccd8b7df96e82f8abf"
   },
   "mapping": {
     "path": "research/preparation/book_field_mapping.json",
@@ -33,11 +33,11 @@
     "bytes": 14336341,
     "sha256": "8f841f9707a6c65f296319855bfbce5b29b43700ed63555b4ee4232ca8b0a43a"
   },
-  "preparation_script_sha256": "68544b311d919bf5adf009106b68553a443b29b7f9df797c1cb1608b2d1e66ea",
+  "preparation_script_sha256": "6a6b99f3d3da73abcbc269e41deb6c6e0e5ebf6415597e3e4c20cf26ba58d298",
   "preparation_helper_sha256": {
     "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
     "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433",
-    "scripts/prepare_bgc_candidate.py": "06200e23523ea5c6a7f73cdf0895855e2fd7d4c546ebb5bbbad89ba1e1ead4f0",
+    "src/research/builders/bgc_source.py": "fa987b2837097e68db3a02779295e4516524797af033cf009f8c19a0ea54d50e",
     "src/research/book_fields.py": "4177ce85b4d146be8cfb18e5d4ea74c0f37a9dead20f6e0380bb9bfdf75d3536",
     "src/catalog/storage.py": "876b0860e3354dabcd0031806e2c5c17f3b48986918b8bfa28bdc081da6f06be"
   },

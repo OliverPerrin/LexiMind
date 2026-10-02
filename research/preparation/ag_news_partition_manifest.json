@@ -8,8 +8,8 @@
   "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
   "candidate_manifest": {
     "path": "research/preparation/ag_news_candidate_manifest.json",
-    "sha256": "ebdbe66fa0afc36bb420dcfb66959d61f601f2a06ab47f50f50a09a0a0a78d7c",
-    "bytes": 7801
+    "sha256": "5c68bbac44e7e9911c045365b698b7b11f20c7eb28e5f486005811cfdde195e1",
+    "bytes": 7802
   },
   "implementation_sha256": "0d4fd90a268147256c55d0e8106cf8c4bdc437d65f6cb81890a19f5a064168f3",
   "assignments": {

@@ -243,7 +243,8 @@ def test_cli_observed_gate_and_source_preservation(tmp_path):
     report_path = tmp_path / "report.json"
     command = [
         sys.executable,
-        str(ROOT / "scripts/validate_compute_ledger.py"),
+        str(ROOT / "scripts/research.py"),
+        "ledger",
         str(source),
         "--report",
         str(report_path),
@@ -275,7 +276,7 @@ def test_cli_rejects_duplicate_json_fields(tmp_path):
         '{"schema_version":1,"status":"observed","status":"unobserved_template","runs":[],"events":[],"recipes":[]}'
     )
     result = subprocess.run(
-        [sys.executable, str(ROOT / "scripts/validate_compute_ledger.py"), str(source)],
+        [sys.executable, str(ROOT / "scripts/research.py"), "ledger", str(source)],
         capture_output=True,
         text=True,
     )

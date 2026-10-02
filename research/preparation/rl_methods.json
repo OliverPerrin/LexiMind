@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "status": "literature_review_and_software_preparation_only",
+  "as_of": "2026-10-02",
+  "training_authorized": false,
+  "scope": "Targeted primary-source review, prioritizing May-September 2026 papers/revisions and necessary foundations; not an exhaustive literature review or proof of gains in LexiMind.",
+  "recommendations": {
+    "baseline": "Keep partial-label supervised losses for book-field heads. Compare admitted generative tasks with SFT, then a compact Dr.GRPO candidate; use DPO separately when genuine preference pairs exist.",
+    "optional_objectives": [
+      "DAPO-style token reduction",
+      "GSPO sequence clipping",
+      "experimental BPO with explicit clipping",
+      "RLP objective with detached observed-token information gain and EMA baseline"
+    ],
+    "pretraining": "Retain cross-entropy/denoising as controls. Native RPT-style normalized-token continuations and a byte-prefix verifier are prepared; RLP objective/reward/EMA helpers are implemented. Neither is a paper reproduction or evidence that scratch CE can be removed.",
+    "deferred_systems": [
+      "asynchronous actor/critic training",
+      "experience replay",
+      "dynamic group controllers",
+      "learned semantic reward models",
+      "teacher distillation",
+      "automatic reward-driven promotion"
+    ],
+    "transfer_limit": "The decoder's conditional token probabilities support these objective primitives mathematically; reviewed papers do not demonstrate improvement on LexiMind's custom encoder-decoder or partially labeled book fields."
+  },
+  "objective_contracts": {
+    "notation": "m_it selects decoder response tokens; n_i=sum_t m_it; N is response count; G>=2 is a same-prompt rollout group; l, b and f are current, behavior and reference token log probabilities; A and b/f are detached.",
+    "group_advantage": "Dr.GRPO: A_i=R_i-mean_g(R). DAPO/GSPO/BPO: divide by explicitly declared group standard deviation for nonflat groups. Reject singleton groups. Equal rewards give zero policy-gradient signal; an explicitly enabled reference penalty can still act.",
+    "standard_deviation": "Papers write std without fixing correction. Pin the implementation convention explicitly; the reviewed official verl implementation uses torch.std (sample correction=1) plus a small epsilon. The local primitive uses sample correction=1, exact division for nonflat groups and zero advantages for flat groups. Unequal group-size weighting needs its own contract.",
+    "dr_grpo": "rho_it=exp(l_it-b_it); L=-sum_it m_it*min(rho_it*A_i,clip(rho_it,0.8,1.2)*A_i)/(N*fixed_response_cap). The fixed cap must not change with padding.",
+    "dapo_style": "Use standardized group advantages and token-mean clipped loss; paper clipping interval [0.8,1.28]. This branch does not implement dynamic resampling or overlong reward shaping.",
+    "gspo": "s_i=exp(sum_t m_it*(l_it-b_it)/n_i); L=-mean_i min(s_i*A_i,clip(s_i,0.9997,1.0004)*A_i). The geometric-mean surrogate is not an exact whole-trajectory importance ratio.",
+    "bpo_experimental": "omega_it=(1+0.1-exp(b_it))/(1+0.1-exp(l_it)); M=0 if A_i>0 and omega>1+clip_high, or A_i<0 and omega<1-clip_low; otherwise M=1. L=-mean_i sum_t m_it*A_i*M_it*stopgrad(min(omega_it,3))*l_it/n_i. Require explicit clip widths; paper does not state BPO values unambiguously.",
+    "sampled_reference_penalty": "k3=expm1(f_it-l_it)-(f_it-l_it). Optional beta defaults to zero. Under behavior-policy samples this is a sampled penalty, not an unbiased measured current-policy KL; no silent importance-correction or overflow clamp.",
+    "dpo": "L=-mean log_sigmoid(beta*((sum_m l_chosen-sum_m l_rejected)-(sum_m f_chosen-sum_m f_rejected))). Original DPO uses response log-probability sums, not length means; chosen/rejected must refer to the same prompt and a documented preference.",
+    "numerical_and_sampling": "Compute log-softmax/reductions in stable precision; reject nonfinite active values and importance-ratio over/underflow. Preserve tokenizer/model revisions, actual sampling distribution, temperature, EOS and truncation. The prepared adapter supports an explicit positive temperature with full categorical support only (top-p=1, top-k=0); policy/behavior and reference temperatures must agree. No implicit replay or truncation correction.",
+    "rlp": "A_i=G/(G-1)*(R_i-mean_g(R)), with equal per-thought means of clipped token losses and no KL in the core recipe. Clip widths must be supplied explicitly; reviewed paper does not state numeric values. Information gain is detached logp(observed target|context,thought)-logp(observed target|context;EMA), returned per observed position without automatic span averaging.",
+    "native_adapter": "Cached native sampling stores actual full-support temperature log probabilities, response-only masks including first EOS, stop status and tokenizer/special-token/precision contracts. Teacher-forced scoring retains active PAD tokens, skips unused response capacity and shares prompt encoding. Dropout and ambient autocast are disabled consistently; current eval-mode scoring also disables native gradient checkpointing. Initial Trainer integration requires gradient_accumulation_steps=1 because existing microbatch-mean accumulation differs from merged token/response-weighted objectives. PCGrad projects only the encoder; decoder/head gradients are summed. GPU numerical parity, precision/memory feasibility and throughput remain unmeasured."
+  },
+  "reward_contracts": [
+    "A reward record needs task/prompt/response identity, source and split/group provenance, verifier ID/revision, evidence digest, score or explicit unscored status, and termination/truncation status.",
+    "Unknown book labels remain unknown; do not manufacture negatives, preference pairs, full-set F1 rewards, or correctness labels from unreviewed agent suggestions.",
+    "CR4 free-form human responses require task/ontology adjudication before becoming categorical rewards; plausible alternative emotions are not automatically incorrect.",
+    "Formatting, exact string match and outcome correctness are different reward components. Do not reward verbosity or JSON validity as a substitute for supported book content.",
+    "For RPT, verify raw continuation bytes and ground-truth token boundaries with a pinned tokenizer; generic whitespace/case normalization changes the task.",
+    "For RLP, isolate sampled thought-token masks, future target tokens and a pinned context-only EMA baseline; reward construction cannot expose target continuation as input.",
+    "Audit verifier-accepted errors on an independent human-reviewed holdout. Log reward, valid coverage, zero-advantage rate, clip fraction, response length, truncation, sampled KL and actual generated tokens separately.",
+    "Any future experiment needs admitted data, available hardware, a total compute budget, matched controls, group-safe splits and existing execution admission. This register grants none of these.",
+    "The four-work RPT pilot explicitly uses tokenizer-normalized, stable round-trip continuation bytes. It is separately named from raw-byte RPT corpus reproduction; all work partitions and per-source licenses remain attached."
+  ],
+  "sources": [
+    {
+      "id": "grpo",
+      "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+      "arxiv": "2402.03300",
+      "first_submitted": "2024-02-05",
+      "reviewed_version": "v3",
+      "version_date": "2024-04-27",
+      "url": "https://arxiv.org/html/2402.03300v3",
+      "inspected": "method, equations 3-4",
+      "finding": "Group-relative rewards replace a learned critic. The sampled reference penalty is exp(logref-logpolicy) - (logref-logpolicy) - 1.",
+      "decision": "Shared group-advantage and sampled-penalty primitives. An old-policy sample does not make this an unbiased current-policy KL measurement."
+    },
+    {
+      "id": "dr_grpo",
+      "title": "Understanding R1-Zero-Like Training: A Critical Perspective",
+      "arxiv": "2503.20783",
+      "first_submitted": "2025-03-26",
+      "reviewed_version": "v2",
+      "version_date": "2025-10-06",
+      "url": "https://arxiv.org/html/2503.20783v2",
+      "inspected": "section 3.2 and appendix G",
+      "finding": "Removes reward-standard-deviation scaling and response-length division; a fixed generation cap supplies loss normalization. Appendix G uses symmetric 0.2 clipping and zero KL coefficients.",
+      "decision": "Preferred simple RL objective candidate. No claimed gain for LexiMind; retain supervised controls and record response length."
+    },
+    {
+      "id": "dapo",
+      "title": "DAPO: An Open-Source LLM Reinforcement Learning System at Scale",
+      "arxiv": "2503.14476",
+      "first_submitted": "2025-03-18",
+      "reviewed_version": "v2",
+      "version_date": "2025-05-20",
+      "url": "https://arxiv.org/html/2503.14476v2",
+      "inspected": "sections 3 and 4.1",
+      "finding": "Token-mean policy loss, higher upper clipping, dynamic sampling, and truncation handling form a combined system. Paper clipping is 0.2 below and 0.28 above one.",
+      "decision": "Prepare DAPO-style token loss only. Dynamic sampling needs an explicit rollout cap and accounting for rejected groups; do not call one loss branch a full DAPO reproduction."
+    },
+    {
+      "id": "gspo",
+      "title": "Group Sequence Policy Optimization",
+      "arxiv": "2507.18071",
+      "first_submitted": "2025-07-24",
+      "reviewed_version": "v2",
+      "version_date": "2025-07-28",
+      "url": "https://arxiv.org/html/2507.18071v2",
+      "inspected": "equations 5-7 and section 5.1",
+      "finding": "Clips the geometric mean of token probability ratios once per response, with standardized group advantages. Its reported lower/upper clipping widths are 0.0003/0.0004.",
+      "decision": "Optional shared objective for sequence rewards. Do not copy token-level clipping defaults; MoE reasoning results do not establish encoder-decoder transfer."
+    },
+    {
+      "id": "dpo",
+      "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+      "arxiv": "2305.18290",
+      "first_submitted": "2023-05-29",
+      "reviewed_version": "v3",
+      "version_date": "2024-07-29",
+      "url": "https://arxiv.org/html/2305.18290v3",
+      "inspected": "sections 3-4, equation 7",
+      "finding": "Directly fits chosen-versus-rejected response preferences against a frozen reference using a logistic loss on sequence log-probability differences, without online RL rollouts.",
+      "decision": "Prepare a small offline preference objective alongside RL. Requires admitted preference pairs; free responses or partial class labels are not preference pairs."
+    },
+    {
+      "id": "sagc",
+      "title": "Faster Synchronous On-Policy RL via Straggler-Aware Group Sizing",
+      "arxiv": "2606.02218",
+      "first_submitted": "2026-06-01",
+      "reviewed_version": "v1",
+      "version_date": "2026-06-01",
+      "url": "https://arxiv.org/html/2606.02218v1",
+      "inspected": "algorithm 1 and section 5",
+      "finding": "A CPU controller adjusts group size from rollout-length statistics. Studies use 3B models on a 141GB H200; equal per-step generations do not imply equal total optimizer steps.",
+      "decision": "Record rollout lengths and generated tokens now. Defer dynamic group control until generation is a measured bottleneck and group weighting is specified."
+    },
+    {
+      "id": "advantage_replay",
+      "title": "Rollout-Level Advantage-Prioritized Experience Replay for GRPO",
+      "arxiv": "2606.04560",
+      "first_submitted": "2026-06-03",
+      "reviewed_version": "v3",
+      "version_date": "2026-09-08",
+      "url": "https://arxiv.org/html/2606.04560v3",
+      "inspected": "method and appendices I-K",
+      "finding": "Reuses individual high-advantage rollouts with age eviction while retaining all fresh on-policy samples. Gains depend on model and sampling regime; an 8B extension uses one seed and a different batch.",
+      "decision": "Defer replay. Preserve behavior-policy revision, behavior log probabilities, age, sampling probabilities, and fresh/replay identity before considering it."
+    },
+    {
+      "id": "sao",
+      "title": "Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning",
+      "arxiv": "2607.07508",
+      "first_submitted": "2026-07-08",
+      "reviewed_version": "v1",
+      "version_date": "2026-07-08",
+      "url": "https://arxiv.org/html/2607.07508v1",
+      "inspected": "sections 3-4 and limitations",
+      "finding": "One rollout per prompt is supported by value-model training, two critic updates per policy update, and strict clipping under policy lag. Main experiments use Qwen3-30B-A3B and long agentic trajectories.",
+      "decision": "Defer asynchronous actors and critics. This is not group-size-one GRPO and is not a demonstrated low-compute recipe for LexiMind."
+    },
+    {
+      "id": "pipo",
+      "title": "Policy Improvement Reinforcement Learning",
+      "arxiv": "2604.00860",
+      "first_submitted": "2026-04-01",
+      "reviewed_version": "v5",
+      "version_date": "2026-07-07",
+      "url": "https://arxiv.org/abs/2604.00860v5",
+      "inspected": "abstract and version history",
+      "finding": "Uses feedback about improvement against historical performance to modulate base policy-optimization signals. July is a revision, not its first publication.",
+      "decision": "Track independent validation and historical checkpoints. Do not implement the controller from an abstract-level review."
+    },
+    {
+      "id": "bpo",
+      "title": "Bellman Policy Optimization",
+      "arxiv": "2609.15987",
+      "first_submitted": "2026-09-14",
+      "reviewed_version": "v1",
+      "version_date": "2026-09-14",
+      "url": "https://arxiv.org/pdf/2609.15987v1",
+      "inspected": "equations 14-15, sections 3-4, appendix B",
+      "finding": "Uses detached capped complementary-probability weights, omega=(1+epsilon-p_old)/(1+epsilon-p_current), instead of ordinary importance ratios. Clip masks also use omega. Appendix B specifies sequence-mean/token-mean reduction, epsilon=0.1, cap=3, and no KL.",
+      "decision": "Small experimental objective only, disabled by default. Require explicit lower/upper clipping because BPO values are not explicitly reported. Ideal-objective equivalence is not a guarantee for the approximate implemented loss; evidence centers on Qwen3 math."
+    },
+    {
+      "id": "verifier_errors",
+      "title": "Verifier Errors in RLVR: Reward Hacking, Limits of Feedback, and Selective Control",
+      "arxiv": "2609.35677",
+      "first_submitted": "2026-09-28",
+      "reviewed_version": "v1",
+      "version_date": "2026-09-28",
+      "url": "https://arxiv.org/abs/2609.35677v1",
+      "inspected": "abstract and version history",
+      "finding": "Studies when imperfect-verifier reward improves while actual correctness declines, and why extra correctness audits are needed to identify accepted errors.",
+      "decision": "Keep reward provenance, verifier revision, independent held-out correctness checks, and unscored unknowns. No implementation of its selective-control algorithm is claimed."
+    },
+    {
+      "id": "small_model_dynamics",
+      "title": "GRPO Training Dynamics for Small Language Models",
+      "arxiv": "2609.39321",
+      "first_submitted": "2026-09-30",
+      "reviewed_version": "v1",
+      "version_date": "2026-09-30",
+      "url": "https://arxiv.org/html/2609.39321v1",
+      "inspected": "sections 3-4",
+      "finding": "Studies 1.5B-7B models with 8xA100 and two seeds; group-size gains vary by model. Reported out-of-distribution improvements occur in about 80% of math configurations but about 39% of MCQ configurations.",
+      "decision": "Use task-specific controls and paired seeds; larger groups and RL are not automatically better. The paper's small-model compute setting is much larger than an unprovisioned laptop."
+    },
+    {
+      "id": "rpt",
+      "title": "Reinforcement Pre-Training",
+      "arxiv": "2506.08007",
+      "first_submitted": "2025-06-09",
+      "reviewed_version": "v1",
+      "version_date": "2025-06-09",
+      "url": "https://arxiv.org/html/2506.08007v1",
+      "inspected": "method, verification rule and experiment setup",
+      "finding": "Recasts continuation prediction as RL with byte-prefix correctness ending at an actual ground-truth token boundary. Experiments start from a 14B distilled reasoner with eight rollouts, rather than a random initial model.",
+      "decision": "Prepare a continuation-verifier contract only. A generic normalized-string exact-match score is not this reward, and success does not establish replacement of initial cross-entropy pretraining."
+    },
+    {
+      "id": "rlp",
+      "title": "RLP: Reinforcement as a Pretraining Objective",
+      "arxiv": "2510.01265",
+      "first_submitted": "2025-09-26",
+      "reviewed_version": "v2",
+      "version_date": "2026-03-01",
+      "url": "https://arxiv.org/html/2510.01265v2",
+      "inspected": "section 2.4 and experimental setup",
+      "finding": "Rewards sampled thoughts by future-token log-likelihood gain over a context-only EMA policy. Uses leave-one-out scaling G/(G-1), no group standard-deviation scaling, and a clipped loss only on thought tokens. Its continued-pretraining phase excludes ordinary next-token cross entropy.",
+      "decision": "Record a future information-gain reward interface, separate thought masks and EMA checkpoint. Requires trained base models and target-only future tokens; do not leak the continuation into encoder inputs."
+    },
+    {
+      "id": "rlpt",
+      "title": "Reinforcement Learning on Pre-Training Data",
+      "arxiv": "2509.19249",
+      "first_submitted": "2025-09-23",
+      "reviewed_version": "v2",
+      "version_date": "2025-09-25",
+      "url": "https://arxiv.org/html/2509.19249v2",
+      "inspected": "method and reward design",
+      "finding": "Autoregressive and masked-segment reasoning use a generative reward model for semantic prefix equivalence after a cold-start instruction stage.",
+      "decision": "Keep distinct from RPT and RLP. Defer learned semantic graders; this is not a teacher-free rule-verifiable exact-match recipe."
+    },
+    {
+      "id": "rl_excursions",
+      "title": "RL Excursions during Pre-Training: Re-examining Policy Optimization for LLM training",
+      "arxiv": "2606.04272",
+      "first_submitted": "2026-06-02",
+      "reviewed_version": "v1",
+      "version_date": "2026-06-02",
+      "url": "https://arxiv.org/html/2606.04272v1",
+      "inspected": "method, experimental setup and section 5",
+      "finding": "Tests RL at intermediate checkpoints of 1B/4B OLMo2-style math-heavy pretraining. Parallel SFT/RL averages separate optimizer updates; the body reports stronger pass@32 with lower pass@1 than direct RL/SFT in that comparison.",
+      "decision": "Preserve intermediate checkpoints, pretraining-token accounting, SFT/RL controls and separate pass@1/pass@k. A combined scalar loss or gradient sum is not the paper's parallel-update method."
+    },
+    {
+      "id": "pretraining_rl_interface",
+      "title": "Understanding Reasoning from Pretraining to Post-Training",
+      "arxiv": "2607.16097",
+      "first_submitted": "2026-07-17",
+      "reviewed_version": "v2",
+      "version_date": "2026-08-09",
+      "url": "https://arxiv.org/html/2607.16097v2",
+      "inspected": "setup and pretraining/RL scaling analysis",
+      "finding": "Studies 5M-1B chess models with an 81-token vocabulary and verifiable puzzles, plus a 1B math transfer experiment. Better pretraining predicts stronger subsequent RL; more pretraining can remain competitive at pass@16.",
+      "decision": "Budget and compare pretraining against RL jointly. Small chess models are relevant mechanistic evidence, not measured scaling laws for book classification."
+    },
+    {
+      "id": "opd_before_rl",
+      "title": "RL Starts before RL: On Policy Distillation for Better Reinforcement Learning",
+      "arxiv": "2609.28145",
+      "first_submitted": "2026-09-23",
+      "reviewed_version": "v2",
+      "version_date": "2026-09-26",
+      "url": "https://arxiv.org/html/2609.28145v2",
+      "inspected": "method, setup and revision history",
+      "finding": "Studies 8B students with 32B teachers and full teacher distributions. Distillation-objective rankings can change after RL; initial pass@k does not fully predict final gains.",
+      "decision": "Future optional initialization control. Teacher generation/distribution access and their full compute costs are prerequisites, not part of the current preparation."
+    }
+  ],
+  "implementation_reference": {
+    "url": "https://github.com/verl-project/verl/blob/main/verl/trainer/ppo/core_algos.py",
+    "reviewed_on": "2026-10-02",
+    "scope": "Group standard-deviation convention only; mutable upstream code is not a pinned dependency or a claim of experiment reproduction."
+  },
+  "implementations": {
+    "objectives": "src/training/rl.py",
+    "native_adapter_and_verifiers": "src/training/policy.py",
+    "continuation_pilot": "research/preparation/rpt_candidate_manifest.json",
+    "execution": "disabled; no training or model-quality evaluation"
+  }
+}

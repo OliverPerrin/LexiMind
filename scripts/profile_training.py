@@ -23,7 +23,9 @@ from __future__ import annotations
 
 import os
 import sys
+from dataclasses import fields
 from pathlib import Path
+from typing import Callable, Dict
 
 import hydra
 import torch
@@ -37,6 +39,34 @@ from src.data.dataloader import build_task_dataloaders
 from src.data.dataset import load_training_datasets, validate_task_directories
 from src.data.tokenization import Tokenizer, TokenizerConfig
 from src.models.factory import ModelConfig, build_multitask_model
+from src.training.trainer import Trainer, TrainerConfig
+
+
+class ProfileLoader:
+    """Use the real loader with an exact outer-step budget; Trainer handles cycling."""
+
+    def __init__(self, loader, steps: int):
+        if steps < 1 or len(loader) == 0:
+            raise ValueError("Profiling requires positive steps and nonempty task loaders")
+        self.loader, self.steps, self.dataset = loader, steps, loader.dataset
+
+    def __len__(self):
+        return self.steps
+
+    def __iter__(self):
+        return iter(self.loader)
+
+
+def profile_epoch(
+    trainer: Trainer, loaders: Dict, steps: int, step_callback: Callable[[], None] | None = None
+) -> Dict[str, float]:
+    """Measure the production training loop, including its accumulation and metrics."""
+    return trainer._run_epoch(
+        {task: ProfileLoader(loader, steps) for task, loader in loaders.items()},
+        train=True,
+        epoch=1,
+        step_callback=step_callback,
+    )
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
@@ -44,6 +74,8 @@ def main(cfg: DictConfig) -> None:
     profile_steps = int(os.environ.get("PROFILE_STEPS", 20))
     warmup_steps = 3  # let CUDA graphs / torch.compile settle
     active_steps = profile_steps - warmup_steps
+    if active_steps <= 3:
+        raise ValueError("PROFILE_STEPS must be at least 7 for warmup and an active trace")
 
     data_cfg = cfg.data
     if data_cfg.get("topic_problem_type", "single_label") != "single_label":
@@ -142,11 +174,14 @@ def main(cfg: DictConfig) -> None:
                         p.requires_grad = False
 
     # Compile (same as train.py)
+    if trainer_cfg.get("use_pcgrad", False):
+        torch._functorch.config.donated_buffer = False
     compile_mode = "default" if grad_ckpt else "reduce-overhead"
+    compile_dynamic = compile_mode == "default"
     if cfg.training.get("compile_encoder", True):
-        model.encoder = torch.compile(model.encoder, mode=compile_mode)
+        model.encoder = torch.compile(model.encoder, mode=compile_mode, dynamic=compile_dynamic)
     if cfg.training.get("compile_decoder", True):
-        model.decoder = torch.compile(model.decoder, mode=compile_mode)
+        model.decoder = torch.compile(model.decoder, mode=compile_mode, dynamic=compile_dynamic)
 
     # Optimizer
     opt_cfg = cfg.training.get("optimizer", {})
@@ -155,6 +190,8 @@ def main(cfg: DictConfig) -> None:
         model.parameters(),
         lr=float(opt_cfg.get("lr", 3e-5)),
         weight_decay=float(opt_cfg.get("weight_decay", 0.01)),
+        eps=float(opt_cfg.get("eps", 1e-8)),
+        betas=tuple(float(value) for value in opt_cfg.get("betas", (0.9, 0.999))),
         fused=use_fused,
     )
 
@@ -163,73 +200,24 @@ def main(cfg: DictConfig) -> None:
     out_dir = PROJECT_ROOT / "outputs" / "profile"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    model.train()
-    iterators = {task: iter(loader) for task, loader in train_loaders.items()}
-    task_names = list(train_loaders.keys())
-    accum = int(trainer_cfg.get("gradient_accumulation_steps", 4))
-    use_bf16 = torch.cuda.is_bf16_supported()
-    task_weights = trainer_cfg.get("task_weights") or {}
-
-    emotion_loss_fn = torch.nn.BCEWithLogitsLoss()
-    topic_loss_fn = torch.nn.CrossEntropyLoss()
-
-    def get_batch(task):
-        try:
-            batch = next(iterators[task])
-        except StopIteration:
-            iterators[task] = iter(train_loaders[task])
-            batch = next(iterators[task])
-        return {
-            k: v.to(device, non_blocking=True) if isinstance(v, torch.Tensor) else v
-            for k, v in batch.items()
-        }
-
-    def training_step(step):
-        """One training step across all tasks."""
-        for task in task_names:
-            batch = get_batch(task)
-            dtype = torch.bfloat16 if use_bf16 else torch.float16
-            with torch.autocast("cuda", dtype=dtype):
-                if task == "summarization":
-                    inputs = {"src_ids": batch["src_ids"], "tgt_ids": batch["tgt_ids"]}
-                    if "src_mask" in batch:
-                        inputs["src_mask"] = batch["src_mask"]
-                    logits = model.forward("summarization", inputs)
-                    loss = torch.nn.functional.cross_entropy(
-                        logits.view(-1, logits.size(-1)),
-                        batch["labels"].view(-1),
-                        ignore_index=-100,
-                        label_smoothing=0.1,
-                    )
-                elif task == "emotion":
-                    inputs = {"input_ids": batch["input_ids"]}
-                    if "attention_mask" in batch:
-                        inputs["attention_mask"] = batch["attention_mask"]
-                    logits = model.forward("emotion", inputs)
-                    loss = emotion_loss_fn(logits, batch["labels"].float())
-                elif task == "topic":
-                    inputs = {"input_ids": batch["input_ids"]}
-                    if "attention_mask" in batch:
-                        inputs["attention_mask"] = batch["attention_mask"]
-                    logits = model.forward("topic", inputs)
-                    loss = topic_loss_fn(logits, batch["labels"])
-                else:
-                    continue
-
-            weight = task_weights.get(task, 1.0)
-            scaled = (loss * weight) / accum
-            scaled.backward()
-
-        if (step + 1) % accum == 0:
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            optimizer.step()
-            optimizer.zero_grad()
+    settings = {
+        field.name: trainer_cfg[field.name]
+        for field in fields(TrainerConfig)
+        if field.name in trainer_cfg
+    }
+    scheduler_cfg = cfg.training.get("scheduler", {})
+    settings.update(
+        scheduler_type=scheduler_cfg.get("name", "cosine"),
+        warmup_steps=int(scheduler_cfg.get("warmup_steps", 500)),
+    )
+    trainer = Trainer(model, optimizer, TrainerConfig(**settings), device, tokenizer)
+    trainer._setup_scheduler(
+        {task: ProfileLoader(loader, profile_steps) for task, loader in train_loaders.items()}, 1
+    )
 
     # Warmup outside profiler to let torch.compile finish
     print(f"\nWarmup ({warmup_steps} steps)...")
-    for s in range(warmup_steps):
-        training_step(s)
-    optimizer.zero_grad()
+    profile_epoch(trainer, train_loaders, warmup_steps)
     torch.cuda.synchronize()
 
     # Profile
@@ -253,9 +241,7 @@ def main(cfg: DictConfig) -> None:
         with_stack=True,
         with_flops=True,
     ) as prof:
-        for s in range(active_steps):
-            training_step(warmup_steps + s)
-            prof.step()
+        profile_epoch(trainer, train_loaders, active_steps, prof.step)
 
     torch.cuda.synchronize()
 

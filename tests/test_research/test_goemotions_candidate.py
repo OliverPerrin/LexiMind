@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts import prepare_goemotions_candidate as prep
+from src.research.builders import goemotions as prep
 
 
 def test_converter_preserves_text_label_order_comment_identity_and_original_split():
@@ -198,7 +198,8 @@ def test_cli_refuses_to_write_candidate_or_manifest_into_legacy_data(tmp_path):
     result = subprocess.run(
         [
             sys.executable,
-            str(Path(prep.__file__)),
+            str(Path(__file__).resolve().parents[2] / "scripts/research.py"),
+            "goemotions",
             "--candidate-dir",
             str(legacy),
             "--legacy-dir",

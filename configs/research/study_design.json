@@ -93,7 +93,7 @@
           "EMO_*"
         ],
         "primary_metric": "to_freeze_after_annotation_and_mapping_audit",
-        "integration_status": "requires_character-conditioned input and reviewed label mapping; no whole-book mood output",
+        "integration_status": "Raw CR4 source and condition/response iterator audited; categorical ontology and ambiguous-character/work identity review still required; no whole-book mood output",
         "separate_diagnostics": [
           {
             "source": "dens",
@@ -101,7 +101,8 @@
             "pool_as_character_labels": false
           }
         ],
-        "annotation_policy": "Review t0 character validity and t1 response semantics. Blank/uncertain responses remain unknown, not neutral or all-negative; retain annotator disagreement."
+        "annotation_policy": "Review t0 character validity and t1 response semantics. Blank/uncertain responses remain unknown, not neutral or all-negative; retain annotator disagreement.",
+        "source_candidate": "research/preparation/cr4_candidate_manifest.json"
       }
     ],
     "arms": [
@@ -164,9 +165,9 @@
       ]
     },
     "unresolved": [
-      "adjudicate remaining work/edition/series links and cross-source split membership; bounded review found Little Brother in BGC",
+      "adjudicate remaining work/edition/series identities; candidate cross-source overlay quarantines unresolved title-only matches; CR4 document IDs remain unreconciled",
       "collect human-reviewed negative or complete-label seed evidence; current agent reviews remain unadmitted",
-      "CR4 schema, character context, source terms and human/derived label separation",
+      "review raw CR4 free-text response ontology, highlighted-position ambiguity, excerpt rights and cross-source literary-work identity",
       "validate and freeze book field task/evaluation contract after reviewed data admission; software partial-label integration is implemented",
       "backbone adapter allowlist and runtime",
       "hardware feasibility, B, sampling and equal selection allowance",
@@ -291,5 +292,28 @@
     "rank_recompression_ablation",
     "post_merge_head_readaptation",
     "all_training_and_model_evaluation"
-  ]
+  ],
+  "rl_extension": {
+    "status": "software_and_candidate_data_prepared_not_admitted",
+    "enabled": false,
+    "training_authorized": false,
+    "methods_register": "research/preparation/rl_methods.json",
+    "continuation_candidate": "research/preparation/rpt_candidate_manifest.json",
+    "objective_contract": "src/training/rl.py",
+    "native_adapter": "src/training/policy.py",
+    "first_candidate": "Dr.GRPO after an admitted supervised/generative baseline; DPO only with genuine preferences",
+    "pretraining_controls": "Keep CE/denoising; RPT-style/RLP are separate later conditions, not replacements or claimed replications",
+    "existing_mtl_arms_unchanged": true,
+    "reward_dataset_manifest": null,
+    "preference_dataset_manifest": null,
+    "unresolved": [
+      "human or deterministic reward-data admission and verifier holdout audit",
+      "hardware, precision/memory parity and total rollout/judge/training budget",
+      "task-specific prompt/answer extraction protocol and calibration",
+      "independent held-out outcome evaluation; surrogate loss is not a selection metric",
+      "explicit experiment resumption",
+      "GPU precision/memory feasibility with deterministic scoring and no training-mode checkpointing",
+      "Weighted policy accumulation beyond a single microbatch"
+    ]
+  }
 }

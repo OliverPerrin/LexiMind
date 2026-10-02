@@ -35,11 +35,17 @@ class ObservedMultilabelMetrics:
         if predictions.dtype != torch.bool:
             raise ValueError("Multi-label metric predictions must be bool")
         gold = labels == 1
-        self.tp = (predictions & gold & mask).sum(dim=0).cpu()
-        self.fp = (predictions & ~gold & mask).sum(dim=0).cpu()
-        self.fn = (~predictions & gold & mask).sum(dim=0).cpu()
-        self.observed = mask.sum(dim=0).cpu()
-        self.positive = (gold & mask).sum().item()
+        # Transfer the sufficient statistics together, not one synchronization
+        # for every count. Their size depends on labels, never epoch length.
+        self.tp, self.fp, self.fn, self.observed = torch.stack(
+            (
+                (predictions & gold & mask).sum(dim=0),
+                (predictions & ~gold & mask).sum(dim=0),
+                (~predictions & gold & mask).sum(dim=0),
+                mask.sum(dim=0),
+            )
+        ).cpu()
+        self.positive = int((self.tp + self.fn).sum())
         self.total = labels.numel()
 
     def merge(self, other: ObservedMultilabelMetrics) -> None:
@@ -73,8 +79,10 @@ class ObservedMultilabelMetrics:
 class MultilabelBatchMetrics(dict[str, float]):
     """Public batch metrics with sufficient counts for exact epoch aggregation."""
 
-    def __init__(self, counts: ObservedMultilabelMetrics):
-        super().__init__(counts.compute())
+    def __init__(self, counts: ObservedMultilabelMetrics, *, summarize: bool = True):
+        # Epoch aggregation uses the counts directly; only standalone batch
+        # callers need the derived summary here.
+        super().__init__(counts.compute() if summarize else {})
         self.counts = counts
 
 
@@ -402,30 +410,22 @@ def tune_per_class_thresholds(
     num_classes = probs.shape[1]
     gold = targets.float()
 
-    best_thresholds: List[float] = []
-    for c in range(num_classes):
-        best_f1 = -1.0
-        best_t = 0.5
-        for t in thresholds:
-            preds = (probs[:, c] >= t).float()
-            tp = (preds * gold[:, c]).sum()
-            fp = (preds * (1 - gold[:, c])).sum()
-            fn = ((1 - preds) * gold[:, c]).sum()
-            if tp + fp > 0 and tp + fn > 0:
-                p = tp / (tp + fp)
-                r = tp / (tp + fn)
-                f1 = (2 * p * r / (p + r)).item()
-            else:
-                f1 = 0.0
-            if f1 > best_f1:
-                best_f1 = f1
-                best_t = t
-        best_thresholds.append(best_t)
+    # Reduce all classes together per threshold: O(T) tensor reductions and a
+    # single index transfer, instead of O(T*C) scalar synchronizations. Keep
+    # memory bounded to one N x C candidate rather than an N x C x T cube.
+    support = gold.sum(dim=0)
+    scores = []
+    for threshold in thresholds:
+        predictions = probs >= threshold
+        tp = (predictions * gold).sum(dim=0)
+        scores.append(2 * tp / (predictions.sum(dim=0) + support).clamp(min=1))
+    if scores:
+        best_indices = torch.stack(scores).argmax(dim=0).tolist()
+        best_thresholds = [thresholds[index] for index in best_indices]
+    else:
+        best_thresholds = [0.5] * num_classes
 
-    # Compute resulting macro F1 with tuned thresholds
-    tuned_preds = torch.zeros_like(probs)
-    for c in range(num_classes):
-        tuned_preds[:, c] = (probs[:, c] >= best_thresholds[c]).float()
+    tuned_preds = probs >= probs.new_tensor(best_thresholds)
     macro_f1 = multilabel_macro_f1(tuned_preds, targets)
 
     return best_thresholds, macro_f1

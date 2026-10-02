@@ -45,6 +45,7 @@ class SyntheticClassifier(torch.nn.Module):
 
 def make_trainer(monkeypatch, *, accum=1, pcgrad=False, problem_type="multi_label"):
     trainer = Trainer.__new__(Trainer)
+    trainer.policy_objectives = {}
     trainer.model = SyntheticClassifier(problem_type)
     trainer.optimizer = torch.optim.AdamW(trainer.model.parameters(), lr=0.01, weight_decay=0.3)
     trainer.config = TrainerConfig(
@@ -224,6 +225,25 @@ def test_observed_metrics_ignore_unknown_predictions_and_report_zero_coverage():
     a = ObservedMultilabelMetrics(torch.tensor([[True, False]]), labels, mask).compute()
     b = ObservedMultilabelMetrics(torch.tensor([[True, True]]), labels, mask).compute()
     assert a == b
+
+
+def test_epoch_computes_observed_summary_only_after_merging(monkeypatch):
+    trainer = make_trainer(monkeypatch)
+    compute = ObservedMultilabelMetrics.compute
+    calls = []
+
+    def counted_summary(counts):
+        calls.append(counts.total)
+        return compute(counts)
+
+    monkeypatch.setattr(ObservedMultilabelMetrics, "compute", counted_summary)
+    result = trainer._run_epoch({"topic": Batches([batch()] * 3)}, train=False, epoch=1)
+    assert calls == [6]
+    assert result["topic_label_coverage"] == 1.0
+    # Standalone batch callers retain their complete public metric dictionary.
+    _, metrics = trainer._forward_task("topic", batch())
+    assert metrics["label_coverage"] == 1.0
+    assert calls == [6, 2]
 
 
 def test_legacy_topic_ce_and_dense_emotion_bce_keep_their_defaults(monkeypatch):

@@ -153,7 +153,7 @@ def test_strict_json_rejects_duplicate_manifest_keys(packet_root):
 
 
 def test_cli_distinguishes_consistent_from_ready():
-    command = [sys.executable, str(ROOT / "scripts/audit_research_preparation.py")]
+    command = [sys.executable, str(ROOT / "scripts/research.py"), "status"]
     default = subprocess.run(command, capture_output=True, text=True, check=False)
     required = subprocess.run(
         command + ["--require-ready"], capture_output=True, text=True, check=False
@@ -275,11 +275,39 @@ def test_review_provenance_cannot_be_hidden_by_outer_rehash(packet_root, mutatio
     elif mutation == "group_assignments":
         report["inputs"]["assignments"]["sha256"] = "f" * 64
     else:
-        report["implementation_sha256"]["scripts/review_book_groups.py"] = "f" * 64
+        report["implementation_sha256"]["src/research/builders/book_groups_review.py"] = "f" * 64
     write_json(path, report)
     write_json(packet_root / MANIFEST, build_manifest(packet_root))
     result = inspect_preparation(packet_root, MANIFEST, "model_study")
     assert not result["artifacts_valid"]
     assert any(
         "review" in error and ("bind" in error or "packet" in error) for error in result["errors"]
+    )
+
+
+@pytest.mark.parametrize(
+    "artifact,key",
+    [
+        ("cr4_candidate", "parser"),
+        ("book_partitions", "review"),
+        ("rpt_candidate", "tokenizer"),
+        ("rpt_candidate", "partition_manifest"),
+        ("rl_methods", "future_version"),
+    ],
+)
+def test_extension_receipts_survive_outer_rehash(packet_root, artifact, key):
+    path = packet_root / ARTIFACTS[artifact][1]
+    value = json.loads(path.read_text())
+    if key == "parser":
+        value["preparation_script_sha256"] = "f" * 64
+    elif key == "future_version":
+        value["sources"][0]["version_date"] = "2099-01-01"
+    else:
+        value["inputs"][key]["sha256"] = "f" * 64
+    write_json(path, value)
+    write_json(packet_root / MANIFEST, build_manifest(packet_root))
+    report = inspect_preparation(packet_root, MANIFEST, "model_study")
+    assert not report["artifacts_valid"]
+    assert any(
+        word in " ".join(report["errors"]) for word in ("CR4", "partitions", "RPT", "RL source")
     )

@@ -6,7 +6,7 @@ receipts. The [preparation packet](../../research/preparation/annotation_packet.
 stays immutable with empty answers; collected records never replace it.
 
 ```sh
-python scripts/audit_research_preparation.py --target book_study --require-ready
+python scripts/research.py status --target book_study --require-ready
 python -m pytest tests/test_research/test_book_admission.py -q
 ```
 

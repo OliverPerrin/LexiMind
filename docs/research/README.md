@@ -4,7 +4,7 @@
 and software checks continue. The Gradio demo and custom FLAN/T5 implementation stay.
 
 Read [dataset decisions](dataset_decisions.md) for the current direction and next
-three actions. The priority is book-aligned genre/topic supervision, with narrative
+actions. The priority is book-aligned genre/topic supervision, with narrative
 emotion as an auxiliary and reader mood kept separate. AG News, GoEmotions and
 arXiv are optional controls, not the primary field-training plan.
 
@@ -18,21 +18,35 @@ Book recommendation relevance is evaluated separately from model-task accuracy.
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh
-python scripts/prepare_bgc_groups.py
-python scripts/prepare_book_fields.py
-python scripts/prepare_licensed_books.py
-python scripts/review_book_groups.py
-python scripts/prepare_field_review.py
+python scripts/research.py bgc-groups
+python scripts/research.py book-fields
+python scripts/research.py licensed-books
+python scripts/research.py book-groups-review
+python scripts/research.py field-review
+python scripts/research.py book-partitions
+python scripts/research.py cr4
+python scripts/research.py review build --output data/research_candidates/human-review/index.html
 ```
 
-Only the licensed-book command has an explicit `--fetch` option for missing pinned
-public files. These commands use the standard library and do not load models.
-Then check the compact preparation evidence:
+The source builders are offline by default; licensed-books and cr4 expose an
+explicit `--fetch` for missing pinned public files. Open the generated HTML locally
+to review labels, export a draft, then use `review import --help` to import it into
+a new candidate packet. No human judgments are filled automatically.
+
+Optional continuation preparation uses the existing tokenizer JSON and the
+effective book partitions, without loading model weights:
 
 ```sh
-python scripts/audit_research_preparation.py --target model_study
-python scripts/audit_research_preparation.py --target book_study
-python scripts/prepare_annotation_packet.py --mode validate --packet research/preparation/annotation_packet.json
+python scripts/research.py licensed-books --rpt-tokenizer artifacts/hf_tokenizer/tokenizer.json
+```
+
+All research preparation shares this entry point. Most commands use the standard
+library; this optional tokenizer step needs `tokenizers`. Check compact evidence:
+
+```sh
+python scripts/research.py status --target model_study
+python scripts/research.py status --target book_study
+python scripts/research.py annotation --mode validate --packet research/preparation/annotation_packet.json
 python -m pytest tests/test_research -q
 ```
 
@@ -49,6 +63,8 @@ commands do not load models or grant permission to run experiments.
   [relevance rubric](../recommendation_judgments.md).
 - [Model methods](model_recipe_review.md), [book-retrieval methods](book_discovery_review.md),
   [backbone compatibility](backbone_interface_review.md).
+- [RL methods through October 2026](../../research/preparation/rl_methods.json):
+  implemented objective contracts, recent evidence and deferred techniques.
 - [Retained source archive](source_archive.md): old corpus audit, optional control
   reconstructions and their reproducible commands.
 - [Model receipts](admission_contracts.md), [book receipts](book_admission_contract.md),
@@ -56,6 +72,6 @@ commands do not load models or grant permission to run experiments.
 
 Keep one current decision page; source details belong in manifests and implementation
 contracts in code/tests. Update dependent evidence deliberately, then run
-`python scripts/build_preparation_manifest.py --replace`. Do not refresh hashes to
+`python scripts/research.py snapshot --replace`. Do not refresh hashes to
 hide an unexplained change. New evidence should replace stale decisions, not add
 another parallel plan document.

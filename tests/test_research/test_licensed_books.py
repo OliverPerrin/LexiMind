@@ -5,8 +5,202 @@ from pathlib import Path
 
 import pytest
 
-from scripts import prepare_licensed_books as prep
+from src.research.builders import licensed_books as prep
 from src.research.candidate_io import create_or_verify, json_bytes, sha
+
+
+def rpt_fixture(root):
+    from tokenizers import Tokenizer, models, pre_tokenizers
+
+    tokenizer = Tokenizer(
+        models.WordLevel(
+            {"[UNK]": 0, "alpha": 1, "beta": 2, "gamma": 3, "delta": 4}, unk_token="[UNK]"
+        )
+    )
+    tokenizer.pre_tokenizer = pre_tokenizers.WhitespaceSplit()
+    tokenizer_path = root / "tokenizer.json"
+    tokenizer.save(str(tokenizer_path))
+
+    def write(path, payload):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(json_bytes(payload))
+        return {
+            "path": str(path.relative_to(root)),
+            "bytes": path.stat().st_size,
+            "sha256": sha(path.read_bytes()),
+        }
+
+    inventory = write(root / "sources.json", {"status": "synthetic_sources"})
+    books, components = [], []
+    cache = root / "data/research_candidates/licensed_books"
+    for split in ("train", "dev", "test", "quarantine"):
+        work = "synthetic-" + split
+        body = ("alpha beta gamma delta\n" * 40).strip()
+        content = {
+            "work_id": work,
+            "work_group_id": work,
+            "title": work,
+            "creators": ["Fixture Author"],
+            "source_page": "https://example.test/fixture",
+            "source_sha256": sha(body),
+            "license": {"id": "CC-BY-4.0", "url": "https://creativecommons.org/licenses/by/4.0/"},
+            "sections": [{"section_id": "one", "text": body, "source_lines": [1, 40]}],
+        }
+        artifact = write(cache / (work + ".json"), content)
+        artifact["path"] = Path(artifact["path"]).name
+        books.append(
+            {"work_id": work, "work_group_id": work, "license": "CC-BY-4.0", "artifact": artifact}
+        )
+        components.append(
+            {
+                "component_id": "book-component:" + sha(work),
+                "members": ["licensed_text:" + work],
+                "proposed_split": None if split == "quarantine" else split,
+                "status": "quarantined_title_only_ambiguity"
+                if split == "quarantine"
+                else "candidate_not_admitted",
+            }
+        )
+    manifest = write(
+        root / "research/preparation/licensed_books_manifest.json",
+        {"source_inventory": inventory, "cache_root": str(cache.relative_to(root)), "books": books},
+    )
+    path = root / "components.jsonl"
+    path.write_text("".join(json.dumps(row) + "\n" for row in components))
+    component_ref = {
+        "path": "components.jsonl",
+        "bytes": path.stat().st_size,
+        "sha256": sha(path.read_bytes()),
+    }
+    write(
+        root / "research/preparation/book_partition_manifest.json",
+        {
+            "policy": "book-component-overlay-v1",
+            "inputs": {"licensed_manifest": manifest, "licensed_sources": inventory},
+            "components": component_ref,
+        },
+    )
+    return tokenizer_path, tokenizer
+
+
+def test_rpt_candidates_retain_partitions_and_exact_token_byte_boundaries(tmp_path, monkeypatch):
+    tokenizer_path, tokenizer = rpt_fixture(tmp_path)
+    monkeypatch.setattr(prep.urllib.request, "build_opener", lambda *_: pytest.fail("Network used"))
+    manifest_path = tmp_path / "research/preparation/licensed_books_manifest.json"
+    source_before = manifest_path.read_bytes()
+    result = prep.prepare_rpt(tokenizer_path, root=tmp_path)
+    assert result == prep.prepare_rpt(tokenizer_path, root=tmp_path)
+    assert manifest_path.read_bytes() == source_before
+    assert result["counts"]["by_split"] == {"train": 8, "dev": 8, "test": 8}
+    assert result["counts"]["works_by_split"]["quarantine"] == 1
+    assert result["training_performed"] is False and result["model_inference_performed"] is False
+    rows = [
+        json.loads(line)
+        for line in (tmp_path / result["continuations"]["path"]).read_text().splitlines()
+    ]
+    assert len(rows) == 24
+    for row in rows:
+        target = row["continuation_target"]
+        text = target["observed_bytes"]
+        pieces = [piece.encode() for piece in target["token_bytes"]]
+        assert all(pieces) and b"".join(pieces) == text.encode()
+        assert len(row["target_ids"]) == len(pieces)
+        assert tokenizer.encode(text, add_special_tokens=False).ids == row["target_ids"]
+        assert (
+            tokenizer.encode(row["prompt_normalized_text"], add_special_tokens=False).ids
+            == row["prompt_ids"]
+        )
+        for end in range(1, len(pieces) + 1):
+            assert tokenizer.decode(
+                row["target_ids"][:end], skip_special_tokens=False
+            ).encode() == b"".join(pieces[:end])
+        assert target["source_evidence_sha256"] == sha(json_bytes(row["source_evidence"]))
+        assert target["tokenizer_sha256"] == sha(tokenizer_path.read_bytes())
+        assert target["split"] in {"train", "dev", "test"}
+        assert row["attribution"]["creators"] == ["Fixture Author"]
+        assert row["candidate_status"] == "unadmitted" and row["training_authorized"] is False
+    assert not any(row["work_id"].endswith("quarantine") for row in rows)
+    assert all(work["records"] == 0 for work in result["works"] if work["split"] == "quarantine")
+    assert "alpha beta" not in json.dumps(result)
+
+
+def test_rpt_rejects_changed_or_unlinked_partition_evidence(tmp_path):
+    tokenizer_path, _ = rpt_fixture(tmp_path)
+    path = tmp_path / "components.jsonl"
+    path.write_text(path.read_text() + "\n")
+    with pytest.raises(ValueError, match="changed"):
+        prep.prepare_rpt(tokenizer_path, root=tmp_path)
+    assert not (tmp_path / "data/research_candidates/licensed_books/rpt").exists()
+    rpt_fixture(tmp_path)
+    path = tmp_path / "research/preparation/licensed_books_manifest.json"
+    path.write_text(path.read_text() + "\n")
+    with pytest.raises(ValueError, match="exact licensed manifest"):
+        prep.prepare_rpt(tokenizer_path, root=tmp_path)
+
+
+@pytest.mark.parametrize("positions", [0, 7, 17, True, 8.5])
+def test_rpt_position_count_is_bounded_before_tokenizer_load(tmp_path, positions):
+    with pytest.raises(ValueError, match="integer from 8 to 16"):
+        prep.prepare_rpt(tmp_path / "missing.json", positions_per_work=positions, root=tmp_path)
+
+
+def test_rpt_skips_unknown_tokens_even_without_added_special_registration(tmp_path):
+    tokenizer_path, _ = rpt_fixture(tmp_path)
+    manifest_path = tmp_path / "research/preparation/licensed_books_manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    for book in manifest["books"]:
+        path = tmp_path / manifest["cache_root"] / book["artifact"]["path"]
+        artifact = json.loads(path.read_text())
+        artifact["sections"][0]["text"] = "unrecognized " * 80
+        path.write_bytes(json_bytes(artifact))
+        book["artifact"].update(bytes=path.stat().st_size, sha256=sha(path.read_bytes()))
+    manifest_path.write_bytes(json_bytes(manifest))
+    partition_path = tmp_path / "research/preparation/book_partition_manifest.json"
+    partition = json.loads(partition_path.read_text())
+    partition["inputs"]["licensed_manifest"].update(
+        bytes=manifest_path.stat().st_size, sha256=sha(manifest_path.read_bytes())
+    )
+    partition_path.write_bytes(json_bytes(partition))
+    result = prep.prepare_rpt(tokenizer_path, root=tmp_path)
+    assert result["counts"]["records"] == 0
+    assert result["counts"]["skipped_non_roundtripping_or_unstable_windows"] > 0
+
+
+def test_rpt_rejects_decoder_prefix_rewrites():
+    class Tokenizer:
+        def encode(self, text, **kwargs):
+            return type("Encoding", (), {"ids": [int(item) for item in text.split()]})()
+
+        def decode(self, ids, **kwargs):
+            # A partial target rewrites an earlier byte when another token arrives.
+            text = " ".join(map(str, ids))
+            return "rewritten" if len(ids) == 2 else text
+
+    assert prep._rpt_window(Tokenizer(), list(range(40)), 8, set()) is None
+
+
+def test_rpt_refuses_stochastic_tokenizer_configuration(tmp_path):
+    tokenizer_path, _ = rpt_fixture(tmp_path)
+    configuration = json.loads(tokenizer_path.read_text())
+    configuration["model"]["dropout"] = 0.1
+    tokenizer_path.write_bytes(json_bytes(configuration))
+    with pytest.raises(ValueError, match="stochastic BPE dropout"):
+        prep.prepare_rpt(tokenizer_path, root=tmp_path)
+
+
+def test_rpt_cli_uses_existing_sources_without_base_repreparation(tmp_path, monkeypatch):
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    prep.configure_parser(parser)
+    args = parser.parse_args(["--rpt-tokenizer", "tokenizer.json"])
+    monkeypatch.setattr(prep, "prepare", lambda **_: pytest.fail("Base source preparation ran"))
+    monkeypatch.setattr(prep, "prepare_rpt", lambda *_, **__: {"counts": {"records": 0}})
+    monkeypatch.setattr(prep, "RPT_MANIFEST", tmp_path / "rpt.json")
+    assert prep.run(args, parser) == 0
+    assert json.loads((tmp_path / "rpt.json").read_text()) == {"counts": {"records": 0}}
+    with pytest.raises(SystemExit):
+        prep.run(parser.parse_args(["--fetch", "--rpt-tokenizer", "tokenizer.json"]), parser)
 
 
 def novel():

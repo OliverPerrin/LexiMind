@@ -211,14 +211,8 @@ class ScaledDotProductAttention(nn.Module):
             if mask_bool is not None:
                 p_attn = p_attn.masked_fill(~mask_bool, 0.0)
             p_attn = torch.nan_to_num(p_attn, nan=0.0, posinf=0.0, neginf=0.0)
-            output = torch.matmul(p_attn, value)
+            output = torch.matmul(p_attn.to(value.dtype), value)
             return output, p_attn
-
-        # Use optimized SDPA path - torch.compile friendly version
-        # Pre-scale query instead of using SDPA's scale parameter for better compile compatibility
-        # This avoids issues with inductor and custom scale values
-        if self.scale_scores:
-            query = query * scale_factor
 
         # Build combined attention mask (float tensor added to scores)
         attn_mask = None
@@ -226,8 +220,8 @@ class ScaledDotProductAttention(nn.Module):
         if position_bias is not None or mask is not None:
             # Start with position bias if provided
             if position_bias is not None:
-                # Clamp position bias to prevent overflow
-                attn_mask = position_bias.to(dtype=query.dtype).clamp(-100, 100)
+                # Clipping learned bias changes probabilities and its gradients.
+                attn_mask = position_bias.to(dtype=query.dtype, device=query.device)
 
             # Add mask (convert bool mask to additive float mask)
             if mask is not None:
@@ -244,10 +238,6 @@ class ScaledDotProductAttention(nn.Module):
                     # an additional floating mask when there is no position bias.
                     attn_mask = mask_bool
 
-        # Use SDPA without custom scale (scale=None uses default 1/sqrt(d_k))
-        # For T5 (scale_scores=False), we already didn't scale query above, so default scale is wrong
-        # But we pre-scaled query for scaled attention, so we need scale=1.0 here
-        # Actually simpler: always use scale=1.0 since we handle scaling ourselves
         output = F.scaled_dot_product_attention(
             query,
             key,
@@ -255,7 +245,7 @@ class ScaledDotProductAttention(nn.Module):
             attn_mask=attn_mask,
             dropout_p=0.0,
             is_causal=False,
-            scale=1.0,  # We handle scaling manually above
+            scale=None if self.scale_scores else 1.0,
         )
         return output, None
 
@@ -406,6 +396,22 @@ class MultiHeadAttention(nn.Module):
             nn.init.kaiming_uniform_(self.lora_v_A.weight, a=math.sqrt(5))
             nn.init.zeros_(self.lora_v_B.weight)
 
+    def project_query(self, values: torch.Tensor) -> torch.Tensor:
+        result = self.W_Q(values)
+        if self.use_lora:
+            result = (
+                result + self.lora_q_B(self.lora_q_A(self.lora_dropout(values))) * self.lora_scaling
+            )
+        return result
+
+    def project_value(self, values: torch.Tensor) -> torch.Tensor:
+        result = self.W_V(values)
+        if self.use_lora:
+            result = (
+                result + self.lora_v_B(self.lora_v_A(self.lora_dropout(values))) * self.lora_scaling
+            )
+        return result
+
     def forward(
         self,
         query: torch.Tensor,
@@ -430,22 +436,9 @@ class MultiHeadAttention(nn.Module):
         batch_size = query.size(0)
 
         # Linear projections
-        Q = self.W_Q(query)  # (batch, seq_len, d_model)
+        Q = self.project_query(query)  # (batch, seq_len, d_model)
         K = self.W_K(key)
-        V = self.W_V(value)
-
-        # Apply LoRA if enabled
-        if self.use_lora:
-            # Q += (query @ A^T @ B^T) * scaling
-            # Note: nn.Linear(x) computes x @ weight.T
-            # So lora_q_A(x) is x @ A.T
-            # lora_q_B(lora_q_A(x)) is (x @ A.T) @ B.T = x @ A.T @ B.T
-            lora_q = self.lora_q_B(self.lora_q_A(self.lora_dropout(query))) * self.lora_scaling
-            Q = Q + lora_q
-
-            # V += (value @ A^T @ B^T) * scaling
-            lora_v = self.lora_v_B(self.lora_v_A(self.lora_dropout(value))) * self.lora_scaling
-            V = V + lora_v
+        V = self.project_value(value)
 
         # Split into heads
         # Reshape from (batch, seq_len, d_model) to (batch, num_heads, seq_len, d_k), Apply to Q, K, V

@@ -1,6 +1,7 @@
 import unittest
 
 import numpy as np
+import pytest
 import torch
 
 from src.training.metrics import (
@@ -9,7 +10,9 @@ from src.training.metrics import (
     classification_report_dict,
     get_confusion_matrix,
     multilabel_f1,
+    multilabel_macro_f1,
     rouge_like,
+    tune_per_class_thresholds,
 )
 
 
@@ -67,3 +70,36 @@ class TestMetrics(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@pytest.mark.parametrize("thresholds", [[0.9, 0.1, 0.5, 0.3], []])
+def test_threshold_tuning_matches_per_class_counts_and_first_tie(thresholds):
+    generator = torch.Generator().manual_seed(9)
+    logits = torch.randn(37, 9, generator=generator)
+    labels = torch.randint(0, 2, logits.shape, generator=generator).float()
+    labels[:, 0] = 0  # A class with no positives must get the first tied threshold.
+    probabilities = logits.sigmoid()
+    expected = []
+    for column in range(logits.shape[1]):
+        scores = []
+        for threshold in thresholds:
+            predicted = probabilities[:, column] >= threshold
+            positives = labels[:, column] == 1
+            tp = int((predicted & positives).sum())
+            scores.append(2 * tp / max(int(predicted.sum() + positives.sum()), 1))
+        expected.append(thresholds[scores.index(max(scores))] if scores else 0.5)
+    actual, f1 = tune_per_class_thresholds(logits, labels, thresholds)
+    assert actual == expected
+    assert f1 == pytest.approx(multilabel_macro_f1(probabilities >= torch.tensor(expected), labels))
+
+
+def test_threshold_tuning_zero_true_positives_keeps_a_candidate_threshold():
+    # Zero precision and recall used to produce NaN and leave the default 0.5
+    # in place even when it was outside the supplied candidates.
+    thresholds, f1 = tune_per_class_thresholds(
+        torch.tensor([[8.0, -8.0], [-8.0, 8.0]]),
+        torch.tensor([[0.0, 1.0], [1.0, 0.0]]),
+        [0.1, 0.3],
+    )
+    assert thresholds == [0.1, 0.1]
+    assert f1 == 0

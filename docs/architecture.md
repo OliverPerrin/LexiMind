@@ -70,7 +70,10 @@ checkpoint equivalence or the quality of a trained model.
 `src/training/trainer.py` coordinates task-specific losses, task sampling, gradient
 accumulation, mixed precision where supported, learning-rate scheduling, validation,
 and checkpoint callbacks. `pcgrad.py` implements optional gradient-conflict
-projection. Metrics and calibration utilities remain separate from model layers.
+projection on the encoder; decoder/head gradients are summed even when generative
+objectives share them. Metrics and calibration utilities remain separate from model layers.
+The profiler calls the same epoch loop. Metrics accumulate fixed-size summaries;
+threshold calibration vectorizes classes, and PCGrad reuses reference norms.
 
 Classification heads explicitly select single-label CE or multi-label BCE. Book
 fields opt in through `data.topic_problem_type=multi_label`; legacy topic CE and
@@ -89,6 +92,23 @@ Book checkpoints use `predict_book_fields` with explicit thresholds and independ
 sigmoid scores; legacy topic/batch APIs and the old profiler reject that mode.
 Thresholds still need calibration; no book model has been trained or evaluated.
 
+`src/models/adapters.py` attaches LoRA only to named native attention projections,
+freezes base weights, and keeps private decoder/head state separate. Task arithmetic
+and TIES merge effective matrices (`B @ A`), then materialize into an independent
+copy of the same full base. Matching base/layout hashes and private initialization
+are required; matching tensor shapes alone do not establish label compatibility.
+
+`src/training/rl.py` contains group-relative objectives, DPO and information-gain/EMA
+primitives. `policy.py` supplies full-support sampling, response-only scoring and
+verifiers through `Trainer.policy_objectives`. It disables dropout consistently
+and ambient autocast, checks the precision contract, and restores caller modes;
+this also disables checkpointing tied to training mode,
+so GPU feasibility needs measurement. Policy surrogate loss cannot select the best
+checkpoint. Native policy tasks currently require accumulation of one: the existing
+microbatch-mean accumulation would change token-weighted policy reductions.
+The ordinary CLI does not start an RL run; reward data and a separately
+specified experiment are still required.
+
 The book site has no dependency on that runtime. Research outputs must pass their
 own source, domain and evaluation review before becoming catalogue features.
 Training and experiments are currently paused; see
@@ -105,8 +125,9 @@ its complete training split to establish the vocabulary. The reconstructed
 candidates supply label maps, avoiding that extra scan. Disabled tasks and unused
 test splits are not loaded. Padding remains dynamic within each minibatch.
 
-Legacy JSON arrays still load eagerly, and emotion validation remains materialized
-for the existing full-split calibration helper. Lazy reads trade repeated decoding
+Legacy JSON arrays still load eagerly. Emotion calibration uses indexed selection
+views with the previous split membership/order, without retaining decoded text.
+Lazy reads trade repeated decoding
 for lower retained memory; no GPU throughput improvement is claimed. File-stat
 checks detect ordinary source edits, while research manifests provide content hashes.
 The default data paths are unset: explicit dataset directories are required before
@@ -128,3 +149,7 @@ two are lists of `facet:label` IDs. Only title/description are tokenized. Its
 Book label metadata records the same loss/input/mapping contract. It is written
 before any checkpoint, also beside the weights as `labels.json`; incompatible
 existing metadata is preserved and rejected. Resume/inference validate that contract.
+
+Cached decoding uses preallocated output buffers and incremental n-gram state.
+Both full and cached attention apply native/legacy LoRA projections. SDPA preserves
+learned relative biases without clipping; tests compare logits and gradients.

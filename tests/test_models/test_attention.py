@@ -181,3 +181,35 @@ def test_sdpa_and_manual_attention_agree_with_batched_masks_and_position_bias():
         query, key, value, mask=mask, position_bias=bias, return_attn_weights=True
     )
     torch.testing.assert_close(fast, reference, atol=1e-6, rtol=1e-5)
+
+
+def test_sdpa_preserves_large_relative_bias_values_and_gradients():
+    # A shared offset must not erase a learned one-unit preference.
+    attention = ScaledDotProductAttention()
+    query = torch.zeros(1, 1, 1, 2)
+    key = torch.zeros(1, 1, 2, 2)
+    value = torch.eye(2).view(1, 1, 2, 2)
+    bias = torch.tensor([[[[200.0, 201.0]]]], requires_grad=True)
+    fast, _ = attention(query, key, value, position_bias=bias)
+    fast[..., 0].sum().backward()
+    fast_grad = bias.grad.clone()
+    bias.grad = None
+    manual, _ = attention(query, key, value, position_bias=bias, return_attn_weights=True)
+    manual[..., 0].sum().backward()
+    assert torch.allclose(fast, manual, atol=1e-6)
+    assert torch.allclose(fast_grad, bias.grad, atol=1e-6)
+    assert fast_grad.abs().sum() > 0
+    shifted, _ = attention(query, key, value, position_bias=bias.detach() - 200)
+    assert torch.allclose(shifted, fast, atol=1e-6)
+
+
+def test_manual_attention_accepts_full_precision_bias_with_half_values():
+    attention = ScaledDotProductAttention()
+    query = torch.ones(1, 1, 1, 2, dtype=torch.float16)
+    key = torch.ones(1, 1, 2, 2, dtype=torch.float16)
+    value = torch.eye(2, dtype=torch.float16).view(1, 1, 2, 2)
+    output, weights = attention(
+        query, key, value, position_bias=torch.zeros(1, 1, 1, 2), return_attn_weights=True
+    )
+    assert output.dtype == value.dtype
+    assert torch.isfinite(output).all() and torch.isfinite(weights).all()

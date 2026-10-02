@@ -138,3 +138,44 @@ def test_unigram_repeat_constraint_blocks_all_previous_tokens():
     decoder.step = lambda last, memory, cache: (torch.tensor([[0.0, 1.0, 3.0, 4.0, 2.0]]), cache)
     generated = decoder.greedy_decode(memory, max_len=4, start_token_id=0, no_repeat_ngram_size=1)
     assert generated.tolist() == [[0, 3, 2, 4]]
+
+
+def test_cached_step_preserves_existing_attention_lora_updates():
+    from src.models.attention import MultiHeadAttention
+
+    torch.manual_seed(219)
+    decoder = TransformerDecoder(
+        vocab_size=19,
+        d_model=8,
+        num_layers=1,
+        num_heads=2,
+        d_ff=16,
+        dropout=0.0,
+        pad_token_id=0,
+        use_relative_position_bias=True,
+    )
+    for layer in decoder.layers:
+        for name in ("self_attn", "cross_attn"):
+            attention = MultiHeadAttention(
+                d_model=8,
+                num_heads=2,
+                dropout=0.0,
+                use_lora=True,
+                lora_rank=2,
+                lora_alpha=2,
+                lora_dropout=0.0,
+                scale_scores=False,
+            )
+            with torch.no_grad():
+                attention.lora_q_B.weight.normal_(0, 0.2)
+                attention.lora_v_B.weight.normal_(0, 0.2)
+            setattr(layer, name, attention)
+    decoder.eval()
+    memory = torch.randn(2, 4, 8)
+    ids = torch.tensor([[0, 2, 0, 4], [0, 3, 5, 6]])
+    cache = {"past_length": 0}
+    with torch.no_grad():
+        whole = decoder(ids, memory, skip_padding_mask=True)
+        for index in range(ids.shape[1]):
+            logits, cache = decoder.step(ids[:, index : index + 1], memory, cache)
+            torch.testing.assert_close(logits, whole[:, index], atol=2e-6, rtol=2e-6)

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
@@ -104,24 +105,28 @@ class EmotionCollator:
     ) -> None:
         self.tokenizer = tokenizer
         self.binarizer = dataset.binarizer
-        self.known_labels = set(dataset.emotion_classes)
+        self.columns = {label: index for index, label in enumerate(dataset.emotion_classes)}
+        self.known_labels = set(self.columns)
         self.max_length = max_length
         self.padding = padding
         self.pad_to_multiple_of = pad_to_multiple_of
 
     def __call__(self, batch: List[EmotionExample]) -> Dict[str, torch.Tensor]:
-        for example in batch:
+        rows: list[int] = []
+        columns: list[int] = []
+        for row, example in enumerate(batch):
             validate_known_labels(example.emotions, self.known_labels, "emotion")
+            rows.extend([row] * len(example.emotions))
+            columns.extend(self.columns[label] for label in example.emotions)
+        targets: np.ndarray = np.zeros((len(batch), len(self.columns)), dtype=np.float32)
+        targets[rows, columns] = 1.0
+        labels = torch.from_numpy(targets)
         texts = [ex.text for ex in batch]
         encoded = self.tokenizer.batch_encode(
             texts,
             max_length=self.max_length,
             padding=self.padding,
             pad_to_multiple_of=self.pad_to_multiple_of,
-        )
-        labels = torch.as_tensor(
-            self.binarizer.transform([ex.emotions for ex in batch]),
-            dtype=torch.float32,
         )
         return {
             "input_ids": encoded["input_ids"],
@@ -144,7 +149,8 @@ class TopicCollator:
     ) -> None:
         self.tokenizer = tokenizer
         self.encoder = dataset.encoder
-        self.known_labels = set(dataset.topic_classes)
+        self.columns = {label: index for index, label in enumerate(dataset.topic_classes)}
+        self.known_labels = set(self.columns)
         self.max_length = max_length
         self.padding = padding
         self.pad_to_multiple_of = pad_to_multiple_of
@@ -160,7 +166,7 @@ class TopicCollator:
             pad_to_multiple_of=self.pad_to_multiple_of,
         )
         labels = torch.as_tensor(
-            self.encoder.transform([ex.topic for ex in batch]),
+            [self.columns[ex.topic] for ex in batch],
             dtype=torch.long,
         )
         return {
@@ -184,24 +190,32 @@ class PartialTopicCollator:
     ) -> None:
         self.tokenizer = tokenizer
         self.columns = {label: index for index, label in enumerate(dataset.topic_classes)}
+        self.known_labels = set(self.columns)
         self.max_length = max_length
         self.padding = padding
         self.pad_to_multiple_of = pad_to_multiple_of
 
     def __call__(self, batch: List[PartialTopicExample]) -> Dict[str, torch.Tensor]:
-        labels = torch.zeros((len(batch), len(self.columns)), dtype=torch.float32)
-        known = torch.zeros_like(labels, dtype=torch.bool)
+        labels: np.ndarray = np.zeros((len(batch), len(self.columns)), dtype=np.float32)
+        known = np.zeros_like(labels, dtype=np.bool_)
+        positive_rows: list[int] = []
+        positive_columns: list[int] = []
+        negative_rows: list[int] = []
+        negative_columns: list[int] = []
         for row, example in enumerate(batch):
             for values in (example.positive, example.negative):
-                validate_known_labels(values, set(self.columns), "book field")
+                validate_known_labels(values, self.known_labels, "book field")
                 if len(values) != len(set(values)):
                     raise ValueError("Repeated partial book field")
             if set(example.positive) & set(example.negative):
                 raise ValueError("A book field cannot be both positive and negative")
-            for value, values in ((1.0, example.positive), (0.0, example.negative)):
-                columns = [self.columns[label] for label in values]
-                labels[row, columns] = value
-                known[row, columns] = True
+            positive_rows.extend([row] * len(example.positive))
+            positive_columns.extend(self.columns[label] for label in example.positive)
+            negative_rows.extend([row] * len(example.negative))
+            negative_columns.extend(self.columns[label] for label in example.negative)
+        labels[positive_rows, positive_columns] = 1.0
+        known[positive_rows, positive_columns] = True
+        known[negative_rows, negative_columns] = True
         encoded = self.tokenizer.batch_encode(
             [example.text for example in batch],
             max_length=self.max_length,
@@ -211,8 +225,8 @@ class PartialTopicCollator:
         return {
             "input_ids": encoded["input_ids"],
             "attention_mask": encoded["attention_mask"],
-            "labels": labels,
-            "label_mask": known,
+            "labels": torch.from_numpy(labels),
+            "label_mask": torch.from_numpy(known),
         }
 
 

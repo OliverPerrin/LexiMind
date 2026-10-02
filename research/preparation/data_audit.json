@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "audit_version": "data-readiness/v1",
-  "inventory_sha256": "98b3bf48212a5489d859a35b0e665fbb29fa7acbe97d92eb06383875f5017331",
+  "inventory_sha256": "90b3d9691cabf82efb49c9e1207d5c143f5c8554993f8e101c4267db65f46f4f",
   "status": "blocked",
   "mechanical_checks_passed": false,
   "training_authorized": false,

@@ -15,11 +15,6 @@ import zlib
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from scripts.prepare_bgc_candidate import MEMBERS, SOURCE_SHA256, isbn13, provider_id, records
 from src.catalog.storage import write_json_atomic
 from src.research.book_fields import (
     FACETS,
@@ -28,8 +23,11 @@ from src.research.book_fields import (
     map_source_labels,
     validate_mapping,
 )
+from src.research.builders.bgc_source import MEMBERS, SOURCE_SHA256, isbn13, provider_id, records
 from src.research.candidate_io import create_or_verify, helper_hashes
 from src.research.io import check_file, file_hash, parse_json, read_json, safe_path
+
+from . import ROOT
 
 MAX_REFERENCE_LINE = 32_000
 
@@ -135,7 +133,7 @@ def prepare_fields(root: Path, mapping_path: Path, grouping_path: Path, director
     if audit["archive"]["sha256"] != SOURCE_SHA256:
         raise ValueError("BGC archive is not the reviewed source")
     if audit["preparation_script_sha256"] != file_hash(
-        root / "scripts/prepare_bgc_candidate.py"
+        root / "src/research/builders/bgc_source.py"
     ) or audit["preparation_helper_sha256"] != helper_hashes(root):
         raise ValueError("BGC source audit dependencies changed")
     if (
@@ -145,12 +143,16 @@ def prepare_fields(root: Path, mapping_path: Path, grouping_path: Path, director
         or grouping.get("candidate_manifest") != bindings["candidate_manifest"]
     ):
         raise ValueError("Grouping must use the same archive and remain unadmitted")
-    if grouping["preparation_script_sha256"] != file_hash(root / "scripts/prepare_bgc_groups.py"):
+    if grouping["preparation_script_sha256"] != file_hash(
+        root / "src/research/builders/bgc_groups.py"
+    ):
         raise ValueError("BGC grouping builder changed")
     group_helpers = {
         **helper_hashes(root),
         "src/research/book_groups.py": file_hash(root / "src/research/book_groups.py"),
-        "scripts/prepare_bgc_candidate.py": file_hash(root / "scripts/prepare_bgc_candidate.py"),
+        "src/research/builders/bgc_source.py": file_hash(
+            root / "src/research/builders/bgc_source.py"
+        ),
     }
     if grouping["preparation_helper_sha256"] != group_helpers:
         raise ValueError("BGC grouping dependencies changed or are incomplete")
@@ -162,8 +164,10 @@ def prepare_fields(root: Path, mapping_path: Path, grouping_path: Path, director
         archive_sha256=audit["archive"]["sha256"],
         hierarchy_sha256=audit["observed"]["members"]["hierarchy.txt"]["sha256"],
     )
-    count, decisions, positive_counts = Counter(), Counter(), {field: Counter() for field in FACETS}
-    coverage = Counter()
+    count: Counter[str] = Counter()
+    decisions: Counter[str] = Counter()
+    positive_counts: dict[str, Counter[str]] = {field: Counter() for field in FACETS}
+    coverage: Counter[str] = Counter()
     proposed_labels: dict[str, dict[str, set[str]]] = {
         split: {field: set() for field in FACETS} for split in MEMBERS
     }
@@ -261,7 +265,7 @@ def prepare_fields(root: Path, mapping_path: Path, grouping_path: Path, director
         }
     helpers = helper_hashes(root)
     for name in (
-        "scripts/prepare_bgc_candidate.py",
+        "src/research/builders/bgc_source.py",
         "src/research/book_fields.py",
         "src/catalog/storage.py",
     ):
@@ -347,8 +351,7 @@ def iter_resolved_candidates(root: Path, manifest: dict):
             raise ValueError("Extra candidate rows outside BGC source")
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--mapping", type=Path, default=ROOT / "research/preparation/book_field_mapping.json"
     )
@@ -361,7 +364,9 @@ def main() -> int:
         type=Path,
         default=ROOT / "research/preparation/book_field_manifest.json",
     )
-    args = parser.parse_args()
+
+
+def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if not args.report.resolve().is_relative_to(
         ROOT / "research/preparation"
     ) or args.report.resolve() in {
@@ -394,7 +399,3 @@ def main() -> int:
         )
     )
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

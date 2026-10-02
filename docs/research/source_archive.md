@@ -19,11 +19,11 @@ in ignored `data/research_candidates/` and never enters
 the preparation manifest. arXiv re-indexing is substantial disk/decompression work.
 
 ```sh
-python scripts/audit_research_preparation.py --check-archive
-python scripts/prepare_goemotions_candidate.py
-python scripts/prepare_ag_news_candidate.py
-python scripts/prepare_arxiv_candidate.py
-python scripts/audit_research_data.py
+python scripts/research.py status --check-archive
+python scripts/research.py goemotions
+python scripts/research.py ag-news
+python scripts/research.py arxiv
+python scripts/research.py data-audit
 ```
 
 Preparers pin provider files, shared helper/script hashes and stable source
@@ -50,8 +50,8 @@ and [AG News assignments](../../research/preparation/ag_news_partition_manifest.
 pin compact record/row indices rather than copying text. Reproduce with:
 
 ```sh
-python scripts/prepare_research_partitions.py research/preparation/goemotions_candidate_manifest.json --output-dir data/research_candidates/go_emotions/add492243ff905527e67aeb8b80c082af02207c3/partitions-v1 --report research/preparation/goemotions_partition_manifest.json
-python scripts/prepare_research_partitions.py research/preparation/ag_news_candidate_manifest.json --output-dir data/research_candidates/ag_news/eb185aade064a813bc0b7f42de02595523103ca4/partitions-v1 --report research/preparation/ag_news_partition_manifest.json
+python scripts/research.py source-partitions research/preparation/goemotions_candidate_manifest.json --output-dir data/research_candidates/go_emotions/add492243ff905527e67aeb8b80c082af02207c3/partitions-v1 --report research/preparation/goemotions_partition_manifest.json
+python scripts/research.py source-partitions research/preparation/ag_news_candidate_manifest.json --output-dir data/research_candidates/ag_news/eb185aade064a813bc0b7f42de02595523103ca4/partitions-v1 --report research/preparation/ag_news_partition_manifest.json
 ```
 
 Assignments are proposals, not admitted training inputs. The trainer does not

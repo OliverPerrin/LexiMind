@@ -1,4 +1,4 @@
-# Book-field supervision: decision, 27 September 2026
+# Book-field supervision: decision, 2 October 2026
 
 **Use book-domain labels as the main path.** AG News, GoEmotions and arXiv remain
 optional controls; their reconstruction does not make them the right product targets.
@@ -58,17 +58,31 @@ weak positives; omissions stay unknown. Text remains in the original ZIP.
 
 The [bounded group review](../../research/preparation/book_group_review.json) covers
 7 components / 113 rows and screens the 120-book catalogue plus four licensed texts.
-It finds 24 identity-candidate pairs, including Little Brother in BGC; those texts
-cannot become independent holdouts without reconciliation. No labels or splits changed.
+It finds 24 identity-candidate pairs, including Little Brother in BGC. The
+[partition overlay](../../research/preparation/book_partition_manifest.json)
+now keeps strong links together and quarantines unresolved components: effective
+BGC train/dev/test counts are 58,889 / 14,630 / 18,326, with 49 rows quarantined.
+All 48 mapped targets retain positive support in each split. Title-only matches
+remain unresolved; the overlay is a candidate, not a frozen work-identity truth.
 The [32-record field review](../../research/preparation/book_field_review.json) contains
 29 agent positive suggestions, one explicit negative candidate and 17 abstentions.
 Human review is empty; these suggestions do not enter training labels or gold.
+The local review page records explicit judgments and cited spans, hides agent
+suggestions initially, and imports drafts into a separate unadmitted packet.
+
+The [CR4 audit](../../research/preparation/cr4_candidate_manifest.json) covers
+207,721 raw annotations and 43,142 passage/character conditions. Raw `t1` is free
+text, not a categorical emotion target; `t1_corrected`/`t1_unified` include LLM
+cleaning. The audit preserves duplicates, ambiguous highlights and disagreement.
+Document IDs are not verified literary works; ontology, rights and leakage review
+remain open before any training export.
 
 Partial-label loss, data masks, observed-only diagnostics and sigmoid field output
 are implemented and tested on synthetic inputs; see [runtime contracts](../architecture.md).
 Legacy topic CE remains the default. Next: human/source conflict adjudication,
-representative negative or complete-label evidence, cross-source split freeze and
-CR4's character-conditioned input. The custom transformer and four recipe arms stay;
+representative negative or complete-label evidence, and work-level split freeze.
+CR4 needs a character-conditioned target decision before label conversion.
+The custom transformer and four recipe arms stay;
 training and model evaluation remain paused. Optional corpora need not block this track.
 
 ## Modern books beyond Gutenberg
@@ -82,5 +96,11 @@ Little Brother's NC/SA conditions remain separate from Book Dash's CC BY terms.
 One YA novel dominates the text; picture books omit visual context. No model ran.
 [OAPEN](https://www.oapen.org/article/metadata) nonfiction and
 [Green Comet](https://greencomet.org/welcome/) remain expansion candidates. Reconcile
-work identities before assigning any full-text splits. Free access is not blanket
+work identities before admitting full-text splits. Free access is not blanket
 training permission; see the source register for provider-specific limits.
+
+The optional [RPT preparation](../../research/preparation/rpt_candidate_manifest.json)
+contains 32 token-boundary continuation examples from those four works (24 train,
+8 test, no dev). Targets use standalone tokenizer-normalized text with verified
+round trips, not original source-byte identity. This tiny preparation pilot is
+not an evaluation set or a reproduction of the 14B RPT experiment.

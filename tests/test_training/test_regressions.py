@@ -23,6 +23,7 @@ class Batches:
 def make_trainer(monkeypatch, *, accum=1, pcgrad=False, diagnostics=0):
     # Avoid training setup, tracking databases, and any pretrained artifacts.
     trainer = Trainer.__new__(Trainer)
+    trainer.policy_objectives = {}
     trainer.model = torch.nn.Module()
     trainer.model.encoder = torch.nn.Linear(1, 1, bias=False)
     with torch.no_grad():
@@ -40,7 +41,7 @@ def make_trainer(monkeypatch, *, accum=1, pcgrad=False, diagnostics=0):
     trainer.pcgrad = PCGrad() if pcgrad else None
     trainer.scheduler = None
     trainer.global_step = 0
-    trainer._forward_task = lambda task, batch: (
+    trainer._forward_task = lambda task, batch, **kwargs: (
         trainer.model.encoder.weight.sum() * batch["coefficient"],
         {},
     )
@@ -64,6 +65,18 @@ def test_accumulation_flushes_and_normalizes_partial_window(monkeypatch):
     torch.testing.assert_close(trainer.model.encoder.weight, torch.tensor([[-16.0]]))
 
 
+def test_policy_rejects_unweighted_accumulation_before_mutating_state(monkeypatch):
+    trainer = make_trainer(monkeypatch, accum=2)
+    trainer.policy_objectives = {"policy": object()}
+    trainer.model.eval()
+    parameter = trainer.model.encoder.weight
+    parameter.grad = torch.tensor([[7.0]])
+    with pytest.raises(ValueError, match="weighted policy windows"):
+        trainer._run_epoch({"policy": Batches([batch()])}, train=True, epoch=1)
+    assert not trainer.model.training and trainer.global_step == 0
+    torch.testing.assert_close(parameter.grad, torch.tensor([[7.0]]))
+
+
 def test_scheduler_counts_remainder_updates(monkeypatch):
     trainer = make_trainer(monkeypatch, accum=2)
     trainer.config.max_epochs = 1
@@ -76,7 +89,7 @@ def test_validation_visits_each_batch_once_and_weights_examples(monkeypatch):
     trainer = make_trainer(monkeypatch)
     calls = []
 
-    def forward(task, value):
+    def forward(task, value, **kwargs):
         calls.append((task, value["coefficient"]))
         return torch.tensor(value["coefficient"]), {"accuracy": value["coefficient"]}
 
@@ -100,7 +113,7 @@ def test_validation_visits_each_batch_once_and_weights_examples(monkeypatch):
 
 def test_summarization_validation_weights_loss_by_nonignored_tokens(monkeypatch):
     trainer = make_trainer(monkeypatch)
-    trainer._forward_task = lambda task, value: (torch.tensor(value["coefficient"]), {})
+    trainer._forward_task = lambda task, value, **kwargs: (torch.tensor(value["coefficient"]), {})
     loader = Batches(
         [
             {"coefficient": 2.0, "labels": torch.tensor([[1, 2, 3], [4, -100, -100]])},
@@ -116,7 +129,7 @@ def test_gradient_diagnostics_preserve_accumulated_grads_and_rng(monkeypatch):
     parameter = trainer.model.encoder.weight
     parameter.grad = torch.tensor([[7.0]])
 
-    def noisy_forward(task, value):
+    def noisy_forward(task, value, **kwargs):
         torch.rand(3)  # Stand-in for dropout draws during a diagnostic probe.
         return parameter.sum() * value["coefficient"], {}
 
@@ -175,9 +188,64 @@ def test_pcgrad_handles_no_shared_parameters_and_accumulation():
     assert private.grad.item() == 2
 
 
+@pytest.mark.parametrize("reduction", ["sum", "mean"])
+@pytest.mark.parametrize("tiny_reference", [False, True])
+def test_pcgrad_matches_sequential_reference_with_weights_and_accumulation(
+    reduction, tiny_reference
+):
+    import random
+
+    parameter = torch.nn.Parameter(torch.zeros(4, dtype=torch.float64))
+    gradients = [
+        torch.tensor(values, dtype=torch.float64)
+        for values in ([1, -2, 3, 0], [-2, 1, 0, 2], [1, 1, -1, 0])
+    ]
+    if tiny_reference:
+        gradients[2] *= 1e-8
+    weights = {"0": 0.2, "1": 0.6, "2": 1.4}
+    originals = [grad * weights[str(i)] / 3 for i, grad in enumerate(gradients)]
+    expected = torch.zeros_like(parameter)
+    random.seed(17)
+    for i, original in enumerate(originals):
+        projected = original.clone()
+        others = [j for j in range(3) if j != i]
+        random.shuffle(others)
+        for j in others:
+            reference = originals[j]
+            dot, norm = torch.dot(projected, reference), torch.dot(reference, reference)
+            if dot < 0 and norm > 1e-12:
+                projected = projected - dot / norm * reference
+        expected += projected
+    if reduction == "mean":
+        expected /= 3
+    random.seed(17)
+    PCGrad(reduction).backward(
+        {str(i): (parameter * grad).sum() for i, grad in enumerate(gradients)},
+        [parameter],
+        task_weights=weights,
+        gradient_accumulation_steps=3,
+    )
+    torch.testing.assert_close(parameter.grad, expected, rtol=1e-12, atol=1e-12)
+
+
+def test_profiler_uses_real_loop_and_flushes_warmup_before_recording(monkeypatch):
+    from scripts.profile_training import profile_epoch
+
+    trainer = make_trainer(monkeypatch, accum=4)
+    loaders = {"topic": Batches([batch(2.0)])}
+    profile_epoch(trainer, loaders, 3)
+    assert trainer.global_step == 1
+    torch.testing.assert_close(trainer.model.encoder.weight, torch.tensor([[-2.0]]))
+    assert trainer.model.encoder.weight.grad is None
+    updates = []
+    profile_epoch(trainer, loaders, 5, lambda: updates.append(trainer.global_step))
+    assert updates == [1, 1, 1, 2, 3]
+    torch.testing.assert_close(trainer.model.encoder.weight, torch.tensor([[-6.0]]))
+
+
 def test_nonfinite_loss_fails_instead_of_silently_skipping(monkeypatch):
     trainer = make_trainer(monkeypatch)
-    trainer._forward_task = lambda task, value: (torch.tensor(float("inf")), {})
+    trainer._forward_task = lambda task, value, **kwargs: (torch.tensor(float("inf")), {})
     with pytest.raises(FloatingPointError):
         trainer._run_epoch({"topic": Batches([batch()])}, train=True, epoch=1)
     assert trainer.global_step == 0

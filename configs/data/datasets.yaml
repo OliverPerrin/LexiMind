@@ -1,5 +1,5 @@
 # Explicit directories for the tasks selected by training.trainer.tasks.
-# Candidates are prepared by scripts/prepare_*_candidate.py. They remain unadmitted.
+# Candidates are prepared by scripts/research.py source subcommands. They remain unadmitted.
 # Supply reviewed split directories when running a separately authorized experiment.
 processed:
   summarization: null

@@ -72,3 +72,14 @@ def test_profiler_rejects_book_mode_before_cuda_data_or_model_setup(monkeypatch)
     cfg = OmegaConf.create({"data": {"topic_problem_type": "multi_label"}})
     with pytest.raises(ValueError, match="no profile was started"):
         profile_training.main.__wrapped__(cfg)
+
+
+def test_profiler_rejects_empty_active_trace_before_setup(monkeypatch):
+    import pytest
+    from omegaconf import OmegaConf
+
+    from scripts.profile_training import main
+
+    monkeypatch.setenv("PROFILE_STEPS", "6")
+    with pytest.raises(ValueError, match="at least 7"):
+        main.__wrapped__(OmegaConf.create({}))
