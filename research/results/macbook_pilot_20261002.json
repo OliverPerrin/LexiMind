@@ -1,0 +1,294 @@
+{
+  "schema_version": 1,
+  "kind": "local_macbook_training_observations",
+  "observed_on": "2026-10-02",
+  "status": "completed_local_feasibility_not_model_promotion",
+  "implementation_commit": "8b3213d7289ebe53906a51b1002bee952f74ca48",
+  "hardware": {
+    "chip": "Apple M5",
+    "gpu_cores": 10,
+    "unified_memory_bytes": 17179869184,
+    "power_source": "AC",
+    "device": "mps",
+    "dtype": "float32",
+    "cpu_fallback_enabled": false
+  },
+  "runtime": {
+    "torch": "2.14.0",
+    "transformers": "5.17.0",
+    "tokenizers": "0.23.2",
+    "mlflow-skinny": "3.16.1",
+    "SQLAlchemy": "2.1.2",
+    "alembic": "1.20.0"
+  },
+  "environment": {
+    "path": "outputs/macbook_pilot_20261002/environment.json",
+    "bytes": 2300,
+    "sha256": "a00d06fa051972bb7f5a3a1892df377c48b1636ee1e44da53766746763b12719"
+  },
+  "base": {
+    "repo": "google/flan-t5-base",
+    "revision": "7bcac572ce56db69c1ea7c8af255c5d7c9672fc2",
+    "weights_sha256": "1dfb70afdcedceb9f9fae2f9b68e004ad934361fb35b9b2bd50b45ea90790fc8",
+    "total_parameters": 272953984,
+    "trainable_parameters": 442368,
+    "lora": {
+      "rank": 4,
+      "alpha": 8,
+      "dropout": 0.0,
+      "seed": 17
+    },
+    "activation": "gated-gelu-tanh"
+  },
+  "data": {
+    "rpt_manifest": {
+      "path": "research/preparation/rpt_candidate_manifest.json",
+      "bytes": 26768,
+      "sha256": "627f6c0f6ec83e07fd694791483685083fac19a5b45c37e6eadd9a7bb37bf4c7"
+    },
+    "records": {
+      "train": 16,
+      "diagnostic": 8
+    },
+    "target_tokens_including_eos": {
+      "train": 440,
+      "diagnostic": 222
+    },
+    "work_roles": {
+      "cory-doctorow-little-brother": "train",
+      "bookdash-why-is-nita-upside-down": "train",
+      "bookdash-sizwes-smile": "diagnostic"
+    },
+    "global_test_used": false,
+    "human_labels_created": 0
+  },
+  "protocol": {
+    "baseline_config": {
+      "path": "configs/research/macbook_pilot.json",
+      "bytes": 2174,
+      "sha256": "32c5e890a4815ee870482d47d43ff424441ce298b50365d601070b42ec09258e"
+    },
+    "short_horizon_config": {
+      "path": "outputs/macbook_pilot_20261002/short_horizon_config.json",
+      "bytes": 2464,
+      "sha256": "d8b7f89efc1e54dd51d2ecad3bcaf7163ec26b2b48ac9c5000ea3a5566717067"
+    },
+    "checkpoint_selection": "fixed stage endpoints; no holdout selection",
+    "reward": "Exact normalized-byte token-boundary prefix, at least four canonical content tokens, undefined/special IDs rejected. Length floor differs from original RPT.",
+    "short_horizon_rationale": "Declared after the train-only 32-token reward audit showed zero successes; diagnostic outcomes did not choose this change. Exploratory, not confirmatory evidence."
+  },
+  "real_weight_parity": {
+    "report": {
+      "path": "outputs/macbook_pilot_20261002/feasibility_tanh.json",
+      "bytes": 1320,
+      "sha256": "c1edbb0d700ca8c8dc81c081eceab14eb7d567fc5fb53d215657d88fa9ef28b6"
+    },
+    "scope": "One fixed prompt before training; separate tiny random-model unit tests cover padded inputs and gradients.",
+    "cpu_upstream_max_abs_logits": 0.0,
+    "mps_cpu_max_abs_logits": 4.9591064453125e-05,
+    "cached_scoring_max_abs_logprob": 3.814697265625e-06
+  },
+  "runs": [
+    {
+      "run_id": "run_002",
+      "report": {
+        "path": "outputs/macbook_pilot_20261002/run_002/report.json",
+        "bytes": 54720,
+        "sha256": "595d0cfb92c2638affbf5eb27b3070f12bb0abbfd4ab1b7615797fceec822e74"
+      },
+      "config_sha256": "32c5e890a4815ee870482d47d43ff424441ce298b50365d601070b42ec09258e",
+      "response_cap": 32,
+      "sft_steps": 64,
+      "sft_wall_seconds": 15.88942954101367,
+      "sft_median_step_seconds": 0.1468243955168873,
+      "rl_groups": 8,
+      "rl_updates": 0,
+      "rewarded_responses": 0,
+      "sampled_responses": 16,
+      "elapsed_execution_seconds": 29.74935933301458,
+      "max_observed_mps_driver_bytes": 2310537216,
+      "frozen_base_verified": true,
+      "stages": {
+        "before": {
+          "train": {
+            "nll_per_token": 3.8333275534889917,
+            "per_work": {
+              "cory-doctorow-little-brother": 3.7875054966319692,
+              "bookdash-why-is-nita-upside-down": 3.902060638774525
+            }
+          },
+          "diagnostic": {
+            "nll_per_token": 4.011925963668136,
+            "per_work": {
+              "bookdash-sizwes-smile": 4.011925963668136
+            }
+          }
+        },
+        "after_sft": {
+          "train": {
+            "nll_per_token": 2.86506648497148,
+            "per_work": {
+              "cory-doctorow-little-brother": 2.9122934919415098,
+              "bookdash-why-is-nita-upside-down": 2.794225974516435
+            }
+          },
+          "diagnostic": {
+            "nll_per_token": 3.6505744006182694,
+            "per_work": {
+              "bookdash-sizwes-smile": 3.6505744006182694
+            }
+          }
+        },
+        "after_rl_probe": {
+          "train": {
+            "nll_per_token": 2.86506648497148,
+            "per_work": {
+              "cory-doctorow-little-brother": 2.9122934919415098,
+              "bookdash-why-is-nita-upside-down": 2.794225974516435
+            }
+          },
+          "diagnostic": {
+            "nll_per_token": 3.6505744006182694,
+            "per_work": {
+              "bookdash-sizwes-smile": 3.6505744006182694
+            }
+          }
+        }
+      },
+      "checkpoints": {
+        "after_sft": {
+          "path": "outputs/macbook_pilot_20261002/run_002/after_sft.pt",
+          "bytes": 1819275,
+          "sha256": "c280aa15f5055250fc483eceb318e861371f62132f473bc384f60836c72cce85"
+        },
+        "after_rl_probe": {
+          "path": "outputs/macbook_pilot_20261002/run_002/after_rl_probe.pt",
+          "bytes": 1820025,
+          "sha256": "a1ac57bee7a0b18d8f564bc158164bfd281c18ca5057453da05956b3c392d783"
+        }
+      },
+      "checkpoint_reload": {
+        "report": {
+          "path": "outputs/macbook_pilot_20261002/run_002/reload_verification.json",
+          "bytes": 826,
+          "sha256": "e33dbfd8aae6ab05faf342ace98cadee7449ee4a3e19fdea9a717802271bb91f"
+        },
+        "passed": true,
+        "max_cpu_mps_nll_difference": 2.1880323236800336e-05
+      }
+    },
+    {
+      "run_id": "run_003_cap8",
+      "report": {
+        "path": "outputs/macbook_pilot_20261002/run_003_cap8/report.json",
+        "bytes": 34229,
+        "sha256": "0186956c8022088a2e9c14179261ba2a02c12f2c679d94158ba3654d544bba2f"
+      },
+      "config_sha256": "d8b7f89efc1e54dd51d2ecad3bcaf7163ec26b2b48ac9c5000ea3a5566717067",
+      "response_cap": 8,
+      "sft_steps": 64,
+      "sft_wall_seconds": 12.353986625035759,
+      "sft_median_step_seconds": 0.14195037499302998,
+      "rl_groups": 8,
+      "rl_updates": 1,
+      "rewarded_responses": 1,
+      "sampled_responses": 16,
+      "elapsed_execution_seconds": 22.130726624978706,
+      "max_observed_mps_driver_bytes": 2318991360,
+      "frozen_base_verified": true,
+      "stages": {
+        "before": {
+          "train": {
+            "nll_per_token": 3.8333275534889917,
+            "per_work": {
+              "cory-doctorow-little-brother": 3.7875054966319692,
+              "bookdash-why-is-nita-upside-down": 3.902060638774525
+            }
+          },
+          "diagnostic": {
+            "nll_per_token": 4.011925963668136,
+            "per_work": {
+              "bookdash-sizwes-smile": 4.011925963668136
+            }
+          }
+        },
+        "after_sft": {
+          "train": {
+            "nll_per_token": 2.86506648497148,
+            "per_work": {
+              "cory-doctorow-little-brother": 2.9122934919415098,
+              "bookdash-why-is-nita-upside-down": 2.794225974516435
+            }
+          },
+          "diagnostic": {
+            "nll_per_token": 3.6505744006182694,
+            "per_work": {
+              "bookdash-sizwes-smile": 3.6505744006182694
+            }
+          }
+        },
+        "after_rl_probe": {
+          "train": {
+            "nll_per_token": 2.8644420233639805,
+            "per_work": {
+              "cory-doctorow-little-brother": 2.9114974773291387,
+              "bookdash-why-is-nita-upside-down": 2.793858842416243
+            }
+          },
+          "diagnostic": {
+            "nll_per_token": 3.650851481669658,
+            "per_work": {
+              "bookdash-sizwes-smile": 3.650851481669658
+            }
+          }
+        }
+      },
+      "checkpoints": {
+        "after_sft": {
+          "path": "outputs/macbook_pilot_20261002/run_003_cap8/after_sft.pt",
+          "bytes": 1819275,
+          "sha256": "8a1e752bea5066e81c07137b82a85565680671a3df8ca7481484f4222fd8cee1"
+        },
+        "after_rl_probe": {
+          "path": "outputs/macbook_pilot_20261002/run_003_cap8/after_rl_probe.pt",
+          "bytes": 1820025,
+          "sha256": "87797addf58939b84739bbe0327587bb365f5bcaff2ec57eaba8921c4f0e7b67"
+        }
+      },
+      "checkpoint_reload": {
+        "report": {
+          "path": "outputs/macbook_pilot_20261002/run_003_cap8/reload_verification.json",
+          "bytes": 827,
+          "sha256": "5a0e14a361dac49a579b8e36fd00ad313467b06618ef8dc269ee7d589c6845a5"
+        },
+        "passed": true,
+        "max_cpu_mps_nll_difference": 2.2107904607437945e-05
+      }
+    }
+  ],
+  "failed_attempt": {
+    "report": {
+      "path": "outputs/macbook_pilot_20261002/run_001/report.json",
+      "bytes": 13293,
+      "sha256": "2f30a56b3bfab30ec96432801d2a5c926052aba86a1d506817321c167f154f7f"
+    },
+    "reason": "SQLite tracking dependencies missing from software-test environment; model initialized but no optimizer updates. Installed SQLAlchemy 2.1.2 and Alembic 1.20.0 in the isolated environment before a fresh run."
+  },
+  "interpretation": [
+    "M5 runs the native 273M-parameter frozen base with 0.44M trainable LoRA parameters at short lengths. This does not measure full pretraining or long-context capacity.",
+    "Both supervised runs fit 440 target tokens repeatedly; the diagnostic set is 222 tokens from one source work and is not representative product evaluation.",
+    "32-token RL gave zero updates;8-token variant gave one update. Slight diagnostic NLL increase after that RL update does not establish improvement.",
+    "Primary barrier to meaningful RL here is reward/data coverage. No field, reader-mood, preference or recommendation model was trained or promoted."
+  ],
+  "remaining": [
+    "Independent reviewed book-field negatives/complete labels and task-aligned rewards",
+    "Broader licensed sources and work-disjoint training/calibration/test design",
+    "Formal MTL comparison and RTX4070-specific feasibility when available"
+  ],
+  "independent_audit": {
+    "all_32_sampled_rewards_recomputed": true,
+    "same_sft_start_all_144_factor_tensors_identical": true,
+    "short_horizon_update_changed_all_144_factor_tensors": true,
+    "diagnostic_target_overlap_with_training": 0
+  }
+}

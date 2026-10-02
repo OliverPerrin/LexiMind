@@ -64,5 +64,7 @@ The native rollout/scoring adapter uses the existing trainer; no parallel traini
 framework or launch scripts were added. Reward/tokenizer/behavior-policy revisions,
 EOS masks and complete-label requirements are checked. Uniform-reward or fully
 clipped batches skip optimizer updates. Replay, asynchronous critics and learned
-semantic graders remain deferred. GPU memory/throughput, reward validity and model
-quality remain unmeasured; recent papers do not establish a LexiMind improvement.
+semantic graders remain deferred. The [bounded M5 pilot](../../research/results/macbook_pilot_20261002.json)
+measures local execution with a sparse continuation reward. CUDA feasibility and
+representative model quality remain unmeasured; recent papers do not establish a
+LexiMind improvement.

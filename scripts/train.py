@@ -19,7 +19,7 @@ import re
 import sys
 import time
 from pathlib import Path
-from typing import Dict
+from typing import Any, Dict
 
 import hydra
 import torch
@@ -180,7 +180,7 @@ def main(cfg: DictConfig) -> None:
     emotion_classes = getattr(train_datasets.get("emotion"), "emotion_classes", [])
     topic_classes = getattr(train_datasets.get("topic"), "topic_classes", [])
     topic_dataset = train_datasets.get("topic")
-    topic_contract = {
+    topic_contract: dict[str, Any] = {
         "topic_problem_type": getattr(topic_dataset, "topic_problem_type", "single_label"),
         "topic_input_format": getattr(topic_dataset, "topic_input_format", "text"),
         "topic_mapping_sha256": getattr(topic_dataset, "topic_mapping_sha256", None),

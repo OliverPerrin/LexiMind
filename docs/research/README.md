@@ -28,6 +28,12 @@ The configuration limits steps, wall time and MPS memory. Its three-work sample 
 a feasibility/overfit check; the diagnostic work remains a global training work.
 The prefix reward adds a four-canonical-token minimum and is not original RPT scoring.
 
+The [M5 observations](../../research/results/macbook_pilot_20261002.json) record
+two 64-update LoRA continuation pilots: 12–16 seconds for supervised updates and
+about 2.32 GB maximum observed MPS driver memory. The 32-token RL probe had no
+reward signal; a separately declared eight-token probe made one RL update, with
+no diagnostic improvement. These tiny runs establish local execution feasibility.
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh

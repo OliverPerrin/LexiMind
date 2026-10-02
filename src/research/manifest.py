@@ -61,6 +61,7 @@ ARTIFACTS: dict[str, tuple[str, str]] = {
     "adapter_runtime": ("model_study", "src/models/adapters.py"),
     "pilot_runtime": ("model_study", "src/training/pilot.py"),
     "pilot_config": ("model_study", "configs/research/macbook_pilot.json"),
+    "pilot_observations": ("model_study", "research/results/macbook_pilot_20261002.json"),
     "encoder_runtime": ("model_study", "src/models/encoder.py"),
     "feedforward_runtime": ("model_study", "src/models/feedforward.py"),
     "runtime_architecture": ("model_study", "docs/architecture.md"),
