@@ -291,7 +291,7 @@
     "uncontrolled_existing_expert_reuse",
     "rank_recompression_ablation",
     "post_merge_head_readaptation",
-    "all_training_and_model_evaluation"
+    "formal_comparison_training_and_evaluation"
   ],
   "rl_extension": {
     "status": "software_and_candidate_data_prepared_not_admitted",
@@ -315,5 +315,10 @@
       "GPU precision/memory feasibility with deterministic scoring and no training-mode checkpointing",
       "Weighted policy accumulation beyond a single microbatch"
     ]
+  },
+  "local_pilot": {
+    "config": "configs/research/macbook_pilot.json",
+    "status": "authorized_local_feasibility",
+    "formal_comparison_admitted": false
   }
 }

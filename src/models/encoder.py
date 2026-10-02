@@ -13,7 +13,7 @@ Author: Oliver Perrin
 Date: 2025-10-23
 """
 
-from typing import List, Literal, Optional, Tuple, Union, cast
+from typing import List, Optional, Tuple, Union, cast
 
 import torch
 import torch.nn as nn
@@ -21,7 +21,7 @@ from torch.utils.checkpoint import checkpoint
 
 # Encoder implementation
 from .attention import MultiHeadAttention, T5RelativePositionBias
-from .feedforward import FeedForward
+from .feedforward import ActivationType, FeedForward
 from .positional_encoding import LearnedPositionalEncoding, PositionalEncoding
 from .t5_layer_norm import T5LayerNorm
 
@@ -47,7 +47,7 @@ class TransformerEncoderLayer(nn.Module):
         d_ff: int,
         dropout: float = 0.1,
         quantization: Optional[str] = None,
-        activation: Literal["gelu", "relu", "swiglu", "gated-gelu"] = "gated-gelu",
+        activation: ActivationType = "gated-gelu",
         scale_attn_scores: bool = True,  # T5 uses False
     ):
         super().__init__()
@@ -153,7 +153,7 @@ class TransformerEncoder(nn.Module):
         pad_token_id: Optional[int] = None,
         quantization: Optional[str] = None,
         use_learned_pos_enc: bool = False,
-        activation: Literal["gelu", "relu", "swiglu", "gated-gelu"] = "gated-gelu",
+        activation: ActivationType = "gated-gelu",
         use_relative_position_bias: bool = False,  # T5-style relative position bias
         gradient_checkpointing: bool = False,
     ):

@@ -77,6 +77,26 @@ def test_policy_rejects_unweighted_accumulation_before_mutating_state(monkeypatc
     torch.testing.assert_close(parameter.grad, torch.tensor([[7.0]]))
 
 
+def test_generation_metrics_can_be_disabled_without_changing_loss_or_gradients(monkeypatch):
+    trainer = make_trainer(monkeypatch)
+    logits = torch.tensor([[[0.1, 0.3, -0.2], [0.4, -0.1, 0.2]]], requires_grad=True)
+    trainer.model.forward = lambda *args: logits
+    trainer.tokenizer = None  # Any decoding would fail.
+    trainer.config.generation_metrics = False
+    trainer.config.label_smoothing = 0.0
+    ids = torch.tensor([[0, 1]])
+    labels = torch.tensor([[1, -100]])
+    loss, metrics = trainer._forward_summarization(
+        {"src_ids": ids, "tgt_ids": ids, "labels": labels}
+    )
+    expected = torch.nn.functional.cross_entropy(logits.reshape(-1, 3), labels.reshape(-1))
+    torch.testing.assert_close(loss, expected)
+    assert metrics == {}
+    loss.backward()
+    assert logits.grad[0, 0].abs().sum() > 0
+    assert logits.grad[0, 1].abs().sum() == 0
+
+
 def test_scheduler_counts_remainder_updates(monkeypatch):
     trainer = make_trainer(monkeypatch, accum=2)
     trainer.config.max_epochs = 1
@@ -148,6 +168,47 @@ def test_diagnostics_do_not_change_sgd_updates(monkeypatch):
     plain._run_epoch({"topic": loader}, train=True, epoch=1)
     diagnostic._run_epoch({"topic": loader}, train=True, epoch=1)
     torch.testing.assert_close(plain.model.encoder.weight, diagnostic.model.encoder.weight)
+
+
+@pytest.mark.parametrize("raise_in_probe", [False, True])
+def test_gradient_diagnostics_restore_mps_rng_without_hardware(monkeypatch, raise_in_probe):
+    trainer = make_trainer(monkeypatch)
+    trainer.device = torch.device("mps")
+    parameter = trainer.model.encoder.weight
+    parameter.grad = torch.tensor([[7.0]])
+    mps_state = torch.tensor([17], dtype=torch.uint8)
+    reads, writes = [], []
+
+    def get_state(device):
+        reads.append(device)
+        return mps_state.clone()
+
+    def set_state(state, device):
+        writes.append(device)
+        mps_state.copy_(state)
+
+    monkeypatch.setattr(torch.mps, "get_rng_state", get_state)
+    monkeypatch.setattr(torch.mps, "set_rng_state", set_state)
+
+    def noisy_forward(task, value, **kwargs):
+        torch.rand(3)
+        mps_state.add_(1)
+        if raise_in_probe:
+            raise RuntimeError("synthetic probe failure")
+        return parameter.sum() * value["coefficient"], {}
+
+    trainer._forward_task = noisy_forward
+    cpu_state = torch.get_rng_state().clone()
+    if raise_in_probe:
+        with pytest.raises(RuntimeError, match="synthetic probe failure"):
+            trainer._compute_gradient_conflicts({"topic": batch()})
+    else:
+        stats = trainer._compute_gradient_conflicts({"topic": batch(), "emotion": batch(-1.0)})
+        assert stats["cos_sim_topic_emotion"] == pytest.approx(-1)
+    assert reads == writes == [0]
+    assert mps_state.item() == 17
+    assert torch.equal(torch.get_rng_state(), cpu_state)
+    torch.testing.assert_close(parameter.grad, torch.tensor([[7.0]]))
 
 
 def test_pcgrad_preserves_duplicate_temperature_task_draws(monkeypatch):

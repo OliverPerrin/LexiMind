@@ -1,23 +1,21 @@
 {
   "schema_version": 1,
   "status": "draft",
-  "paused_by_user": true,
+  "paused_by_user": false,
   "as_of": "2026-10-02",
-  "instruction": "Training, model execution/evaluation, research scoring and paid calls remain paused. Literature review, source/data preparation and software contract tests continue under the current user request.",
+  "instruction": "User authorized bounded local MacBook training and evaluation on 2026-10-02. Apple M5/16GB is available; RTX4070 remains unavailable for several days. Formal MTL/book studies still need their declared data/protocol evidence. Paid calls and remote compute are not authorized.",
   "paid_spend_authorized": false,
-  "hardware_available": false,
+  "hardware_available": true,
   "proposed_first_comparison": [
     "joint_sft",
     "budget_matched_task_specialists",
     "merged_task_adapters"
   ],
   "deferred": [
-    "backbone_feasibility_runs",
-    "distillation",
+    "formal_mtl_comparison",
     "teacher_api_generation",
-    "rl_execution",
-    "all_training",
-    "all_model_evaluation"
+    "paid_compute",
+    "rtx4070_execution"
   ],
   "gates": {
     "literature_gate": {
@@ -52,8 +50,8 @@
       "evidence": [
         {
           "path": "configs/research/study_design.json",
-          "bytes": 13865,
-          "sha256": "a9c26c3ebe77e291f96722747ec93e0b947353b26f144f4c0254cf128e986bf5"
+          "bytes": 14036,
+          "sha256": "93a2117b67453684c8721b05d6c7938b26853b01955a3102370543a350b2ef21"
         },
         {
           "path": "docs/research/study_decisions.md",
@@ -194,8 +192,8 @@
         },
         {
           "path": "src/training/trainer.py",
-          "bytes": 34236,
-          "sha256": "fdb0c9272e9fbf084bc8bf013055041aeaef4c2d3374e6964df3af02cd34f26a"
+          "bytes": 34550,
+          "sha256": "37f599517db69002e01af804c56358cbf8f2fe6305140e8c27911e136b65ab29"
         }
       ],
       "note": "Native LoRA/effective-delta merging and policy objectives share the existing transformer/trainer. No real checkpoint, GPU feasibility, training or quality evaluation."
@@ -204,5 +202,6 @@
   "study_design": "configs/research/study_design.json",
   "preparation_manifest": "research/preparation/manifest.json",
   "scope_decision": "Book-domain field supervision first; accepted joint/specialist/merge comparison retained. Generic corpora are optional controls, not product label truth.",
-  "source_decisions": "research/preparation/book_field_sources.json"
+  "source_decisions": "research/preparation/book_field_sources.json",
+  "local_pilot": "configs/research/macbook_pilot.json"
 }

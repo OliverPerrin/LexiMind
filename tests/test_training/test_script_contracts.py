@@ -1,5 +1,36 @@
 """Synthetic contracts for the retained training entry point; no experiment runs."""
 
+import pytest
+import torch
+
+
+def test_freeze_encoder_prefix_includes_native_embedding_and_preserves_upper_layers():
+    from scripts.train import freeze_encoder_layers
+
+    encoder = torch.nn.Module()
+    encoder.embedding = torch.nn.Embedding(5, 2)
+    encoder.layers = torch.nn.ModuleList([torch.nn.Linear(2, 2), torch.nn.Linear(2, 2)])
+    encoder.final_norm = torch.nn.LayerNorm(2)
+    assert freeze_encoder_layers(encoder, 0) == 0
+    assert all(parameter.requires_grad for parameter in encoder.parameters())
+    assert freeze_encoder_layers(encoder, 1) == 16
+    assert not encoder.embedding.weight.requires_grad
+    assert all(not parameter.requires_grad for parameter in encoder.layers[0].parameters())
+    assert all(parameter.requires_grad for parameter in encoder.layers[1].parameters())
+    assert all(parameter.requires_grad for parameter in encoder.final_norm.parameters())
+
+
+@pytest.mark.parametrize("count", [-1, 3, True, 1.0])
+def test_invalid_freeze_prefix_is_rejected_before_mutation(count):
+    from scripts.train import freeze_encoder_layers
+
+    encoder = torch.nn.Module()
+    encoder.embedding = torch.nn.Embedding(5, 2)
+    encoder.layers = torch.nn.ModuleList([torch.nn.Linear(2, 2), torch.nn.Linear(2, 2)])
+    with pytest.raises(ValueError, match="encoder layer count"):
+        freeze_encoder_layers(encoder, count)
+    assert all(parameter.requires_grad for parameter in encoder.parameters())
+
 
 def test_weights_only_resume_does_not_apply_last_epoch_to_best(tmp_path):
     from scripts.train import resume_start_epoch

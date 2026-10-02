@@ -23,11 +23,9 @@ from ..data.tokenization import Tokenizer
 from ..utils.core import load_yaml
 from .decoder import TransformerDecoder, TransformerDecoderLayer
 from .encoder import TransformerEncoder, TransformerEncoderLayer
+from .feedforward import ActivationType
 from .heads import ClassificationHead, LMHead
 from .multitask import MultiTaskModel
-
-# Type alias for activation functions
-ActivationType = Literal["gelu", "relu", "swiglu", "gated-gelu"]
 
 
 @dataclass
@@ -45,9 +43,8 @@ class ModelConfig:
     pretrained_model_name: str = "google/flan-t5-base"
     quantization: Optional[str] = None  # "4bit" or "8bit"
     use_learned_pos_enc: bool = True  # Use learned positional embeddings
-    activation: str = (
-        "gated-gelu"  # "gelu", "relu", "swiglu", or "gated-gelu" (use gated-gelu for T5/FLAN-T5)
-    )
+    # Preserve old checkpoints; use gated-gelu-tanh for upstream FLAN-T5 parity.
+    activation: str = "gated-gelu"
     use_relative_position_bias: bool = (
         False  # T5-style relative position bias (use True for T5/FLAN-T5)
     )
@@ -108,7 +105,7 @@ def _load_pretrained_weights(
     - T5 uses relative position bias instead of absolute embeddings
       -> We now load T5's relative position bias weights into our T5RelativePositionBias modules
       -> This allows exact weight transfer without requiring fine-tuning
-    - T5 uses gated FFN (wi_0, wi_1, wo) - we use gated-gelu FFN matching this
+    - T5 uses gated FFN (wi_0, wi_1, wo); gated-gelu-tanh matches FLAN-T5 gelu_new
     - T5 attention has no bias, our attention has bias
       -> We zero-initialize the bias terms
     """

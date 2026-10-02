@@ -125,6 +125,26 @@ def prepare_checkpoint_labels(
             save_label_metadata(metadata, path)
 
 
+def freeze_encoder_layers(encoder: torch.nn.Module, count: int) -> int:
+    """Freeze the native token embedding and a prefix of encoder layers."""
+    if (
+        isinstance(count, bool)
+        or not isinstance(count, int)
+        or not 0 <= count <= len(encoder.layers)
+    ):
+        raise ValueError("freeze_encoder_layers must be an integer within the encoder layer count")
+    if count == 0:
+        return 0
+    parameters = {
+        parameter
+        for module in [encoder.embedding, *encoder.layers[:count]]
+        for parameter in module.parameters()
+    }
+    for parameter in parameters:
+        parameter.requires_grad_(False)
+    return sum(parameter.numel() for parameter in parameters)
+
+
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
     """Main training entry point."""
@@ -257,20 +277,8 @@ def main(cfg: DictConfig) -> None:
 
     # Freeze lower encoder layers (keeps pretrained language understanding, adapts upper layers)
     freeze_layers = cfg.training.get("freeze_encoder_layers", 0)
+    frozen_params = freeze_encoder_layers(model.encoder, freeze_layers)
     if freeze_layers > 0:
-        frozen_params = 0
-        # Freeze embedding layer
-        if hasattr(model.encoder, "embed_tokens"):
-            for p in model.encoder.embed_tokens.parameters():
-                p.requires_grad = False
-                frozen_params += p.numel()
-        # Freeze specified number of encoder layers
-        if hasattr(model.encoder, "layers"):
-            for i, layer in enumerate(model.encoder.layers):
-                if i < freeze_layers:
-                    for p in layer.parameters():
-                        p.requires_grad = False
-                        frozen_params += p.numel()
         trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
         print(f"  Frozen layers: 0-{freeze_layers - 1} ({frozen_params / 1e6:.1f}M params)")
         print(f"  Trainable: {trainable:,} ({trainable / 1e6:.1f}M)")
@@ -349,6 +357,8 @@ def main(cfg: DictConfig) -> None:
             task_sampling_alpha=float(trainer_cfg.get("task_sampling_alpha", 0.5)),
             gradient_conflict_frequency=int(trainer_cfg.get("gradient_conflict_frequency", 0)),
             use_pcgrad=bool(trainer_cfg.get("use_pcgrad", False)),
+            generation_metrics=bool(trainer_cfg.get("generation_metrics", True)),
+            tracking_uri=str(trainer_cfg.get("tracking_uri", "sqlite:///mlruns.db")),
         ),
         device=device,
         tokenizer=tokenizer,
@@ -404,4 +414,9 @@ def main(cfg: DictConfig) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "--pilot":
+        from src.training.pilot import main as pilot_main
+
+        raise SystemExit(pilot_main(sys.argv[2:]))
+    else:
+        main()
