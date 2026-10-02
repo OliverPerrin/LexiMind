@@ -1,0 +1,684 @@
+{
+  "schema_version": 1,
+  "policy": "bookdash-independent-cohort-v1",
+  "commit": "54916310c5c06a5282e2d5d4add18d64f90e5fde",
+  "selection": "All previously unused English sources at this pinned commit with at least 100 whitespace-delimited narrative words, exactly 12 supported page markers, and per-title CC-BY-4.0 metadata. No model-based filtering.",
+  "metadata": {
+    "path": "data/research_candidates/bookdash/sources/2979394c86bf5a3171500a6d15e2cb45ef0f261d2dcab7a6322504319627564f/meta.yml",
+    "bytes": 102260,
+    "sha256": "2979394c86bf5a3171500a6d15e2cb45ef0f261d2dcab7a6322504319627564f",
+    "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/_data/meta.yml"
+  },
+  "tree": {
+    "path": "data/research_candidates/bookdash/sources/a675538ceec11ae88a56ac7a4d629cb1d2adf5d5e514470868cade01c1a40679/tree.json",
+    "bytes": 424213,
+    "sha256": "a675538ceec11ae88a56ac7a4d629cb1d2adf5d5e514470868cade01c1a40679",
+    "url": "https://api.github.com/repos/bookdash/bookdash-books/git/trees/54916310c5c06a5282e2d5d4add18d64f90e5fde?recursive=1"
+  },
+  "books": [
+    {
+      "slug": "a-beautiful-day",
+      "title": "A Beautiful Day",
+      "source_heading": "A Beautiful Day",
+      "creators": [
+        "Raeesah Vawda",
+        "Lindy Pelzl",
+        "Elana Bregin"
+      ],
+      "publication_date": "2015-11-07",
+      "provider_id": "9c9e94e0-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-15-6",
+      "source": {
+        "bytes": 2177,
+        "sha256": "be8f87f97e88aa0f1438cce15a10f611a3d3280a86c27cbfbd399fc2bb63a2f1",
+        "git_blob": "00f1c85dae50c8366c90e8c93827f0adb161a54e"
+      },
+      "expected_words": 125
+    },
+    {
+      "slug": "a-dancers-tale",
+      "title": "A Dancer’s Tale",
+      "source_heading": "A Dancer's Tale: The Story of Phyllis Spira",
+      "creators": [
+        "Samantha Cutler",
+        "Thea Nicole De Klerk",
+        "Roberto Pita"
+      ],
+      "publication_date": "2014-08-30",
+      "provider_id": "9c9e8586-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9946519-1-4",
+      "source": {
+        "bytes": 4065,
+        "sha256": "52403faf9a0b509b670090d4dace2e90fa1eb7f40e69f7582c24bedc03462bf0",
+        "git_blob": "8b796cc8530702a6583484e8d7f9493ac95f9cf1"
+      },
+      "expected_words": 411
+    },
+    {
+      "slug": "a-tiny-seed",
+      "title": "A Tiny Seed",
+      "source_heading": "A Tiny Seed: The Story of Wangari Maathai",
+      "creators": [
+        "Nicola Rijsdijk",
+        "Maya Marshak",
+        "Karen Lilje"
+      ],
+      "publication_date": "2014-08-30",
+      "provider_id": "9c9e7a6e-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9946519-2-1",
+      "source": {
+        "bytes": 3474,
+        "sha256": "4b1a6f23e08217a755839fc3b253f7ed082cb29495a9cc99580f0372e0e375c4",
+        "git_blob": "0165547ce0984a18d36aebfc4e26cd60798c5c00"
+      },
+      "expected_words": 412
+    },
+    {
+      "slug": "amazing-daisy",
+      "title": "Amazing Daisy",
+      "source_heading": "Amazing Daisy!",
+      "creators": [
+        "Nozizwe Herero",
+        "Siya Masuku",
+        "Leona Ingram"
+      ],
+      "publication_date": "2015-07-27",
+      "provider_id": "9c9e7b9a-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-32-3",
+      "source": {
+        "bytes": 3021,
+        "sha256": "ed7f390e7ab6eac4ba22c1a82f064837500440ace4a696a074cb91679cb27889",
+        "git_blob": "d2f6f12cc640c95fc910baa91ab8393d550e758d"
+      },
+      "expected_words": 337
+    },
+    {
+      "slug": "gracas-dream",
+      "title": "Graca's Dream",
+      "source_heading": "Graça’s Dream",
+      "creators": [
+        "Melissa Fagan",
+        "Karlien de Villiers",
+        "Marike le Roux"
+      ],
+      "publication_date": "2014-08-30",
+      "provider_id": "9c9e71cc-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922358-7-1",
+      "source": {
+        "bytes": 4689,
+        "sha256": "850af7cbe5f6d46280ea70ca3bd93e85dd5c59a1283d8a99cbb3416d802b46be",
+        "git_blob": "a764198f3a7dc07fe0e0a8e286cc617dd9f45b07"
+      },
+      "expected_words": 528
+    },
+    {
+      "slug": "grandpas-gold",
+      "title": "Grandpa's Gold",
+      "source_heading": "Grandpa's Gold",
+      "creators": [
+        "Kerry Saadien-Raad",
+        "Elsabé Milandri",
+        "Mathilde de Blois"
+      ],
+      "publication_date": "2014-06-28",
+      "provider_id": "9c9e6524-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922358-5-7",
+      "source": {
+        "bytes": 2328,
+        "sha256": "56b8cf799d3908827c5347d5be8a3a8588daf4c709bb5e732f33d1f4947d078a",
+        "git_blob": "25f6f0c01a05c9db8597bc4a6cc18595bd4d9d9b"
+      },
+      "expected_words": 184
+    },
+    {
+      "slug": "hippo-wants-to-dance",
+      "title": "Hippo Wants to Dance",
+      "source_heading": "Hippo Wants to Dance",
+      "creators": [
+        "Megan Andrews",
+        "Sam Beckbessinger",
+        "Marisa Steyn"
+      ],
+      "publication_date": "2016-03-05",
+      "provider_id": "9c9f4976-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-49-1",
+      "source": {
+        "bytes": 2409,
+        "sha256": "183d9ec435da5dd71ede072252095c4e879a5aee89d2c4af65a5a0a09efa064f",
+        "git_blob": "4027ef47358ea196db9e1a5f7c67fa819e4d4d45"
+      },
+      "expected_words": 188
+    },
+    {
+      "slug": "i-will-help-you",
+      "title": "I Will Help You",
+      "source_heading": "I Will Help You",
+      "creators": [
+        "Fathima Kathrada",
+        "Olivia Villet",
+        "Andrea Abbott"
+      ],
+      "publication_date": "2015-11-07",
+      "provider_id": "9c9e9396-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922357-3-4",
+      "source": {
+        "bytes": 2120,
+        "sha256": "dd560387bbf64e47dc667fbd085a50b425455317016cf5bebeb1d3f8315c880c",
+        "git_blob": "b321ddf9154f9a58b06f1ef8b4a46b772241a26b"
+      },
+      "expected_words": 123
+    },
+    {
+      "slug": "is-there-anyone-like-me",
+      "title": "Is There Anyone Like Me?",
+      "source_heading": "Is There Anyone Like Me?",
+      "creators": [
+        "Fred Strydom",
+        "Jess Jardim-Wedepohl",
+        "Stephen Wallace"
+      ],
+      "publication_date": "2015-07-27",
+      "provider_id": "9c9e8c0c-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-26-2",
+      "source": {
+        "bytes": 1841,
+        "sha256": "09becc27dbb5561264d41165b08a379782a12b3d8b2f3d9e37f8ec5a3e9993cd",
+        "git_blob": "6506ba222e75e181b2b2079aef7cf14772b72f7d"
+      },
+      "expected_words": 114
+    },
+    {
+      "slug": "karabos-question",
+      "title": "Karabo's Question",
+      "source_heading": "Karabo’s Question",
+      "creators": [
+        "Leisl Jobson",
+        "Natalie Propa",
+        "Marike Beyleveld"
+      ],
+      "publication_date": "2015-07-27",
+      "provider_id": "9c9e9e5e-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-33-0",
+      "source": {
+        "bytes": 1932,
+        "sha256": "b90ba860a981ceab030d5492dac794ba754d6fa99404a5312a7b83d13761af50",
+        "git_blob": "b8f398439cc14b735f337cb2b68fb5e37e501ee9"
+      },
+      "expected_words": 196
+    },
+    {
+      "slug": "lara-the-yellow-ladybird",
+      "title": "Lara the Yellow Ladybird",
+      "source_heading": "Lara the Yellow Ladybird",
+      "creators": [
+        "Martha Evans",
+        "Catherine Holtzhausen",
+        "Nadene Kriel"
+      ],
+      "publication_date": "2016-03-05",
+      "provider_id": "9c9f566e-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-54-5",
+      "source": {
+        "bytes": 2691,
+        "sha256": "8bee061fc85315c5766e6adf451f65f6b0af47566813eebd1909f85b3d94a103",
+        "git_blob": "dba794ff7699fcfcab118a0b96ae85260df1055c"
+      },
+      "expected_words": 206
+    },
+    {
+      "slug": "little-sock",
+      "title": "Little Sock and the Tiny Creatures",
+      "source_heading": "Little Sock and the Tiny Creatures",
+      "creators": [
+        "Lili Probart",
+        "Jon Keevy",
+        "Chani Coetzee"
+      ],
+      "publication_date": "2016-03-05",
+      "provider_id": "9c9f4da4-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-50-7",
+      "source": {
+        "bytes": 2026,
+        "sha256": "8dd4a5cb877600ad8af64b5d108fcbb9c21886f2345cab0620f32b68b484b3fb",
+        "git_blob": "7d5369540fbaa04e00a8140e70ea54041cfb4637"
+      },
+      "expected_words": 128
+    },
+    {
+      "slug": "londi-the-dreaming-girl",
+      "title": "Londi the dreaming girl",
+      "source_heading": "Londi the Dreaming Girl",
+      "creators": [
+        "Lauren Holliday",
+        "Nathalie Koenig"
+      ],
+      "publication_date": "2015-11-07",
+      "provider_id": "9c9e96ac-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-18-7",
+      "source": {
+        "bytes": 2472,
+        "sha256": "eacc7c629fadbc1682ce5d2e73bdf944eef212a96321f1cf8bd52357a94a0e45",
+        "git_blob": "0e4fceb754a27daa808c5c5a0baf7c124a59522c"
+      },
+      "expected_words": 213
+    },
+    {
+      "slug": "lory-dory",
+      "title": "Lory Dory",
+      "source_heading": "Lory Dory ",
+      "creators": [
+        "Sonia Dearling",
+        "Brendan O'Neill",
+        "Arthur Attwell"
+      ],
+      "publication_date": "2015-07-27",
+      "provider_id": "9c9e83b0-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-23-1",
+      "source": {
+        "bytes": 2495,
+        "sha256": "d288eaa982ce07c7806993bcee496726377c702d68cb7fc155299e20752d7385",
+        "git_blob": "f367c6b607a46406d80fbff503e8df8b6ce708dd"
+      },
+      "expected_words": 223
+    },
+    {
+      "slug": "maddy-moona",
+      "title": "Maddy Moona's Menagerie",
+      "source_heading": "Maddy Moona’s Menagerie!",
+      "creators": [
+        "Rachel Zadok",
+        "Candace Di Talamo",
+        "Nick Mulgrew"
+      ],
+      "publication_date": "2014-06-28",
+      "provider_id": "9c9e7dca-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922357-4-1",
+      "source": {
+        "bytes": 4543,
+        "sha256": "46af9b9710ef524f98565bd989da7287e9d2c5d5c248ca5c5bbc9f773cea5c42",
+        "git_blob": "cfdb03093b051b229cd187033db27158c117d77c"
+      },
+      "expected_words": 554
+    },
+    {
+      "slug": "miss-helens-magical-world",
+      "title": "Miss Helen's Magical World",
+      "source_heading": "Miss Helen’s Magical World",
+      "creators": [
+        "Jacqui L'Ange",
+        "Wendy Morison",
+        "Nadene Kriel"
+      ],
+      "publication_date": "2014-08-30",
+      "provider_id": "9c9e6196-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9946519-4-5",
+      "source": {
+        "bytes": 5702,
+        "sha256": "ae19180666c1592e1a7516bc394917ef5ef276fc73c31b23fea9e2c745e8b833",
+        "git_blob": "0f2c8e985becb4d233df9360b93d81fbba0dee37"
+      },
+      "expected_words": 754
+    },
+    {
+      "slug": "mrs-penguins-palace",
+      "title": "Mrs Penguin's Perfect Palace",
+      "source_heading": "Mrs Penguin’s Perfect Palace",
+      "creators": [
+        "Helen Brain Faulkner",
+        "Vian Oelofsen",
+        "Jennifer Jacobs",
+        "Celeste Beckerling"
+      ],
+      "publication_date": "2014-05-10",
+      "provider_id": "9c9eb7e0-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922357-2-7",
+      "source": {
+        "bytes": 3511,
+        "sha256": "96f2b5fb7c19068f11bc648f6515351783595a6df738925226db65f15d058c62",
+        "git_blob": "e15044b1ed7270d0138b89c541f616520333991d"
+      },
+      "expected_words": 296
+    },
+    {
+      "slug": "queen-of-soweto",
+      "title": "Queen of Soweto",
+      "source_heading": "Queen of Soweto: The story of Basetsana Kumalo",
+      "creators": [
+        "Jessica Taylor",
+        "Mia du Plessis",
+        "Marli Fourie"
+      ],
+      "publication_date": "2014-08-30",
+      "provider_id": "9c9e640c-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922358-6-4",
+      "source": {
+        "bytes": 5373,
+        "sha256": "a8c7404a0cfd3a47dfdc7e47ecbeae953f8d16686c225fcd4c89ab3144a47895",
+        "git_blob": "f64bda1dc84b8c8a82730219a43ba2a13790d024"
+      },
+      "expected_words": 716
+    },
+    {
+      "slug": "rafikis-style",
+      "title": "Rafiki's Style",
+      "source_heading": "Rafiki’s Style",
+      "creators": [
+        "Louis Greenberg",
+        "Audrey Anderson",
+        "Wesley Thompson"
+      ],
+      "publication_date": "2015-07-27",
+      "provider_id": "9c9e6e52-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-27-9",
+      "source": {
+        "bytes": 2412,
+        "sha256": "b8c4e668fe766acc5262e538d2270f4c03eff74d89ba64d0544e8cdc4dcb91b3",
+        "git_blob": "ea8bc73c8ae4f40dbfce630245f1710996c2881f"
+      },
+      "expected_words": 140
+    },
+    {
+      "slug": "searching-for-the-spirit-of-spring",
+      "title": "Searching for the Spirit of Spring",
+      "source_heading": "Searching for the spirit of spring",
+      "creators": [
+        "Mosa Mahlaba",
+        "Selina Morulane",
+        "Sibusiso Mkhwanazi"
+      ],
+      "publication_date": "2015-07-27",
+      "provider_id": "9c9e76ea-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-30-9",
+      "source": {
+        "bytes": 5055,
+        "sha256": "5bdf6e1fbbe3203740d95e31c37f8a348783f9cce5864d95f7ef8fed14e664a2",
+        "git_blob": "ddea02bf822a6988bbcd1a3a7a8c65c832f3a454"
+      },
+      "expected_words": 678
+    },
+    {
+      "slug": "sima-and-siza",
+      "title": "Sima and Siza",
+      "source_heading": "Sima and Siza",
+      "creators": [
+        "Lwando Xaso",
+        "CClaire Ingram"
+      ],
+      "publication_date": "2015-07-27",
+      "provider_id": "9c9ea96c-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-24-8",
+      "source": {
+        "bytes": 2808,
+        "sha256": "3b30e01cc327b9b5bca3d4892760cf0f5a71694d9370addb74d35c22477987b8",
+        "git_blob": "e4f05796cdee8909176af4f8434ae86dc8170cf5"
+      },
+      "expected_words": 278
+    },
+    {
+      "slug": "sindi-and-the-moon",
+      "title": "Sindi and the Moon",
+      "source_heading": "Sindi and the Moon",
+      "creators": [
+        "Thokozani Mkhize",
+        "Wesley van Eeden",
+        "Zanele Dlamini"
+      ],
+      "publication_date": "2015-11-07",
+      "provider_id": "9c9ea21e-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-08-8",
+      "source": {
+        "bytes": 3963,
+        "sha256": "853e734580271bf8bad8e737d1cfac69518a0ef7ade377714534c5f6f1cf91d6",
+        "git_blob": "e0e3a654cb40e7dfe481594704ea59767f84f736"
+      },
+      "expected_words": 534
+    },
+    {
+      "slug": "sindiwe-and-the-fireflies",
+      "title": "Sindiwe & the Fireflies",
+      "source_heading": "Sindiwe and the Fireflies",
+      "creators": [
+        "Cheréne Pienaar",
+        "Jano Strydom",
+        "Tess Gadd"
+      ],
+      "publication_date": "2014-08-30",
+      "provider_id": "9c9e596c-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9946519-3-8",
+      "source": {
+        "bytes": 3519,
+        "sha256": "a292ae64c7de448568dcbff1d20a7ea93ab0fe9f4b847c3332c340e24e280026",
+        "git_blob": "6323503ed0333f812019c42812ce5d68afdfcf60"
+      },
+      "expected_words": 411
+    },
+    {
+      "slug": "singing-the-truth",
+      "title": "Singing the Truth",
+      "source_heading": "Singing the Truth: the story of Miriam Makeba",
+      "creators": [
+        "Jade Mathieson",
+        "Louwrisa Blaauw",
+        "Bianca de Jong"
+      ],
+      "publication_date": "2014-08-30",
+      "provider_id": "9c9e62ea-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9946519-0-7",
+      "source": {
+        "bytes": 3726,
+        "sha256": "f891964a265516afed5c40c760e55da9a38093e2911de7c2adb63f8e7d421c82",
+        "git_blob": "8aa05b4573afb3315b5cdd8dfc67a8530400eacf"
+      },
+      "expected_words": 469
+    },
+    {
+      "slug": "sleepy-mr-sloth",
+      "title": "Sleepy Mr Sloth",
+      "source_heading": "Sleepy Mr Sloth",
+      "creators": [
+        "Graham Paterson",
+        "Paul Kennedy",
+        "Nick Mulgrew"
+      ],
+      "publication_date": "2014-05-10",
+      "provider_id": "9c9e7cb2-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922357-0-3",
+      "source": {
+        "bytes": 2332,
+        "sha256": "2748730cb37302ca9084795624617d5824950f08959ead29147e333e4738957b",
+        "git_blob": "edceff530f721f7cba3a54b81bef0b96c4fb90dd"
+      },
+      "expected_words": 222
+    },
+    {
+      "slug": "thatos-birthday-surprise",
+      "title": "Thato's Birthday Surprise",
+      "source_heading": "Thato’s Birthday Surprise",
+      "creators": [
+        "Jodi Houareau",
+        "Brad Cuzen",
+        "Corinne Lamoral-Rosmarin"
+      ],
+      "publication_date": "2015-11-07",
+      "provider_id": "9c9eb68c-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-34-7",
+      "source": {
+        "bytes": 2404,
+        "sha256": "9d1e7af5dbf2605f2162f412c0c45ef23e22336fcbb350a5f9f76bc8b37dc53f",
+        "git_blob": "20833b0f9bae8abe3fec350cbaced0e0837c625f"
+      },
+      "expected_words": 211
+    },
+    {
+      "slug": "the-best-thing-ever",
+      "title": "The Best Thing Ever",
+      "source_heading": "The best thing ever",
+      "creators": [
+        "Melissa Fagan",
+        "Lauren Nel",
+        "Stefania Origgi"
+      ],
+      "publication_date": "2016-03-05",
+      "provider_id": "9c9f5790-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-55-2",
+      "source": {
+        "bytes": 2674,
+        "sha256": "8b734558f20707fc98cb012d44343c27549087173f91cde52f75836a81b3e75c",
+        "git_blob": "237d07e274e116287ad9612b89e68d401634ba41"
+      },
+      "expected_words": 183
+    },
+    {
+      "slug": "the-elephant-in-the-room",
+      "title": "The Elephant in the Room",
+      "source_heading": "The Elephant in the Room",
+      "creators": [
+        "Sam Wilson",
+        "Michael Tymbios",
+        "Thomas Pepler"
+      ],
+      "publication_date": "2014-06-28",
+      "provider_id": "9c9ec05a-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922357-9-6",
+      "source": {
+        "bytes": 3623,
+        "sha256": "6502396cf49bdc826aefc19c5b3c810c4a50c9a63849f93c1017c0b8099ed60c",
+        "git_blob": "61c024b87f917010ebaf1654a444b306d8b6542d"
+      },
+      "expected_words": 377
+    },
+    {
+      "slug": "there-must-be-a-rainbow",
+      "title": "There Must be a Rainbow",
+      "source_heading": "There Must be a Rainbow",
+      "creators": [
+        "Thulisizwe Mamba",
+        "Sinomonde Ngwane",
+        "Nerissa Govender"
+      ],
+      "publication_date": "2015-11-07",
+      "provider_id": "9c9ea48a-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-36-1",
+      "source": {
+        "bytes": 2629,
+        "sha256": "59fa89aa0d7f1b9b95e003599dfb2765be1a5acdf003462688c12eb6033e6433",
+        "git_blob": "51dba77004f84264586f9d8ac20acf59f5c832dc"
+      },
+      "expected_words": 281
+    },
+    {
+      "slug": "together-were-strong",
+      "title": "Together We're Strong",
+      "source_heading": "Together We’re Strong: The Story of Albertina Sisulu",
+      "creators": [
+        "Liesl Jobson",
+        "Alice Toich",
+        "Nazli Jacobs"
+      ],
+      "publication_date": "2014-08-30",
+      "provider_id": "9c9e663c-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922358-8-8",
+      "source": {
+        "bytes": 11018,
+        "sha256": "d473615bffc2929c912bc477e01ab6d36b839a1721eaefd9609e692db446c472",
+        "git_blob": "03b11c2d9c817ba2ee3a9aaa4acbe5e7c758a3a3"
+      },
+      "expected_words": 1659
+    },
+    {
+      "slug": "tortoise-finds-his-home",
+      "title": "Tortoise Finds His Home",
+      "source_heading": "Tortoise finds his home",
+      "creators": [
+        "Maya Fowler",
+        "Katrin Coetzer",
+        "Damian Gibbs"
+      ],
+      "publication_date": "2014-06-28",
+      "provider_id": "9c9e6f9c-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922358-0-2",
+      "source": {
+        "bytes": 3599,
+        "sha256": "4178959fb639d6e59fda438b6d775bba3d66e064bf9428579a8df2be47c35d69",
+        "git_blob": "8704fa8865b4716516cf825e2123ecbc6162f601"
+      },
+      "expected_words": 363
+    },
+    {
+      "slug": "walking-together",
+      "title": "Walking Together",
+      "source_heading": "Walking Together",
+      "creators": [
+        "Jade Mathieson",
+        "Louwrisa Blaauw",
+        "Bianca de Jong"
+      ],
+      "publication_date": "2015-07-27",
+      "provider_id": "9c9e9102-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-28-6",
+      "source": {
+        "bytes": 2440,
+        "sha256": "e1a7493b0b641e1076aea4db5499bb3b0a15191895fc3c29e3487056a0e5d4ef",
+        "git_blob": "18c802bcb8f1b221aa5de9f95e435dd044eea8f8"
+      },
+      "expected_words": 216
+    },
+    {
+      "slug": "what-if",
+      "title": "What if",
+      "source_heading": "What if...?",
+      "creators": [
+        "Julie Ann Smith-Belton",
+        "MaryAn Hampton",
+        "Cristy Zinn"
+      ],
+      "publication_date": "2015-11-07",
+      "provider_id": "9c9f3292-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-35-4",
+      "source": {
+        "bytes": 1963,
+        "sha256": "b2c52782b50fe5e61a1c2e8c2c432a92cf539a24a32630e3e72bce4d0b6a7827",
+        "git_blob": "d148a3eb7997ba258a92357bc7c1df98d825bfef"
+      },
+      "expected_words": 152
+    },
+    {
+      "slug": "when-i-grow-up",
+      "title": "When I Grow Up",
+      "source_heading": "When I Grow Up",
+      "creators": [
+        "Simóne van der Spuy",
+        "Michele Fry",
+        "Jennifer Jacobs"
+      ],
+      "publication_date": "2016-03-05",
+      "provider_id": "9c9f471e-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-1-928318-47-7",
+      "source": {
+        "bytes": 2151,
+        "sha256": "fab9e242df5bd713d5c42a2aa70f5bc33a789670e5fda4df94a60172a6415dea",
+        "git_blob": "d540bf9632969184a5a12f4d7c31d385bdc74656"
+      },
+      "expected_words": 173
+    },
+    {
+      "slug": "zanele-situ-my-story",
+      "title": "Zanele Situ: My Story",
+      "source_heading": "Zanele Situ: My story",
+      "creators": [
+        "Liz Sparg",
+        "Jesse Breytenbach",
+        "Andy Thesen"
+      ],
+      "publication_date": "2014-08-30",
+      "provider_id": "9c9e6d12-fe46-11e5-86aa-5e5517507c66",
+      "provider_isbn": "978-0-9922358-9-5",
+      "source": {
+        "bytes": 4090,
+        "sha256": "86fe410a81f632bc61d6eb36ea1735866c800b5ee62024e22a63531f756f70c5",
+        "git_blob": "e6b1e517fde60e697030e82587965a84a331b689"
+      },
+      "expected_words": 486
+    }
+  ]
+}

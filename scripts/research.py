@@ -20,6 +20,7 @@ COMMANDS = {
     "bgc-groups": ("bgc_groups", "Prepare conservative BGC identity groups"),
     "book-fields": ("book_fields", "Prepare partial book-field label references"),
     "licensed-books": ("licensed_books", "Prepare licensed book text candidates"),
+    "bookdash": ("bookdash", "Prepare the expanded licensed Book Dash cohort"),
     "cr4": ("cr4", "Audit raw CR4 character-emotion annotations"),
     "book-groups-review": ("book_groups_review", "Prepare bounded cross-source group evidence"),
     "field-review": ("field_review", "Prepare or validate authored field reviews"),

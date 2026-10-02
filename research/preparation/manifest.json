@@ -13,8 +13,8 @@
       "id": "preparation_status",
       "scope": "common",
       "path": "configs/research/preparation.json",
-      "bytes": 8698,
-      "sha256": "9851af832539df1491b225e2a5198abbfa398db1aac598c8d97cb8f1f4fc5717"
+      "bytes": 8977,
+      "sha256": "a237db0c97e1107ff46d2c529f9df131fee38f662a4eead5e05a722f2dd67c1c"
     },
     {
       "id": "research_index",
@@ -41,8 +41,8 @@
       "id": "preflight_contract",
       "scope": "common",
       "path": "src/research/preparation.py",
-      "bytes": 28816,
-      "sha256": "2c38f0d7123a16e9f158c209470b3189a3943e34a513bdbd5134277ff66cf7b0"
+      "bytes": 29819,
+      "sha256": "bfb6c3b37d56b091977c9374d594c9fe9df8c2bd825461ba41293855e5550e98"
     },
     {
       "id": "file_integrity_contract",
@@ -55,15 +55,15 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 8813,
-      "sha256": "e99158b7dedbba438de207cddb5ad22dd6abfeac2a124f483b41543b252e5ca7"
+      "bytes": 9220,
+      "sha256": "87ca27ce3014db025f4c815defa346f665e2f31540c01ab4a867b463620af14e"
     },
     {
       "id": "research_entry",
       "scope": "common",
       "path": "scripts/research.py",
-      "bytes": 3039,
-      "sha256": "e038a8157311e23d17cba43156fc27b61b299b14e3baeeedad361665b6b175af"
+      "bytes": 3119,
+      "sha256": "23be0ac9c474f61b0cf46d8e4c3c29a2653cfe3633bd6f4f76e411deb8a9bb93"
     },
     {
       "id": "builder_location",
@@ -328,8 +328,8 @@
       "id": "pilot_runtime",
       "scope": "model_study",
       "path": "src/training/pilot.py",
-      "bytes": 29697,
-      "sha256": "49711a8aed368d711d28481d3c05c66549ca0a6ae1f6040769e7ba3da5747063"
+      "bytes": 30635,
+      "sha256": "dae8c5f96c422c4bc20cd37da8c8ac4b6245b65ff8c19bf34eefa435126463e1"
     },
     {
       "id": "pilot_config",
@@ -337,6 +337,41 @@
       "path": "configs/research/macbook_pilot.json",
       "bytes": 2174,
       "sha256": "32c5e890a4815ee870482d47d43ff424441ce298b50365d601070b42ec09258e"
+    },
+    {
+      "id": "bookdash_sources",
+      "scope": "model_study",
+      "path": "research/preparation/bookdash_sources.json",
+      "bytes": 22699,
+      "sha256": "a11dcb4bb98deb06a00e49277a6f615c28d8f6aabfa3ec6f8c99dbe1b3cfe99a"
+    },
+    {
+      "id": "bookdash_candidate",
+      "scope": "model_study",
+      "path": "research/preparation/bookdash_manifest.json",
+      "bytes": 57022,
+      "sha256": "b8907bc7cc5596b6a3de8e15f6c7128cec1a71ab747b7cc084930b7457bdf996"
+    },
+    {
+      "id": "bookdash_builder",
+      "scope": "model_study",
+      "path": "src/research/builders/bookdash.py",
+      "bytes": 19103,
+      "sha256": "311857c719395a75a0b892b146e37ced5523ee3315ce08f25c6f9a351cfad3bb"
+    },
+    {
+      "id": "denoising_runtime",
+      "scope": "model_study",
+      "path": "src/training/denoising.py",
+      "bytes": 32654,
+      "sha256": "00178de32636ca406d1c9277b4e5febb67a47d909b647290ce8465b3c17293d0"
+    },
+    {
+      "id": "denoising_config",
+      "scope": "model_study",
+      "path": "configs/research/book_denoising.json",
+      "bytes": 2641,
+      "sha256": "87e07e3e52c470310d8e7b013bdc39ab50eb441aa98c3beab9f06676bd5a4413"
     },
     {
       "id": "pilot_observations",

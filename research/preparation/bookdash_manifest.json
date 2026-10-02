@@ -1,0 +1,1074 @@
+{
+  "schema_version": 1,
+  "policy": "bookdash-independent-cohort-v1",
+  "candidate_status": "unadmitted",
+  "training_authorized": false,
+  "training_performed": false,
+  "inputs": {
+    "registry": {
+      "path": "research/preparation/bookdash_sources.json",
+      "bytes": 22699,
+      "sha256": "a11dcb4bb98deb06a00e49277a6f615c28d8f6aabfa3ec6f8c99dbe1b3cfe99a"
+    },
+    "legacy_sources": {
+      "path": "research/preparation/licensed_books_sources.json",
+      "bytes": 7705,
+      "sha256": "02dd9de53b398fefd671ab9b12e09c17e3af6cea7dcbe6e2976c70e1e446cfa0"
+    },
+    "legacy_manifest": {
+      "path": "research/preparation/licensed_books_manifest.json",
+      "bytes": 7753,
+      "sha256": "810f823565504cbf4db8422e7e753f7a52273f2f717842ebedaa3a3910e89053"
+    },
+    "bgc_manifest": {
+      "path": "research/preparation/bgc_candidate_manifest.json",
+      "bytes": 18995,
+      "sha256": "be54f692cdfa0cad29ff03de57009ed376fc41e04ff9805806d5817eb6a02dee"
+    },
+    "catalogue": {
+      "path": "web/data/books.json",
+      "bytes": 246566,
+      "sha256": "2adb8d4bdeb13cf367b76ea1fcbd8a4cccacad72699eb356b168974db221d777"
+    },
+    "metadata": {
+      "path": "data/research_candidates/bookdash/sources/2979394c86bf5a3171500a6d15e2cb45ef0f261d2dcab7a6322504319627564f/meta.yml",
+      "bytes": 102260,
+      "sha256": "2979394c86bf5a3171500a6d15e2cb45ef0f261d2dcab7a6322504319627564f",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/_data/meta.yml"
+    },
+    "metadata_receipt": {
+      "path": "data/research_candidates/bookdash/sources/2979394c86bf5a3171500a6d15e2cb45ef0f261d2dcab7a6322504319627564f/meta.yml.receipt.json",
+      "bytes": 568,
+      "sha256": "9f824e9f117321a6c59b1bf8dfd10364340dfadbc112c0b3e3f5b00f01ab2fe2"
+    },
+    "tree": {
+      "path": "data/research_candidates/bookdash/sources/a675538ceec11ae88a56ac7a4d629cb1d2adf5d5e514470868cade01c1a40679/tree.json",
+      "bytes": 424213,
+      "sha256": "a675538ceec11ae88a56ac7a4d629cb1d2adf5d5e514470868cade01c1a40679",
+      "url": "https://api.github.com/repos/bookdash/bookdash-books/git/trees/54916310c5c06a5282e2d5d4add18d64f90e5fde?recursive=1"
+    },
+    "tree_receipt": {
+      "path": "data/research_candidates/bookdash/sources/a675538ceec11ae88a56ac7a4d629cb1d2adf5d5e514470868cade01c1a40679/tree.json.receipt.json",
+      "bytes": 497,
+      "sha256": "54615760e10c6d39816ecc7a8c314a3c2c7e1da4a0e42927f3e79a6ab789d449"
+    },
+    "prior_work:cory-doctorow-little-brother": {
+      "path": "data/research_candidates/licensed_books/prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/cory-doctorow-little-brother.json",
+      "bytes": 584065,
+      "sha256": "9aa0c4fa7d7cf24ceef4624cc837a8787cd6342b3eb60fc0fdf8fbb2042a0645"
+    },
+    "prior_work:bookdash-little-ants-big-plan": {
+      "path": "data/research_candidates/licensed_books/prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/bookdash-little-ants-big-plan.json",
+      "bytes": 4657,
+      "sha256": "90819cdf883e2a8369e31927f8bb67b04bdfd278201948306e36fd3ac1552d10"
+    },
+    "prior_work:bookdash-sizwes-smile": {
+      "path": "data/research_candidates/licensed_books/prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/bookdash-sizwes-smile.json",
+      "bytes": 7385,
+      "sha256": "9a049066613d28c3392722fcfc50226053521cabcc53b8ebc7df3857b48f036d"
+    },
+    "prior_work:bookdash-why-is-nita-upside-down": {
+      "path": "data/research_candidates/licensed_books/prepared/382e76ae39161877de3a896f514ae456c0ca34bb3355b1af838e1f3bf6660f4e/bookdash-why-is-nita-upside-down.json",
+      "bytes": 4828,
+      "sha256": "e5832c7960cfd287fbea3898c4e81b051e1578ae1a8d455f8f063dc03eeba1d4"
+    },
+    "source:a-beautiful-day": {
+      "bytes": 2177,
+      "sha256": "be8f87f97e88aa0f1438cce15a10f611a3d3280a86c27cbfbd399fc2bb63a2f1",
+      "git_blob": "00f1c85dae50c8366c90e8c93827f0adb161a54e",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/a-beautiful-day/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/be8f87f97e88aa0f1438cce15a10f611a3d3280a86c27cbfbd399fc2bb63a2f1/a-beautiful-day.md"
+    },
+    "receipt:a-beautiful-day": {
+      "path": "data/research_candidates/bookdash/sources/be8f87f97e88aa0f1438cce15a10f611a3d3280a86c27cbfbd399fc2bb63a2f1/a-beautiful-day.md.receipt.json",
+      "bytes": 584,
+      "sha256": "33e33f8b327b17c82c9a5a1c69708c57d831f1e11a924bc437700f15e26267b3"
+    },
+    "source:a-dancers-tale": {
+      "bytes": 4065,
+      "sha256": "52403faf9a0b509b670090d4dace2e90fa1eb7f40e69f7582c24bedc03462bf0",
+      "git_blob": "8b796cc8530702a6583484e8d7f9493ac95f9cf1",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/a-dancers-tale/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/52403faf9a0b509b670090d4dace2e90fa1eb7f40e69f7582c24bedc03462bf0/a-dancers-tale.md"
+    },
+    "receipt:a-dancers-tale": {
+      "path": "data/research_candidates/bookdash/sources/52403faf9a0b509b670090d4dace2e90fa1eb7f40e69f7582c24bedc03462bf0/a-dancers-tale.md.receipt.json",
+      "bytes": 583,
+      "sha256": "c282fcdc89e09a87b668f3db608b7e2418b1699ee5316d0ef63e3016d4481ffd"
+    },
+    "source:a-tiny-seed": {
+      "bytes": 3474,
+      "sha256": "4b1a6f23e08217a755839fc3b253f7ed082cb29495a9cc99580f0372e0e375c4",
+      "git_blob": "0165547ce0984a18d36aebfc4e26cd60798c5c00",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/a-tiny-seed/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/4b1a6f23e08217a755839fc3b253f7ed082cb29495a9cc99580f0372e0e375c4/a-tiny-seed.md"
+    },
+    "receipt:a-tiny-seed": {
+      "path": "data/research_candidates/bookdash/sources/4b1a6f23e08217a755839fc3b253f7ed082cb29495a9cc99580f0372e0e375c4/a-tiny-seed.md.receipt.json",
+      "bytes": 580,
+      "sha256": "a506cd051d3fb9a1d0acfbbddf314b261fef87754ec1b8e2c8dbeaa9d461d9c2"
+    },
+    "source:amazing-daisy": {
+      "bytes": 3021,
+      "sha256": "ed7f390e7ab6eac4ba22c1a82f064837500440ace4a696a074cb91679cb27889",
+      "git_blob": "d2f6f12cc640c95fc910baa91ab8393d550e758d",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/amazing-daisy/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/ed7f390e7ab6eac4ba22c1a82f064837500440ace4a696a074cb91679cb27889/amazing-daisy.md"
+    },
+    "receipt:amazing-daisy": {
+      "path": "data/research_candidates/bookdash/sources/ed7f390e7ab6eac4ba22c1a82f064837500440ace4a696a074cb91679cb27889/amazing-daisy.md.receipt.json",
+      "bytes": 582,
+      "sha256": "be75ed6d82b0ecccb318f88a1a0e333b708f3ba9779e1697e9c8e52d803b8c6d"
+    },
+    "source:gracas-dream": {
+      "bytes": 4689,
+      "sha256": "850af7cbe5f6d46280ea70ca3bd93e85dd5c59a1283d8a99cbb3416d802b46be",
+      "git_blob": "a764198f3a7dc07fe0e0a8e286cc617dd9f45b07",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/gracas-dream/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/850af7cbe5f6d46280ea70ca3bd93e85dd5c59a1283d8a99cbb3416d802b46be/gracas-dream.md"
+    },
+    "receipt:gracas-dream": {
+      "path": "data/research_candidates/bookdash/sources/850af7cbe5f6d46280ea70ca3bd93e85dd5c59a1283d8a99cbb3416d802b46be/gracas-dream.md.receipt.json",
+      "bytes": 581,
+      "sha256": "6d3fcff1f707ea5a342f7991c69169fa50d097cafd9689a4d1e9352d357db09a"
+    },
+    "source:grandpas-gold": {
+      "bytes": 2328,
+      "sha256": "56b8cf799d3908827c5347d5be8a3a8588daf4c709bb5e732f33d1f4947d078a",
+      "git_blob": "25f6f0c01a05c9db8597bc4a6cc18595bd4d9d9b",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/grandpas-gold/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/56b8cf799d3908827c5347d5be8a3a8588daf4c709bb5e732f33d1f4947d078a/grandpas-gold.md"
+    },
+    "receipt:grandpas-gold": {
+      "path": "data/research_candidates/bookdash/sources/56b8cf799d3908827c5347d5be8a3a8588daf4c709bb5e732f33d1f4947d078a/grandpas-gold.md.receipt.json",
+      "bytes": 582,
+      "sha256": "43c35f94e0a120f3408e11cf4c3149e2d2eac1d45458b41ad7e64a36da3c4816"
+    },
+    "source:hippo-wants-to-dance": {
+      "bytes": 2409,
+      "sha256": "183d9ec435da5dd71ede072252095c4e879a5aee89d2c4af65a5a0a09efa064f",
+      "git_blob": "4027ef47358ea196db9e1a5f7c67fa819e4d4d45",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/hippo-wants-to-dance/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/183d9ec435da5dd71ede072252095c4e879a5aee89d2c4af65a5a0a09efa064f/hippo-wants-to-dance.md"
+    },
+    "receipt:hippo-wants-to-dance": {
+      "path": "data/research_candidates/bookdash/sources/183d9ec435da5dd71ede072252095c4e879a5aee89d2c4af65a5a0a09efa064f/hippo-wants-to-dance.md.receipt.json",
+      "bytes": 589,
+      "sha256": "c208c5c8a546e5bef761bb20f76e5caa41e79db8fcc6c59229df1668532e525b"
+    },
+    "source:i-will-help-you": {
+      "bytes": 2120,
+      "sha256": "dd560387bbf64e47dc667fbd085a50b425455317016cf5bebeb1d3f8315c880c",
+      "git_blob": "b321ddf9154f9a58b06f1ef8b4a46b772241a26b",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/i-will-help-you/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/dd560387bbf64e47dc667fbd085a50b425455317016cf5bebeb1d3f8315c880c/i-will-help-you.md"
+    },
+    "receipt:i-will-help-you": {
+      "path": "data/research_candidates/bookdash/sources/dd560387bbf64e47dc667fbd085a50b425455317016cf5bebeb1d3f8315c880c/i-will-help-you.md.receipt.json",
+      "bytes": 584,
+      "sha256": "cf3c8cf5cf490be73713de940eb962f3824fd11c557335091303856b7b755dbe"
+    },
+    "source:is-there-anyone-like-me": {
+      "bytes": 1841,
+      "sha256": "09becc27dbb5561264d41165b08a379782a12b3d8b2f3d9e37f8ec5a3e9993cd",
+      "git_blob": "6506ba222e75e181b2b2079aef7cf14772b72f7d",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/is-there-anyone-like-me/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/09becc27dbb5561264d41165b08a379782a12b3d8b2f3d9e37f8ec5a3e9993cd/is-there-anyone-like-me.md"
+    },
+    "receipt:is-there-anyone-like-me": {
+      "path": "data/research_candidates/bookdash/sources/09becc27dbb5561264d41165b08a379782a12b3d8b2f3d9e37f8ec5a3e9993cd/is-there-anyone-like-me.md.receipt.json",
+      "bytes": 592,
+      "sha256": "583ef4e1fd2640a120be7903a633ecf173d77efe4a9b23adf6e767460d9027aa"
+    },
+    "source:karabos-question": {
+      "bytes": 1932,
+      "sha256": "b90ba860a981ceab030d5492dac794ba754d6fa99404a5312a7b83d13761af50",
+      "git_blob": "b8f398439cc14b735f337cb2b68fb5e37e501ee9",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/karabos-question/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/b90ba860a981ceab030d5492dac794ba754d6fa99404a5312a7b83d13761af50/karabos-question.md"
+    },
+    "receipt:karabos-question": {
+      "path": "data/research_candidates/bookdash/sources/b90ba860a981ceab030d5492dac794ba754d6fa99404a5312a7b83d13761af50/karabos-question.md.receipt.json",
+      "bytes": 585,
+      "sha256": "629a0b91e0036493dc9adca0031544c4cdc747ab52f680cb0367abec33a43e21"
+    },
+    "source:lara-the-yellow-ladybird": {
+      "bytes": 2691,
+      "sha256": "8bee061fc85315c5766e6adf451f65f6b0af47566813eebd1909f85b3d94a103",
+      "git_blob": "dba794ff7699fcfcab118a0b96ae85260df1055c",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/lara-the-yellow-ladybird/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/8bee061fc85315c5766e6adf451f65f6b0af47566813eebd1909f85b3d94a103/lara-the-yellow-ladybird.md"
+    },
+    "receipt:lara-the-yellow-ladybird": {
+      "path": "data/research_candidates/bookdash/sources/8bee061fc85315c5766e6adf451f65f6b0af47566813eebd1909f85b3d94a103/lara-the-yellow-ladybird.md.receipt.json",
+      "bytes": 593,
+      "sha256": "ea78d43fc388dfe02ed89eda7a1edfaae6ca21d4da4ee4013735cbd692f082db"
+    },
+    "source:little-sock": {
+      "bytes": 2026,
+      "sha256": "8dd4a5cb877600ad8af64b5d108fcbb9c21886f2345cab0620f32b68b484b3fb",
+      "git_blob": "7d5369540fbaa04e00a8140e70ea54041cfb4637",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/little-sock/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/8dd4a5cb877600ad8af64b5d108fcbb9c21886f2345cab0620f32b68b484b3fb/little-sock.md"
+    },
+    "receipt:little-sock": {
+      "path": "data/research_candidates/bookdash/sources/8dd4a5cb877600ad8af64b5d108fcbb9c21886f2345cab0620f32b68b484b3fb/little-sock.md.receipt.json",
+      "bytes": 580,
+      "sha256": "9f996ee57d6449a11bb2e1e181f2b48b3ed5ef701f1814b2c567ccbccca0acaf"
+    },
+    "source:londi-the-dreaming-girl": {
+      "bytes": 2472,
+      "sha256": "eacc7c629fadbc1682ce5d2e73bdf944eef212a96321f1cf8bd52357a94a0e45",
+      "git_blob": "0e4fceb754a27daa808c5c5a0baf7c124a59522c",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/londi-the-dreaming-girl/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/eacc7c629fadbc1682ce5d2e73bdf944eef212a96321f1cf8bd52357a94a0e45/londi-the-dreaming-girl.md"
+    },
+    "receipt:londi-the-dreaming-girl": {
+      "path": "data/research_candidates/bookdash/sources/eacc7c629fadbc1682ce5d2e73bdf944eef212a96321f1cf8bd52357a94a0e45/londi-the-dreaming-girl.md.receipt.json",
+      "bytes": 592,
+      "sha256": "b12d2ac05ffabe57762a0c9cc9667dc0001de9800b60ff9f221c9d4f893507e7"
+    },
+    "source:lory-dory": {
+      "bytes": 2495,
+      "sha256": "d288eaa982ce07c7806993bcee496726377c702d68cb7fc155299e20752d7385",
+      "git_blob": "f367c6b607a46406d80fbff503e8df8b6ce708dd",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/lory-dory/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/d288eaa982ce07c7806993bcee496726377c702d68cb7fc155299e20752d7385/lory-dory.md"
+    },
+    "receipt:lory-dory": {
+      "path": "data/research_candidates/bookdash/sources/d288eaa982ce07c7806993bcee496726377c702d68cb7fc155299e20752d7385/lory-dory.md.receipt.json",
+      "bytes": 578,
+      "sha256": "174037d8fce5ff84d3d3c25a903f365ae569cc02f2dd2a67fc77dc01b7f4968d"
+    },
+    "source:maddy-moona": {
+      "bytes": 4543,
+      "sha256": "46af9b9710ef524f98565bd989da7287e9d2c5d5c248ca5c5bbc9f773cea5c42",
+      "git_blob": "cfdb03093b051b229cd187033db27158c117d77c",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/maddy-moona/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/46af9b9710ef524f98565bd989da7287e9d2c5d5c248ca5c5bbc9f773cea5c42/maddy-moona.md"
+    },
+    "receipt:maddy-moona": {
+      "path": "data/research_candidates/bookdash/sources/46af9b9710ef524f98565bd989da7287e9d2c5d5c248ca5c5bbc9f773cea5c42/maddy-moona.md.receipt.json",
+      "bytes": 580,
+      "sha256": "d08fe0fc221b379a9c36f0de8a838d8b59a31f0d8185164188d361cdc31bd127"
+    },
+    "source:miss-helens-magical-world": {
+      "bytes": 5702,
+      "sha256": "ae19180666c1592e1a7516bc394917ef5ef276fc73c31b23fea9e2c745e8b833",
+      "git_blob": "0f2c8e985becb4d233df9360b93d81fbba0dee37",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/miss-helens-magical-world/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/ae19180666c1592e1a7516bc394917ef5ef276fc73c31b23fea9e2c745e8b833/miss-helens-magical-world.md"
+    },
+    "receipt:miss-helens-magical-world": {
+      "path": "data/research_candidates/bookdash/sources/ae19180666c1592e1a7516bc394917ef5ef276fc73c31b23fea9e2c745e8b833/miss-helens-magical-world.md.receipt.json",
+      "bytes": 594,
+      "sha256": "bd178e822a947501659c3c0085f8e30159eba921e68f2ec14d4fed240d857f0f"
+    },
+    "source:mrs-penguins-palace": {
+      "bytes": 3511,
+      "sha256": "96f2b5fb7c19068f11bc648f6515351783595a6df738925226db65f15d058c62",
+      "git_blob": "e15044b1ed7270d0138b89c541f616520333991d",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/mrs-penguins-palace/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/96f2b5fb7c19068f11bc648f6515351783595a6df738925226db65f15d058c62/mrs-penguins-palace.md"
+    },
+    "receipt:mrs-penguins-palace": {
+      "path": "data/research_candidates/bookdash/sources/96f2b5fb7c19068f11bc648f6515351783595a6df738925226db65f15d058c62/mrs-penguins-palace.md.receipt.json",
+      "bytes": 588,
+      "sha256": "0ec3cee92a7327cae39de7f2c164d397e287f1d8e49ca307e11c52333df8579e"
+    },
+    "source:queen-of-soweto": {
+      "bytes": 5373,
+      "sha256": "a8c7404a0cfd3a47dfdc7e47ecbeae953f8d16686c225fcd4c89ab3144a47895",
+      "git_blob": "f64bda1dc84b8c8a82730219a43ba2a13790d024",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/queen-of-soweto/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/a8c7404a0cfd3a47dfdc7e47ecbeae953f8d16686c225fcd4c89ab3144a47895/queen-of-soweto.md"
+    },
+    "receipt:queen-of-soweto": {
+      "path": "data/research_candidates/bookdash/sources/a8c7404a0cfd3a47dfdc7e47ecbeae953f8d16686c225fcd4c89ab3144a47895/queen-of-soweto.md.receipt.json",
+      "bytes": 584,
+      "sha256": "1887d483b565379a3adeeddfb3a8c9eda0e2c8b8955ecff87581e6d1ba1155a6"
+    },
+    "source:rafikis-style": {
+      "bytes": 2412,
+      "sha256": "b8c4e668fe766acc5262e538d2270f4c03eff74d89ba64d0544e8cdc4dcb91b3",
+      "git_blob": "ea8bc73c8ae4f40dbfce630245f1710996c2881f",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/rafikis-style/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/b8c4e668fe766acc5262e538d2270f4c03eff74d89ba64d0544e8cdc4dcb91b3/rafikis-style.md"
+    },
+    "receipt:rafikis-style": {
+      "path": "data/research_candidates/bookdash/sources/b8c4e668fe766acc5262e538d2270f4c03eff74d89ba64d0544e8cdc4dcb91b3/rafikis-style.md.receipt.json",
+      "bytes": 582,
+      "sha256": "ad0da87f92d7fe1cdf363baa7d95fb517715d80e305a7d1b55b366190e95cf31"
+    },
+    "source:searching-for-the-spirit-of-spring": {
+      "bytes": 5055,
+      "sha256": "5bdf6e1fbbe3203740d95e31c37f8a348783f9cce5864d95f7ef8fed14e664a2",
+      "git_blob": "ddea02bf822a6988bbcd1a3a7a8c65c832f3a454",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/searching-for-the-spirit-of-spring/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/5bdf6e1fbbe3203740d95e31c37f8a348783f9cce5864d95f7ef8fed14e664a2/searching-for-the-spirit-of-spring.md"
+    },
+    "receipt:searching-for-the-spirit-of-spring": {
+      "path": "data/research_candidates/bookdash/sources/5bdf6e1fbbe3203740d95e31c37f8a348783f9cce5864d95f7ef8fed14e664a2/searching-for-the-spirit-of-spring.md.receipt.json",
+      "bytes": 603,
+      "sha256": "cf81280cbc02252a0307d0bb320b0fe46973075df56007b53e44107fb7be523d"
+    },
+    "source:sima-and-siza": {
+      "bytes": 2808,
+      "sha256": "3b30e01cc327b9b5bca3d4892760cf0f5a71694d9370addb74d35c22477987b8",
+      "git_blob": "e4f05796cdee8909176af4f8434ae86dc8170cf5",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/sima-and-siza/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/3b30e01cc327b9b5bca3d4892760cf0f5a71694d9370addb74d35c22477987b8/sima-and-siza.md"
+    },
+    "receipt:sima-and-siza": {
+      "path": "data/research_candidates/bookdash/sources/3b30e01cc327b9b5bca3d4892760cf0f5a71694d9370addb74d35c22477987b8/sima-and-siza.md.receipt.json",
+      "bytes": 582,
+      "sha256": "c621bbd18ff1964b32a08e98a4598b30f150b61ce067f37b0b22560beb276261"
+    },
+    "source:sindi-and-the-moon": {
+      "bytes": 3963,
+      "sha256": "853e734580271bf8bad8e737d1cfac69518a0ef7ade377714534c5f6f1cf91d6",
+      "git_blob": "e0e3a654cb40e7dfe481594704ea59767f84f736",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/sindi-and-the-moon/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/853e734580271bf8bad8e737d1cfac69518a0ef7ade377714534c5f6f1cf91d6/sindi-and-the-moon.md"
+    },
+    "receipt:sindi-and-the-moon": {
+      "path": "data/research_candidates/bookdash/sources/853e734580271bf8bad8e737d1cfac69518a0ef7ade377714534c5f6f1cf91d6/sindi-and-the-moon.md.receipt.json",
+      "bytes": 587,
+      "sha256": "6af97a5477b0dbfb7465f7a5dbc1da12dd60bbed5558f72d318ed4be282ec852"
+    },
+    "source:sindiwe-and-the-fireflies": {
+      "bytes": 3519,
+      "sha256": "a292ae64c7de448568dcbff1d20a7ea93ab0fe9f4b847c3332c340e24e280026",
+      "git_blob": "6323503ed0333f812019c42812ce5d68afdfcf60",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/sindiwe-and-the-fireflies/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/a292ae64c7de448568dcbff1d20a7ea93ab0fe9f4b847c3332c340e24e280026/sindiwe-and-the-fireflies.md"
+    },
+    "receipt:sindiwe-and-the-fireflies": {
+      "path": "data/research_candidates/bookdash/sources/a292ae64c7de448568dcbff1d20a7ea93ab0fe9f4b847c3332c340e24e280026/sindiwe-and-the-fireflies.md.receipt.json",
+      "bytes": 594,
+      "sha256": "99896c9137981516d9af4f0c06705842b34f8250ff02ab988c99595aeb5e62aa"
+    },
+    "source:singing-the-truth": {
+      "bytes": 3726,
+      "sha256": "f891964a265516afed5c40c760e55da9a38093e2911de7c2adb63f8e7d421c82",
+      "git_blob": "8aa05b4573afb3315b5cdd8dfc67a8530400eacf",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/singing-the-truth/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/f891964a265516afed5c40c760e55da9a38093e2911de7c2adb63f8e7d421c82/singing-the-truth.md"
+    },
+    "receipt:singing-the-truth": {
+      "path": "data/research_candidates/bookdash/sources/f891964a265516afed5c40c760e55da9a38093e2911de7c2adb63f8e7d421c82/singing-the-truth.md.receipt.json",
+      "bytes": 586,
+      "sha256": "1c433c8c1b6ec402751f3a02af740d74c6b5551982d1ae4d5e69550f4434e7ec"
+    },
+    "source:sleepy-mr-sloth": {
+      "bytes": 2332,
+      "sha256": "2748730cb37302ca9084795624617d5824950f08959ead29147e333e4738957b",
+      "git_blob": "edceff530f721f7cba3a54b81bef0b96c4fb90dd",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/sleepy-mr-sloth/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/2748730cb37302ca9084795624617d5824950f08959ead29147e333e4738957b/sleepy-mr-sloth.md"
+    },
+    "receipt:sleepy-mr-sloth": {
+      "path": "data/research_candidates/bookdash/sources/2748730cb37302ca9084795624617d5824950f08959ead29147e333e4738957b/sleepy-mr-sloth.md.receipt.json",
+      "bytes": 584,
+      "sha256": "bac3fa4d54850669de4b198ec9aabdd3886164e0060362a90e000c837712376e"
+    },
+    "source:thatos-birthday-surprise": {
+      "bytes": 2404,
+      "sha256": "9d1e7af5dbf2605f2162f412c0c45ef23e22336fcbb350a5f9f76bc8b37dc53f",
+      "git_blob": "20833b0f9bae8abe3fec350cbaced0e0837c625f",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/thatos-birthday-surprise/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/9d1e7af5dbf2605f2162f412c0c45ef23e22336fcbb350a5f9f76bc8b37dc53f/thatos-birthday-surprise.md"
+    },
+    "receipt:thatos-birthday-surprise": {
+      "path": "data/research_candidates/bookdash/sources/9d1e7af5dbf2605f2162f412c0c45ef23e22336fcbb350a5f9f76bc8b37dc53f/thatos-birthday-surprise.md.receipt.json",
+      "bytes": 593,
+      "sha256": "56cf33352e4e2b52f848a8319bf8c46f5c059b63a1f66584ffe73040bd35589b"
+    },
+    "source:the-best-thing-ever": {
+      "bytes": 2674,
+      "sha256": "8b734558f20707fc98cb012d44343c27549087173f91cde52f75836a81b3e75c",
+      "git_blob": "237d07e274e116287ad9612b89e68d401634ba41",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/the-best-thing-ever/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/8b734558f20707fc98cb012d44343c27549087173f91cde52f75836a81b3e75c/the-best-thing-ever.md"
+    },
+    "receipt:the-best-thing-ever": {
+      "path": "data/research_candidates/bookdash/sources/8b734558f20707fc98cb012d44343c27549087173f91cde52f75836a81b3e75c/the-best-thing-ever.md.receipt.json",
+      "bytes": 588,
+      "sha256": "09f633b644bd10bb1bbc7a4d0b8e6be3d4eb4754737fc4c6cdb88bb22cfe145c"
+    },
+    "source:the-elephant-in-the-room": {
+      "bytes": 3623,
+      "sha256": "6502396cf49bdc826aefc19c5b3c810c4a50c9a63849f93c1017c0b8099ed60c",
+      "git_blob": "61c024b87f917010ebaf1654a444b306d8b6542d",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/the-elephant-in-the-room/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/6502396cf49bdc826aefc19c5b3c810c4a50c9a63849f93c1017c0b8099ed60c/the-elephant-in-the-room.md"
+    },
+    "receipt:the-elephant-in-the-room": {
+      "path": "data/research_candidates/bookdash/sources/6502396cf49bdc826aefc19c5b3c810c4a50c9a63849f93c1017c0b8099ed60c/the-elephant-in-the-room.md.receipt.json",
+      "bytes": 593,
+      "sha256": "911f88bacffa36005700d4bdf30ea440796aa7e3a1d6369a8cd0e35245a2b052"
+    },
+    "source:there-must-be-a-rainbow": {
+      "bytes": 2629,
+      "sha256": "59fa89aa0d7f1b9b95e003599dfb2765be1a5acdf003462688c12eb6033e6433",
+      "git_blob": "51dba77004f84264586f9d8ac20acf59f5c832dc",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/there-must-be-a-rainbow/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/59fa89aa0d7f1b9b95e003599dfb2765be1a5acdf003462688c12eb6033e6433/there-must-be-a-rainbow.md"
+    },
+    "receipt:there-must-be-a-rainbow": {
+      "path": "data/research_candidates/bookdash/sources/59fa89aa0d7f1b9b95e003599dfb2765be1a5acdf003462688c12eb6033e6433/there-must-be-a-rainbow.md.receipt.json",
+      "bytes": 592,
+      "sha256": "c3479efda840bc53de4d033f738fddc9f31a2ac5d3cd4b614a5a5b1fbfb90e56"
+    },
+    "source:together-were-strong": {
+      "bytes": 11018,
+      "sha256": "d473615bffc2929c912bc477e01ab6d36b839a1721eaefd9609e692db446c472",
+      "git_blob": "03b11c2d9c817ba2ee3a9aaa4acbe5e7c758a3a3",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/together-were-strong/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/d473615bffc2929c912bc477e01ab6d36b839a1721eaefd9609e692db446c472/together-were-strong.md"
+    },
+    "receipt:together-were-strong": {
+      "path": "data/research_candidates/bookdash/sources/d473615bffc2929c912bc477e01ab6d36b839a1721eaefd9609e692db446c472/together-were-strong.md.receipt.json",
+      "bytes": 590,
+      "sha256": "0b063ca6f0bca85b1e26315d04bca03efdfbd2dee3bccb41df2612e48d73f198"
+    },
+    "source:tortoise-finds-his-home": {
+      "bytes": 3599,
+      "sha256": "4178959fb639d6e59fda438b6d775bba3d66e064bf9428579a8df2be47c35d69",
+      "git_blob": "8704fa8865b4716516cf825e2123ecbc6162f601",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/tortoise-finds-his-home/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/4178959fb639d6e59fda438b6d775bba3d66e064bf9428579a8df2be47c35d69/tortoise-finds-his-home.md"
+    },
+    "receipt:tortoise-finds-his-home": {
+      "path": "data/research_candidates/bookdash/sources/4178959fb639d6e59fda438b6d775bba3d66e064bf9428579a8df2be47c35d69/tortoise-finds-his-home.md.receipt.json",
+      "bytes": 592,
+      "sha256": "60ec84a7150938bba1fb132cdaea3dbccb8ed19229fcdfc2cc77c5334d16d833"
+    },
+    "source:walking-together": {
+      "bytes": 2440,
+      "sha256": "e1a7493b0b641e1076aea4db5499bb3b0a15191895fc3c29e3487056a0e5d4ef",
+      "git_blob": "18c802bcb8f1b221aa5de9f95e435dd044eea8f8",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/walking-together/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/e1a7493b0b641e1076aea4db5499bb3b0a15191895fc3c29e3487056a0e5d4ef/walking-together.md"
+    },
+    "receipt:walking-together": {
+      "path": "data/research_candidates/bookdash/sources/e1a7493b0b641e1076aea4db5499bb3b0a15191895fc3c29e3487056a0e5d4ef/walking-together.md.receipt.json",
+      "bytes": 585,
+      "sha256": "3e6b193bcbc9d2cf46ddfe45807ef8ddf6731e08c5e8f06024789bccd41275b9"
+    },
+    "source:what-if": {
+      "bytes": 1963,
+      "sha256": "b2c52782b50fe5e61a1c2e8c2c432a92cf539a24a32630e3e72bce4d0b6a7827",
+      "git_blob": "d148a3eb7997ba258a92357bc7c1df98d825bfef",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/what-if/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/b2c52782b50fe5e61a1c2e8c2c432a92cf539a24a32630e3e72bce4d0b6a7827/what-if.md"
+    },
+    "receipt:what-if": {
+      "path": "data/research_candidates/bookdash/sources/b2c52782b50fe5e61a1c2e8c2c432a92cf539a24a32630e3e72bce4d0b6a7827/what-if.md.receipt.json",
+      "bytes": 576,
+      "sha256": "697c7ff14657ef0abc9e562bc152445e2d1b16f71fd325aab1cdb1ae7f00243e"
+    },
+    "source:when-i-grow-up": {
+      "bytes": 2151,
+      "sha256": "fab9e242df5bd713d5c42a2aa70f5bc33a789670e5fda4df94a60172a6415dea",
+      "git_blob": "d540bf9632969184a5a12f4d7c31d385bdc74656",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/when-i-grow-up/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/fab9e242df5bd713d5c42a2aa70f5bc33a789670e5fda4df94a60172a6415dea/when-i-grow-up.md"
+    },
+    "receipt:when-i-grow-up": {
+      "path": "data/research_candidates/bookdash/sources/fab9e242df5bd713d5c42a2aa70f5bc33a789670e5fda4df94a60172a6415dea/when-i-grow-up.md.receipt.json",
+      "bytes": 583,
+      "sha256": "dae617bf3d5404c98e79ba89066eebb5c5f96bea2a6c10b0819a0cc166f891a2"
+    },
+    "source:zanele-situ-my-story": {
+      "bytes": 4090,
+      "sha256": "86fe410a81f632bc61d6eb36ea1735866c800b5ee62024e22a63531f756f70c5",
+      "git_blob": "e6b1e517fde60e697030e82587965a84a331b689",
+      "url": "https://raw.githubusercontent.com/bookdash/bookdash-books/54916310c5c06a5282e2d5d4add18d64f90e5fde/zanele-situ-my-story/en/index.md",
+      "path": "data/research_candidates/bookdash/sources/86fe410a81f632bc61d6eb36ea1735866c800b5ee62024e22a63531f756f70c5/zanele-situ-my-story.md"
+    },
+    "receipt:zanele-situ-my-story": {
+      "path": "data/research_candidates/bookdash/sources/86fe410a81f632bc61d6eb36ea1735866c800b5ee62024e22a63531f756f70c5/zanele-situ-my-story.md.receipt.json",
+      "bytes": 589,
+      "sha256": "294e9a7ca666a77f5d48039d99ade232dff2442aaa064c621dc885f11d1598c6"
+    },
+    "bgc_archive": {
+      "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+      "bytes": 48690771,
+      "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+    }
+  },
+  "implementation_sha256": {
+    "src/research/builders/bookdash.py": "311857c719395a75a0b892b146e37ced5523ee3315ce08f25c6f9a351cfad3bb",
+    "src/research/builders/licensed_books.py": "980216bb4f7c0de8fe9573808ebf093b45d2fc22329a7ee65e3eaa2e6bb487b1",
+    "src/research/builders/bgc_source.py": "fa987b2837097e68db3a02779295e4516524797af033cf009f8c19a0ea54d50e",
+    "src/research/candidate_io.py": "3e6ee6c4885613b62c5f02a528f86ab068848ba73da0fa5a1b62e47bfcea46b4",
+    "src/research/io.py": "b9a5431e2cada30cf8929a4cb448c692eedc4ff8b16ff31f8375bc877bd8f433",
+    "src/catalog/storage.py": "876b0860e3354dabcd0031806e2c5c17f3b48986918b8bfa28bdc081da6f06be"
+  },
+  "build_key": "64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794",
+  "books": [
+    {
+      "work_id": "bookdash-a-beautiful-day",
+      "title": "A Beautiful Day",
+      "group_id": "bookdash-work:4813a06c34f6b519c575f9b510c27205674b4de87c56e72583538527ca0bb08f",
+      "proposed_split": "dev",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 125,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-a-beautiful-day.json",
+        "bytes": 4019,
+        "sha256": "e9bfd1de736052ac757e2ed1452392bb559b1b05d08662762a2003230cebf993"
+      }
+    },
+    {
+      "work_id": "bookdash-a-dancers-tale",
+      "title": "A Dancer’s Tale",
+      "group_id": "bookdash-work:f4270b57f9c6b71d5385a40eb6d234993053192959724928f4bfe386d969e848",
+      "proposed_split": "test",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 411,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-a-dancers-tale.json",
+        "bytes": 5574,
+        "sha256": "6c71cfafe9d975b62b6f34790787f14dacc4cf4e6600703504cfa6e2dc06e2e2"
+      }
+    },
+    {
+      "work_id": "bookdash-a-tiny-seed",
+      "title": "A Tiny Seed",
+      "group_id": "bookdash-work:59ecbb2679488e7751a68a57f57f29ea6f5e8ded4ec0c0ccf12a418a2a1dd771",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 412,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-a-tiny-seed.json",
+        "bytes": 5480,
+        "sha256": "55763d3959b76b39d7796aa71c88a304b7b0dca0f33cd69c764824d8db6be426"
+      }
+    },
+    {
+      "work_id": "bookdash-amazing-daisy",
+      "title": "Amazing Daisy",
+      "group_id": "bookdash-work:e7257651e6ea73d11f7f25901aa9d1689fda0f2e26d284a1460ecf9b5f478238",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 337,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-amazing-daisy.json",
+        "bytes": 5136,
+        "sha256": "1c028a2fd30feb24c544887b8b3aa9ffeec7b8b691005c002054444b82402f9e"
+      }
+    },
+    {
+      "work_id": "bookdash-gracas-dream",
+      "title": "Graca's Dream",
+      "group_id": "bookdash-work:4f84de567abdfdb95a04104319e9d7b17049625e5dcdff851501f179c6b20134",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 528,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-gracas-dream.json",
+        "bytes": 6225,
+        "sha256": "196f234b45a67abb77cffde0df51c99e828501a0eb459a4f9c7bdd6514ae2c19"
+      }
+    },
+    {
+      "work_id": "bookdash-grandpas-gold",
+      "title": "Grandpa's Gold",
+      "group_id": "bookdash-work:9afc74b441f77860ac0d7e3b40416a2fa6b8102ecf08f23cdb425d48620d2bff",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 184,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-grandpas-gold.json",
+        "bytes": 4200,
+        "sha256": "8f7440a0065e958e49ec665431034f8360059991a82472d76fc423ac239304df"
+      }
+    },
+    {
+      "work_id": "bookdash-hippo-wants-to-dance",
+      "title": "Hippo Wants to Dance",
+      "group_id": "bookdash-work:a958e6fa79fc95edaba7d72633ace7fed8a96841b15868109b1a818b0b7746a9",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 188,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-hippo-wants-to-dance.json",
+        "bytes": 4412,
+        "sha256": "47c0499debd1d5dc1fb708c9f01ece4b894ab9b9cd6a6cf22f75f5c55cee4aed"
+      }
+    },
+    {
+      "work_id": "bookdash-i-will-help-you",
+      "title": "I Will Help You",
+      "group_id": "bookdash-work:c65659f1d8bff0f40ce2040ad583f8327e2ff415dd784691305aeb62f4ce9490",
+      "proposed_split": "dev",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 123,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-i-will-help-you.json",
+        "bytes": 3915,
+        "sha256": "3fe389bf9d75846a934529c3d398f7a935e6b4e4a53e24a92749eccc9e455cd1"
+      }
+    },
+    {
+      "work_id": "bookdash-is-there-anyone-like-me",
+      "title": "Is There Anyone Like Me?",
+      "group_id": "bookdash-work:7ae88051e0c11ced349b52ebe9bb46dbbb8f4d0dbda1e20a29ee8f0011b70b59",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 114,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-is-there-anyone-like-me.json",
+        "bytes": 3864,
+        "sha256": "7aa4e6febf4e1d2928ea5aab6304f3c661216bdb19346d1a9bc553712948423d"
+      }
+    },
+    {
+      "work_id": "bookdash-karabos-question",
+      "title": "Karabo's Question",
+      "group_id": "bookdash-work:e50be790b23ec663578b59f27ec7b5f98788016f810eccf35af38fb729d66a14",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 196,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-karabos-question.json",
+        "bytes": 4195,
+        "sha256": "115f8e8bcdbdcb51a70bbb186e554c836fe3341e52565c0b95f9697c329059ed"
+      }
+    },
+    {
+      "work_id": "bookdash-lara-the-yellow-ladybird",
+      "title": "Lara the Yellow Ladybird",
+      "group_id": "bookdash-work:1274f7fcf55e8f1f0cc1a0f882df8acc1a847d32b529d9fb4ba1124716a4d577",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 206,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-lara-the-yellow-ladybird.json",
+        "bytes": 4489,
+        "sha256": "2e99507dd8fe26d111208a8007c555b51db6934d4b41e4328071afc4171e3df0"
+      }
+    },
+    {
+      "work_id": "bookdash-little-sock",
+      "title": "Little Sock and the Tiny Creatures",
+      "group_id": "bookdash-work:ca05bc987449d66364d58414948980166386edfff6173c599ac88aadf5d95f6c",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 128,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-little-sock.json",
+        "bytes": 3996,
+        "sha256": "4c0a6d89c9157b097fc2c57ac2044bd64eea967b17f0549ab478cacc63186d8b"
+      }
+    },
+    {
+      "work_id": "bookdash-londi-the-dreaming-girl",
+      "title": "Londi the dreaming girl",
+      "group_id": "bookdash-work:5d502e9ce62327979d9f48ef6897deac9132fb811ff43d1fac8f118ef3458158",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 213,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-londi-the-dreaming-girl.json",
+        "bytes": 4525,
+        "sha256": "687d0c2afb6f9f8ed25f1fb2aea7276645c490fc6f46431b1035d75c1f6ea17d"
+      }
+    },
+    {
+      "work_id": "bookdash-lory-dory",
+      "title": "Lory Dory",
+      "group_id": "bookdash-work:5bd4f577977464dbf30a228434b181b09e95f9e94d4e6b484e70255629be2084",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 223,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-lory-dory.json",
+        "bytes": 4363,
+        "sha256": "b191bddcb8e62d0140d445fe44a008d6fd3c8c33e7173f1e4e7650b11e0e37bc"
+      }
+    },
+    {
+      "work_id": "bookdash-maddy-moona",
+      "title": "Maddy Moona's Menagerie",
+      "group_id": "bookdash-work:ac24d516597a95390bb8780ff4918764f330fca7acf0caa1dee9f8e43d0b44b8",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 554,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-maddy-moona.json",
+        "bytes": 6268,
+        "sha256": "eadbfd0832bb1808223b95b50f4edf355a472bfcc337975315441c6801c52660"
+      }
+    },
+    {
+      "work_id": "bookdash-miss-helens-magical-world",
+      "title": "Miss Helen's Magical World",
+      "group_id": "bookdash-work:8eaaa383f0a44ada3ae3c486460f4a2aa5035c2783629939892be8a8f90b0297",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 754,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-miss-helens-magical-world.json",
+        "bytes": 7476,
+        "sha256": "1786f239b3588144ddcaf5419971e666fe4d9afc2d6780a71cdd4d06acb3d163"
+      }
+    },
+    {
+      "work_id": "bookdash-mrs-penguins-palace",
+      "title": "Mrs Penguin's Perfect Palace",
+      "group_id": "bookdash-work:8eb67f21ffadbbc1892daa04105de8845497810f6afc8f05368c839a9d65c999",
+      "proposed_split": "test",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 296,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-mrs-penguins-palace.json",
+        "bytes": 5281,
+        "sha256": "56e994feb3ef16faa2a65732e2643547a3639d27cb0a6393c0fa815bd56a37ff"
+      }
+    },
+    {
+      "work_id": "bookdash-queen-of-soweto",
+      "title": "Queen of Soweto",
+      "group_id": "bookdash-work:2a9a772e2d7ad6f3646e275fd79ece3c50ef5b54fcc0342352e2e0bc3df4eecd",
+      "proposed_split": "dev",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 716,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-queen-of-soweto.json",
+        "bytes": 7352,
+        "sha256": "96013aada838cc2592ef417c07d90e971980508dcc03ced66478151b08262cd0"
+      }
+    },
+    {
+      "work_id": "bookdash-rafikis-style",
+      "title": "Rafiki's Style",
+      "group_id": "bookdash-work:e9c544761a755de5997045c3a888b7933508bdeafda84ea09e35eb190d417c4c",
+      "proposed_split": "test",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 140,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-rafikis-style.json",
+        "bytes": 4086,
+        "sha256": "8a92dcbbfdc03fe81c3dbc50e1ceafffe717a359520e15b138de59614f112603"
+      }
+    },
+    {
+      "work_id": "bookdash-searching-for-the-spirit-of-spring",
+      "title": "Searching for the Spirit of Spring",
+      "group_id": "bookdash-work:793227347a4480cf30e5f9990824b918cf99a9be03234dbf391a8238b2a10a62",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 678,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-searching-for-the-spirit-of-spring.json",
+        "bytes": 7185,
+        "sha256": "c80e0b6f383ec741d43432800e16349f030ae5875978c9710fbf70f774f78ab7"
+      }
+    },
+    {
+      "work_id": "bookdash-sima-and-siza",
+      "title": "Sima and Siza",
+      "group_id": "bookdash-work:4f5b25127588c2fa6d25d8c25d73649b5b50b97377f8c738278a676f151fb6b5",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 278,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-sima-and-siza.json",
+        "bytes": 4757,
+        "sha256": "59ec14a25d80b857f61b7cb70626d8666329583946b6d05477a466192bc99c57"
+      }
+    },
+    {
+      "work_id": "bookdash-sindi-and-the-moon",
+      "title": "Sindi and the Moon",
+      "group_id": "bookdash-work:e99df96de7b27268f5a967668ae7d804a240be46352de31d0287c6ca68f1b3de",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 534,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-sindi-and-the-moon.json",
+        "bytes": 6249,
+        "sha256": "cf6a6a85a3d1d841eba529d7d3908e9411be2567e865ba5f6359703ff4643514"
+      }
+    },
+    {
+      "work_id": "bookdash-sindiwe-and-the-fireflies",
+      "title": "Sindiwe & the Fireflies",
+      "group_id": "bookdash-work:56b5d9e658005adce646368a737b237d5f264a52dcb861914f14fbda2874193d",
+      "proposed_split": "test",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 411,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-sindiwe-and-the-fireflies.json",
+        "bytes": 5629,
+        "sha256": "840ffda0477738b58ebae3d3a4b7f4442c61d6c80a132b54575badd8e94e2247"
+      }
+    },
+    {
+      "work_id": "bookdash-singing-the-truth",
+      "title": "Singing the Truth",
+      "group_id": "bookdash-work:eecae6317a2db18e43e7a54b0b2aaf50a3837946314e8d496ac599127eaf588b",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 469,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-singing-the-truth.json",
+        "bytes": 5688,
+        "sha256": "755cc961218e1371f315a0b2fc4f23cdc087fda9a8a3efc0a5d8facdca751532"
+      }
+    },
+    {
+      "work_id": "bookdash-sleepy-mr-sloth",
+      "title": "Sleepy Mr Sloth",
+      "group_id": "bookdash-work:d3f2837dc1205ffd189b6e4d4accbe11906dd3b88f6466ade7530c9ea0b19fff",
+      "proposed_split": "dev",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 222,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-sleepy-mr-sloth.json",
+        "bytes": 4465,
+        "sha256": "ff3f6b3261ab7a196c30decba897ab0184a8532f3c54ce8dbc1d7d73b937d3e6"
+      }
+    },
+    {
+      "work_id": "bookdash-thatos-birthday-surprise",
+      "title": "Thato's Birthday Surprise",
+      "group_id": "bookdash-work:c3e84ebed95f82c2f2bec394e6db4d7c09dbf3f79b5f08ede21c64031c9f258e",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 211,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-thatos-birthday-surprise.json",
+        "bytes": 4448,
+        "sha256": "bdfca5e172d49dcb478126033d4ca194c7969232f04ee54da3fec8bb3bac9c5d"
+      }
+    },
+    {
+      "work_id": "bookdash-the-best-thing-ever",
+      "title": "The Best Thing Ever",
+      "group_id": "bookdash-work:9975f0cd7aa92a76dc155aa6e0a386c0ac7a1609f962d3d883e873b6eb292717",
+      "proposed_split": "test",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 183,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-the-best-thing-ever.json",
+        "bytes": 4244,
+        "sha256": "15af04534fe030879fa7584dcc0fc1d07a6b120eac3d21a40d2b848b353e3591"
+      }
+    },
+    {
+      "work_id": "bookdash-the-elephant-in-the-room",
+      "title": "The Elephant in the Room",
+      "group_id": "bookdash-work:4e1d8ddba8274effb7b8fa328dde746afe67a2d6f489d271dc5310854cfe9458",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 377,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-the-elephant-in-the-room.json",
+        "bytes": 5717,
+        "sha256": "33f60ef477be2329863b4c8eaac7ff50cb199f846515e9dcdec7dcab028b7c03"
+      }
+    },
+    {
+      "work_id": "bookdash-there-must-be-a-rainbow",
+      "title": "There Must be a Rainbow",
+      "group_id": "bookdash-work:c345d9b342acae5d5c5bce2ac2fcc57ab1ad5b9566dd83d713bb9d83544b5726",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 281,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-there-must-be-a-rainbow.json",
+        "bytes": 4881,
+        "sha256": "c20d0faffeff6c22b4ee9617c44820ac6283c700e94b6d2a432053df4fe99347"
+      }
+    },
+    {
+      "work_id": "bookdash-together-were-strong",
+      "title": "Together We're Strong",
+      "group_id": "bookdash-work:940f1cbd6e40919bd0535df7ae4e1a678c307ba988f57af9ea45c11a78d3d253",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 1659,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-together-were-strong.json",
+        "bytes": 13037,
+        "sha256": "5a37e312b68e900443cd38b4a916d9664afc177bc41a7cd353be22d2a55be518"
+      }
+    },
+    {
+      "work_id": "bookdash-tortoise-finds-his-home",
+      "title": "Tortoise Finds His Home",
+      "group_id": "bookdash-work:bf900836e36014b2e9d7f4cbff65d2d9b991a640c063811ea80f918a970348ac",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 363,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-tortoise-finds-his-home.json",
+        "bytes": 5523,
+        "sha256": "036c1666d938b975a4c62c87d7726e35586a26ae2fb8ea740c4ab16de06f0466"
+      }
+    },
+    {
+      "work_id": "bookdash-walking-together",
+      "title": "Walking Together",
+      "group_id": "bookdash-work:e246425cf3d9165235285295cd56788c0146c474f976747909549af780466713",
+      "proposed_split": "dev",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 216,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-walking-together.json",
+        "bytes": 4402,
+        "sha256": "8629988ccca807076b59ab50b04e8626774112ecb1b839df9136abd4e4dfbbc5"
+      }
+    },
+    {
+      "work_id": "bookdash-what-if",
+      "title": "What if",
+      "group_id": "bookdash-work:a5b0833bf5f6f299006761c60de590f7a5f2583b90f74a4f5e76d29afe8bee80",
+      "proposed_split": "quarantine",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 152,
+      "sections": 12,
+      "matches": [
+        {
+          "source": "bgc",
+          "id": "bgc:train:8609",
+          "matching_keys": [
+            "title"
+          ]
+        }
+      ],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-what-if.json",
+        "bytes": 4011,
+        "sha256": "37c4ad32d053dc56cbea2ffd6482757aae9e980154ffb327fc264752b6ebd64f"
+      }
+    },
+    {
+      "work_id": "bookdash-when-i-grow-up",
+      "title": "When I Grow Up",
+      "group_id": "bookdash-work:3ac914fa7c90b3ac31feae30353e2a060d18f190e976c3879647adc56dc589b3",
+      "proposed_split": "quarantine",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 173,
+      "sections": 12,
+      "matches": [
+        {
+          "source": "bgc",
+          "id": "bgc:train:32947",
+          "matching_keys": [
+            "title"
+          ]
+        }
+      ],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-when-i-grow-up.json",
+        "bytes": 3955,
+        "sha256": "82b08ca4d51853c0d1f47d9eddffaae2422c58600ab82f40a433f501e29f3927"
+      }
+    },
+    {
+      "work_id": "bookdash-zanele-situ-my-story",
+      "title": "Zanele Situ: My Story",
+      "group_id": "bookdash-work:a4a0209a62c4be70ec107176325c8cb49a3f34049c00fc93243c2e04a286dd88",
+      "proposed_split": "train",
+      "license": "CC-BY-4.0",
+      "whitespace_words": 486,
+      "sections": 12,
+      "matches": [],
+      "artifact": {
+        "path": "data/research_candidates/bookdash/prepared/64ffb7add37555a1377e709e801efce6b8c36aa5778e941a6d30cc7e60688794/bookdash-zanele-situ-my-story.json",
+        "bytes": 5727,
+        "sha256": "cc96c42a1ea303d983dfdad0fdd6ec6f1b36ed3cd0bed9c77e59f925487ca214"
+      }
+    }
+  ],
+  "counts": {
+    "works": 35,
+    "works_by_split": {
+      "dev": 5,
+      "test": 5,
+      "train": 23,
+      "quarantine": 2
+    },
+    "whitespace_words": 12541,
+    "screened_records": {
+      "prior_licensed": 4,
+      "catalogue": 120,
+      "bgc": 91894
+    }
+  },
+  "contract": {
+    "split": "Rank stable SHA-256(policy:work_id) among unambiguous works; reserve max(1, round(15%)) each for dev and test, all remaining for train. Assigned before model use. Every page and future window inherits the whole-work split. Never train on dev/test/quarantine.",
+    "screening": "Quarantine any title or explicit source-heading alias match (NFC/whitespace/casefold/curly-apostrophe normalization) or valid ISBN match against BGC, the catalogue, prior licensed works, or this cohort. Also quarantine fullbody/page duplicates within this cohort or against prior licensed texts using the same normalization. No fuzzy match, translated edition or pretraining contamination guarantee.",
+    "scope": "Previously unused English picture books from one publisher, 100+ narrative words each. Images omitted; narrow genre and audience coverage. No human field labels or blanket training authorization.",
+    "license": "Per-title CC-BY-4.0 evidence and every creator in the pinned metadata retained. Current publisher guidance (https://bookdash.org/re-using-the-book-dash-content/) additionally requests author/illustrator/designer/editor credits, source and logo. The older metadata does not assign roles or establish whether an editor credit is missing; credit completeness needs review before redistribution. This preparation is local text only. Repository MIT terms do not replace source conditions."
+  }
+}

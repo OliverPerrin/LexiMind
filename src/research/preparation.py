@@ -413,6 +413,28 @@ def _inspect_extensions(files: dict[str, Path], plan: dict[str, Any]) -> list[st
     ):
         errors.append("RPT candidate used a different tokenizer-preparation implementation")
     methods = _object(read_json(files["rl_methods"]), "RL source register")
+    cohort = _object(read_json(files["bookdash_candidate"]), "Book Dash cohort")
+    comparison = _object(read_json(files["denoising_config"]), "Denoising comparison")
+    if (
+        cohort["inputs"].get("registry") != ref("bookdash_sources")
+        or cohort["inputs"].get("legacy_manifest") != ref("licensed_books")
+        or cohort.get("implementation_sha256")
+        != hashes(
+            (
+                "bookdash_builder",
+                "licensed_book_builder",
+                "bgc_builder",
+                "candidate_io",
+                "file_integrity_contract",
+                "catalogue_storage",
+            )
+        )
+        or comparison.get("data_manifest") != ref("bookdash_candidate")
+        or comparison.get("base_runtime") != ref("pilot_config")
+        or comparison.get("tokenizer") != ref("rpt_tokenizer")
+        or comparison.get("promote") is not False
+    ):
+        errors.append("Book denoising comparison does not bind its source, runtime and local scope")
     pilot = _object(read_json(files["pilot_observations"]), "Local pilot observations")
     if (
         pilot.get("kind") != "local_macbook_training_observations"

@@ -109,9 +109,14 @@
           "path": "research/preparation/rpt_candidate_manifest.json",
           "bytes": 26768,
           "sha256": "627f6c0f6ec83e07fd694791483685083fac19a5b45c37e6eadd9a7bb37bf4c7"
+        },
+        {
+          "path": "research/preparation/bookdash_manifest.json",
+          "bytes": 57022,
+          "sha256": "b8907bc7cc5596b6a3de8e15f6c7128cec1a71ab747b7cc084930b7457bdf996"
         }
       ],
-      "note": "Raw CR4 conditions/responses audited; 32 licensed-work continuation examples prepared. Field suggestions remain agent-only; no real human judgments, dataset admission or model execution."
+      "note": "Book Dash expansion: 35 pinned works, with 23 train, 5 validation, 5 test and 2 quarantined. Fixed extraction produces 179 training and 36 validation examples. Original CR4/field/RPT preparations remain unchanged; no new human field labels or formal study admission."
     },
     "group_split_audit": {
       "status": "cross_source_partition_overlay_prepared_not_frozen",
