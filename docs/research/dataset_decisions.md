@@ -87,6 +87,15 @@ formal field training still needs reviewed data. The separately recorded local
 continuation pilot establishes execution feasibility only. Optional corpora need
 not block this track.
 
+A [bounded weak source-label diagnostic](../../research/results/book_field_baseline_20261003.json)
+now fits training-only TF-IDF prototypes on 4,096 singleton groups and evaluates
+1,024 development groups. Known-label recall@3 exceeds frequency ranking for
+genre/topic, but unknown labels supply no precision or false-positive evidence.
+The [research index](README.md#book-field-source-recovery) records all controls,
+rare-label limits and the separate 32-record training-only review worksheet.
+The old purposive review packet contains effective test records and is not used
+as a training seed. No human labels or formal field-study admission were created.
+
 ## Modern books beyond Gutenberg
 
 Open Library supplies modern **catalogue** coverage; publisher blurbs match field

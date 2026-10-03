@@ -78,6 +78,10 @@ ARTIFACTS: dict[str, tuple[str, str]] = {
     "field_baseline_runtime": ("model_study", "src/research/field_baseline.py"),
     "field_baseline_inputs": ("model_study", "src/research/field_baseline_data.py"),
     "field_baseline_review": ("model_study", "src/research/field_baseline_review.py"),
+    "field_baseline_observations": (
+        "model_study",
+        "research/results/book_field_baseline_20261003.json",
+    ),
     "pilot_observations": ("model_study", "research/results/macbook_pilot_20261002.json"),
     "encoder_runtime": ("model_study", "src/models/encoder.py"),
     "feedforward_runtime": ("model_study", "src/models/feedforward.py"),

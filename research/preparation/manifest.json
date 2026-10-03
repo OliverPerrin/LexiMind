@@ -20,8 +20,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 9935,
-      "sha256": "ed54a6dfe1cbb96212fe0ab6654257dc54a6530d6ecf0ba47f26f71a32798a9e"
+      "bytes": 11021,
+      "sha256": "ac8fa5c5b8438bd3ffcd8d1028f7c0f56ea1b122c33777b201ca275e92330b40"
     },
     {
       "id": "study_decisions",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 10023,
-      "sha256": "1f33ad53a0fa2bfa729f7839c6cc7244395b52be7afd651ac7d53516cf48c4df"
+      "bytes": 10152,
+      "sha256": "fdc8677b009605fda9ddd7aa0daff0fb3e84f5c815099eec88e818a48169bd82"
     },
     {
       "id": "research_entry",
@@ -437,6 +437,13 @@
       "sha256": "db1297925d7a6150f32e631668aa3cce756567df8bf8b58763e47ec29949b0bf"
     },
     {
+      "id": "field_baseline_observations",
+      "scope": "model_study",
+      "path": "research/results/book_field_baseline_20261003.json",
+      "bytes": 27361,
+      "sha256": "d9774a2cbe6a58c82791c350509274d0cda07e6445e0daee7f2ea4540427890e"
+    },
+    {
       "id": "pilot_observations",
       "scope": "model_study",
       "path": "research/results/macbook_pilot_20261002.json",
@@ -608,8 +615,8 @@
       "id": "dataset_decisions",
       "scope": "model_study",
       "path": "docs/research/dataset_decisions.md",
-      "bytes": 8653,
-      "sha256": "1f51e750fc8f0724187613edbcfc13d496b5bd513a3e926f2b637644a1f00dcc"
+      "bytes": 9311,
+      "sha256": "300ef5c42becd67cd3e375aba4b7a04f2e27f9af6319241f4e2538ddb70fb814"
     },
     {
       "id": "goemotions_candidate",

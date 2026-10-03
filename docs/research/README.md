@@ -100,6 +100,25 @@ reader mood or recommendation relevance. The [provider's description](https://ww
 explicitly notes missing specific categories. Small facets can achieve trivial
 recall at large k; inspect the actual cutoff and rare-label support.
 
+The [3 October results](../../research/results/book_field_baseline_20261003.json)
+completed in 6.06 seconds on CPU, including preparation, fitting and scoring.
+Observed-positive group-macro recall@3 on development:
+
+| Method | Genre (353 groups) | Topic (379) | Form (805) | Audience (258) |
+| --- | --- | --- | --- | --- |
+| Training frequency | 52.4% | 26.3% | 93.3% | 100% |
+| Label-name matching | 27.9% | 41.1% | 54.7% | 100% |
+| Positive TF-IDF prototype | 85.3% | 89.0% | 97.5% | 100% |
+
+Audience has only three labels, so its recall@3 is trivial for every method.
+Prototype label-macro recall@3 was 72.6% for genres and 80.1% for topics.
+The erotica label has one training positive and no development positives;
+gothic/horror and games each have only two development positives. The fixed
+sample was retained. Independent reconstruction verified all 20,000 training-only
+IDFs, eight saved sparse arrays, 12,288 ranking lists and 147,456 scores.
+This supplies a useful fixed lexical control for future field models, with false
+positives and human label quality still unresolved.
+
 Each preparation/run also creates a 32-record **training-only, blind review**
 worksheet under `data/research_candidates/bgc/field-baseline-review/`, with its
 path and hashes in `report.json`. All human and agent slots start blank. The
