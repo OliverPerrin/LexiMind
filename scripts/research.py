@@ -1,4 +1,4 @@
-"""Prepare, inspect and review research evidence without running model training."""
+"""Prepare and inspect research evidence, including explicitly bounded diagnostics."""
 
 from __future__ import annotations
 
@@ -19,6 +19,10 @@ COMMANDS = {
     "bgc-source": ("bgc_source", "Audit the pinned BGC source archive"),
     "bgc-groups": ("bgc_groups", "Prepare conservative BGC identity groups"),
     "book-fields": ("book_fields", "Prepare partial book-field label references"),
+    "field-baseline": (
+        "src.research.field_baseline",
+        "Run a bounded weak source-label ranking diagnostic",
+    ),
     "licensed-books": ("licensed_books", "Prepare licensed book text candidates"),
     "bookdash": ("bookdash", "Prepare the expanded licensed Book Dash cohort"),
     "cr4": ("cr4", "Audit raw CR4 character-emotion annotations"),

@@ -20,8 +20,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 7615,
-      "sha256": "73b194e25929db08cd4fcfdf4bb449ab0199e4a06e4a5fda0cefd46589a47d47"
+      "bytes": 9935,
+      "sha256": "ed54a6dfe1cbb96212fe0ab6654257dc54a6530d6ecf0ba47f26f71a32798a9e"
     },
     {
       "id": "study_decisions",
@@ -55,15 +55,15 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 9679,
-      "sha256": "d3643c14d55086e9087aa579aea57421a2d61259ae43bb2b8ef969d506a30c45"
+      "bytes": 10023,
+      "sha256": "1f33ad53a0fa2bfa729f7839c6cc7244395b52be7afd651ac7d53516cf48c4df"
     },
     {
       "id": "research_entry",
       "scope": "common",
       "path": "scripts/research.py",
-      "bytes": 3119,
-      "sha256": "23be0ac9c474f61b0cf46d8e4c3c29a2653cfe3633bd6f4f76e411deb8a9bb93"
+      "bytes": 3254,
+      "sha256": "8991d357365787ce1b2571ad6e7c143e32f14ab5961b137a855274889dc92744"
     },
     {
       "id": "builder_location",
@@ -407,6 +407,34 @@
       "path": "docs/research/rnn_ppo_review.md",
       "bytes": 17302,
       "sha256": "962a2caf74a6b486c49a9a950785fde09e2fd99a8455c02f0b768c69de02b155"
+    },
+    {
+      "id": "field_baseline_config",
+      "scope": "model_study",
+      "path": "configs/research/book_field_baseline.json",
+      "bytes": 4543,
+      "sha256": "db121fb959c8348b34afafe49c960c8eecb0233e63f5595350ede30146405f60"
+    },
+    {
+      "id": "field_baseline_runtime",
+      "scope": "model_study",
+      "path": "src/research/field_baseline.py",
+      "bytes": 25961,
+      "sha256": "5ccac6621b4fac9b24b53bdf14a6cff0f113279a7c6bd54a1e16ccac0d4944bd"
+    },
+    {
+      "id": "field_baseline_inputs",
+      "scope": "model_study",
+      "path": "src/research/field_baseline_data.py",
+      "bytes": 19751,
+      "sha256": "b963c80d82e3d7dd7655851507ee9c70888cf993d1b469532c0dfcb31a8d9b37"
+    },
+    {
+      "id": "field_baseline_review",
+      "scope": "model_study",
+      "path": "src/research/field_baseline_review.py",
+      "bytes": 9278,
+      "sha256": "db1297925d7a6150f32e631668aa3cce756567df8bf8b58763e47ec29949b0bf"
     },
     {
       "id": "pilot_observations",
