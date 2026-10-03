@@ -287,9 +287,111 @@ def continuation_rewards(rows, generated, tokenizer, *, minimum_tokens):
     return results
 
 
+class Batches:
+    def __init__(self, rows):
+        self.rows, self.dataset = rows, range(len(rows))
+
+    def __len__(self):
+        return len(self.rows)
+
+    def __iter__(self):
+        return iter(self.rows)
+
+
+def make_local_trainer(model, tokenizer, device, output, learning_rate):
+    """Use the same optimizer/trainer boundary for each local pilot condition."""
+    import torch
+
+    from src.training.trainer import Trainer, TrainerConfig
+
+    trainable = [p for p in model.parameters() if p.requires_grad]
+    optimizer = torch.optim.AdamW(trainable, lr=learning_rate, weight_decay=0.0, foreach=False)
+    runner = Trainer(
+        model,
+        optimizer,
+        TrainerConfig(
+            max_epochs=1,
+            gradient_clip_norm=1.0,
+            task_sampling="round_robin",
+            scheduler_type="constant",
+            early_stopping_patience=None,
+            label_smoothing=0.0,
+            generation_metrics=False,
+            tracking_uri="sqlite:///" + str(output / "tracking.db"),
+            experiment_name="LexiMind-local-pilot",
+        ),
+        device,
+        tokenizer,
+    )
+    runner.scheduler = None
+    return runner
+
+
+def build_local_model(config):
+    """Shared offline native FLAN/LoRA setup for bounded local experiments."""
+    import gc
+    import os
+
+    import torch
+    from huggingface_hub import snapshot_download
+
+    from src.data.tokenization import Tokenizer as ModelTokenizer
+    from src.data.tokenization import TokenizerConfig
+    from src.models.adapters import LoRAConfig, attach_lora
+    from src.models.factory import ModelConfig, build_multitask_model
+
+    torch.set_num_threads(config["threads"])
+    torch.manual_seed(config["seed"])
+    device = torch.device(config["device"])
+    if device.type == "mps":
+        if os.environ.get("PYTORCH_ENABLE_MPS_FALLBACK") == "1":
+            raise ValueError("Measured MPS pilots require CPU operator fallback disabled")
+        if not torch.backends.mps.is_available():
+            raise RuntimeError("MPS unavailable; no automatic device fallback")
+        torch.mps.set_per_process_memory_fraction(config["mps_memory_fraction"])
+    snapshot = Path(
+        snapshot_download(
+            config["base_repo"], revision=config["base_revision"], local_files_only=True
+        )
+    )
+    if file_hash(snapshot / "model.safetensors") != config["base_weight_sha256"]:
+        raise ValueError("Cached base weights differ from the pinned checkpoint")
+    tokenizer = ModelTokenizer(TokenizerConfig(str(snapshot), max_length=160))
+    model_config = ModelConfig(
+        d_model=768,
+        vocab_size=32128,
+        num_encoder_layers=12,
+        num_decoder_layers=12,
+        num_attention_heads=12,
+        ffn_dim=2048,
+        dropout=0.0,
+        use_pretrained=True,
+        pretrained_model_name=str(snapshot),
+        activation=config["activation"],
+        use_relative_position_bias=True,
+        use_learned_pos_enc=False,
+    )
+    model = build_multitask_model(tokenizer, num_emotions=0, num_topics=0, config=model_config)
+    shared = [f"encoder.layers.{i}.self_attn.W_{p}" for i in range(12) for p in ("Q", "V")]
+    private = [
+        f"decoder.layers.{i}.{kind}.W_{p}"
+        for i in range(12)
+        for kind in ("self_attn", "cross_attn")
+        for p in ("Q", "V")
+    ]
+    binding = attach_lora(
+        model,
+        shared_projections=shared,
+        private_projections=private,
+        config=LoRAConfig(**config["lora"]),
+    )
+    model.to(device)
+    gc.collect()
+    return model, tokenizer, binding, device
+
+
 def _run_pilot(root: Path, config_path: Path, output: Path, *, prepare_only=False) -> dict:
     """Run bounded local stages through Trainer; save evidence and adapter factors."""
-    import gc
     import json
     import platform
     import random
@@ -300,6 +402,10 @@ def _run_pilot(root: Path, config_path: Path, output: Path, *, prepare_only=Fals
     from src.catalog.storage import write_json_atomic
 
     config = read_json(config_path)
+    if config.get("kind") == "book_denoising_comparison":
+        from .denoising import run_comparison
+
+        return run_comparison(root, config_path, output, prepare_only=prepare_only)
     validate_pilot_config(config)
     if errors := check_file(root, config["continuation_manifest"]):
         raise ValueError("; ".join(errors))
@@ -342,66 +448,17 @@ def _run_pilot(root: Path, config_path: Path, output: Path, *, prepare_only=Fals
     if prepare_only:
         return report
     import torch
-    from huggingface_hub import snapshot_download
 
-    from src.data.tokenization import Tokenizer as ModelTokenizer
-    from src.data.tokenization import TokenizerConfig
-    from src.models.adapters import LoRAConfig, attach_lora, extract_effective_delta
-    from src.models.factory import ModelConfig, build_multitask_model
+    from src.models.adapters import extract_effective_delta
     from src.training.policy import PolicyTask, sample_responses, score_responses
     from src.training.rl import GroupRelativeConfig, RewardProvenance
-    from src.training.trainer import Trainer, TrainerConfig
 
-    torch.set_num_threads(config["threads"])
-    torch.manual_seed(config["seed"])
-    device = torch.device(config["device"])
-    if device.type == "mps":
-        if not torch.backends.mps.is_available():
-            raise RuntimeError("MPS unavailable; no automatic device fallback")
-        torch.mps.set_per_process_memory_fraction(config["mps_memory_fraction"])
-    snapshot = Path(
-        snapshot_download(
-            config["base_repo"], revision=config["base_revision"], local_files_only=True
-        )
-    )
-    if file_hash(snapshot / "model.safetensors") != config["base_weight_sha256"]:
-        raise ValueError("Cached base weights differ from the pinned checkpoint")
-    tokenizer = ModelTokenizer(TokenizerConfig(str(snapshot), max_length=160))
+    model, tokenizer, binding, device = build_local_model(config)
     raw_tokenizer = Tokenizer.from_file(
         str(safe_path(root, data["provenance"]["inputs"]["tokenizer"]["path"]))
     )
     raw_tokenizer.no_padding()
     raw_tokenizer.no_truncation()
-    model_config = ModelConfig(
-        d_model=768,
-        vocab_size=32128,
-        num_encoder_layers=12,
-        num_decoder_layers=12,
-        num_attention_heads=12,
-        ffn_dim=2048,
-        dropout=0.0,
-        use_pretrained=True,
-        pretrained_model_name=str(snapshot),
-        activation=config["activation"],
-        use_relative_position_bias=True,
-        use_learned_pos_enc=False,
-    )
-    model = build_multitask_model(tokenizer, num_emotions=0, num_topics=0, config=model_config)
-    shared = [f"encoder.layers.{i}.self_attn.W_{p}" for i in range(12) for p in ("Q", "V")]
-    private = [
-        f"decoder.layers.{i}.{kind}.W_{p}"
-        for i in range(12)
-        for kind in ("self_attn", "cross_attn")
-        for p in ("Q", "V")
-    ]
-    binding = attach_lora(
-        model,
-        shared_projections=shared,
-        private_projections=private,
-        config=LoRAConfig(**config["lora"]),
-    )
-    model.to(device)
-    gc.collect()
     report.update(
         status="running",
         torch=torch.__version__,
@@ -488,38 +545,8 @@ def _run_pilot(root: Path, config_path: Path, output: Path, *, prepare_only=Fals
         }
         save()
 
-    class Batches:
-        def __init__(self, rows):
-            self.rows, self.dataset = rows, range(len(rows))
-
-        def __len__(self):
-            return len(self.rows)
-
-        def __iter__(self):
-            return iter(self.rows)
-
     trainable = [p for p in model.parameters() if p.requires_grad]
-    optimizer = torch.optim.AdamW(
-        trainable, lr=config["sft_learning_rate"], weight_decay=0.0, foreach=False
-    )
-    runner = Trainer(
-        model,
-        optimizer,
-        TrainerConfig(
-            max_epochs=1,
-            gradient_clip_norm=1.0,
-            task_sampling="round_robin",
-            scheduler_type="constant",
-            early_stopping_patience=None,
-            label_smoothing=0.0,
-            generation_metrics=False,
-            tracking_uri="sqlite:///" + str(output / "tracking.db"),
-            experiment_name="LexiMind-local-pilot",
-        ),
-        device,
-        tokenizer,
-    )
-    runner.scheduler = None
+    runner = make_local_trainer(model, tokenizer, device, output, config["sft_learning_rate"])
     times = []
     previous = time.perf_counter()
 

@@ -68,3 +68,10 @@ semantic graders remain deferred. The [bounded M5 pilot](../../research/results/
 measures local execution with a sparse continuation reward. CUDA feasibility and
 representative model quality remain unmeasured; recent papers do not establish a
 LexiMind improvement.
+
+The [two-seed local comparison](../../research/results/book_denoising_20261002.json)
+tests exact word reconstruction, inspired by [T5 denoising](https://arxiv.org/abs/1910.10683).
+Both branches share warm-start adapters and 64 prompts, but RL generates four
+responses per prompt, so compute is not matched. Continued CE reduced validation
+content NLL more in both seeds; sparse rewards and poor exact recovery support
+improving the supervised task/baseline before increasing RL compute.

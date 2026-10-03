@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "book_denoising_comparison",
+  "study_id": "bookdash-infilling-m5-20261002",
+  "status": "fixed_before_model_evaluation",
+  "authorization": "User authorized continued bounded local M5 training; no paid calls or remote4070 execution.",
+  "base_runtime": {
+    "path": "configs/research/macbook_pilot.json",
+    "bytes": 2174,
+    "sha256": "32c5e890a4815ee870482d47d43ff424441ce298b50365d601070b42ec09258e"
+  },
+  "data_manifest": {
+    "path": "research/preparation/bookdash_manifest.json",
+    "bytes": 57022,
+    "sha256": "b8907bc7cc5596b6a3de8e15f6c7128cec1a71ab747b7cc084930b7457bdf996"
+  },
+  "tokenizer": {
+    "path": "artifacts/hf_tokenizer/tokenizer.json",
+    "bytes": 2422234,
+    "sha256": "4d4b21a8cc7c0407dafd8ac6215269cd05c8e49a521c3580479b567879526160"
+  },
+  "seeds": [
+    17,
+    29
+  ],
+  "warmup_steps": 128,
+  "comparison_prompts": 64,
+  "warmup_learning_rate": 0.0005,
+  "adaptation_learning_rate": 0.0001,
+  "group_size": 4,
+  "response_cap": 8,
+  "temperature": 1.0,
+  "clip_low": 0.2,
+  "clip_high": 0.2,
+  "max_total_seconds": 1800,
+  "task": "Restore one source-observed alphabetic word of at least four letters, represented by one to three canonical tokens, from visible left/right context. Target absent as a whole word from the full input.",
+  "reward": "Complete exact target and EOS; no case/whitespace normalization, partial-prefix reward or learned judge.",
+  "sampling": "Work-balanced fixed prompt order shared by branches; at most eight nonoverlapping windows per work; no resampling to force mixed reward groups.",
+  "comparison": "Same warm-start adapters, fresh AdamW states and same 64-prompt order/LR. ContinuedCE makes 64 updates; DrGRPO attempts 64 groups of four responses and skips no-signal updates. Prompt-budget matched, not compute matched.",
+  "evaluation": "Fixed endpoints: base, warm, continued CE, RL. Primary accuracy is the unweighted mean of per-work exact-match rates. Content NLL averages target-token NLL within each example, then examples within each work, then works; EOS NLL, invalid/truncated rates secondary. Report both seeds; no best-checkpoint selection.",
+  "test_policy": "Never load test/quarantined book contents into this task builder or model runtime. No old pilot work reused.",
+  "limitations": [
+    "Children\u2019s prose lexical reconstruction, not book-field/mood/recommendation quality.",
+    "Exposure of the pretrained base to these works is unknown.",
+    "One on-policy update per fresh group keeps importance ratios near one; this is not multi-epoch PPO."
+  ],
+  "promote": false,
+  "paid_spend_authorized": false
+}

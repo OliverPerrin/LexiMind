@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "kind": "book_denoising_comparison_observations",
+  "observed_on": "2026-10-02",
+  "implementation_commit": "4aade1d7cedf5f94ca7271b68af49ba199eded28",
+  "protocol": {
+    "path": "configs/research/book_denoising.json",
+    "bytes": 2641,
+    "sha256": "87e07e3e52c470310d8e7b013bdc39ab50eb441aa98c3beab9f06676bd5a4413"
+  },
+  "source_cohort": {
+    "path": "research/preparation/bookdash_manifest.json",
+    "bytes": 57022,
+    "sha256": "b8907bc7cc5596b6a3de8e15f6c7128cec1a71ab747b7cc084930b7457bdf996"
+  },
+  "raw_report": {
+    "path": "outputs/book_denoising_20261002/run_001/report.json",
+    "bytes": 815206,
+    "sha256": "069c89412c130e506b1662822d4a52d9d9124848c17db79bf429545a911192d2"
+  },
+  "examples": {
+    "path": "outputs/book_denoising_20261002/run_001/examples.json",
+    "bytes": 916538,
+    "sha256": "5c7da80d3897d681d9d2adc304648db29935cff5225da0cca9c92c8f0e7d7045"
+  },
+  "hardware": {
+    "chip": "Apple M5",
+    "unified_memory_bytes": 17179869184,
+    "device": "mps",
+    "dtype": "float32",
+    "torch": "2.14.0",
+    "cpu_fallback_enabled": false
+  },
+  "source_counts": {
+    "works": 35,
+    "works_by_split": {
+      "dev": 5,
+      "test": 5,
+      "train": 23,
+      "quarantine": 2
+    },
+    "whitespace_words": 12541,
+    "screened_records": {
+      "prior_licensed": 4,
+      "catalogue": 120,
+      "bgc": 91894
+    }
+  },
+  "example_counts": {
+    "train": 179,
+    "dev": 36
+  },
+  "example_work_counts": {
+    "train": 23,
+    "dev": 5
+  },
+  "global_test_used": false,
+  "new_human_labels": 0,
+  "elapsed_execution_seconds": 90.71327708300669,
+  "max_observed_mps_driver_bytes": 2473377792,
+  "seeds": [
+    {
+      "seed": 17,
+      "same_warm_start": true,
+      "warm_start_tensor_sha256": "de873fd7ccd987a8aa246e970335c9a6bf567dfef34e936e3c85b2bf0b40d039",
+      "frozen_base_verified": true,
+      "validation": {
+        "base": {
+          "correct": 0.0,
+          "content_nll": 8.396041882038116,
+          "eos_nll": 0.0876267694523752,
+          "invalid": 0.03333333333333333,
+          "truncated": 0.0
+        },
+        "warm": {
+          "correct": 0.0,
+          "content_nll": 6.388463652133941,
+          "eos_nll": 0.018990965468159024,
+          "invalid": 0.05,
+          "truncated": 0.0
+        },
+        "ce": {
+          "correct": 0.0,
+          "content_nll": 6.292624072233836,
+          "eos_nll": 0.01480950625227706,
+          "invalid": 0.025,
+          "truncated": 0.0
+        },
+        "rl": {
+          "correct": 0.0,
+          "content_nll": 6.37112465898196,
+          "eos_nll": 0.020593283233150333,
+          "invalid": 0.025,
+          "truncated": 0.0
+        }
+      },
+      "phases": {
+        "warm": {
+          "optimizer_updates": 128,
+          "wall_seconds": 18.884393250045832,
+          "training_loss": 3.7961600208655
+        },
+        "ce": {
+          "optimizer_updates": 64,
+          "wall_seconds": 5.143900667026173,
+          "training_loss": 3.1505520585924387
+        },
+        "rl": {
+          "optimizer_updates": 3,
+          "wall_seconds": 11.52651454199804,
+          "training_loss": 6.402842700481415e-10,
+          "groups": 64,
+          "sampled_responses": 256,
+          "correct_responses": 4,
+          "generated_tokens": 567,
+          "mixed_reward_groups": 3
+        }
+      },
+      "checkpoints": {
+        "warm": {
+          "path": "outputs/book_denoising_20261002/run_001/seed_17/warm.pt",
+          "bytes": 1809309,
+          "sha256": "6f75a312ccbecad2ae9817fd2f7319e6005fba918c6e042c983c525e1f1991f4",
+          "tensor_sha256": "de873fd7ccd987a8aa246e970335c9a6bf567dfef34e936e3c85b2bf0b40d039"
+        },
+        "ce": {
+          "path": "outputs/book_denoising_20261002/run_001/seed_17/ce.pt",
+          "bytes": 1808945,
+          "sha256": "2eb134e305b026c0a795db5c1fb6bc028580318c24c1bcedb4341be3e34c4181",
+          "tensor_sha256": "5739790ebad355df6a303532944e24eb0c3f10249f7000a4dbccf39871765b8e"
+        },
+        "rl": {
+          "path": "outputs/book_denoising_20261002/run_001/seed_17/rl.pt",
+          "bytes": 1808945,
+          "sha256": "3d598513669ae877db06e0712ef61bc4733cd51fc9501d79ebc6d764eefe42f5",
+          "tensor_sha256": "ac410e222ffc52c6d85c662e07235c8902d8ea02878ef408258c95891a80f501"
+        }
+      }
+    },
+    {
+      "seed": 29,
+      "same_warm_start": true,
+      "warm_start_tensor_sha256": "66d8ecb3f9536bc956289a64877d01aba45befca72d511ecafc1ee32ab387b3a",
+      "frozen_base_verified": true,
+      "validation": {
+        "base": {
+          "correct": 0.0,
+          "content_nll": 8.396041882038116,
+          "eos_nll": 0.0876267694523752,
+          "invalid": 0.03333333333333333,
+          "truncated": 0.0
+        },
+        "warm": {
+          "correct": 0.03333333333333333,
+          "content_nll": 6.284070760011673,
+          "eos_nll": 0.027245290253631538,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "ce": {
+          "correct": 0.03333333333333333,
+          "content_nll": 6.158466738462448,
+          "eos_nll": 0.0355792159577201,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "rl": {
+          "correct": 0.03333333333333333,
+          "content_nll": 6.249749489625295,
+          "eos_nll": 0.029926591393814306,
+          "invalid": 0.0,
+          "truncated": 0.0
+        }
+      },
+      "phases": {
+        "warm": {
+          "optimizer_updates": 128,
+          "wall_seconds": 11.324977834010497,
+          "training_loss": 3.747893392108381
+        },
+        "ce": {
+          "optimizer_updates": 64,
+          "wall_seconds": 5.185151582991239,
+          "training_loss": 2.939598293043673
+        },
+        "rl": {
+          "optimizer_updates": 5,
+          "wall_seconds": 7.947064457985107,
+          "training_loss": 1.8335413187742233e-09,
+          "groups": 64,
+          "sampled_responses": 256,
+          "correct_responses": 7,
+          "generated_tokens": 582,
+          "mixed_reward_groups": 5
+        }
+      },
+      "checkpoints": {
+        "warm": {
+          "path": "outputs/book_denoising_20261002/run_001/seed_29/warm.pt",
+          "bytes": 1809309,
+          "sha256": "0c4d0b5f521deca28af09784b086f84dcd4842cb0695b3a89d8062f2dd8689e9",
+          "tensor_sha256": "66d8ecb3f9536bc956289a64877d01aba45befca72d511ecafc1ee32ab387b3a"
+        },
+        "ce": {
+          "path": "outputs/book_denoising_20261002/run_001/seed_29/ce.pt",
+          "bytes": 1808945,
+          "sha256": "06f518ba98ba5d32189366d6030201ee96047a1d2e180a469cfb00c6c1d493a3",
+          "tensor_sha256": "3a35ee4dc30a39cf90e9117cc0c9dde572ac80090751928d7e8ac0de7e0373c2"
+        },
+        "rl": {
+          "path": "outputs/book_denoising_20261002/run_001/seed_29/rl.pt",
+          "bytes": 1808945,
+          "sha256": "d1dafc26fa6a4c73ea307cebbb75791346e07c491670d4fdb0685d7aacd9344a",
+          "tensor_sha256": "a36cd1d5c85b7edd6a9efa21a023adf9e90061e271b84b5e36a92da92e8b63e0"
+        }
+      }
+    }
+  ],
+  "independent_audit": {
+    "path": "outputs/book_denoising_20261002/run_001/independent_audit.json",
+    "bytes": 5149,
+    "sha256": "43c5ae03285f2814f16688dfdf322254e7867dd6b5612172625c25f17d5ffd6e"
+  },
+  "checkpoint_reload": {
+    "receipt": {
+      "path": "outputs/book_denoising_20261002/run_001/reload_verification.json",
+      "bytes": 7267,
+      "sha256": "18d19a972bf0edafe614de37eae356b832e2ede35307e2944c93dbd702d769b5"
+    },
+    "passed": true,
+    "all_checkpoint_tensor_hashes_verified": true,
+    "greedy_cases_verified": 30,
+    "max_cpu_mps_content_nll_difference": 2.09808349609375e-05
+  },
+  "promoted": false,
+  "interpretation": [
+    "Continued CE reduced validation content NLL more than this sparse-reward RL stage in both seeds. Exact reconstruction remained poor and unchanged by either post-warm stage.",
+    "These conditions match prompt counts, not compute or optimizer updates; full rollout and timing costs are recorded.",
+    "Children\u2019s book lexical reconstruction is not evidence of book genre, reader mood or recommendation quality; pretrained exposure to these works is unknown.",
+    "No hyperparameters or best checkpoint were selected using validation results; test and quarantine narratives were excluded from task preparation and model execution."
+  ],
+  "next_actions": [
+    "Prioritize a stronger supervised, task-aligned baseline before increasing RL compute.",
+    "Review book-field positives/negatives and character-emotion target semantics separately from this source reconstruction task.",
+    "Retain the existing sparse-reward results; future task changes must be declared as new experiments."
+  ]
+}

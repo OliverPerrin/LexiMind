@@ -23,8 +23,8 @@
       "evidence": [
         {
           "path": "docs/research/model_recipe_review.md",
-          "bytes": 5819,
-          "sha256": "b11e258643eb140a35a524133847d6b7b675df4c9f48a08eea0a5813e7e16657"
+          "bytes": 6307,
+          "sha256": "a1d63d673a35e878161f75919eb412bfd04160bc617a035160fe94b83add4e63"
         },
         {
           "path": "docs/research/book_discovery_review.md",
@@ -38,8 +38,8 @@
         },
         {
           "path": "research/preparation/rl_methods.json",
-          "bytes": 21417,
-          "sha256": "8f1fcce72d1785a9a61f15c13e4d5f4e5d9b19b757531b133da6d8fd5c5316ec"
+          "bytes": 21510,
+          "sha256": "5684930dc7e3fa058696655036c718b65059de86dd6a4e742e591066d102ad41"
         }
       ],
       "draft_path": "docs/research/README.md",
@@ -50,8 +50,8 @@
       "evidence": [
         {
           "path": "configs/research/study_design.json",
-          "bytes": 14036,
-          "sha256": "93a2117b67453684c8721b05d6c7938b26853b01955a3102370543a350b2ef21"
+          "bytes": 14181,
+          "sha256": "9a218351c454b61ab5b4c406a5a911ce57fcbaf7486c917962849e7ad9f0fee6"
         },
         {
           "path": "docs/research/study_decisions.md",
@@ -109,9 +109,14 @@
           "path": "research/preparation/rpt_candidate_manifest.json",
           "bytes": 26768,
           "sha256": "627f6c0f6ec83e07fd694791483685083fac19a5b45c37e6eadd9a7bb37bf4c7"
+        },
+        {
+          "path": "research/preparation/bookdash_manifest.json",
+          "bytes": 57022,
+          "sha256": "b8907bc7cc5596b6a3de8e15f6c7128cec1a71ab747b7cc084930b7457bdf996"
         }
       ],
-      "note": "Raw CR4 conditions/responses audited; 32 licensed-work continuation examples prepared. Field suggestions remain agent-only; no real human judgments, dataset admission or model execution."
+      "note": "Book Dash expansion: 35 pinned works, with 23 train, 5 validation, 5 test and 2 quarantined. Fixed extraction produces 179 training and 36 validation examples. Original CR4/field/RPT preparations remain unchanged; no new human field labels or formal study admission."
     },
     "group_split_audit": {
       "status": "cross_source_partition_overlay_prepared_not_frozen",
@@ -173,7 +178,7 @@
       "note": "120 source-linked work references; packet remains empty with no queries, human judgments or gold."
     },
     "runtime_preparation": {
-      "status": "bounded_m5_feasibility_observed",
+      "status": "m5_continuation_and_paired_denoising_observed",
       "evidence": [
         {
           "path": "src/models/adapters.py",
@@ -199,9 +204,19 @@
           "path": "research/results/macbook_pilot_20261002.json",
           "bytes": 10907,
           "sha256": "7ce39eb1cc6a72521b3b3ae17bdd8c343acd198acc7d8fd181395e89d9be072d"
+        },
+        {
+          "path": "configs/research/book_denoising.json",
+          "bytes": 2641,
+          "sha256": "87e07e3e52c470310d8e7b013bdc39ab50eb441aa98c3beab9f06676bd5a4413"
+        },
+        {
+          "path": "research/results/book_denoising_20261002.json",
+          "bytes": 8681,
+          "sha256": "ffcd2d18b5ac204f83da7a046e0226c66f4d4921b8fe50e54e67994adbf69403"
         }
       ],
-      "note": "Native FLAN GELU parity corrected explicitly; local rank-four LoRA CE and one sparse-reward RL update observed. Real adapter reload verified. Formal book-field quality and CUDA feasibility remain unresolved."
+      "note": "Native M5 training and checkpoint reload verified. Two-seed word reconstruction: continued CE reduced validation content loss more than sparse-reward RL; exact recovery remains poor. No book-field model or CUDA result is claimed."
     }
   },
   "study_design": "configs/research/study_design.json",

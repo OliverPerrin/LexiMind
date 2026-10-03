@@ -319,6 +319,8 @@
   "local_pilot": {
     "config": "configs/research/macbook_pilot.json",
     "status": "authorized_local_feasibility",
-    "formal_comparison_admitted": false
+    "formal_comparison_admitted": false,
+    "comparison_config": "configs/research/book_denoising.json",
+    "comparison_observations": "research/results/book_denoising_20261002.json"
   }
 }
