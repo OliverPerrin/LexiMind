@@ -77,6 +77,65 @@ passage/session aggregation from PPO. Current PufferLib 5.0 uses a CUDA trainer;
 its CPU evaluation support does not provide an M5 training path. Keep the native
 runtime while testing the supervised baseline and preparing proper book labels.
 
+## Book-field source recovery
+
+The [fixed field diagnostic](../../configs/research/book_field_baseline.json)
+uses 4,096 training and 1,024 development BGC records. It selects singleton groups
+by hash, excludes every cross-source overlay component, and requires original and
+effective roles to agree. Selection precedes text resolution; the original test
+ZIP member is never opened. Raw train/dev member bytes are streamed and checked,
+while only selected record frames are decoded.
+
+```sh
+python scripts/research.py field-baseline --output outputs/new-field-run --prepare-only
+# Omit --prepare-only in a different fresh output directory to fit and score.
+```
+
+Frequency, label-name matching and positive TF-IDF prototypes rank the 48 mapped
+labels separately within genre/topic/form/audience. Vocabulary and IDF use
+training text only. The fixed metrics are observed-positive recall at 1/3/5 and
+first-positive reciprocal rank, with group and label support reported. Omissions
+remain unknown: this does not measure false positives, calibrated field quality,
+reader mood or recommendation relevance. The [provider's description](https://www.inf.uni-hamburg.de/en/inst/ab/lt/resources/data/blurb-genre-collection.html)
+explicitly notes missing specific categories. Small facets can achieve trivial
+recall at large k; inspect the actual cutoff and rare-label support.
+
+The [3 October results](../../research/results/book_field_baseline_20261003.json)
+completed in 6.06 seconds on CPU, including preparation, fitting and scoring.
+Observed-positive group-macro recall@3 on development:
+
+| Method | Genre (353 groups) | Topic (379) | Form (805) | Audience (258) |
+| --- | --- | --- | --- | --- |
+| Training frequency | 52.4% | 26.3% | 93.3% | 100% |
+| Label-name matching | 27.9% | 41.1% | 54.7% | 100% |
+| Positive TF-IDF prototype | 85.3% | 89.0% | 97.5% | 100% |
+
+Audience has only three labels, so its recall@3 is trivial for every method.
+Prototype label-macro recall@3 was 72.6% for genres and 80.1% for topics.
+The erotica label has one training positive and no development positives;
+gothic/horror and games each have only two development positives. The fixed
+sample was retained. Independent reconstruction verified all 20,000 training-only
+IDFs, eight saved sparse arrays, 12,288 ranking lists and 147,456 scores.
+This supplies a useful fixed lexical control for future field models, with false
+positives and human label quality still unresolved.
+
+Each preparation/run also creates a 32-record **training-only, blind review**
+worksheet under `data/research_candidates/bgc/field-baseline-review/`, with its
+path and hashes in `report.json`. All human and agent slots start blank. The
+worksheet is hash-selected before scoring and binds the protocol, cohort,
+assignments and partition overlay. Use its own `review_manifest.json` when
+importing an exported draft:
+
+```sh
+python scripts/research.py review import --manifest <review-folder>/review_manifest.json --draft <exported-draft.json> --output data/research_candidates/new-human-candidate.json
+```
+
+Imports remain candidates. Source-conflicting decisions still require separate
+adjudication and the existing importer rejects them; preserve the exported draft.
+The older 32-row purposive packet includes effective test records and must not be
+used as this diagnostic's training seed. No worksheet creates human evidence by
+being generated or viewed.
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh

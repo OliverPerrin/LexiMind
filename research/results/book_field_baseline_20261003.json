@@ -1,0 +1,850 @@
+{
+  "schema_version": 1,
+  "kind": "book_field_retrieval_diagnostic_observations",
+  "observed_on": "2026-10-03",
+  "implementation_commit": "c6d21e26ba72f48bcdf8dc59c41c2d578a0169ce",
+  "protocol": {
+    "bytes": 4543,
+    "path": "configs/research/book_field_baseline.json",
+    "sha256": "db121fb959c8348b34afafe49c960c8eecb0233e63f5595350ede30146405f60"
+  },
+  "field_manifest": {
+    "bytes": 6428,
+    "path": "research/preparation/book_field_manifest.json",
+    "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
+  },
+  "partition_manifest": {
+    "bytes": 41532,
+    "path": "research/preparation/book_partition_manifest.json",
+    "sha256": "c45173e71a2196090f319e77ad4a17eff0a03c3a137f852bf621183dbccf8e73"
+  },
+  "raw_report": {
+    "path": "outputs/book_field_baseline_20261003/run_001/report.json",
+    "bytes": 1778118,
+    "sha256": "4ab9a7e98738f787b8298691f823ff09f26c20978af1273bcceb798b2bd4ec6e"
+  },
+  "examples": {
+    "bytes": 12423441,
+    "path": "outputs/book_field_baseline_20261003/run_001/examples.json",
+    "sha256": "01472e03950c25ebd1847143f8d3cd3d04bfc3412b78d64e3c6c067864c988b1"
+  },
+  "rankings": {
+    "bytes": 21680805,
+    "path": "outputs/book_field_baseline_20261003/run_001/rankings.json",
+    "sha256": "c9265d21d33463614b78d7889fd875ffcf6eb21973f6498b125ee7cf6916ce2d"
+  },
+  "fitted_artifacts": {
+    "centroids": {
+      "audience": {
+        "bytes": 208918,
+        "path": "outputs/book_field_baseline_20261003/run_001/fitted/centroids_audience.npz",
+        "sha256": "cc93c24204a34d71ed9a35f347e4dc4da728b875fa3a8dad672ea155aa6a95a1"
+      },
+      "form": {
+        "bytes": 504797,
+        "path": "outputs/book_field_baseline_20261003/run_001/fitted/centroids_form.npz",
+        "sha256": "b6607f33f02b380a5d19dd5278d8e22d600791834ac7e1d789fa16027de1c666"
+      },
+      "genre": {
+        "bytes": 603101,
+        "path": "outputs/book_field_baseline_20261003/run_001/fitted/centroids_genre.npz",
+        "sha256": "41453ef06e2cd93d841ed70bed2d011017092d8ff8fdbf176cdefd590ef4b3a2"
+      },
+      "topic": {
+        "bytes": 685671,
+        "path": "outputs/book_field_baseline_20261003/run_001/fitted/centroids_topic.npz",
+        "sha256": "629df09f66167cd66ea5e9b9f48e555fc28102e9891607d6c68a822f12291a43"
+      }
+    },
+    "label_name_vectors": {
+      "audience": {
+        "bytes": 1049,
+        "path": "outputs/book_field_baseline_20261003/run_001/fitted/label_name_vectors_audience.npz",
+        "sha256": "7729262e4cac888522e433c0653b051fc52a6b50564b7d770ee54a17b0d2c18b"
+      },
+      "form": {
+        "bytes": 1079,
+        "path": "outputs/book_field_baseline_20261003/run_001/fitted/label_name_vectors_form.npz",
+        "sha256": "004c90bc4aa29e4400df9ebbf099bd0ec11c950658531e3b8de8a9bb4126459a"
+      },
+      "genre": {
+        "bytes": 1217,
+        "path": "outputs/book_field_baseline_20261003/run_001/fitted/label_name_vectors_genre.npz",
+        "sha256": "7e7c41042e9b9805f93454773099162eabc965d3a4c1be9aa3e3c105ea4f5f48"
+      },
+      "topic": {
+        "bytes": 1169,
+        "path": "outputs/book_field_baseline_20261003/run_001/fitted/label_name_vectors_topic.npz",
+        "sha256": "05fdb1f175c31aabb14daa00cdf3c73c8c9cf5e65530dc484d84a0eec2c853ac"
+      }
+    },
+    "vectorizer": {
+      "bytes": 919338,
+      "path": "outputs/book_field_baseline_20261003/run_001/fitted/vectorizer.json",
+      "sha256": "df14e002c0d239d8a3392736c8786184278aa180808a024caa4744a35d2a649b"
+    }
+  },
+  "hardware": {
+    "device": "cpu",
+    "chip": "Apple M5"
+  },
+  "dependency_versions": {
+    "numpy": "2.2.6",
+    "python": "3.11.15",
+    "scikit-learn": "1.7.2",
+    "scipy": "1.17.1"
+  },
+  "cohort_counts": {
+    "eligible": {
+      "dev": 2306,
+      "train": 36250
+    },
+    "eligible_not_selected": {
+      "dev": 1282,
+      "train": 32154
+    },
+    "excluded_by_first_reason": {
+      "cross_source_component": 53,
+      "effective_reserved": 14027,
+      "non_singleton_group": 3423,
+      "source_effective_disagreement": 18143,
+      "source_reserved": 17692
+    },
+    "group_overlap": 0,
+    "input_hash_overlap": 0,
+    "record_overlap": 0,
+    "selected": {
+      "dev": 1024,
+      "train": 4096
+    },
+    "selected_groups": {
+      "dev": 1024,
+      "train": 4096
+    },
+    "shortfall": {
+      "dev": 0,
+      "train": 0
+    },
+    "source_groups": 89910,
+    "source_records": 91894
+  },
+  "source_members_opened": [
+    "BlurbGenreCollection_EN_train.txt",
+    "BlurbGenreCollection_EN_dev.txt"
+  ],
+  "decoded_records": 5120,
+  "test_records_decoded": 0,
+  "selected_label_support": {
+    "dev": {
+      "audience": {
+        "groups_without_observed_positives": 766,
+        "negative_groups": {
+          "children": 0,
+          "middle_grade": 0,
+          "teen_young_adult": 0
+        },
+        "positive_groups": {
+          "children": 214,
+          "middle_grade": 74,
+          "teen_young_adult": 45
+        }
+      },
+      "form": {
+        "groups_without_observed_positives": 219,
+        "negative_groups": {
+          "fiction": 0,
+          "graphic_narrative": 0,
+          "life_writing": 0,
+          "literary_collection": 0,
+          "nonfiction": 0,
+          "poetry": 0,
+          "reference": 0
+        },
+        "positive_groups": {
+          "fiction": 400,
+          "graphic_narrative": 49,
+          "life_writing": 68,
+          "literary_collection": 14,
+          "nonfiction": 395,
+          "poetry": 12,
+          "reference": 25
+        }
+      },
+      "genre": {
+        "groups_without_observed_positives": 671,
+        "negative_groups": {
+          "adventure": 0,
+          "erotica": 0,
+          "fantasy": 0,
+          "gothic_horror": 0,
+          "historical_fiction": 0,
+          "humor": 0,
+          "literary_fiction": 0,
+          "mystery": 0,
+          "mystery_suspense": 0,
+          "paranormal_fiction": 0,
+          "romance": 0,
+          "science_fiction": 0,
+          "spiritual_fiction": 0,
+          "suspense_thriller": 0,
+          "western": 0
+        },
+        "positive_groups": {
+          "adventure": 21,
+          "erotica": 0,
+          "fantasy": 45,
+          "gothic_horror": 2,
+          "historical_fiction": 39,
+          "humor": 20,
+          "literary_fiction": 73,
+          "mystery": 51,
+          "mystery_suspense": 116,
+          "paranormal_fiction": 18,
+          "romance": 97,
+          "science_fiction": 21,
+          "spiritual_fiction": 8,
+          "suspense_thriller": 72,
+          "western": 14
+        }
+      },
+      "topic": {
+        "groups_without_observed_positives": 645,
+        "negative_groups": {
+          "arts": 0,
+          "business": 0,
+          "cooking": 0,
+          "crafts": 0,
+          "finance": 0,
+          "games": 0,
+          "health": 0,
+          "history": 0,
+          "language": 0,
+          "literature": 0,
+          "parenting": 0,
+          "pets": 0,
+          "philosophy": 0,
+          "politics": 0,
+          "psychology": 0,
+          "religion": 0,
+          "science": 0,
+          "self_development": 0,
+          "social_issues": 0,
+          "sports": 0,
+          "technology": 0,
+          "test_preparation": 0,
+          "travel": 0
+        },
+        "positive_groups": {
+          "arts": 52,
+          "business": 6,
+          "cooking": 38,
+          "crafts": 10,
+          "finance": 5,
+          "games": 2,
+          "health": 42,
+          "history": 57,
+          "language": 7,
+          "literature": 10,
+          "parenting": 11,
+          "pets": 6,
+          "philosophy": 43,
+          "politics": 29,
+          "psychology": 17,
+          "religion": 27,
+          "science": 29,
+          "self_development": 49,
+          "social_issues": 30,
+          "sports": 16,
+          "technology": 4,
+          "test_preparation": 7,
+          "travel": 7
+        }
+      }
+    },
+    "train": {
+      "audience": {
+        "groups_without_observed_positives": 3057,
+        "negative_groups": {
+          "children": 0,
+          "middle_grade": 0,
+          "teen_young_adult": 0
+        },
+        "positive_groups": {
+          "children": 890,
+          "middle_grade": 350,
+          "teen_young_adult": 154
+        }
+      },
+      "form": {
+        "groups_without_observed_positives": 896,
+        "negative_groups": {
+          "fiction": 0,
+          "graphic_narrative": 0,
+          "life_writing": 0,
+          "literary_collection": 0,
+          "nonfiction": 0,
+          "poetry": 0,
+          "reference": 0
+        },
+        "positive_groups": {
+          "fiction": 1547,
+          "graphic_narrative": 183,
+          "life_writing": 270,
+          "literary_collection": 47,
+          "nonfiction": 1613,
+          "poetry": 59,
+          "reference": 99
+        }
+      },
+      "genre": {
+        "groups_without_observed_positives": 2696,
+        "negative_groups": {
+          "adventure": 0,
+          "erotica": 0,
+          "fantasy": 0,
+          "gothic_horror": 0,
+          "historical_fiction": 0,
+          "humor": 0,
+          "literary_fiction": 0,
+          "mystery": 0,
+          "mystery_suspense": 0,
+          "paranormal_fiction": 0,
+          "romance": 0,
+          "science_fiction": 0,
+          "spiritual_fiction": 0,
+          "suspense_thriller": 0,
+          "western": 0
+        },
+        "positive_groups": {
+          "adventure": 76,
+          "erotica": 1,
+          "fantasy": 187,
+          "gothic_horror": 31,
+          "historical_fiction": 197,
+          "humor": 70,
+          "literary_fiction": 297,
+          "mystery": 218,
+          "mystery_suspense": 444,
+          "paranormal_fiction": 63,
+          "romance": 306,
+          "science_fiction": 95,
+          "spiritual_fiction": 26,
+          "suspense_thriller": 260,
+          "western": 55
+        }
+      },
+      "topic": {
+        "groups_without_observed_positives": 2541,
+        "negative_groups": {
+          "arts": 0,
+          "business": 0,
+          "cooking": 0,
+          "crafts": 0,
+          "finance": 0,
+          "games": 0,
+          "health": 0,
+          "history": 0,
+          "language": 0,
+          "literature": 0,
+          "parenting": 0,
+          "pets": 0,
+          "philosophy": 0,
+          "politics": 0,
+          "psychology": 0,
+          "religion": 0,
+          "science": 0,
+          "self_development": 0,
+          "social_issues": 0,
+          "sports": 0,
+          "technology": 0,
+          "test_preparation": 0,
+          "travel": 0
+        },
+        "positive_groups": {
+          "arts": 167,
+          "business": 42,
+          "cooking": 169,
+          "crafts": 50,
+          "finance": 17,
+          "games": 23,
+          "health": 175,
+          "history": 223,
+          "language": 9,
+          "literature": 36,
+          "parenting": 61,
+          "pets": 12,
+          "philosophy": 172,
+          "politics": 119,
+          "psychology": 107,
+          "religion": 209,
+          "science": 107,
+          "self_development": 207,
+          "social_issues": 75,
+          "sports": 90,
+          "technology": 32,
+          "test_preparation": 13,
+          "travel": 33
+        }
+      }
+    }
+  },
+  "training_support": {
+    "audience": {
+      "positive_groups": {
+        "children": 890,
+        "middle_grade": 350,
+        "teen_young_adult": 154
+      },
+      "zero_centroid_labels": [],
+      "zero_label_name_labels": [],
+      "zero_positive_support_labels": []
+    },
+    "form": {
+      "positive_groups": {
+        "fiction": 1547,
+        "graphic_narrative": 183,
+        "life_writing": 270,
+        "literary_collection": 47,
+        "nonfiction": 1613,
+        "poetry": 59,
+        "reference": 99
+      },
+      "zero_centroid_labels": [],
+      "zero_label_name_labels": [],
+      "zero_positive_support_labels": []
+    },
+    "genre": {
+      "positive_groups": {
+        "adventure": 76,
+        "erotica": 1,
+        "fantasy": 187,
+        "gothic_horror": 31,
+        "historical_fiction": 197,
+        "humor": 70,
+        "literary_fiction": 297,
+        "mystery": 218,
+        "mystery_suspense": 444,
+        "paranormal_fiction": 63,
+        "romance": 306,
+        "science_fiction": 95,
+        "spiritual_fiction": 26,
+        "suspense_thriller": 260,
+        "western": 55
+      },
+      "zero_centroid_labels": [],
+      "zero_label_name_labels": [
+        "erotica"
+      ],
+      "zero_positive_support_labels": []
+    },
+    "topic": {
+      "positive_groups": {
+        "arts": 167,
+        "business": 42,
+        "cooking": 169,
+        "crafts": 50,
+        "finance": 17,
+        "games": 23,
+        "health": 175,
+        "history": 223,
+        "language": 9,
+        "literature": 36,
+        "parenting": 61,
+        "pets": 12,
+        "philosophy": 172,
+        "politics": 119,
+        "psychology": 107,
+        "religion": 209,
+        "science": 107,
+        "self_development": 207,
+        "social_issues": 75,
+        "sports": 90,
+        "technology": 32,
+        "test_preparation": 13,
+        "travel": 33
+      },
+      "zero_centroid_labels": [],
+      "zero_label_name_labels": [],
+      "zero_positive_support_labels": []
+    }
+  },
+  "fit_diagnostics": {
+    "negative_labels_used_for_fitting": 0,
+    "negative_training_labels": 0,
+    "train_groups": 4096,
+    "vocabulary_features": 20000,
+    "zero_training_tfidf_vectors": 0
+  },
+  "zero_development_tfidf_vectors": 0,
+  "timings": {
+    "evaluation_seconds": 0.15461720898747444,
+    "fit_seconds": 0.6481740419985726,
+    "preparation_seconds": 4.128828999993857,
+    "total_seconds": 6.055768417019863
+  },
+  "metrics": {
+    "frequency": {
+      "audience": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 3
+        },
+        "evaluated_groups": 258,
+        "excluded_groups_without_observed_positives": 766,
+        "group_macro_recall_at_k": {
+          "1": 0.6854005167958657,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "group_macro_reciprocal_rank": 0.8863049095607239,
+        "label_macro_recall_at_k": {
+          "1": 0.3333333333333333,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "observed_positive_count": 333,
+        "zero_evaluation_support_labels": []
+      },
+      "form": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 805,
+        "excluded_groups_without_observed_positives": 219,
+        "group_macro_recall_at_k": {
+          "1": 0.42712215320910973,
+          "3": 0.9333333333333333,
+          "5": 0.9786749482401655
+        },
+        "group_macro_reciprocal_rank": 0.7402543626146111,
+        "label_macro_recall_at_k": {
+          "1": 0.14285714285714285,
+          "3": 0.42857142857142855,
+          "5": 0.7142857142857143
+        },
+        "observed_positive_count": 963,
+        "zero_evaluation_support_labels": []
+      },
+      "genre": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 353,
+        "excluded_groups_without_observed_positives": 671,
+        "group_macro_recall_at_k": {
+          "1": 0.1561378659112371,
+          "3": 0.5240321057601512,
+          "5": 0.6601038715769592
+        },
+        "group_macro_reciprocal_rank": 0.5367921738318339,
+        "label_macro_recall_at_k": {
+          "1": 0.07142857142857142,
+          "3": 0.21428571428571427,
+          "5": 0.35714285714285715
+        },
+        "observed_positive_count": 597,
+        "zero_evaluation_support_labels": [
+          "erotica"
+        ]
+      },
+      "topic": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 379,
+        "excluded_groups_without_observed_positives": 645,
+        "group_macro_recall_at_k": {
+          "1": 0.12752858399296393,
+          "3": 0.2631926121372032,
+          "5": 0.40589270008795075
+        },
+        "group_macro_reciprocal_rank": 0.3148449873503953,
+        "label_macro_recall_at_k": {
+          "1": 0.043478260869565216,
+          "3": 0.13043478260869565,
+          "5": 0.21739130434782608
+        },
+        "observed_positive_count": 504,
+        "zero_evaluation_support_labels": []
+      }
+    },
+    "label_name": {
+      "audience": {
+        "all_scores_zero_groups": 793,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 3
+        },
+        "evaluated_groups": 258,
+        "excluded_groups_without_observed_positives": 766,
+        "group_macro_recall_at_k": {
+          "1": 0.642764857881137,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "group_macro_reciprocal_rank": 0.8591731266149873,
+        "label_macro_recall_at_k": {
+          "1": 0.35824422553394514,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "observed_positive_count": 333,
+        "zero_evaluation_support_labels": []
+      },
+      "form": {
+        "all_scores_zero_groups": 596,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 805,
+        "excluded_groups_without_observed_positives": 219,
+        "group_macro_recall_at_k": {
+          "1": 0.3086956521739131,
+          "3": 0.5472049689440994,
+          "5": 0.9697722567287784
+        },
+        "group_macro_reciprocal_rank": 0.5489026915113838,
+        "label_macro_recall_at_k": {
+          "1": 0.2890473712088814,
+          "3": 0.5561169133114366,
+          "5": 0.7820976491862568
+        },
+        "observed_positive_count": 963,
+        "zero_evaluation_support_labels": []
+      },
+      "genre": {
+        "all_scores_zero_groups": 703,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 353,
+        "excluded_groups_without_observed_positives": 671,
+        "group_macro_recall_at_k": {
+          "1": 0.14268177525967893,
+          "3": 0.27851746931067045,
+          "5": 0.3264400377714825
+        },
+        "group_macro_reciprocal_rank": 0.35789632935525334,
+        "label_macro_recall_at_k": {
+          "1": 0.14523543530168953,
+          "3": 0.25217327108010007,
+          "5": 0.3104233748351299
+        },
+        "observed_positive_count": 597,
+        "zero_evaluation_support_labels": [
+          "erotica"
+        ]
+      },
+      "topic": {
+        "all_scores_zero_groups": 595,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 379,
+        "excluded_groups_without_observed_positives": 645,
+        "group_macro_recall_at_k": {
+          "1": 0.24736147757255933,
+          "3": 0.4109498680738787,
+          "5": 0.45250659630606865
+        },
+        "group_macro_reciprocal_rank": 0.43265631589820497,
+        "label_macro_recall_at_k": {
+          "1": 0.25112344943968434,
+          "3": 0.3592210743905849,
+          "5": 0.43030891103906227
+        },
+        "observed_positive_count": 504,
+        "zero_evaluation_support_labels": []
+      }
+    },
+    "positive_centroid": {
+      "audience": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 3
+        },
+        "evaluated_groups": 258,
+        "excluded_groups_without_observed_positives": 766,
+        "group_macro_recall_at_k": {
+          "1": 0.7338501291989664,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "group_macro_reciprocal_rank": 0.9211886304909562,
+        "label_macro_recall_at_k": {
+          "1": 0.6577568222428035,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "observed_positive_count": 333,
+        "zero_evaluation_support_labels": []
+      },
+      "form": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 805,
+        "excluded_groups_without_observed_positives": 219,
+        "group_macro_recall_at_k": {
+          "1": 0.7801242236024845,
+          "3": 0.9745341614906833,
+          "5": 0.996687370600414
+        },
+        "group_macro_reciprocal_rank": 0.9244099378881989,
+        "label_macro_recall_at_k": {
+          "1": 0.607646610181143,
+          "3": 0.8861765519951199,
+          "5": 0.9713119533527698
+        },
+        "observed_positive_count": 963,
+        "zero_evaluation_support_labels": []
+      },
+      "genre": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 353,
+        "excluded_groups_without_observed_positives": 671,
+        "group_macro_recall_at_k": {
+          "1": 0.529603399433428,
+          "3": 0.8529745042492919,
+          "5": 0.9298866855524079
+        },
+        "group_macro_reciprocal_rank": 0.849361482081029,
+        "label_macro_recall_at_k": {
+          "1": 0.42113678633158835,
+          "3": 0.7255757720513273,
+          "5": 0.8216935561904671
+        },
+        "observed_positive_count": 597,
+        "zero_evaluation_support_labels": [
+          "erotica"
+        ]
+      },
+      "topic": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 379,
+        "excluded_groups_without_observed_positives": 645,
+        "group_macro_recall_at_k": {
+          "1": 0.6418205804749342,
+          "3": 0.8902814423922604,
+          "5": 0.936235708003518
+        },
+        "group_macro_reciprocal_rank": 0.8513079791937499,
+        "label_macro_recall_at_k": {
+          "1": 0.5034675973647574,
+          "3": 0.8005995704661973,
+          "5": 0.8646109470332106
+        },
+        "observed_positive_count": 504,
+        "zero_evaluation_support_labels": []
+      }
+    }
+  },
+  "independent_audit": {
+    "receipt": {
+      "path": "outputs/book_field_baseline_20261003/run_001/independent_audit.json",
+      "bytes": 2140,
+      "sha256": "e4d30abb08b6793342c278fecd84d8398afa496ae837bf1de431103e297dab19"
+    },
+    "implementation": {
+      "path": "outputs/book_field_baseline_20261003/run_001/independent_audit.py",
+      "bytes": 8017,
+      "sha256": "21c819e3958a283cb3c7f66e1bb394005dcd65d41a6a34ed52f1ff109bd77d07"
+    },
+    "passed": true,
+    "references_verified": 32,
+    "train_groups": 4096,
+    "dev_groups": 1024,
+    "vocabulary_features_verified": 20000,
+    "train_only_idf_verified": true,
+    "fitted_arrays_reloaded": 8,
+    "maximum_centroid_absolute_difference": 3.0531133177191805e-16,
+    "ranking_lists_checked": 12288,
+    "individual_scores_checked": 147456,
+    "blank_train_review_records_verified": 32
+  },
+  "review": {
+    "blind_to_ranker_outputs": true,
+    "effective_role": "train",
+    "manifest": {
+      "bytes": 6719,
+      "path": "data/research_candidates/bgc/field-baseline-review/book_field_baseline_20261003/run_001/review_manifest.json",
+      "sha256": "c37ff8963d88b56f0dd33d931113252bed32d8fd4042dd66664b1dd6915ed65a"
+    },
+    "new_human_labels": 0,
+    "packet": {
+      "bytes": 15831,
+      "path": "data/research_candidates/bgc/field-baseline-review/book_field_baseline_20261003/run_001/review_packet.json",
+      "sha256": "981f5d943fa1eb4997c2bfcbfd868f33153e326f588fa141cadbb105ce910781"
+    },
+    "page": {
+      "bytes": 76487,
+      "path": "data/research_candidates/bgc/field-baseline-review/book_field_baseline_20261003/run_001/index.html",
+      "sha256": "66e9a0e7ce7bc15a120d155cfa0aa6e832d66c5d696d3048e76047fc1d032ab5"
+    },
+    "records": 32,
+    "worksheet": {
+      "bytes": 82164,
+      "path": "data/research_candidates/bgc/field-baseline-review/book_field_baseline_20261003/run_001/review_worksheet.json",
+      "sha256": "98a7e33d0d3b1c0448dd4637462be635a39e4cf44df5b44fbc700d40ab70576b"
+    },
+    "browser_verification": {
+      "path": "outputs/book_field_baseline_20261003/run_001/browser_verification.json",
+      "bytes": 533,
+      "sha256": "ac60885519a24d13d4cf9ba6a0a1cce406d45fc553e29450823a23bec9c669d5"
+    }
+  },
+  "human_labels_created": 0,
+  "negative_labels_created": 0,
+  "statistical_fitting_performed": true,
+  "neural_training_performed": false,
+  "rl_training_performed": false,
+  "formal_study_admitted": false,
+  "promoted": false,
+  "interpretation": [
+    "Positive-centroid TF-IDF recovered more observed genre and topic assignments than the fixed frequency and label-name controls in this development diagnostic. Group-macro recall@3 was 85.30% for genres and 89.03% for topics versus frequency 52.40% and 26.32%. Eligible denominators are 353 and 379 groups respectively; unannotated facets are excluded, not counted as failures.",
+    "All three methods and all four facets/cutoffs are retained. For the three-label audience facet, recall@3 and recall@5 are necessarily 100% and do not demonstrate ranking quality; inspect recall@1 and reciprocal rank instead.",
+    "Label-macro recall@3 was 72.56% for genres and 80.06% for topics under positive-centroid retrieval. The erotica label has one training positive and no development positives; gothic_horror and games each have only two development positives. No sample expansion or hyperparameter selection was performed to repair rare-label coverage.",
+    "Omitted labels remain unknown and no explicit negatives or human labels were created. These metrics cannot establish precision, false-positive rate, calibrated field output, reader mood or recommendation relevance. Literal genre words in blurbs are allowed available-input evidence.",
+    "The subset excludes multi-record groups, all cross-source components and all source/effective role disagreements. This is a conservative 5120-record source subset, not verified full-work grouping or representative coverage of all books. The original test member was not opened; skipped allowed-member frames were streamed as bytes for integrity, not decoded.",
+    "Independent recomputation verified train-only IDF for all 20000 features, reloaded all eight fitted sparse arrays and reproduced every ranking and score. The 32-record review queue was selected from training by a separate fixed hash before fitting and contains blank agent/human decisions."
+  ],
+  "next_actions": [
+    "Use the bound 32-record training-only review worksheet to collect explicit source-supported positive/negative/unknown decisions. Keep review candidates separate from gold; do not infer negatives from synopsis silence.",
+    "Implement a separately versioned source-conflict/adjudication path before using opposing reviewer assertions as supervised targets; the existing importer rejects source-positive conflicts and exported drafts must be preserved.",
+    "Keep these lexical rankers as fixed controls for future neural or recurrent field models. Better known-label recovery alone is not a reason to deploy, scale RL, or claim recommendation gains.",
+    "Once representative labels and work partitions are admitted, compare a supervised recurrent passage/session aggregator against pooling/order controls using the same inputs and budget. Current blurb recovery supplies neither ordered full-book passages nor reader-session rewards."
+  ]
+}

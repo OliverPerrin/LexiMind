@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "book_field_retrieval_diagnostic",
+  "study_id": "bgc-positive-field-retrieval-20261003",
+  "status": "fixed_before_development_scoring",
+  "authorization": "User requested merge and continued next steps on 2026-10-03; this scope fits a bounded local statistical diagnostic. No formal model-study admission, paid calls, remote compute or production promotion.",
+  "field_manifest": {
+    "path": "research/preparation/book_field_manifest.json",
+    "bytes": 6428,
+    "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
+  },
+  "partition_manifest": {
+    "path": "research/preparation/book_partition_manifest.json",
+    "bytes": 41532,
+    "sha256": "c45173e71a2196090f319e77ad4a17eff0a03c3a137f852bf621183dbccf8e73"
+  },
+  "methods": [
+    "frequency",
+    "label_name",
+    "positive_centroid"
+  ],
+  "facets": [
+    "genre",
+    "topic",
+    "form",
+    "audience"
+  ],
+  "top_k": [
+    1,
+    3,
+    5
+  ],
+  "train_limit": 4096,
+  "dev_limit": 1024,
+  "selection_salt": "bgc-field-retrieval-v1",
+  "tfidf": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 2,
+    "max_features": 20000,
+    "sublinear_tf": true,
+    "lowercase": true,
+    "strip_accents": "unicode",
+    "stop_words": "english"
+  },
+  "max_total_seconds": 600,
+  "selection": "Metadata-only SHA-256 order over selection_salt:role:record_id, then record_id. Original BGC singleton groups only, no review-required or overlay-touched groups, and source role must equal effective role in train/dev. No label balancing, retries or post-score sample changes. Source test ZIP member remains unopened; skipped frames in allowed members are streamed as bytes without text decoding.",
+  "source_semantics": "Recover observed positives in the existing authored 48-label mapping, separately within genre/topic/form/audience. Omitted labels stay unknown. Existing source-preparation training flags and all human review slots remain unchanged; zero source negatives and zero human-gold labels.",
+  "input": "Literal title plus newline plus description, with no category, author, URL or identifier metadata. Vocabulary and IDF fit selected training texts only. The fixed scikit-learn text transform is applied after source input verification.",
+  "rankers": "Frequency ranks training positive counts. Label-name cosine uses canonical label IDs with underscores replaced by spaces. Positive-centroid cosine uses normalized mean training TF-IDF vectors for each observed-positive label. Preserve all mapped labels, including zero-support labels. Sort by descending score then label ID for exact ties. No calibration or learned thresholds.",
+  "evaluation": "Fixed development-only observed-positive recall at 1/3/5 and first-observed-positive reciprocal rank per facet. One row per group; group macro and observed-label macro recall, per-label support and misses reported. Facets with no observed positives are excluded from their denominators and counted. k is clipped to facet vocabulary size and actual k reported. No precision/F1/accuracy, negative-label loss, best-run selection or significance claim.",
+  "review": {
+    "records": 32,
+    "role": "train",
+    "selection_salt": "bgc-field-review-v1",
+    "mode": "blind_to_ranker_outputs",
+    "human_review": null,
+    "agent_review": null,
+    "purpose": "Hash-selected training-only worksheet using the existing source-first review UI. Record evidence and explicit unknown decisions; no generated human labels or accuracy claims."
+  },
+  "limitations": [
+    "Conservative singleton/source-role subset is not the full BGC population or a verified literary-work partition.",
+    "Mapped labels inherit publisher and mapping biases; known positives are incomplete and some targets overlap hierarchically.",
+    "Descriptions may explicitly state a genre; this is permitted available-input evidence, not proof of literary understanding.",
+    "Both target selection and the existing mapping were prepared previously; this development diagnostic is not a confirmatory test.",
+    "A high recall at large k can be trivial for small facets and says nothing about false positives.",
+    "Source collection terms and this research diagnostic do not grant product deployment rights."
+  ],
+  "sources": [
+    "https://www.inf.uni-hamburg.de/en/inst/ab/lt/resources/data/blurb-genre-collection.html",
+    "https://scikit-learn.org/1.7/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html"
+  ],
+  "promote": false,
+  "paid_spend_authorized": false
+}
