@@ -42,6 +42,23 @@ validation target loss more than RL; exact recovery stayed low and only eight of
 128 RL groups produced updates. Test narratives remained excluded. Reproduce via
 `train.py --pilot configs/research/book_denoising.json --output outputs/new-run`.
 
+The next [fixed supervised comparison](../../configs/research/book_supervision.json)
+retains those exact examples and compares instruction/word-only output with native
+T5 sentinel-marked span output, at 128 and 512 updates in two seeds. It measures
+final training reward coverage without RL updates. This changes both input/output
+format and relative content-loss weighting, with equal prompt/update budgets,
+not equal compute. Development books were already inspected in the previous run;
+the reserved test narratives remain excluded. Run through the same entry point:
+
+```sh
+python scripts/train.py --pilot configs/research/book_supervision.json --output outputs/new-supervision-run --prepare-only
+```
+
+The [RNN/PufferLib review](rnn_ppo_review.md) distinguishes supervised recurrent
+passage/session aggregation from PPO. Current PufferLib 5.0 uses a CUDA trainer;
+its CPU evaluation support does not provide an M5 training path. Keep the native
+runtime while testing the supervised baseline and preparing proper book labels.
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh

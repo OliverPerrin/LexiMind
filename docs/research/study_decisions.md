@@ -48,5 +48,7 @@ reviews and then described as independent prospective reader requests.
 
 Fix book-domain labels and work grouping first, then integrate the new output/loss
 contract. Optional source controls and later mood/generation work are not requirements
-for making progress on the genre/topic track. GPU feasibility, numeric budgets and
-model runs remain deferred under the current pause.
+for making progress on the genre/topic track. Formal M1/B1 runs still need admission
+evidence and fixed budgets. The separately authorized local reconstruction pilots
+establish execution feasibility and measure that narrow task; they do not admit
+these studies or supply their missing labels.

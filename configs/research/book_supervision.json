@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "book_supervision_comparison",
+  "study_id": "bookdash-supervision-formats-m5-20261003",
+  "status": "fixed_before_model_evaluation",
+  "authorization": "User requested continued next steps on 2026-10-03; bounded local M5 work only, no paid calls or remote compute.",
+  "base_runtime": {
+    "path": "configs/research/macbook_pilot.json",
+    "bytes": 2174,
+    "sha256": "32c5e890a4815ee870482d47d43ff424441ce298b50365d601070b42ec09258e"
+  },
+  "data_manifest": {
+    "path": "research/preparation/bookdash_manifest.json",
+    "bytes": 57022,
+    "sha256": "b8907bc7cc5596b6a3de8e15f6c7128cec1a71ab747b7cc084930b7457bdf996"
+  },
+  "tokenizer": {
+    "path": "artifacts/hf_tokenizer/tokenizer.json",
+    "bytes": 2422234,
+    "sha256": "4d4b21a8cc7c0407dafd8ac6215269cd05c8e49a521c3580479b567879526160"
+  },
+  "seeds": [
+    17,
+    29
+  ],
+  "arms": [
+    "instruction_word",
+    "t5_span"
+  ],
+  "checkpoints": [
+    128,
+    512
+  ],
+  "learning_rate": 0.0005,
+  "response_cap": 8,
+  "group_size": 4,
+  "coverage_prompts": 46,
+  "temperature": 1.0,
+  "max_total_seconds": 1800,
+  "hypothesis": "A stronger fixed supervised baseline may improve exact reconstruction and expose whether sparse verified rewards persist. Native T5 corruption format is a hypothesis, not a fix to an established defect.",
+  "formats": {
+    "instruction_word": "Original instruction and sentinel-masked passage; output target word then EOS.",
+    "t5_span": "Same sentinel-masked passage without instruction; output <extra_id_0>, original canonical target word tokens, <extra_id_1>, EOS."
+  },
+  "data_policy": "Preserve the original 179 train and 36 development rows, target selection, work splits and source evidence. Never open test/quarantine narrative contents. Validation books have already been inspected in the previous experiment; these are development findings.",
+  "comparison": "Two-component input/output format package comparison, not isolated input-prompt or sentinel causal attribution. Identical initialized rank-four adapters, frozen base, fresh AdamW, common seed-specific work-balanced 512-prompt order, constant LR, existing Trainer. Equal optimizer updates and prompt exposure, not equal token or compute budgets. CE averages all target positions, so adding sentinel controls also changes relative content-loss weighting; this is part of the package, not isolated formatting causality.",
+  "evaluation": "Base and fixed 128/512-update development endpoints, final training metrics. Primary outcome: macro-over-work strict complete exact word recovery at 512. Report every development work and seed. Content NLL excludes sentinel and EOS labels; control and EOS NLL reported separately. Decoder conditioning differs, so use content NLL changes within arms rather than directly rank their absolute NLL. No early stopping or best checkpoint selection.",
+  "coverage": "At final weights sample four responses on each of 46 fixed work-balanced training prompts (two per training work), temperature 1, seed+4000 prompt schedule and seed+5000 sampling RNG. No updates, filtering, retries or resampling; report success, mixed/flat groups, per-work support and generated-token/time cost. Verify adapters unchanged. Probe rows overlap fitted data and are not generalization evidence.",
+  "scaling_gate": "Do not automatically run RL or choose a winner. Before a future RL comparison require successful responses across at least half the training works and mixed groups in at least one quarter of the fixed probe groups in both seeds for a predeclared format. Passing this descriptive coverage gate would establish only train reward feasibility.",
+  "limitations": [
+    "Tiny child-book lexical reconstruction is not genre, narrative emotion, reader mood or recommendation quality.",
+    "Only five development works; no significance or held-out confirmation claims.",
+    "Pretraining exposure to these public works is unknown.",
+    "T5 span format is inspired by pretraining but uses FLAN instruction-tuned weights and rank-four adaptation, not a reproduction of T5 pretraining."
+  ],
+  "method_source": "https://www.jmlr.org/papers/v21/20-074.html",
+  "promote": false,
+  "paid_spend_authorized": false
+}
