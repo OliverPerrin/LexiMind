@@ -42,7 +42,7 @@ validation target loss more than RL; exact recovery stayed low and only eight of
 128 RL groups produced updates. Test narratives remained excluded. Reproduce via
 `train.py --pilot configs/research/book_denoising.json --output outputs/new-run`.
 
-The next [fixed supervised comparison](../../configs/research/book_supervision.json)
+The [fixed supervised comparison](../../configs/research/book_supervision.json)
 retains those exact examples and compares instruction/word-only output with native
 T5 sentinel-marked span output, at 128 and 512 updates in two seeds. It measures
 final training reward coverage without RL updates. This changes both input/output
@@ -53,6 +53,24 @@ the reserved test narratives remain excluded. Run through the same entry point:
 ```sh
 python scripts/train.py --pilot configs/research/book_supervision.json --output outputs/new-supervision-run --prepare-only
 ```
+
+Its [recorded M5 results](../../research/results/book_supervision_20261003.json)
+cover four 512-update conditions in 336 seconds, with 2.28 GB maximum observed
+Metal driver memory. Final work-macro exact recovery:
+
+| Format | Development, seed 17 / 29 | Training, seed 17 / 29 | Mixed probe groups, seed 17 / 29 |
+| --- | --- | --- | --- |
+| Instruction + word | 2.5% / 0% | 60.4% / 60.4% | 17/46 / 18/46 |
+| T5 sentinel span | 5% / 16.7% | 58.7% / 58.4% | 21/46 / 18/46 |
+
+The span format's descriptive advantage needs broader evidence; the large
+train–development gap remains. Both formats passed the declared training reward
+coverage gate, but no RL update ran. All 1,884 outcomes were independently
+recomputed, and eight adapters reloaded with 40 matching CPU/MPS greedy cases.
+Both word-format 128-update adapters also reproduce the earlier warm-start hashes.
+Prioritize reviewed book-field labels and broader evaluation. Any further RL
+comparison needs a new fixed protocol; training reward coverage alone is not a
+reason to scale it or promote a model.
 
 The [RNN/PufferLib review](rnn_ppo_review.md) distinguishes supervised recurrent
 passage/session aggregation from PPO. Current PufferLib 5.0 uses a CUDA trainer;

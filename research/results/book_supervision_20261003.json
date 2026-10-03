@@ -1,0 +1,716 @@
+{
+  "schema_version": 1,
+  "kind": "book_supervision_comparison_observations",
+  "observed_on": "2026-10-03",
+  "implementation_commit": "3950000140317a53599cf09ef3091459c8fb7dce",
+  "protocol": {
+    "path": "configs/research/book_supervision.json",
+    "bytes": 4237,
+    "sha256": "44fb941873b163c35a1dcbad860cf426f99c38f24c239166d843f35eb1e9ffc7"
+  },
+  "source_cohort": {
+    "path": "research/preparation/bookdash_manifest.json",
+    "bytes": 57022,
+    "sha256": "b8907bc7cc5596b6a3de8e15f6c7128cec1a71ab747b7cc084930b7457bdf996"
+  },
+  "raw_report": {
+    "path": "outputs/book_supervision_20261003/run_001/report.json",
+    "bytes": 2403421,
+    "sha256": "a0ac08080cdc16b34eca384209d094fc570f99dbf2d17b2fdecdd879941eafcd"
+  },
+  "examples": {
+    "path": "outputs/book_supervision_20261003/run_001/examples.json",
+    "bytes": 2906304,
+    "sha256": "3188faec2403796f4cf854c7df709364dbf6da107513e10b701abdc18c4a5139"
+  },
+  "hardware": {
+    "chip": "Apple M5",
+    "unified_memory_bytes": 17179869184,
+    "device": "mps",
+    "dtype": "float32",
+    "torch": "2.14.0",
+    "cpu_fallback_enabled": false
+  },
+  "example_counts": {
+    "train": 179,
+    "dev": 36
+  },
+  "example_work_counts": {
+    "train": 23,
+    "dev": 5
+  },
+  "same_examples_as_previous_experiment": true,
+  "global_test_used": false,
+  "new_human_labels": 0,
+  "rl_optimizer_updates": 0,
+  "elapsed_execution_seconds": 335.6316133340006,
+  "max_observed_mps_driver_bytes": 2283175936,
+  "conditions": [
+    {
+      "seed": 17,
+      "arm": "instruction_word",
+      "initial_adapter_sha256": "0e9950a4cf8c3f812cdb62302ed8a5b6d9cd214b290b77d0313e5f17b1306f3a",
+      "frozen_base_verified": true,
+      "development": {
+        "base": {
+          "correct": 0.0,
+          "content_nll": 8.396041882038116,
+          "control_nll": null,
+          "eos_nll": 0.0876267694523752,
+          "invalid": 0.03333333333333333,
+          "truncated": 0.0
+        },
+        "128": {
+          "correct": 0.0,
+          "content_nll": 6.388463652133941,
+          "control_nll": null,
+          "eos_nll": 0.018990965468159024,
+          "invalid": 0.05,
+          "truncated": 0.0
+        },
+        "512": {
+          "correct": 0.025,
+          "content_nll": 6.175807416439056,
+          "control_nll": null,
+          "eos_nll": 0.0017523623779743148,
+          "invalid": 0.0,
+          "truncated": 0.0
+        }
+      },
+      "final_development_per_work": {
+        "bookdash-a-beautiful-day": {
+          "records": 6,
+          "correct": 0.0,
+          "content_nll": 4.663349946339925,
+          "control_nll": null,
+          "eos_nll": 1.3947253282964311e-05,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-i-will-help-you": {
+          "records": 6,
+          "correct": 0.0,
+          "content_nll": 8.885093371073404,
+          "control_nll": null,
+          "eos_nll": 0.007803509051996116,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-queen-of-soweto": {
+          "records": 8,
+          "correct": 0.0,
+          "content_nll": 5.783420890569687,
+          "control_nll": null,
+          "eos_nll": 6.409698363540883e-05,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-sleepy-mr-sloth": {
+          "records": 8,
+          "correct": 0.125,
+          "content_nll": 5.315970957279205,
+          "control_nll": null,
+          "eos_nll": 0.0008411899436557846,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-walking-together": {
+          "records": 8,
+          "correct": 0.0,
+          "content_nll": 6.23120191693306,
+          "control_nll": null,
+          "eos_nll": 3.9068657301299936e-05,
+          "invalid": 0.0,
+          "truncated": 0.0
+        }
+      },
+      "final_training": {
+        "correct": 0.6036231884057971,
+        "content_nll": 1.7183044325033932,
+        "control_nll": null,
+        "eos_nll": 0.00046985120353454645,
+        "invalid": 0.005434782608695652,
+        "truncated": 0.0
+      },
+      "phases": {
+        "128": {
+          "arm": "instruction_word",
+          "from_update": 0,
+          "to_update": 128,
+          "optimizer_updates": 128,
+          "input_tokens": 6310,
+          "content_target_tokens": 144,
+          "supervised_tokens_including_controls": 272,
+          "cumulative_optimizer_updates": 128,
+          "metrics": {
+            "summarization_loss": 3.7961600208655,
+            "total_loss": 3.7961600208655
+          },
+          "wall_seconds": 10.55845654202858
+        },
+        "512": {
+          "arm": "instruction_word",
+          "from_update": 128,
+          "to_update": 512,
+          "optimizer_updates": 384,
+          "input_tokens": 18903,
+          "content_target_tokens": 452,
+          "supervised_tokens_including_controls": 836,
+          "cumulative_optimizer_updates": 512,
+          "metrics": {
+            "summarization_loss": 2.064419821618685,
+            "total_loss": 2.064419821618685
+          },
+          "wall_seconds": 29.00607712502824
+        }
+      },
+      "coverage": {
+        "groups": 46,
+        "sampled_responses": 184,
+        "correct_responses": 80,
+        "invalid_responses": 6,
+        "truncated_responses": 0,
+        "mixed_reward_groups": 17,
+        "generated_tokens": 382,
+        "successful_works": 17,
+        "training_works": 23,
+        "wall_seconds": 2.6126456249621697,
+        "no_updates": true,
+        "adapter_before_sha256": "72348b5e5fc5f8fe78863a29b82beeac6d33b7968ae11c615433b367fb94f918",
+        "adapter_after_sha256": "72348b5e5fc5f8fe78863a29b82beeac6d33b7968ae11c615433b367fb94f918",
+        "coverage_gate_passed": true
+      },
+      "checkpoints": {
+        "128": {
+          "path": "outputs/book_supervision_20261003/run_001/seed_17/instruction_word/step_128.pt",
+          "bytes": 1819189,
+          "sha256": "7c39005a9c8e93fcbc39323ee249c7b38ebf373cd022f9e7a80b6595c486975b",
+          "arm": "instruction_word",
+          "optimizer_updates": 128,
+          "tensor_sha256": "de873fd7ccd987a8aa246e970335c9a6bf567dfef34e936e3c85b2bf0b40d039"
+        },
+        "512": {
+          "path": "outputs/book_supervision_20261003/run_001/seed_17/instruction_word/step_512.pt",
+          "bytes": 1819189,
+          "sha256": "aecc4203de083caa55219a259918fb6cd97cca19b5a844e624b0936337a719b6",
+          "arm": "instruction_word",
+          "optimizer_updates": 512,
+          "tensor_sha256": "72348b5e5fc5f8fe78863a29b82beeac6d33b7968ae11c615433b367fb94f918"
+        }
+      }
+    },
+    {
+      "seed": 17,
+      "arm": "t5_span",
+      "initial_adapter_sha256": "0e9950a4cf8c3f812cdb62302ed8a5b6d9cd214b290b77d0313e5f17b1306f3a",
+      "frozen_base_verified": true,
+      "development": {
+        "base": {
+          "correct": 0.0,
+          "content_nll": 7.354249493281046,
+          "control_nll": 40.76356973648071,
+          "eos_nll": 4.3712124670545265,
+          "invalid": 1.0,
+          "truncated": 0.5416666666666667
+        },
+        "128": {
+          "correct": 0.0,
+          "content_nll": 8.234938875834146,
+          "control_nll": 2.9554552376270293,
+          "eos_nll": 0.7374559722840786,
+          "invalid": 1.0,
+          "truncated": 0.0
+        },
+        "512": {
+          "correct": 0.05,
+          "content_nll": 6.502964843064547,
+          "control_nll": 0.48824807728912367,
+          "eos_nll": 0.000614922433578613,
+          "invalid": 0.05833333333333333,
+          "truncated": 0.0
+        }
+      },
+      "final_development_per_work": {
+        "bookdash-a-beautiful-day": {
+          "records": 6,
+          "correct": 0.0,
+          "content_nll": 3.747550129890442,
+          "control_nll": 0.005056836952765782,
+          "eos_nll": 0.0005464191350862772,
+          "invalid": 0.16666666666666666,
+          "truncated": 0.0
+        },
+        "bookdash-i-will-help-you": {
+          "records": 6,
+          "correct": 0.0,
+          "content_nll": 11.93828272819519,
+          "control_nll": 1.7399918382288888,
+          "eos_nll": 0.0001087316444075744,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-queen-of-soweto": {
+          "records": 8,
+          "correct": 0.125,
+          "content_nll": 5.568179149180651,
+          "control_nll": 0.681511944392696,
+          "eos_nll": 0.0006932430678716628,
+          "invalid": 0.125,
+          "truncated": 0.0
+        },
+        "bookdash-sleepy-mr-sloth": {
+          "records": 8,
+          "correct": 0.0,
+          "content_nll": 5.52450430393219,
+          "control_nll": 0.006190525717101991,
+          "eos_nll": 0.0005172239493731468,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-walking-together": {
+          "records": 8,
+          "correct": 0.125,
+          "content_nll": 5.73630790412426,
+          "control_nll": 0.008489241154165938,
+          "eos_nll": 0.0012089943711544038,
+          "invalid": 0.0,
+          "truncated": 0.0
+        }
+      },
+      "final_training": {
+        "correct": 0.5873188405797102,
+        "content_nll": 2.062250221763616,
+        "control_nll": 0.02489804101817266,
+        "eos_nll": 0.0009054308794871474,
+        "invalid": 0.05072463768115942,
+        "truncated": 0.005434782608695652
+      },
+      "phases": {
+        "128": {
+          "arm": "t5_span",
+          "from_update": 0,
+          "to_update": 128,
+          "optimizer_updates": 128,
+          "input_tokens": 4390,
+          "content_target_tokens": 144,
+          "supervised_tokens_including_controls": 528,
+          "cumulative_optimizer_updates": 128,
+          "metrics": {
+            "summarization_loss": 13.497400177642703,
+            "total_loss": 13.497400177642703
+          },
+          "wall_seconds": 14.865846542001236
+        },
+        "512": {
+          "arm": "t5_span",
+          "from_update": 128,
+          "to_update": 512,
+          "optimizer_updates": 384,
+          "input_tokens": 13143,
+          "content_target_tokens": 452,
+          "supervised_tokens_including_controls": 1604,
+          "cumulative_optimizer_updates": 512,
+          "metrics": {
+            "summarization_loss": 1.748134838234667,
+            "total_loss": 1.748134838234667
+          },
+          "wall_seconds": 38.34234416700201
+        }
+      },
+      "coverage": {
+        "groups": 46,
+        "sampled_responses": 184,
+        "correct_responses": 78,
+        "invalid_responses": 11,
+        "truncated_responses": 2,
+        "mixed_reward_groups": 21,
+        "generated_tokens": 758,
+        "successful_works": 18,
+        "training_works": 23,
+        "wall_seconds": 4.325158541963901,
+        "no_updates": true,
+        "adapter_before_sha256": "ab5a7b504502da6044e6d77bd29b17f2085be0752eef124390c9a52f41782d0b",
+        "adapter_after_sha256": "ab5a7b504502da6044e6d77bd29b17f2085be0752eef124390c9a52f41782d0b",
+        "coverage_gate_passed": true
+      },
+      "checkpoints": {
+        "128": {
+          "path": "outputs/book_supervision_20261003/run_001/seed_17/t5_span/step_128.pt",
+          "bytes": 1819189,
+          "sha256": "cb29f332580f130d5b5c9eb87d8d47a9f3717ff35fd248577de6b5583e1a2285",
+          "arm": "t5_span",
+          "optimizer_updates": 128,
+          "tensor_sha256": "64abe772e54a764ec3df48bfcf5caf1257c105b2da7d9b0a68030d9de70e17d9"
+        },
+        "512": {
+          "path": "outputs/book_supervision_20261003/run_001/seed_17/t5_span/step_512.pt",
+          "bytes": 1819189,
+          "sha256": "450d06c376f3c7ce096900d103e85ab2e13931b2f06912312e972cfea9b450ff",
+          "arm": "t5_span",
+          "optimizer_updates": 512,
+          "tensor_sha256": "ab5a7b504502da6044e6d77bd29b17f2085be0752eef124390c9a52f41782d0b"
+        }
+      }
+    },
+    {
+      "seed": 29,
+      "arm": "instruction_word",
+      "initial_adapter_sha256": "b370a1a4abb8f3fc42f4352db173b9ba3d0a8ff70e45338a6a1a137dcf6ea749",
+      "frozen_base_verified": true,
+      "development": {
+        "base": {
+          "correct": 0.0,
+          "content_nll": 8.396041882038116,
+          "control_nll": null,
+          "eos_nll": 0.0876267694523752,
+          "invalid": 0.03333333333333333,
+          "truncated": 0.0
+        },
+        "128": {
+          "correct": 0.03333333333333333,
+          "content_nll": 6.284070760011673,
+          "control_nll": null,
+          "eos_nll": 0.027245290253631538,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "512": {
+          "correct": 0.0,
+          "content_nll": 5.689654799302419,
+          "control_nll": null,
+          "eos_nll": 0.009457190912867949,
+          "invalid": 0.0,
+          "truncated": 0.0
+        }
+      },
+      "final_development_per_work": {
+        "bookdash-a-beautiful-day": {
+          "records": 6,
+          "correct": 0.0,
+          "content_nll": 4.668683091799418,
+          "control_nll": null,
+          "eos_nll": 0.00030308112430551165,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-i-will-help-you": {
+          "records": 6,
+          "correct": 0.0,
+          "content_nll": 7.5178587436676025,
+          "control_nll": null,
+          "eos_nll": 0.03540511616059424,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-queen-of-soweto": {
+          "records": 8,
+          "correct": 0.0,
+          "content_nll": 5.0068371295928955,
+          "control_nll": null,
+          "eos_nll": 0.0025186469371760722,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-sleepy-mr-sloth": {
+          "records": 8,
+          "correct": 0.0,
+          "content_nll": 5.265600562095642,
+          "control_nll": null,
+          "eos_nll": 0.008711202707331722,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-walking-together": {
+          "records": 8,
+          "correct": 0.0,
+          "content_nll": 5.989294469356537,
+          "control_nll": null,
+          "eos_nll": 0.00034790763493219856,
+          "invalid": 0.0,
+          "truncated": 0.0
+        }
+      },
+      "final_training": {
+        "correct": 0.6036231884057971,
+        "content_nll": 1.6659231046709886,
+        "control_nll": null,
+        "eos_nll": 0.0010041929456631462,
+        "invalid": 0.0,
+        "truncated": 0.0
+      },
+      "phases": {
+        "128": {
+          "arm": "instruction_word",
+          "from_update": 0,
+          "to_update": 128,
+          "optimizer_updates": 128,
+          "input_tokens": 6298,
+          "content_target_tokens": 147,
+          "supervised_tokens_including_controls": 275,
+          "cumulative_optimizer_updates": 128,
+          "metrics": {
+            "summarization_loss": 3.747893392108381,
+            "total_loss": 3.747893392108381
+          },
+          "wall_seconds": 14.58626633399399
+        },
+        "512": {
+          "arm": "instruction_word",
+          "from_update": 128,
+          "to_update": 512,
+          "optimizer_updates": 384,
+          "input_tokens": 19002,
+          "content_target_tokens": 442,
+          "supervised_tokens_including_controls": 826,
+          "cumulative_optimizer_updates": 512,
+          "metrics": {
+            "summarization_loss": 2.096610910146713,
+            "total_loss": 2.096610910146713
+          },
+          "wall_seconds": 40.350443250034004
+        }
+      },
+      "coverage": {
+        "groups": 46,
+        "sampled_responses": 184,
+        "correct_responses": 79,
+        "invalid_responses": 0,
+        "truncated_responses": 0,
+        "mixed_reward_groups": 18,
+        "generated_tokens": 395,
+        "successful_works": 19,
+        "training_works": 23,
+        "wall_seconds": 3.755785250046756,
+        "no_updates": true,
+        "adapter_before_sha256": "5e7c18aeedbeaaa679f1cc93868955633e2725f2fda72a2f2b75b455a32ad2fb",
+        "adapter_after_sha256": "5e7c18aeedbeaaa679f1cc93868955633e2725f2fda72a2f2b75b455a32ad2fb",
+        "coverage_gate_passed": true
+      },
+      "checkpoints": {
+        "128": {
+          "path": "outputs/book_supervision_20261003/run_001/seed_29/instruction_word/step_128.pt",
+          "bytes": 1819189,
+          "sha256": "f5f8e8e6986b54ca63256819b61ae997b724c325dbe089fc1ca61ac6992f7ae4",
+          "arm": "instruction_word",
+          "optimizer_updates": 128,
+          "tensor_sha256": "66d8ecb3f9536bc956289a64877d01aba45befca72d511ecafc1ee32ab387b3a"
+        },
+        "512": {
+          "path": "outputs/book_supervision_20261003/run_001/seed_29/instruction_word/step_512.pt",
+          "bytes": 1819189,
+          "sha256": "4b4d7719fc67401d626110148120b18d442f0c94e3728912af29877f79da2bc4",
+          "arm": "instruction_word",
+          "optimizer_updates": 512,
+          "tensor_sha256": "5e7c18aeedbeaaa679f1cc93868955633e2725f2fda72a2f2b75b455a32ad2fb"
+        }
+      }
+    },
+    {
+      "seed": 29,
+      "arm": "t5_span",
+      "initial_adapter_sha256": "b370a1a4abb8f3fc42f4352db173b9ba3d0a8ff70e45338a6a1a137dcf6ea749",
+      "frozen_base_verified": true,
+      "development": {
+        "base": {
+          "correct": 0.0,
+          "content_nll": 7.354249493281046,
+          "control_nll": 40.76356973648071,
+          "eos_nll": 4.3712124670545265,
+          "invalid": 1.0,
+          "truncated": 0.5416666666666667
+        },
+        "128": {
+          "correct": 0.0,
+          "content_nll": 8.40248449643453,
+          "control_nll": 2.3441835790872574,
+          "eos_nll": 0.46986242036024733,
+          "invalid": 1.0,
+          "truncated": 0.0
+        },
+        "512": {
+          "correct": 0.16666666666666666,
+          "content_nll": 5.998057363927364,
+          "control_nll": 0.13247263967835654,
+          "eos_nll": 0.05362665919875507,
+          "invalid": 0.05833333333333333,
+          "truncated": 0.0
+        }
+      },
+      "final_development_per_work": {
+        "bookdash-a-beautiful-day": {
+          "records": 6,
+          "correct": 0.3333333333333333,
+          "content_nll": 3.3323153456052146,
+          "control_nll": 0.043888599068547286,
+          "eos_nll": 0.2172504829953444,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-i-will-help-you": {
+          "records": 6,
+          "correct": 0.0,
+          "content_nll": 9.857245604197184,
+          "control_nll": 0.5453131611575373,
+          "eos_nll": 0.0018011392658081604,
+          "invalid": 0.16666666666666666,
+          "truncated": 0.0
+        },
+        "bookdash-queen-of-soweto": {
+          "records": 8,
+          "correct": 0.125,
+          "content_nll": 5.7492995262146,
+          "control_nll": 0.05675766052445397,
+          "eos_nll": 0.012430640153048955,
+          "invalid": 0.0,
+          "truncated": 0.0
+        },
+        "bookdash-sleepy-mr-sloth": {
+          "records": 8,
+          "correct": 0.125,
+          "content_nll": 5.362019531428814,
+          "control_nll": 0.008518204835127108,
+          "eos_nll": 0.03587141073512612,
+          "invalid": 0.125,
+          "truncated": 0.0
+        },
+        "bookdash-walking-together": {
+          "records": 8,
+          "correct": 0.25,
+          "content_nll": 5.6894068121910095,
+          "control_nll": 0.007885572806117125,
+          "eos_nll": 0.0007796228444476583,
+          "invalid": 0.0,
+          "truncated": 0.0
+        }
+      },
+      "final_training": {
+        "correct": 0.5840579710144927,
+        "content_nll": 1.8249041105881445,
+        "control_nll": 0.02679446056456494,
+        "eos_nll": 0.012224614229203129,
+        "invalid": 0.043478260869565216,
+        "truncated": 0.0
+      },
+      "phases": {
+        "128": {
+          "arm": "t5_span",
+          "from_update": 0,
+          "to_update": 128,
+          "optimizer_updates": 128,
+          "input_tokens": 4378,
+          "content_target_tokens": 147,
+          "supervised_tokens_including_controls": 531,
+          "cumulative_optimizer_updates": 128,
+          "metrics": {
+            "summarization_loss": 13.381850840523839,
+            "total_loss": 13.381850840523839
+          },
+          "wall_seconds": 15.10739891603589
+        },
+        "512": {
+          "arm": "t5_span",
+          "from_update": 128,
+          "to_update": 512,
+          "optimizer_updates": 384,
+          "input_tokens": 13242,
+          "content_target_tokens": 442,
+          "supervised_tokens_including_controls": 1594,
+          "cumulative_optimizer_updates": 512,
+          "metrics": {
+            "summarization_loss": 1.7174494683683104,
+            "total_loss": 1.7174494683683104
+          },
+          "wall_seconds": 49.571675584011246
+        }
+      },
+      "coverage": {
+        "groups": 46,
+        "sampled_responses": 184,
+        "correct_responses": 75,
+        "invalid_responses": 24,
+        "truncated_responses": 2,
+        "mixed_reward_groups": 18,
+        "generated_tokens": 768,
+        "successful_works": 20,
+        "training_works": 23,
+        "wall_seconds": 5.583577707991935,
+        "no_updates": true,
+        "adapter_before_sha256": "55a9cf8fc651ab629e8280e95cb3d46978f66ea2806af0433a2e3749d9ffd19a",
+        "adapter_after_sha256": "55a9cf8fc651ab629e8280e95cb3d46978f66ea2806af0433a2e3749d9ffd19a",
+        "coverage_gate_passed": true
+      },
+      "checkpoints": {
+        "128": {
+          "path": "outputs/book_supervision_20261003/run_001/seed_29/t5_span/step_128.pt",
+          "bytes": 1819189,
+          "sha256": "0a3ec5e18408b19d7779e32347e33b5812c1c707e7230d3a18164e360cb67814",
+          "arm": "t5_span",
+          "optimizer_updates": 128,
+          "tensor_sha256": "86694bb01e93c91dafe4a8d316e3b72171c53c5e6fcfd80f17a332a6ad757487"
+        },
+        "512": {
+          "path": "outputs/book_supervision_20261003/run_001/seed_29/t5_span/step_512.pt",
+          "bytes": 1819189,
+          "sha256": "c8e25790eb5624a4f82e6ff33f524bbd2803989dce174647953f59dbca4b3e80",
+          "arm": "t5_span",
+          "optimizer_updates": 512,
+          "tensor_sha256": "55a9cf8fc651ab629e8280e95cb3d46978f66ea2806af0433a2e3749d9ffd19a"
+        }
+      }
+    }
+  ],
+  "coverage_gate_by_arm": {
+    "instruction_word": true,
+    "t5_span": true
+  },
+  "independent_audit": {
+    "receipt": {
+      "path": "outputs/book_supervision_20261003/run_001/independent_audit.json",
+      "bytes": 909,
+      "sha256": "a7ac45968827c2abc1c7fb739da211c26f637a93120f02cb59d587a59e89d293"
+    },
+    "implementation": {
+      "path": "outputs/book_supervision_20261003/run_001/independent_audit.py",
+      "bytes": 8465,
+      "sha256": "15908d0e745fe8823898475ea5856479602b03d9192e9424b8ca25b3fda04cd6"
+    },
+    "greedy_outcomes_checked": 1148,
+    "sampled_outcomes_checked": 736,
+    "passed": true
+  },
+  "checkpoint_reload": {
+    "receipt": {
+      "path": "outputs/book_supervision_20261003/run_001/reload_verification.json",
+      "bytes": 10694,
+      "sha256": "85a740ee464e0c09ae713e9838cce41dac9df434f98bfd1f1d6fd61c86c5c4eb"
+    },
+    "implementation": {
+      "path": "outputs/book_supervision_20261003/run_001/verify_reload.py",
+      "bytes": 3637,
+      "sha256": "124c535d558851324386ece83fb2a32a2c20ecde97999baafda8e6cee580a687"
+    },
+    "checkpoint_count": 8,
+    "greedy_cases_verified": 40,
+    "max_cpu_mps_content_nll_difference": 3.0040740966796875e-05,
+    "passed": true
+  },
+  "promoted": false,
+  "interpretation": [
+    "At 512 updates, work-macro development exact recovery was 2.5% and 0% for word-only output versus 5% and 16.67% for sentinel span output. This descriptive format-package advantage is based on just five previously inspected development works and two seeds; no confirmatory superiority or checkpoint selection claim is made.",
+    "Training exact recovery was 58.41%-60.36%, leaving a large training-development gap. Both formats reduced target-content NLL from their own base; absolute cross-format NLLs condition on different decoder prefixes.",
+    "Both formats and seeds passed the declared training-only reward-coverage gate: 17-21 of 46 groups had mixed rewards and 17-20 of 23 training works had successful samples. The 736 responses contain 312 exact successes. No RL optimizer updates ran, and this is not generalization evidence.",
+    "Input instructions, output grammar and relative content/control weighting under mean CE change together. Budgets match 512 updates and identical prompt order, not tokens or compute. The span format has more generated control tokens and more invalid responses.",
+    "Both word-format 128-update adapters exactly reproduce the previous experiment warm-start tensor hashes. Independent verification matched 1,148 greedy outcomes and 736 sampled outcomes; all eight adapters reloaded and 40 CPU representative cases matched MPS outputs.",
+    "Reserved test/quarantine narratives remained excluded. Exact reconstruction of an observed word is not semantic grading: other plausible words can score zero. No human field/mood labels or preference judgments were created, and no book-recommendation or formal MTL gain was measured."
+  ],
+  "next_actions": [
+    "Prioritize reviewed book-field supervision and a broader source-faithful evaluation before spending more compute on lexical reconstruction; preserve these development findings and the untouched global test partition.",
+    "If pursuing RL mechanics, declare a new paired continued-CE versus RL protocol from fixed supervised checkpoints with full compute accounting. Passing the training coverage gate alone does not authorize scaling or establish useful transfer.",
+    "For RNN work, compare supervised recurrent passage aggregation against pooling/order controls once matching labels are admitted; session ranking requires real, appropriately split interaction evidence.",
+    "Keep PufferLib 5.0 as a separately scoped CUDA/simulator research path; the current code/docs do not provide M5 training support. See docs/research/rnn_ppo_review.md for version pins and integration requirements."
+  ],
+  "word_format_128_reproduces_previous_warm_start": {
+    "17": true,
+    "29": true
+  }
+}
