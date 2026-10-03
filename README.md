@@ -65,7 +65,7 @@ The catalogue holds 120 works identified in Open Library, 113 of them with sourc
 | Multi-task training, metrics, PCGrad | `src/training/` |
 | Checkpoint loading and shared-encoder inference | `src/inference/` |
 
-**Status:** training and experiments are paused. Current work is on reconstructing source data and designing two studies, one comparing model recipes and one measuring recommendation relevance. Neither has new results yet. Earlier results are kept as [historical evidence](docs/RESULTS.md) and have not been reproduced.
+**Status:** bounded local training runs are active. Source-backed book continuation and missing-word experiments run on the M5 using the native transformer and LoRA; the [research notes](docs/research/README.md) record their results and limits. The formal book-field/model-recipe and recommendation studies still need reviewed labels and evaluation evidence. Earlier undergraduate results remain [historical evidence](docs/RESULTS.md) and have not been reproduced.
 
 The Hugging Face Space runs `scripts/demo_gradio.py`. It uses the same book catalogue and stored historical outputs; it does not run the research model.
 

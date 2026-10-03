@@ -402,6 +402,10 @@ def _run_pilot(root: Path, config_path: Path, output: Path, *, prepare_only=Fals
     from src.catalog.storage import write_json_atomic
 
     config = read_json(config_path)
+    if config.get("kind") == "book_supervision_comparison":
+        from .supervision import run_supervision_comparison
+
+        return run_supervision_comparison(root, config_path, output, prepare_only=prepare_only)
     if config.get("kind") == "book_denoising_comparison":
         from .denoising import run_comparison
 

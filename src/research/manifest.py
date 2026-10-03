@@ -67,6 +67,13 @@ ARTIFACTS: dict[str, tuple[str, str]] = {
     "denoising_runtime": ("model_study", "src/training/denoising.py"),
     "denoising_config": ("model_study", "configs/research/book_denoising.json"),
     "denoising_observations": ("model_study", "research/results/book_denoising_20261002.json"),
+    "supervision_runtime": ("model_study", "src/training/supervision.py"),
+    "supervision_config": ("model_study", "configs/research/book_supervision.json"),
+    "supervision_observations": (
+        "model_study",
+        "research/results/book_supervision_20261003.json",
+    ),
+    "recurrent_ppo_review": ("model_study", "docs/research/rnn_ppo_review.md"),
     "pilot_observations": ("model_study", "research/results/macbook_pilot_20261002.json"),
     "encoder_runtime": ("model_study", "src/models/encoder.py"),
     "feedforward_runtime": ("model_study", "src/models/feedforward.py"),

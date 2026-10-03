@@ -55,8 +55,8 @@
         },
         {
           "path": "docs/research/study_decisions.md",
-          "bytes": 3034,
-          "sha256": "f4bb16415c71270094fb8ecfaa2e45c68b27de2e0d1cb6753831917982b8ef17"
+          "bytes": 3192,
+          "sha256": "293265c978812a18ce81a7668a0b6721207580f7d2c908c5339dc125f5d89024"
         }
       ],
       "draft_path": "docs/eval_protocol.md",

@@ -19,5 +19,6 @@ historical report JSON/YAML files were not rewritten.
 
 Their byte integrity is covered by `tests/test_research/test_evidence_io.py`.
 Current source reconstruction and study decisions live in
-[the research index](research/README.md). Training and research experiments remain
-paused; software checks do not establish model quality.
+[the research index](research/README.md), alongside the separately recorded local
+training pilots. The formal studies still need admission evidence; software checks
+and small reconstruction pilots do not establish book-field or recommendation quality.

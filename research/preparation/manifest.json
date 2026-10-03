@@ -14,21 +14,21 @@
       "scope": "common",
       "path": "configs/research/preparation.json",
       "bytes": 9404,
-      "sha256": "e6e0fb0267fc13bd40bda12929bc89128a024d3225a4622c67c13fe516b31f32"
+      "sha256": "d87d98929e7e7a0e78ab727574eb09bd4bfa7daf1db5d225b977ed05b5e4b2b8"
     },
     {
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 5528,
-      "sha256": "a37305c0e5bef02c8455ea76131c52584227e4fd779b99d3c70c6988093abca6"
+      "bytes": 7615,
+      "sha256": "73b194e25929db08cd4fcfdf4bb449ab0199e4a06e4a5fda0cefd46589a47d47"
     },
     {
       "id": "study_decisions",
       "scope": "common",
       "path": "docs/research/study_decisions.md",
-      "bytes": 3034,
-      "sha256": "f4bb16415c71270094fb8ecfaa2e45c68b27de2e0d1cb6753831917982b8ef17"
+      "bytes": 3192,
+      "sha256": "293265c978812a18ce81a7668a0b6721207580f7d2c908c5339dc125f5d89024"
     },
     {
       "id": "evaluation_protocol",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 9316,
-      "sha256": "8e4fb4d1f0cafba87d12f70352fc92f384d6047d9f424c72347a4aae4a78db49"
+      "bytes": 9679,
+      "sha256": "d3643c14d55086e9087aa579aea57421a2d61259ae43bb2b8ef969d506a30c45"
     },
     {
       "id": "research_entry",
@@ -328,8 +328,8 @@
       "id": "pilot_runtime",
       "scope": "model_study",
       "path": "src/training/pilot.py",
-      "bytes": 30635,
-      "sha256": "dae8c5f96c422c4bc20cd37da8c8ac4b6245b65ff8c19bf34eefa435126463e1"
+      "bytes": 30852,
+      "sha256": "39d544617f191368dcc19252081fc8c71c46ab410074403ef124c70fe4d19f52"
     },
     {
       "id": "pilot_config",
@@ -379,6 +379,34 @@
       "path": "research/results/book_denoising_20261002.json",
       "bytes": 8681,
       "sha256": "ffcd2d18b5ac204f83da7a046e0226c66f4d4921b8fe50e54e67994adbf69403"
+    },
+    {
+      "id": "supervision_runtime",
+      "scope": "model_study",
+      "path": "src/training/supervision.py",
+      "bytes": 25279,
+      "sha256": "627d3851b8e1612c99c625410c0063babcfc1d5703c074375c1fc4f3665f9db6"
+    },
+    {
+      "id": "supervision_config",
+      "scope": "model_study",
+      "path": "configs/research/book_supervision.json",
+      "bytes": 4237,
+      "sha256": "44fb941873b163c35a1dcbad860cf426f99c38f24c239166d843f35eb1e9ffc7"
+    },
+    {
+      "id": "supervision_observations",
+      "scope": "model_study",
+      "path": "research/results/book_supervision_20261003.json",
+      "bytes": 26114,
+      "sha256": "3ff4749d7bf814536ae04aadd0e5fb5945abe8ac320f13a83548bb687d79861a"
+    },
+    {
+      "id": "recurrent_ppo_review",
+      "scope": "model_study",
+      "path": "docs/research/rnn_ppo_review.md",
+      "bytes": 17302,
+      "sha256": "962a2caf74a6b486c49a9a950785fde09e2fd99a8455c02f0b768c69de02b155"
     },
     {
       "id": "pilot_observations",
