@@ -17,11 +17,18 @@
       "sha256": "5a678bd342c52994c952ac205bface5a0fcecd378cab640f7550fffb69d017de"
     },
     {
+      "id": "research_visual_archive",
+      "scope": "common",
+      "path": "docs/research/visuals.html",
+      "bytes": 349447,
+      "sha256": "8d1fea0621c7e44dc5646784cf3be3b677feb5a9b4743985482355d6e066846b"
+    },
+    {
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 35665,
-      "sha256": "ba454125cc1453013662d491122858b842b0262ebc463df44119307ad2b34c00"
+      "bytes": 36332,
+      "sha256": "2be0d33e63c4ab64a4837abb36bbdff855aaf69e2416faacf3511e4ceb8aa6f1"
     },
     {
       "id": "study_decisions",
@@ -55,8 +62,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 11454,
-      "sha256": "86baa40ebb368023c234a1f27407934b642ad2268bbbe5592bc9500a86cac3d4"
+      "bytes": 11527,
+      "sha256": "b2e0be78c15ed836bab2525c44331795f07168867097854d048bd4cacc66d218"
     },
     {
       "id": "research_entry",
