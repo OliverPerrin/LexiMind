@@ -16,6 +16,18 @@ The [study decisions](study_decisions.md) and
 adaptation, specialists, task arithmetic and TIES under comparable training budgets.
 Book recommendation relevance is evaluated separately from model-task accuracy.
 
+## Interactive visual archive
+
+[Download the standalone visual gallery](visuals.html) and open the HTML locally;
+GitHub displays HTML source rather than rendering it. The single file works
+offline and preserves the three interactive 8 October snapshots with stable
+anchors, PR links, commit-pinned result/research-note links and source hashes.
+
+Append future snapshots to the gallery's `archive-payload` entries, retaining
+original complete chart documents, data/code hashes, date, PR and pinned evidence.
+Preserve old entries; record corrections as new versions and embed licensed
+runtime resources so the gallery remains portable. No website deployment is needed.
+
 ## Current runtime readiness
 
 The opt-in `training=book_lora` recipe shares model construction, adapter attachment,

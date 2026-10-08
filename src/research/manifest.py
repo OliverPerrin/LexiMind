@@ -12,6 +12,7 @@ from src.research.io import safe_path
 ARTIFACTS: dict[str, tuple[str, str]] = {
     "study_design": ("common", "configs/research/study_design.json"),
     "preparation_status": ("common", "configs/research/preparation.json"),
+    "research_visual_archive": ("common", "docs/research/visuals.html"),
     "research_index": ("common", "docs/research/README.md"),
     "study_decisions": ("common", "docs/research/study_decisions.md"),
     "evaluation_protocol": ("common", "docs/eval_protocol.md"),

@@ -16,7 +16,8 @@ pinned: false
   <a href="https://leximind-five.vercel.app"><strong>Live site</strong></a> ·
   <a href="https://huggingface.co/spaces/OliverPerrin/LexiMind">Hugging Face Space</a> ·
   <a href="docs/architecture.md">Architecture</a> ·
-  <a href="docs/research/README.md">Research notes</a>
+  <a href="docs/research/README.md">Research notes</a> ·
+  <a href="docs/research/visuals.html">Visual archive</a>
 </p>
 
 <p align="center">
@@ -66,6 +67,8 @@ The catalogue holds 120 works identified in Open Library, 113 of them with sourc
 | Checkpoint loading and shared-encoder inference | `src/inference/` |
 
 **Status:** bounded local training runs are active. Source-backed book continuation and missing-word experiments run on the M5 using the native transformer and LoRA; the [research notes](docs/research/README.md) record their results and limits. The formal book-field/model-recipe and recommendation studies still need reviewed labels and evaluation evidence. Earlier undergraduate results remain [historical evidence](docs/RESULTS.md) and have not been reproduced.
+
+The [interactive research visual archive](docs/research/visuals.html) collects the charts with their PRs and pinned evidence. Download the HTML and open it locally; GitHub displays its source rather than rendering the gallery.
 
 The Hugging Face Space runs `scripts/demo_gradio.py`. It uses the same book catalogue and stored historical outputs; it does not run the research model.
 
