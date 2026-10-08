@@ -1,7 +1,9 @@
 # Research: current work
 
-**Bounded local MacBook training is authorized.** The formal MTL and book studies
-still need their data/protocol evidence; paid calls and remote compute remain
+**The local training runtime is ready for reviewed data.** Bounded MacBook work
+and the user's RTX 4070/WSL profiling were authorized through 8 October. Bounded
+synthetic execution and checkpoint portability are verified on both devices. Formal MTL and
+book studies still need their data/protocol evidence; paid cloud compute remains
 unapproved. The Gradio demo and custom FLAN/T5 implementation stay.
 
 Read [dataset decisions](dataset_decisions.md) for the current direction and next
@@ -13,6 +15,188 @@ The [study decisions](study_decisions.md) and
 [machine-readable design](../../configs/research/study_design.json) retain joint
 adaptation, specialists, task arithmetic and TIES under comparable training budgets.
 Book recommendation relevance is evaluated separately from model-task accuracy.
+
+## Current runtime readiness
+
+The opt-in `training=book_lora` recipe shares model construction, adapter attachment,
+freezing and optimizer setup between `train.py` and the existing profiler. It uses
+the cached, revision-pinned native FLAN-T5-base with `gated-gelu-tanh`, encoder Q/V
+rank-four LoRA, a private topic head, and a frozen decoder. The 48-column synthetic
+fixture has 184,368 trainable parameters that receive AdamW state; the real count
+depends on the exported label vocabulary. MPS uses float32, disabled CPU operator
+fallback and a 35% memory fraction. CUDA uses float32 weights with native BF16 autocast; unsupported
+unscaled FP16 execution is rejected. Compilation remains disabled.
+
+The [8 October engineering receipt](../../research/results/training_readiness_20261008.json)
+records fabricated title/description inputs, 48 synthetic target columns and no
+real book judgments. Each completed M5 condition ran three warmup and 17 timed
+outer microbatches at length 256, with nominal effective batch eight:
+
+| Microbatch / accumulation | Mean seconds per microbatch | Fabricated rows/sec | Maximum sampled MPS driver GiB |
+| --- | ---: | ---: | ---: |
+| 1 / 8 | 0.0617 | 16.21 | 2.09 |
+| 2 / 4 | 0.1088 | 18.38 | 2.02 |
+| 4 / 2 | 0.2017 | 19.83 | 2.02 |
+| 8 / 1 | 0.4104 | 19.49 | 3.09 |
+
+Batch four is the starting preset. Batch eight plateaued with greater observed
+memory. These are diagnostic timings with profiling, metrics and per-step device
+synchronization; they exclude initialization and do not estimate real book model
+quality. Separate warmup/timed loops flush partial accumulation windows, so the
+conditions are not gradient-equivalent comparisons. The initial batch-one trace
+export failed after its loop completed; its failed receipt is preserved, the
+duplicate export was fixed, and a fresh batch-one measurement completed.
+
+The isolated WSL Ubuntu environment used Python 3.10.12, PyTorch 2.14.0+cu130,
+CUDA 13.0, Windows driver 617.42, Transformers 5.17.0 and tokenizers 0.23.2. The
+RTX 4070 reported capability 8.9 and native BF16 support. The original checkout
+remained clean, with its original PyTorch 2.9.1+cu128 environment unchanged.
+
+| CUDA microbatch / accumulation | Effective batch | Mean seconds per microbatch | Fabricated rows/sec | Peak allocated / reserved GiB |
+| --- | ---: | ---: | ---: | ---: |
+| 4 / 2 | 8 | 0.0729 | 54.88 | 1.64 / 1.66 |
+| 8 / 1 | 8 | 0.0804 | 99.48 | 2.04 / 2.11 |
+| 16 / 1 | 16 | 0.1002 | 159.67 | 2.85 / 2.92 |
+| 32 / 1 | 32 | 0.2067 | 154.81 | 4.44 / 4.57 |
+
+The CUDA starting point is batch 16 with accumulation one. It gave higher observed
+throughput and lower reserved memory than batch 32. Larger conditions change the
+effective batch and are capacity diagnostics, not matched-learning comparisons.
+A timing-only batch-16 run retained metrics and per-step synchronization, processing
+272 timed examples at 172.51 rows/sec. Removing the heavy trace lowered mean step
+time by 7.4%. All five CUDA conditions verified frozen-base hashes after updates;
+initialization and that audit remain outside the reported timing/allocator boundary.
+The CUDA allocator statistics and MPS driver samples measure different memory bases.
+These observations select starting settings, not a universal optimum or book model quality.
+
+Two fabricated rows then exercised one optimizer update and native merged-weight
+checkpoint saving. Adapter continuation and ordinary inference reload were checked
+with exact short/long token IDs and masks. Ordered labels, loss/input/mapping,
+tokenizer length/padding, vocabulary, backend normalization and special-token IDs
+are bound before restoration. The final v4 artifacts add backend/direction binding without
+another optimizer update; earlier artifacts remain preserved.
+
+The small Mac v4 adapter restored unchanged on the RTX with strict base/head,
+label and tokenizer bindings. Two fabricated rows exercised one BF16 optimizer
+update; frozen weights matched before and after. The CUDA-saved native merged
+checkpoint reloaded through ordinary inference, with maximum logit difference
+`4.10e-08` against the same adapter weights in CPU FP32. Materialization used FP32
+with TF32 disabled. No full Mac model transfer or real book judgments were needed.
+
+Real field training still waits on independently reviewed labels and source/split
+admission: the current packet has **zero completed human reviews**. Supply explicit
+positive and negative evidence for every enabled label and report both counts;
+omissions remain unknown. Runtime feasibility does not fill these data gates,
+calibrate thresholds or establish book model quality.
+
+Use Python 3.11 with the existing pinned dependency files. Install the appropriate
+PyTorch build for the target hardware; the observed Mac environment used PyTorch
+2.14.0. The existing MLflow SQLite backend also needs SQL dependencies:
+
+```sh
+python3.11 -m venv .venv
+.venv/bin/python -m pip install torch -r requirements-test.txt SQLAlchemy alembic sqlparse
+```
+
+The verified WSL environment was created separately from the existing checkout,
+using the [official CUDA wheel index](https://download.pytorch.org/whl/cu130):
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cu130
+.venv/bin/python -m pip install -r requirements-test.txt SQLAlchemy alembic sqlparse tokenizers==0.23.2
+```
+
+After separate data/experiment approval, set an explicit reviewed split directory
+and a fresh output directory. The pinned FLAN snapshot must already be cached:
+
+```sh
+LEXIMIND_SPLITS=/absolute/path/to/reviewed/book-field-splits
+LEXIMIND_RUN=outputs/reviewed-field-run-001
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTORCH_ENABLE_MPS_FALLBACK=0 \
+  .venv/bin/python scripts/train.py training=book_lora device=mps \
+  "data.processed.topic=$LEXIMIND_SPLITS" \
+  "checkpoint_out=$LEXIMIND_RUN/checkpoints/best.pt" \
+  "labels_out=$LEXIMIND_RUN/labels.json" "history_out=$LEXIMIND_RUN/history.json" \
+  "+training.trainer.tracking_uri=sqlite:///$LEXIMIND_RUN/mlruns.db"
+```
+
+For the verified user-owned RTX host, use the explicit measured overrides:
+
+```sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+  .venv/bin/python scripts/train.py training=book_lora device=cuda \
+  training.dataloader.batch_size=16 training.trainer.gradient_accumulation_steps=1 \
+  "data.processed.topic=$LEXIMIND_SPLITS" \
+  "checkpoint_out=$LEXIMIND_RUN/checkpoints/best.pt" \
+  "labels_out=$LEXIMIND_RUN/labels.json" "history_out=$LEXIMIND_RUN/history.json" \
+  "+training.trainer.tracking_uri=sqlite:///$LEXIMIND_RUN/mlruns.db"
+```
+
+Both commands require reviewed splits; candidate source files remain unadmitted.
+
+Profile a fresh bounded run through the same construction and loss path:
+
+```sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTORCH_ENABLE_MPS_FALLBACK=0 \
+  PROFILE_STEPS=20 PROFILE_OUTPUT_DIR=outputs/reviewed-field-profile-001 \
+  .venv/bin/python scripts/profile_training.py training=book_lora device=mps \
+  "data.processed.topic=$LEXIMIND_SPLITS" training.scheduler.name=constant \
+  "+training.trainer.tracking_uri=sqlite:///outputs/reviewed-field-profile-001.db"
+```
+
+For CUDA, select its measured starting batch explicitly. `PROFILE_TRACE=0` selects
+timing-only measurement; the default `1` retains the heavy operator trace:
+
+```sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+  PROFILE_STEPS=20 PROFILE_TRACE=0 PROFILE_OUTPUT_DIR=outputs/reviewed-cuda-profile-001 \
+  .venv/bin/python scripts/profile_training.py training=book_lora device=cuda \
+  training.dataloader.batch_size=16 training.trainer.gradient_accumulation_steps=1 \
+  "data.processed.topic=$LEXIMIND_SPLITS" training.scheduler.name=constant \
+  "+training.trainer.tracking_uri=sqlite:///outputs/reviewed-cuda-profile-001.db"
+```
+
+Profiling reads training rows only; the summary records actual per-step batch sizes,
+example counts, optimizer updates, timing boundaries and allocated/reserved memory.
+The constant scheduler isolates this diagnostic from the separate warmup boundary.
+
+Native `last.pt`/`best.pt` contain merged ordinary model weights; matching
+`.adapter.pt` files contain small base-bound factors and the private head. Paired
+`labels.json`, `model_config.yaml` and `tokenizer_config.json` are required contracts.
+Files are individually atomic, not an atomic multi-file transaction. Inference
+restores the paired architecture and encoding settings automatically:
+
+```sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python scripts/inference.py \
+  --checkpoint "$LEXIMIND_RUN/checkpoints/last.pt" --device mps \
+  --title "Book title" --threshold 0.5 "Book description"
+```
+
+Use `--device cuda` on the verified RTX host. The explicit threshold is an operating
+choice, not a calibration result. Keep each title paired with its description.
+
+Weights-only continuation uses the adapter artifact, exact reviewed labels and the
+same base/seed/tokenization in a fresh output directory. It resets optimizer,
+scheduler and RNG state. `max_epochs=2` below means continue through epoch two:
+
+```sh
+LEXIMIND_PREVIOUS=outputs/reviewed-field-run-001
+LEXIMIND_RUN=outputs/reviewed-field-run-002
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTORCH_ENABLE_MPS_FALLBACK=0 \
+  .venv/bin/python scripts/train.py training=book_lora device=mps \
+  "data.processed.topic=$LEXIMIND_SPLITS" \
+  "resume_from=$LEXIMIND_PREVIOUS/checkpoints/last.adapter.pt" \
+  "resume_labels=$LEXIMIND_PREVIOUS/checkpoints/labels.json" training.trainer.max_epochs=2 \
+  "checkpoint_out=$LEXIMIND_RUN/checkpoints/best.pt" \
+  "labels_out=$LEXIMIND_RUN/labels.json" "history_out=$LEXIMIND_RUN/history.json" \
+  "+training.trainer.tracking_uri=sqlite:///$LEXIMIND_RUN/mlruns.db"
+```
+
+For CUDA continuation, replace `device=mps` with `device=cuda` and add
+`training.dataloader.batch_size=16 training.trainer.gradient_accumulation_steps=1`.
+A merged full-model
+checkpoint is an inference artifact, not an adapter-resume substitute.
 
 ## Working commands
 

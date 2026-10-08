@@ -149,7 +149,18 @@ class Trainer:
 
         # AMP: bfloat16 on Ampere+ GPUs
         self.use_amp = device.type == "cuda"
-        self.use_bfloat16 = self.use_amp and torch.cuda.is_bf16_supported()
+        self.use_bfloat16 = False
+        if self.use_amp:
+            with torch.cuda.device(device):
+                self.use_bfloat16 = (
+                    torch.cuda.get_device_capability(device)[0] >= 8
+                    and torch.cuda.is_bf16_supported()
+                )
+        if self.use_amp and not self.use_bfloat16:
+            raise ValueError(
+                "CUDA training requires bfloat16 support; unscaled float16 backward "
+                "(including PCGrad) is unsupported. Use a BF16-capable GPU or CPU/MPS float32."
+            )
 
         # Early stopping
         self.early_stopping: EarlyStopping | None = None

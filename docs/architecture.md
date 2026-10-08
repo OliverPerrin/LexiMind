@@ -74,7 +74,8 @@ accumulation, mixed precision where supported, learning-rate scheduling, validat
 and checkpoint callbacks. `pcgrad.py` implements optional gradient-conflict
 projection on the encoder; decoder/head gradients are summed even when generative
 objectives share them. Metrics and calibration utilities remain separate from model layers.
-The profiler calls the same epoch loop. Metrics accumulate fixed-size summaries;
+The trainer and profiler share model/adapter/freeze/optimizer construction in
+`src/training/utils.py`; the profiler calls the same epoch loop. Metrics accumulate fixed-size summaries;
 threshold calibration vectorizes classes, and PCGrad reuses reference norms.
 `generation_metrics=false` skips teacher-forced text decoding/ROUGE during
 loss-only runs; tracking can use a separate local database for each experiment.
@@ -93,14 +94,38 @@ combined prediction path can share one encoder pass across the supported heads
 and summary decoder; individual task methods remain available. Scripts expose
 training, evaluation, inference and profiling for later authorized research work.
 Book checkpoints use `predict_book_fields` with explicit thresholds and independent
-sigmoid scores; legacy topic/batch APIs and the old profiler reject that mode.
-Thresholds still need calibration; no book model has been trained or evaluated.
+sigmoid scores; legacy topic/batch APIs reject that mode. The opt-in
+`training=book_lora` recipe supports the partial-label topic path on MPS and CUDA.
+Thresholds still need calibration; synthetic engineering checks do not establish
+book model quality. [Current commands and measured boundaries](research/README.md#current-runtime-readiness)
+describe verified M5/RTX 4070 engineering evidence and the remaining reviewed-data gates.
 
 `src/models/adapters.py` attaches LoRA only to named native attention projections,
 freezes base weights, and keeps private decoder/head state separate. Task arithmetic
 and TIES merge effective matrices (`B @ A`), then materialize into an independent
 copy of the same full base. Matching base/layout hashes and private initialization
 are required; matching tensor shapes alone do not establish label compatibility.
+
+The book recipe attaches rank-four encoder Q/V adapters and a private topic head,
+then creates AdamW from trainable parameters only. Native FLAN weights are pinned
+and read offline; MPS uses float32 without CPU fallback, while supported CUDA uses
+native BF16 autocast with float32 weights. Unscaled FP16 training is rejected.
+Classification retains the frozen decoder for checkpoint compatibility.
+
+LoRA checkpoints save ordinary merged weights plus a separate small adapter
+artifact. Paired model/label/tokenizer contracts preserve activation, ordered
+columns, problem type, mapping and input formatting. Tokenizer binding includes
+effective classification length, padding, special IDs, vocabulary and backend
+normalization/pretokenization. Inference automatically restores those contracts.
+Weights-only adapter continuation validates the original base/head initialization,
+current and paired labels, and encoding contract before copying factors/head state;
+optimizer, scheduler and RNG state are reset. Each file is written atomically,
+but the artifact set is not one transaction. Legacy checkpoints remain readable.
+Strict small-adapter restoration from the Mac to the RTX and CUDA-saved native
+merged-weight reload have been exercised on fabricated inputs. The existing
+profiler records actual example/batch/update counts and allocated/reserved CUDA
+peaks before a separate frozen-base audit; `PROFILE_TRACE=0` keeps the same loop
+and synchronization while omitting heavy trace collection.
 
 `src/training/rl.py` contains group-relative objectives, DPO and information-gain/EMA
 primitives. `policy.py` supplies full-support sampling, response-only scoring and
@@ -135,7 +160,8 @@ Lazy reads trade repeated decoding
 for lower retained memory; no GPU throughput improvement is claimed. File-stat
 checks detect ordinary source edits, while research manifests provide content hashes.
 The default data paths are unset: explicit dataset directories are required before
-any tokenizer, model or device initialization.
+tokenizer/model construction. The opt-in recipe may verify cached weights and
+configure the selected device before opening those datasets.
 
 Classification vocabularies must describe the full training task, including classes
 absent from a capped prefix. Explicit `labels.json` order is authoritative; otherwise
