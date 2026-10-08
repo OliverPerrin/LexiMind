@@ -20,8 +20,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 31404,
-      "sha256": "96f5c274bc8accf804f9e6ea0d4a7c122ae26cc2924ac76fc1a91ea1c04f98ab"
+      "bytes": 35665,
+      "sha256": "ba454125cc1453013662d491122858b842b0262ebc463df44119307ad2b34c00"
     },
     {
       "id": "study_decisions",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 11303,
-      "sha256": "51d3e87f8d10c0b20d93e1e5e299d230f4f5aa8f9b342e2882793260e6285553"
+      "bytes": 11454,
+      "sha256": "86baa40ebb368023c234a1f27407934b642ad2268bbbe5592bc9500a86cac3d4"
     },
     {
       "id": "research_entry",
@@ -430,6 +430,13 @@
       "sha256": "4e4ff686772fac688f57d76ad60899c26cee9f8c6f29f1bb1c0f13ebba9fb762"
     },
     {
+      "id": "source_objective_analysis_observations",
+      "scope": "model_study",
+      "path": "research/results/book_source_objective_analysis_20261008.json",
+      "bytes": 247805,
+      "sha256": "ed0be4155bd2afd4a66cbbecdf991f8c2e7a07593aacfb27eea7e6da6893e4e9"
+    },
+    {
       "id": "source_data_scaling_observations",
       "scope": "model_study",
       "path": "research/results/book_source_data_scaling_20261008.json",
@@ -685,8 +692,8 @@
       "id": "dataset_decisions",
       "scope": "model_study",
       "path": "docs/research/dataset_decisions.md",
-      "bytes": 11546,
-      "sha256": "7a566dcf9db0c1990fa670250b00e7d69d5fd6467949be96360758c0115873ce"
+      "bytes": 12840,
+      "sha256": "399d264e17d4af1828c182526ec6adebfe035125391a5e1620d0a4d5c2db425a"
     },
     {
       "id": "goemotions_candidate",

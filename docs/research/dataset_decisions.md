@@ -127,6 +127,24 @@ no fresh small-cohort controls. Preserve lexical controls and inspect support
 and source-objective limits; no automatic more-epoch, PPO or product promotion
 follows. Human semantic field labels and formal admission remain unresolved.
 
+The [saved-output support/objective analysis](../../research/results/book_source_objective_analysis_20261008.json)
+now decomposes all 48 labels without new fitting or model execution. Genre/topic
+LoRA two-seed group-macro gains coexist with small label-macro deficits because
+book-positive and equal-label denominators weight the same source-hit changes
+differently. Those deficits reverse by seed. Low development support is not
+proof of training rarity: spiritual fiction/paranormal fiction have 117/293
+training positives, and finance/technology 50/114. A single technology source hit
+would move topic label macro more than its observed mean deficit; this is
+arithmetic sensitivity, not statistical uncertainty or semantic error evidence.
+
+Keep the training-support view separate. A future capped/tempered training-only
+source-target weighting trial may test alignment with label-macro recovery using
+fresh contemporaneous unweighted controls, but no formula is justified as a
+winner. Freeze one variant, budget, normalization and all group/label outcomes
+before execution; never derive weights from dev misses. Coefficient mass is not
+gradient mass, and no causal claim or new training/promotion follows from these
+saved-output correlations. Unknown omissions and human-label gaps remain.
+
 ## Modern books beyond Gutenberg
 
 Open Library supplies modern **catalogue** coverage; publisher blurbs match field

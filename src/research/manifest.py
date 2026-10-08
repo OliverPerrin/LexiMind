@@ -86,6 +86,10 @@ ARTIFACTS: dict[str, tuple[str, str]] = {
         "model_study",
         "research/results/book_source_learning_curves_20261008.json",
     ),
+    "source_objective_analysis_observations": (
+        "model_study",
+        "research/results/book_source_objective_analysis_20261008.json",
+    ),
     "source_data_scaling_observations": (
         "model_study",
         "research/results/book_source_data_scaling_20261008.json",

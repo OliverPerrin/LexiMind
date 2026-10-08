@@ -485,6 +485,74 @@ interpretation. This supplies no semantic gold, precision/F1, significance,
 recommendation or product-admission evidence. There is no automatic extra-epoch,
 PPO or neural website promotion; human semantic field labels remain empty.
 
+### Label support and source objective, 8 October
+
+The [read-only analysis](../../research/results/book_source_objective_analysis_20261008.json)
+reconstructed final recall at 3 from the audited saved rankings for all 48 labels,
+four facets, both head-only and LoRA seeds, and refitted centroid TF-IDF. No model,
+GPU, fitting or source acquisition was used. It retains exact neural-only and
+lexical-only source-hit cancellations, original/additional/expanded/development
+supports, fixed support bins and single/multiple-positive row strata. Separate
+independent computations agree. The final independent checker passed 1,747
+arithmetic/structural checks after two checker-only errors were corrected. The
+receipt distinguishes retained successful checkers from reconstructed failed
+versions; original analyses were unchanged.
+
+Different denominators explain the arithmetic divergence: group macro averages
+each book's recovered fraction, while label macro gives each supported label
+equal weight. Signed per-label contributions reconstruct both gaps and their
+difference exactly. Two-seed LoRA-minus-lexical gaps are +2.5142 / −0.3346
+percentage points for genre group/label macro, and +1.3193 / −1.0249 for topic.
+The negative label means are seed-dependent: genre is positive for seed 17 and
+negative for 29; topic has the reverse signs.
+
+Fixed **development-support** bins contribute the following to the full facet
+gap, in percentage points. These are sums of per-label contributions, not
+within-bin means; empty and unsupported bins remain visible.
+
+| Facet | Dev positives per label | Labels | Group contribution | Label contribution |
+| --- | --- | ---: | ---: | ---: |
+| Genre | 0 | 1 | +0.0000 | +0.0000 |
+| Genre | 1-4 | 1 | +0.0000 | +0.0000 |
+| Genre | 5-19 | 3 | -0.2007 | -1.9558 |
+| Genre | 20+ | 10 | +2.7148 | +1.6212 |
+| Topic | 0 | 0 | +0.0000 | +0.0000 |
+| Topic | 1-4 | 2 | -0.1319 | -1.0870 |
+| Topic | 5-19 | 11 | +0.2639 | -0.5995 |
+| Topic | 20+ | 10 | +1.1873 | +0.6616 |
+
+Small development counts do **not** establish missing or rare training labels.
+Spiritual fiction has 117 training / 8 dev positives, paranormal fiction 293 /
+18, finance 50 / 5, and technology 114 / 4. Finance's saved LoRA hits are 3/5 in
+both seeds versus lexical 5/5; technology is 3/4 versus 4/4. One technology hit
+changes topic label macro by 1/(4×23) = 1.0870 percentage points, exceeding the
+1.0249-point mean deficit. This is denominator sensitivity, not a confidence
+interval or significance claim. The result separately retains training-support
+bins, including mixed outcomes within bins. Erotica has 9 training and zero dev
+positives: recall/delta remain null, contributions zero, and genre label macro
+uses 14 supported labels rather than its 15-label vocabulary.
+
+The uniform source objective assigns global target coefficient mass of 17.20%
+/ 17.92% / 43.67% / 21.22% to genre/topic/form/audience. Actual schedule-weighted
+mass is recorded separately: each seed has four 15-eligible-row batches and
+4092 16-eligible-row batches. Scheduled versus globally uniform row-weight L1
+is only 0.0001216233; it does not establish an explanation for the macro gap. Train/dev label target
+coefficient L1 is 0.08415756. These coefficients are neither gradient mass nor
+causal evidence. Structural group recall-at-3 ceilings are 98.8244% genre and
+99.9340% topic; audience's three-label vocabulary makes recall at 3 mechanically
+100%. Raw recall remains primary, with no ceiling normalization.
+
+A future **training-only capped/tempered weighting hypothesis** is defensible
+for controlled testing, not established as a remedy. Select one coherent variant
+from training supports/target coefficients, freeze its normalization/cap before
+execution, and compare it with fresh contemporaneous unweighted LoRA controls
+under the same seeds, cohort, schedules and update budget. No formula is a
+supported winner; do not choose weights from dev-label misses or seed flips.
+Keep lexical controls, group/label outcomes, all supports and original unweighted
+source-loss diagnostics. No new training is authorized by this analysis itself;
+unknown omissions remain unknown, human semantic gold stays empty, and no PPO,
+semantic-negative BCE or product promotion follows.
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh
