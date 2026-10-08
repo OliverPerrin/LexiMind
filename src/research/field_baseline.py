@@ -1,4 +1,4 @@
-"""Bounded weak source-label ranking diagnostics; no neural training or label admission.
+"""Bounded weak source-label ranking diagnostics and research-only neural recovery.
 
 Only observed positives define recovery metrics. Unlisted labels remain unknown,
 and rank scores are neither probabilities nor judgments of semantic relevance.
@@ -101,7 +101,9 @@ def _text(row: dict) -> str:
     return payload["title"] + "\n" + payload["description"]
 
 
-def fit_rankers(train_rows: list[dict], mapping: dict, tfidf_config: dict) -> dict:
+def fit_rankers(
+    train_rows: list[dict], mapping: dict, tfidf_config: dict, *, texts: list[str] | None = None
+) -> dict:
     """Fit vocabulary/IDF and prototypes on training text and observed positives only."""
     import numpy as np
     from scipy import sparse
@@ -116,7 +118,13 @@ def fit_rankers(train_rows: list[dict], mapping: dict, tfidf_config: dict) -> di
     options = dict(tfidf_config)
     options["ngram_range"] = tuple(options["ngram_range"])
     vectorizer = TfidfVectorizer(**options, norm="l2", dtype=np.float64)
-    train = vectorizer.fit_transform([_text(row) for row in train_rows]).tocsr()
+    if texts is not None and (
+        len(texts) != len(train_rows) or any(not isinstance(t, str) for t in texts)
+    ):
+        raise ValueError("Lexical text controls must match every training row")
+    train = vectorizer.fit_transform(
+        texts if texts is not None else [_text(row) for row in train_rows]
+    ).tocsr()
     centroids, names, frequency, support = {}, {}, {}, {}
     for facet in FACETS:
         vocabulary = labels[facet]
@@ -194,7 +202,13 @@ def _rank(scores, labels: list[str], positives: set[str], top_k: tuple[int, ...]
     }
 
 
-def rank_rows(fitted: dict, rows: list[dict], top_k: tuple[int, ...] = TOP_K) -> list[dict]:
+def rank_rows(
+    fitted: dict,
+    rows: list[dict],
+    top_k: tuple[int, ...] = TOP_K,
+    *,
+    texts: list[str] | None = None,
+) -> list[dict]:
     """Rank every vocabulary label for development inputs, with fixed alphabetical ties."""
     import numpy as np
 
@@ -209,7 +223,15 @@ def rank_rows(fitted: dict, rows: list[dict], top_k: tuple[int, ...] = TOP_K) ->
         raise ValueError("Development rows overlap fitted records or groups")
     if any(type(k) is not int or k < 1 for k in top_k) or not top_k:
         raise ValueError("Ranking cutoffs must be positive integers")
-    matrix = fitted["vectorizer"].transform([_text(row) for row in rows]).tocsr()
+    if texts is not None and (
+        len(texts) != len(rows) or any(not isinstance(t, str) for t in texts)
+    ):
+        raise ValueError("Lexical text controls must match every development row")
+    matrix = (
+        fitted["vectorizer"]
+        .transform(texts if texts is not None else [_text(row) for row in rows])
+        .tocsr()
+    )
     scores = {
         method: {
             facet: (
@@ -261,13 +283,15 @@ def rank_rows(fitted: dict, rows: list[dict], top_k: tuple[int, ...] = TOP_K) ->
     ]
 
 
-def ranking_metrics(ranked_rows: list[dict], mapping: dict, top_k: tuple[int, ...] = TOP_K) -> dict:
+def ranking_metrics(
+    ranked_rows: list[dict], mapping: dict, top_k: tuple[int, ...] = TOP_K, *, methods=METHODS
+) -> dict:
     """Observed-positive recovery only; exclude unobserved facets, never score negatives."""
     labels = _labels(mapping)
     if len({row["group_id"] for row in ranked_rows}) != len(ranked_rows):
         raise ValueError("Group-macro metrics require one unique row per group")
     result: dict = {}
-    for method in METHODS:
+    for method in methods:
         result[method] = {}
         for facet, vocabulary in labels.items():
             eligible = [row for row in ranked_rows if row["observed_positive"][facet]]
@@ -409,6 +433,8 @@ def execute(
             "Field baseline output already exists; preserve it and use a new directory"
         )
     config = read_json(config_path)
+    if config.get("kind") == "book_source_assignment_recovery_pilot":
+        return execute_source_recovery(config_path, output, root=root, prepare_only=prepare_only)
     validate_config(config)
     config_ref = _reference(root, config_path)
     started = time.monotonic()
@@ -590,3 +616,756 @@ def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         end="",
     )
     return 0
+
+
+SOURCE_RECOVERY = {
+    "schema_version": 1,
+    "kind": "book_source_assignment_recovery_pilot",
+    "seeds": [17, 29],
+    "arms": ["head_only", "lora_head"],
+    "facets": list(FACETS),
+    "top_k": list(TOP_K),
+    "train_limit": 4096,
+    "dev_limit": 1024,
+    "selection_salt": "bgc-field-retrieval-v1",
+    "tfidf": TFIDF,
+    "batch_size": 16,
+    "epochs": 2,
+    "updates": 512,
+    "endpoints": [0, 256, 512],
+    "primary_endpoint": 512,
+    "max_length": 256,
+    "max_total_seconds": 900,
+    "device": "cuda",
+    "parameter_dtype": "float32",
+    "autocast_dtype": "bfloat16",
+    "gradient_accumulation_steps": 1,
+    "gradient_clip_norm": 1.0,
+    "optimizer": {"lr": 0.0005, "betas": [0.9, 0.999], "eps": 1e-8, "weight_decay": 0.0},
+    "scheduler": "constant",
+    "lora": {"rank": 4, "alpha": 8, "dropout": 0.0},
+    "dropout": 0.0,
+    "base": {
+        "repo": "google/flan-t5-base",
+        "revision": "7bcac572ce56db69c1ea7c8af255c5d7c9672fc2",
+        "weight_sha256": "1dfb70afdcedceb9f9fae2f9b68e004ad934361fb35b9b2bd50b45ea90790fc8",
+    },
+    "schedule": "Python random.Random(seed + epoch).shuffle over fixed cohort indices; epoch is 1 or 2; same schedule in both arms",
+    "promote": False,
+    "paid_spend_authorized": False,
+    "formal_dataset_admission": False,
+    "human_gold": False,
+}
+
+
+def validate_source_recovery_config(config: dict) -> None:
+    """Reject protocol drift rather than silently adapting this one bounded pilot."""
+    import json
+
+    for key, expected in SOURCE_RECOVERY.items():
+        if json.dumps(config.get(key), sort_keys=True) != json.dumps(expected, sort_keys=True):
+            raise ValueError(f"Source recovery requires fixed {key}")
+    legacy = read_json(ROOT / "configs/research/book_field_baseline.json")
+    for key in ("field_manifest", "partition_manifest"):
+        if config.get(key) != legacy[key]:
+            raise ValueError(f"Source recovery must retain the existing {key} pin")
+
+
+def source_recovery_loss(logits, positives, facet_bounds):
+    """Uniform source-presence CE; facet mean per row, then eligible-row mean.
+
+    The softmax competes across every label, including unassigned and co-positive
+    labels. This is source-assignment recovery, not semantic-negative supervision.
+    """
+    import torch
+
+    if (
+        logits.ndim != 2
+        or positives.shape != logits.shape
+        or positives.dtype != torch.bool
+        or not torch.isfinite(logits).all()
+        or not facet_bounds
+    ):
+        raise ValueError("Recovery logits/positive indicators must be finite matching BxC tensors")
+    cursor = 0
+    losses, eligible = [], []
+    for start, stop in facet_bounds.values():
+        if start != cursor or stop <= start or stop > logits.shape[1]:
+            raise ValueError("Recovery facets must partition every logit in order")
+        cursor = stop
+        observed = positives[:, start:stop]
+        count = observed.sum(dim=1)
+        log_probs = torch.log_softmax(logits[:, start:stop].float(), dim=1)
+        losses.append(-(log_probs * observed).sum(dim=1) / count.clamp_min(1))
+        eligible.append(count > 0)
+    if cursor != logits.shape[1]:
+        raise ValueError("Recovery facets must cover every logit")
+    available = torch.stack(eligible, dim=1)
+    row_count = available.sum(dim=1)
+    row_loss = (torch.stack(losses, dim=1) * available).sum(dim=1) / row_count.clamp_min(1)
+    if not (row_count > 0).any():
+        raise ValueError("A recovery batch must contain an eligible source-positive row")
+    return row_loss[row_count > 0].mean()
+
+
+def source_recovery_rankings(scores, rows: list[dict], mapping: dict, method: str) -> list[dict]:
+    """Validate facet probability rankings and retain all labels and source outcomes."""
+    import numpy as np
+
+    labels = _labels(mapping)
+    if set(scores) != set(FACETS):
+        raise ValueError("Recovery evaluation requires all four facets")
+    for facet, vocabulary in labels.items():
+        values = np.asarray(scores[facet])
+        if (
+            values.shape != (len(rows), len(vocabulary))
+            or not np.isfinite(values).all()
+            or (values < 0).any()
+            or (values > 1).any()
+            or not np.allclose(values.sum(axis=1), 1, atol=1e-5, rtol=1e-5)
+        ):
+            raise ValueError("Recovery scores must be finite per-facet probability vectors")
+    return [
+        {
+            "record_id": row["record_id"],
+            "group_id": row["group_id"],
+            "source_split": row["source_split"],
+            "effective_split": row["effective_split"],
+            "input_sha256": row["input_sha256"],
+            "observed_positive": {f: sorted(row["fields"][f]["positive"]) for f in FACETS},
+            "observed_negative": {f: sorted(row["fields"][f]["negative"]) for f in FACETS},
+            "methods": {
+                method: {
+                    f: _rank(scores[f][i], labels[f], set(row["fields"][f]["positive"]), TOP_K)
+                    for f in FACETS
+                }
+            },
+        }
+        for i, row in enumerate(rows)
+    ]
+
+
+def _recovery_tensor_hash(tensor) -> str:
+    import hashlib
+
+    value = tensor.detach().cpu().contiguous()
+    return hashlib.sha256(
+        json_bytes({"shape": list(value.shape), "dtype": str(value.dtype)})
+        + value.numpy().tobytes()
+    ).hexdigest()
+
+
+def execute_source_recovery(
+    config_path: Path, output: Path, *, root: Path = ROOT, prepare_only: bool = False
+) -> dict:
+    """One immutable research-only pilot; never retry, select a checkpoint or promote."""
+    import hashlib
+    import random
+
+    from src.research.field_baseline_data import prepare_field_baseline_data
+
+    root, config_path, output = root.resolve(), config_path.resolve(), output.resolve()
+    if not output.is_relative_to(root / "outputs") or output == root / "outputs" or output.exists():
+        raise ValueError("Recovery needs a fresh directory beneath outputs")
+    config = read_json(config_path)
+    validate_source_recovery_config(config)
+    config_ref = _reference(root, config_path)
+    started = time.monotonic()
+    output.mkdir(parents=True, exist_ok=False)
+    progress = {"phase": "preparation", "actual_updates": {}}
+    runtime_references = {
+        name: _reference(root, root / name)
+        for name in (
+            "configs/config.yaml",
+            "configs/model/base.yaml",
+            "configs/data/datasets.yaml",
+            "configs/training/default.yaml",
+            "configs/training/book_lora.yaml",
+        )
+    }
+
+    def check(phase):
+        progress["phase"] = phase
+        if time.monotonic() - started > config["max_total_seconds"]:
+            raise TimeoutError("Source recovery exceeded its fixed 900-second cooperative budget")
+        if _reference(root, config_path) != config_ref:
+            raise ValueError("Source recovery protocol changed during execution")
+        if any(_reference(root, root / name) != ref for name, ref in runtime_references.items()):
+            raise ValueError("Source recovery runtime configuration changed during execution")
+
+    try:
+        bundle = prepare_field_baseline_data(root, config)
+        check("source_verified")
+        historical = config["prior_full_text_reference"]
+        if _reference(root, root / historical["path"]) != historical:
+            raise ValueError("Historical full-text reference changed")
+        train, dev, mapping = bundle["train"], bundle["dev"], bundle["mapping"]
+        labels = _labels(mapping)
+        if len(train) != 4096 or len(dev) != 1024 or sum(map(len, labels.values())) != 48:
+            raise ValueError(
+                "Recovery requires exactly the existing 4096/1024 cohort and 48 labels"
+            )
+        for rows, split in ((train, "train"), (dev, "dev")):
+            _validate_rows(rows, mapping, split)
+        if len({r["group_id"] for r in train + dev}) != 5120:
+            raise ValueError("Recovery train/development groups overlap")
+        if any(r["fields"][f]["negative"] for r in train + dev for f in FACETS):
+            raise ValueError("This source-presence pilot requires zero assigned source negatives")
+        bounds, cursor = {}, 0
+        for f in FACETS:
+            bounds[f] = [cursor, cursor + len(labels[f])]
+            cursor += len(labels[f])
+        schedules: dict[str, list[list[int]]] = {}
+        for seed in config["seeds"]:
+            schedules[str(seed)] = []
+            for epoch in (1, 2):
+                indices = list(range(len(train)))
+                random.Random(seed + epoch).shuffle(indices)
+                for begin in range(0, len(indices), 16):
+                    if not any(
+                        train[i]["fields"][f]["positive"]
+                        for i in indices[begin : begin + 16]
+                        for f in FACETS
+                    ):
+                        raise ValueError(
+                            "Planned batch has no source-positive row; no replacement or resampling"
+                        )
+                schedules[str(seed)].append(indices)
+        examples_path = output / "examples.json"
+        _write(
+            examples_path,
+            {
+                "schema_version": 1,
+                "kind": "source_recovery_examples",
+                "mapping": mapping,
+                "provenance": bundle["provenance"],
+                "train": train,
+                "dev": dev,
+            },
+        )
+        schedule_path = output / "schedules.json"
+        _write(
+            schedule_path,
+            {
+                "rule": config["schedule"],
+                "indices": schedules,
+                "record_ids": {
+                    str(seed): [
+                        [train[i]["record_id"] for i in epoch] for epoch in schedules[str(seed)]
+                    ]
+                    for seed in config["seeds"]
+                },
+            },
+        )
+        # Cached tokenizer only: prepare-only does not resolve/read base model weights.
+        from huggingface_hub import snapshot_download
+
+        from src.data.tokenization import Tokenizer, TokenizerConfig
+        from src.utils.labels import format_book_input
+
+        recipe = config["base"]
+        snapshot = Path(
+            snapshot_download(recipe["repo"], revision=recipe["revision"], local_files_only=True)
+        )
+        tokenizer = Tokenizer(
+            TokenizerConfig(
+                pretrained_model_name=str(snapshot),
+                max_length=256,
+                padding="longest",
+                truncation=True,
+            )
+        )
+        check("tokenizer_loaded")
+        encoded, lexical_texts = {}, {}
+        for split, rows in (("train", train), ("dev", dev)):
+            records, texts = [], []
+            for begin in range(0, len(rows), 16):
+                batch = tokenizer.batch_encode(
+                    [format_book_input(**r["input"]) for r in rows[begin : begin + 16]],
+                    max_length=256,
+                    padding="longest",
+                    pad_to_multiple_of=8,
+                )
+                for row, ids, mask in zip(
+                    rows[begin : begin + 16],
+                    batch["input_ids"].tolist(),
+                    batch["attention_mask"].tolist(),
+                    strict=True,
+                ):
+                    visible = [token for token, valid in zip(ids, mask, strict=True) if valid]
+                    text = tokenizer.decode(visible)
+                    texts.append(text)
+                    records.append(
+                        {
+                            "record_id": row["record_id"],
+                            "input_ids": ids,
+                            "attention_mask": mask,
+                            "decoded_control_text": text,
+                            "decoded_control_sha256": hashlib.sha256(text.encode()).hexdigest(),
+                        }
+                    )
+                check(f"tokenization_{split}")
+            encoded[split], lexical_texts[split] = records, texts
+        token_path = output / "tokenization.json"
+        _write(
+            token_path,
+            {
+                "schema_version": 1,
+                "input_format": "book_title_description_v1",
+                "max_length": 256,
+                "control": "Decoded exact visible model token IDs; special tokens removed",
+                "records": encoded,
+            },
+        )
+        report = {
+            "schema_version": 1,
+            "kind": "book_source_assignment_recovery_result",
+            "status": "prepared_not_fitted",
+            "config": config,
+            "config_reference": config_ref,
+            "runtime_configuration_references": runtime_references,
+            "source_provenance": bundle["provenance"],
+            "mapping": mapping,
+            "facet_bounds": bounds,
+            "examples": _reference(root, examples_path),
+            "schedules": _reference(root, schedule_path),
+            "tokenization": _reference(root, token_path),
+            "selected": [
+                {k: r[k] for k in ("record_id", "group_id", "effective_split", "input_sha256")}
+                for r in train + dev
+            ],
+            "selected_label_support": {
+                split: {
+                    f: {
+                        "positive_groups": {
+                            label: sum(label in r["fields"][f]["positive"] for r in rows)
+                            for label in labels[f]
+                        },
+                        "groups_without_observed_positives": sum(
+                            not r["fields"][f]["positive"] for r in rows
+                        ),
+                    }
+                    for f in FACETS
+                }
+                for split, rows in (("train", train), ("dev", dev))
+            },
+            "rows_without_any_observed_positive": {
+                split: sum(not any(r["fields"][f]["positive"] for f in FACETS) for r in rows)
+                for split, rows in (("train", train), ("dev", dev))
+            },
+            "human_gold": False,
+            "formal_dataset_admission": False,
+            "model_promoted": False,
+            "paid_spend": 0,
+            "neural_training_performed": False,
+            "rl_training_performed": False,
+            "statistical_fitting_performed": False,
+            "arms": {},
+            "prior_full_text_reference": config["prior_full_text_reference"],
+            "implementation_sha256": {
+                name: file_hash(root / name)
+                for name in (
+                    "src/research/field_baseline.py",
+                    "src/research/field_baseline_data.py",
+                    "src/training/trainer.py",
+                    "src/training/utils.py",
+                    "src/models/adapters.py",
+                )
+            },
+            "semantics": {
+                "loss": "Uniform known-positive distribution per facet; mean eligible facets within each row, then mean eligible rows. Whole-empty rows excluded only from loss. Softmax pressures unassigned labels and co-positives compete; omissions remain semantically unknown.",
+                "metrics": "Observed publisher-source assignment recovery only, not semantic negatives, human gold, precision, F1 or accuracy.",
+                "comparison": "Matched lexical control decodes exact truncated formatted neural input. Prior full literal title/newline/description TF-IDF is an external reference, not an input-matched comparison.",
+                "selection": "Endpoint512 primary; endpoints0/256 diagnostic; all seeds/arms retained, no best checkpoint selection.",
+            },
+            "timings": {},
+        }
+        if not prepare_only:
+            check("matched_lexical_fitting")
+            fitted = fit_rankers(train, mapping, config["tfidf"], texts=lexical_texts["train"])
+            check("matched_lexical_evaluation")
+            lexical_ranked = rank_rows(fitted, dev, texts=lexical_texts["dev"])
+            report["matched_lexical_metrics"] = ranking_metrics(lexical_ranked, mapping)
+            report["training_support"] = fitted["support"]
+            path = output / "matched_lexical_rankings.json"
+            _write(path, {"records": lexical_ranked})
+            report["matched_lexical_rankings"] = _reference(root, path)
+            report["matched_lexical_artifacts"] = _save_fitted(
+                root, output, fitted, config["tfidf"]
+            )
+            check("neural_initialization")
+            _fit_source_recovery(
+                root,
+                output,
+                config,
+                report,
+                train,
+                dev,
+                encoded,
+                tokenizer,
+                schedules,
+                bounds,
+                check,
+                progress,
+            )
+            report.update(
+                status="completed_source_assignment_recovery_pilot",
+                neural_training_performed=True,
+                statistical_fitting_performed=True,
+            )
+        check("final_receipt")
+        report["timings"]["total_seconds"] = time.monotonic() - started
+        _write(output / "report.json", report)
+        check("receipt_saved")
+        return report
+    except BaseException as error:
+        # A terminal post-save failure must invalidate any earlier apparent success.
+        if (output / "report.json").exists():
+            from src.utils.atomic import atomic_write
+
+            failed_report = read_json(output / "report.json")
+            failed_report.update(status="failed_incomplete_do_not_use", terminal_error=str(error))
+            atomic_write(
+                output / "report.json", lambda stream: stream.write(json_bytes(failed_report))
+            )
+        _write(
+            output / "failure.json",
+            {
+                "schema_version": 1,
+                "status": "failed_incomplete_do_not_use",
+                "config_reference": config_ref,
+                "progress": progress,
+                "error_type": type(error).__name__,
+                "error": str(error),
+                "elapsed_seconds": time.monotonic() - started,
+                "automatic_retry": False,
+            },
+        )
+        raise
+
+
+def _fit_source_recovery(
+    root, output, config, report, train, dev, encoded, tokenizer, schedules, bounds, check, progress
+):
+    """Reuse native model/Trainer plumbing, with a research-local forward objective."""
+    import gc
+    from dataclasses import asdict
+
+    import mlflow
+    import numpy as np
+    import torch
+    from hydra import compose, initialize_config_dir
+
+    from src.models.adapters import extract_effective_delta
+    from src.training.trainer import Trainer, TrainerConfig
+    from src.training.utils import (
+        build_training_model,
+        build_training_optimizer,
+        prepare_training_runtime,
+        set_seed,
+    )
+    from src.utils.atomic import atomic_write
+
+    labels = _labels(report["mapping"])
+    positions = {f: {label: bounds[f][0] + i for i, label in enumerate(labels[f])} for f in FACETS}
+    indicators = torch.zeros((len(train), 48), dtype=torch.bool)
+    for i, row in enumerate(train):
+        for f in FACETS:
+            for label in row["fields"][f]["positive"]:
+                indicators[i, positions[f][label]] = True
+
+    def collate(indices, split):
+        records = [encoded[split][i] for i in indices]
+        width = max(sum(r["attention_mask"]) for r in records)
+        width = ((width + 7) // 8) * 8
+        ids = torch.full((len(indices), width), tokenizer.pad_token_id, dtype=torch.long)
+        masks = torch.zeros_like(ids, dtype=torch.bool)
+        for j, row in enumerate(records):
+            visible = [
+                token
+                for token, valid in zip(row["input_ids"], row["attention_mask"], strict=True)
+                if valid
+            ]
+            ids[j, : len(visible)] = torch.tensor(visible)
+            masks[j, : len(visible)] = True
+        batch = {"input_ids": ids, "attention_mask": masks}
+        if split == "train":
+            batch["labels"] = indicators[indices]
+        return batch
+
+    class SourceRecoveryTrainer(Trainer):
+        def _forward_task(self, task, batch, *, summarize_metrics=True):
+            if task != "source_recovery":
+                return super()._forward_task(task, batch, summarize_metrics=summarize_metrics)
+            check("source_recovery_forward")
+            logits = self.model.forward(
+                "topic", {k: batch[k] for k in ("input_ids", "attention_mask")}
+            )
+            return source_recovery_loss(logits, batch["labels"], bounds), {}
+
+    with initialize_config_dir(config_dir=str(root / "configs"), version_base=None):
+        cfg = compose(config_name="config", overrides=["training=book_lora", "device=cuda"])
+    cfg.training.optimizer = config["optimizer"]
+    cfg.training.trainer.gradient_accumulation_steps = 1
+    cfg.model.dropout = 0.0
+    _validate_recovery_runtime(cfg, config)
+    from omegaconf import OmegaConf
+
+    report["resolved_runtime_config"] = OmegaConf.to_container(cfg, resolve=True)
+    check("runtime_configuration_bound")
+    device, snapshot = prepare_training_runtime(cfg)
+    if device.type != "cuda" or not torch.cuda.is_bf16_supported():
+        raise ValueError("Authorized pilot requires CUDA BF16; no device fallback")
+    check("runtime_verified")
+    report["device"] = {"name": torch.cuda.get_device_name(device), "bf16_supported": True}
+    report["dependency_versions"] = {
+        "python": platform.python_version(),
+        **{
+            name: metadata.version(name)
+            for name in ("torch", "transformers", "numpy", "scipy", "scikit-learn")
+        },
+    }
+    for seed in config["seeds"]:
+        expected_initial = None
+        for arm in config["arms"]:
+            check(f"initialize_{seed}_{arm}")
+            cfg.seed = seed
+            set_seed(seed)
+            model, binding = build_training_model(
+                cfg,
+                tokenizer,
+                num_emotions=0,
+                num_topics=48,
+                topic_problem_type="multi_label",
+                snapshot=snapshot,
+                compile_modules=False,
+            )
+            check(f"initialized_{seed}_{arm}")
+            private = set(binding.private_parameters)
+            factors = {n for n, p in model.named_parameters() if n.endswith((".lora_A", ".lora_B"))}
+            state_names = private | factors
+            initial_hashes = {
+                n: _recovery_tensor_hash(model.get_parameter(n)) for n in sorted(state_names)
+            }
+            identity = {"binding": asdict(binding), "tensor_hashes": initial_hashes}
+            if expected_initial is None:
+                expected_initial = identity
+            elif identity != expected_initial:
+                raise ValueError(
+                    "Paired arms did not share exact head/factor initialization and frozen base"
+                )
+            if arm == "head_only":
+                for n in factors:
+                    model.get_parameter(n).requires_grad_(False)
+            actual_trainable = {n for n, p in model.named_parameters() if p.requires_grad}
+            if actual_trainable != (private if arm == "head_only" else state_names):
+                raise ValueError("Recovery arm trainable parameters differ from exact allowlist")
+            optimizer = build_training_optimizer(model, cfg, device)
+            trainer = SourceRecoveryTrainer(
+                model,
+                optimizer,
+                TrainerConfig(
+                    max_epochs=2,
+                    gradient_accumulation_steps=1,
+                    gradient_clip_norm=1.0,
+                    scheduler_type="constant",
+                    warmup_steps=0,
+                    early_stopping_patience=None,
+                    task_sampling="round_robin",
+                    generation_metrics=False,
+                    gradient_conflict_frequency=0,
+                    use_pcgrad=False,
+                    tracking_uri="sqlite:///" + str(output / "mlflow.db"),
+                    experiment_name="SourceAssignmentRecovery",
+                    run_name=f"{seed}_{arm}",
+                ),
+                device,
+                tokenizer,
+            )
+            if not trainer.use_bfloat16:
+                raise ValueError("Trainer did not enable BF16 autocast")
+            key = f"{seed}_{arm}"
+            progress["actual_updates"][key] = 0
+            arm_report = {
+                "seed": seed,
+                "arm": arm,
+                "initialization": identity,
+                "trainable_names": sorted(actual_trainable),
+                "endpoints": {},
+                "training": {},
+            }
+            report["arms"][key] = arm_report
+            arm_output = output / key
+            arm_output.mkdir()
+
+            study_started = time.monotonic()
+
+            def endpoint(
+                key=key,
+                trainer=trainer,
+                model=model,
+                arm=arm,
+                seed=seed,
+                binding=binding,
+                state_names=state_names,
+                initial_hashes=initial_hashes,
+                factors=factors,
+                arm_output=arm_output,
+                arm_report=arm_report,
+                study_started=study_started,
+            ):
+                check(f"evaluate_{key}_{trainer.global_step}")
+                evaluation_start = time.monotonic()
+                model.eval()
+                scores: dict[str, list] = {f: [] for f in FACETS}
+                with torch.no_grad():
+                    for begin in range(0, len(dev), 16):
+                        batch = {
+                            k: v.to(device)
+                            for k, v in collate(
+                                list(range(begin, min(begin + 16, len(dev)))), "dev"
+                            ).items()
+                        }
+                        with torch.autocast("cuda", dtype=torch.bfloat16):
+                            logits = model.forward("topic", batch)
+                        if (
+                            logits.shape != (len(batch["input_ids"]), 48)
+                            or not torch.isfinite(logits).all()
+                        ):
+                            raise ValueError("Nonfinite or malformed neural evaluation logits")
+                        for f, (start, stop) in bounds.items():
+                            scores[f].append(
+                                logits[:, start:stop].float().softmax(dim=1).cpu().numpy()
+                            )
+                        check(f"evaluate_{key}_{trainer.global_step}")
+                ranked = source_recovery_rankings(
+                    {f: np.concatenate(v) for f, v in scores.items()}, dev, report["mapping"], arm
+                )
+                metrics = ranking_metrics(ranked, report["mapping"], methods=(arm,))
+                delta = extract_effective_delta(model, binding, task_id="source_recovery")
+                adaptation_norm = float(
+                    sum(v.double().square().sum().item() for v in delta.shared.values()) ** 0.5
+                )
+                hashes = {
+                    n: _recovery_tensor_hash(model.get_parameter(n)) for n in sorted(state_names)
+                }
+                if arm == "head_only" and any(hashes[n] != initial_hashes[n] for n in factors):
+                    raise ValueError("Head-only factors changed")
+                if arm == "head_only" and adaptation_norm != 0:
+                    raise ValueError("Head-only encoder acquired an effective adapter delta")
+                if arm == "lora_head" and trainer.global_step and adaptation_norm == 0:
+                    raise ValueError("LoRA arm has no effective adaptation")
+                check(f"save_{key}_{trainer.global_step}")
+                checkpoint = arm_output / f"endpoint_{trainer.global_step}.research.pt"
+                artifact = {
+                    "schema_version": 1,
+                    "kind": "book_source_assignment_recovery_artifact",
+                    "production_inference_supported": False,
+                    "resume_supported": False,
+                    "arm": arm,
+                    "seed": seed,
+                    "actual_updates": trainer.global_step,
+                    "binding": asdict(binding),
+                    "config": config,
+                    "config_reference": report["config_reference"],
+                    "model_config": model._leximind_training_model_config,
+                    "resolved_runtime_config": OmegaConf.to_container(cfg, resolve=True),
+                    "runtime_configuration_references": report["runtime_configuration_references"],
+                    "implementation_sha256": report["implementation_sha256"],
+                    "vocabulary": labels,
+                    "facet_bounds": bounds,
+                    "tokenizer_contract": model._leximind_training_tokenizer_contract,
+                    "source_provenance": report["source_provenance"],
+                    "examples": report["examples"],
+                    "schedules": report["schedules"],
+                    "tokenization": report["tokenization"],
+                    "tensor_hashes": hashes,
+                    "research_state": {
+                        n: model.get_parameter(n).detach().cpu().clone()
+                        for n in sorted(state_names)
+                    },
+                }
+                atomic_write(checkpoint, lambda stream: torch.save(artifact, stream))
+                rank_path = arm_output / f"endpoint_{trainer.global_step}.rankings.json"
+                _write(rank_path, {"schema_version": 1, "records": ranked})
+                receipt = {
+                    "actual_updates": trainer.global_step,
+                    "metrics": metrics,
+                    "artifact": _reference(root, checkpoint),
+                    "rankings": _reference(root, rank_path),
+                    "tensor_hashes": hashes,
+                    "effective_adapter_l2": adaptation_norm,
+                    "frozen_base_verified": True,
+                    "evaluation_and_save_seconds": time.monotonic() - evaluation_start,
+                    "elapsed_seconds": time.monotonic() - study_started,
+                }
+                arm_report["endpoints"][str(trainer.global_step)] = receipt
+                _write(arm_output / f"endpoint_{trainer.global_step}.receipt.json", receipt)
+                check(f"saved_{key}_{trainer.global_step}")
+
+            endpoint()
+            with mlflow.start_run(run_name=key):
+                for epoch in (1, 2):
+                    batches = [
+                        collate(schedules[str(seed)][epoch - 1][i : i + 16], "train")
+                        for i in range(0, 4096, 16)
+                    ]
+                    batch_path = arm_output / f"epoch_{epoch}.batches.json"
+                    _write(
+                        batch_path,
+                        {
+                            "schedule": report["schedules"],
+                            "epoch": epoch,
+                            "batches": [
+                                {
+                                    "input_ids": b["input_ids"].tolist(),
+                                    "attention_mask": b["attention_mask"].tolist(),
+                                }
+                                for b in batches
+                            ],
+                        },
+                    )
+                    arm_report.setdefault("actual_batch_inputs", {})[str(epoch)] = _reference(
+                        root, batch_path
+                    )
+                    check(f"batches_saved_{key}_{epoch}")
+                    loaders = {"source_recovery": batches}
+                    trainer._setup_scheduler(loaders, epoch)
+                    epoch_start = time.monotonic()
+
+                    def step_checked(key=key, trainer=trainer):
+                        progress["actual_updates"][key] = trainer.global_step
+                        check(f"train_{key}")
+
+                    arm_report["training"][str(epoch)] = trainer._run_epoch(
+                        loaders, train=True, epoch=epoch, step_callback=step_checked
+                    )
+                    arm_report["training"][str(epoch)]["seconds"] = time.monotonic() - epoch_start
+                    if trainer.global_step != epoch * 256:
+                        raise ValueError(
+                            "Recovery update count differs from its fixed record schedule"
+                        )
+                    endpoint()
+            del endpoint, step_checked, trainer, optimizer, model, batches
+            gc.collect()
+            torch.cuda.empty_cache()
+            check(f"completed_{key}")
+
+
+def _validate_recovery_runtime(cfg, config) -> None:
+    """Bind the actual composed recipe to the same tokenizer/base and adapter scope."""
+    import json
+
+    recipe = cfg.training.book_lora
+    expected = {
+        "base_repo": config["base"]["repo"],
+        "base_revision": config["base"]["revision"],
+        "base_weight_sha256": config["base"]["weight_sha256"],
+        **config["lora"],
+        "dtype": config["parameter_dtype"],
+    }
+    for key, value in expected.items():
+        if json.dumps(recipe.get(key), sort_keys=True) != json.dumps(value, sort_keys=True):
+            raise ValueError(f"Resolved recovery runtime differs from frozen {key}")
+    if cfg.model.dropout != config["dropout"] or cfg.device != config["device"]:
+        raise ValueError("Resolved recovery model dropout/device differs from frozen protocol")

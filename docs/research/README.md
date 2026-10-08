@@ -320,6 +320,52 @@ The older 32-row purposive packet includes effective test records and must not b
 used as this diagnostic's training seed. No worksheet creates human evidence by
 being generated or viewed.
 
+### Bounded neural source-assignment recovery, 8 October
+
+The [fixed protocol](../../configs/research/book_source_recovery.json) completed
+once on the owned RTX4070: 4096 training / 1024 development groups, four facets,
+48 labels, seeds 17 and 29, and 512 updates per arm in two passes. The
+[recorded result](../../research/results/book_source_recovery_20261008.json)
+retains every seed and endpoint 0/256/512; 512 was fixed as primary. The full run
+took 212.03 seconds within the cooperative 900-second budget. Independent audit
+recomputed all metrics and matched lexical scores, verified paired initialization
+and batches, frozen bases and unchanged head-only adapter factors, and restored
+all 12 checkpoints. BF16 replay matched exactly on the same 32 recorded rows per
+checkpoint. Separate FP32 replay sensitivity reached 0.01214 in probability;
+this was not a BF16 restore failure.
+
+Primary development group-macro observed-positive recall at 3:
+
+| Arm / control | Genre | Topic |
+| --- | ---: | ---: |
+| Frozen encoder, seed 17 | 53.96% | 48.26% |
+| Frozen encoder, seed 29 | 53.96% | 46.77% |
+| Q/V LoRA + head, seed 17 | 72.52% | 70.58% |
+| Q/V LoRA + head, seed 29 | 77.97% | 78.74% |
+| Q/V LoRA + head, descriptive two-seed mean | 75.24% | 74.66% |
+| Matched positive-centroid TF-IDF | 83.27% | 88.90% |
+
+LoRA improved recovery over each paired frozen-encoder head, but both seeds
+remained below the strong input-matched lexical control for genre/topic recall
+at 3. Full-precision values, all facets and other cutoffs remain in the result.
+The prior full-text lexical baseline is a separate historical reference.
+
+This objective learns publisher source assignments: uniform observed-positive
+targets, a facet mean within each eligible row, then a row mean. Softmax pressures
+unassigned labels and co-positives compete; omissions remain semantically unknown.
+It is distinct from semantic partial-label BCE. These results establish neither
+semantic correctness, precision/F1, significance nor recommendation relevance.
+FLAN may have encountered public BGC records or blurbs during pretraining;
+exposure is unknown. The shared base controls exposure within each neural pair,
+but lexical versus neural recovery does not isolate pretraining.
+
+Retain the strong lexical control. Investigate source data/objective and any
+longer fixed neural budget only under a future protocol; this 512-update result
+does not establish that longer training would win. Human field labels remain
+empty, formal admission remains unresolved, and there is no automatic RL,
+neural website promotion or paid compute. Research artifacts preserve all head
+and adapter factors and are rejected by ordinary inference loading.
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh

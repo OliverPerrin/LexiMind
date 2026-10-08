@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "kind": "book_source_assignment_recovery_pilot",
+  "seeds": [
+    17,
+    29
+  ],
+  "arms": [
+    "head_only",
+    "lora_head"
+  ],
+  "facets": [
+    "genre",
+    "topic",
+    "form",
+    "audience"
+  ],
+  "top_k": [
+    1,
+    3,
+    5
+  ],
+  "train_limit": 4096,
+  "dev_limit": 1024,
+  "selection_salt": "bgc-field-retrieval-v1",
+  "tfidf": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 2,
+    "max_features": 20000,
+    "sublinear_tf": true,
+    "lowercase": true,
+    "strip_accents": "unicode",
+    "stop_words": "english"
+  },
+  "batch_size": 16,
+  "epochs": 2,
+  "updates": 512,
+  "endpoints": [
+    0,
+    256,
+    512
+  ],
+  "primary_endpoint": 512,
+  "max_length": 256,
+  "max_total_seconds": 900,
+  "device": "cuda",
+  "parameter_dtype": "float32",
+  "autocast_dtype": "bfloat16",
+  "gradient_accumulation_steps": 1,
+  "gradient_clip_norm": 1.0,
+  "optimizer": {
+    "lr": 0.0005,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.0
+  },
+  "scheduler": "constant",
+  "lora": {
+    "rank": 4,
+    "alpha": 8,
+    "dropout": 0.0
+  },
+  "dropout": 0.0,
+  "schedule": "Python random.Random(seed + epoch).shuffle over fixed cohort indices; epoch is 1 or 2; same schedule in both arms",
+  "promote": false,
+  "paid_spend_authorized": false,
+  "formal_dataset_admission": false,
+  "human_gold": false,
+  "study_id": "bgc-source-assignment-recovery-20261008",
+  "status": "fixed_before_neural_execution",
+  "authorization": "User authorized continued bounded work and the owned CUDA host on 2026-10-08; no paid compute, automatic retries, formal admission or promotion.",
+  "field_manifest": {
+    "path": "research/preparation/book_field_manifest.json",
+    "bytes": 6428,
+    "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
+  },
+  "partition_manifest": {
+    "path": "research/preparation/book_partition_manifest.json",
+    "bytes": 41532,
+    "sha256": "c45173e71a2196090f319e77ad4a17eff0a03c3a137f852bf621183dbccf8e73"
+  },
+  "base": {
+    "repo": "google/flan-t5-base",
+    "revision": "7bcac572ce56db69c1ea7c8af255c5d7c9672fc2",
+    "weight_sha256": "1dfb70afdcedceb9f9fae2f9b68e004ad934361fb35b9b2bd50b45ea90790fc8"
+  },
+  "prior_full_text_reference": {
+    "path": "research/results/book_field_baseline_20261003.json",
+    "bytes": 27361,
+    "sha256": "d9774a2cbe6a58c82791c350509274d0cda07e6445e0daee7f2ea4540427890e"
+  },
+  "loss": "For each eligible row/facet, uniform target mass over observed source positives. Mean eligible facets within each row, then mean eligible rows. Whole-empty rows retain cohort/order but are excluded from loss; every planned batch must have eligible rows. Softmax pressures unassigned labels and co-positives compete; unknown omissions are not semantic negatives.",
+  "input": "Title: {title}\nDescription: {description}, max 256 cached FLAN tokens with longest padding to multiple8. Token-matched lexical control decodes exact visible model IDs excluding special tokens, fit on train only. Historical full raw text baseline is reference only.",
+  "evaluation": "All four facets and 48 labels; observed-positive recall1/3/5 and first-positive reciprocal rank using existing metrics. Every seed/arm/endpoint retained; endpoint512 primary. No precision/F1/accuracy/valbest/human gold/significance claim.",
+  "artifacts": "Research-only artifact kind; all head and LoRA factors in both arms, base binding/fingerprints, tensor hashes, config/tokenizer/vocabulary/source pins, exact schedules/tokens/masks, raw full rankings and endpoint receipts. Normal semantic adapter loading rejects the kind.",
+  "budget": "900 seconds cooperative operation/step checks includes preparation, cached tokenization, initialization, matched lexical control, all training/evaluation/save. On timeout or error preserve failed receipt and partial artifacts; never retry or change hyperparameters.",
+  "limitations": [
+    "FLAN pretraining may have exposed the base to public BGC records or blurbs; exposure is unknown. The identical base controls this within each paired neural arm, but lexical versus neural recovery is not an isolated comparison of pretraining.",
+    "Publisher assignments and the authored mapping are incomplete weak source labels. Recovery metrics do not establish semantic correctness or recommendation relevance."
+  ]
+}

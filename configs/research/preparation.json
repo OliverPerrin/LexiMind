@@ -305,7 +305,12 @@
           "sha256": "b3d7d27c6ebe24b5284c43e2173f782975f23689ca42945c1eedc24ef8e11663"
         }
       ],
-      "note": "Bounded synthetic M5 and isolated RTX4070 BF16 execution verified. Shared M5-safe batch4/accumulation2 preset retained; explicit CUDA batch16/accumulation1 override selected from diagnostics. Timing-only run:272 fabricated examples,17 active microbatches,172.51 rows/sec. Frozen base, strict Mac adapter portability and ordinary merged inference reload verified. No quality claim, real book judgments or source test data; zero human field reviews and formal data/protocol gates remain open."
+      "note": "Bounded synthetic M5 and isolated RTX4070 BF16 execution verified. Shared M5-safe batch4/accumulation2 preset retained; explicit CUDA batch16/accumulation1 override selected from diagnostics. Timing-only run:272 fabricated examples,17 active microbatches,172.51 rows/sec. Frozen base, strict Mac adapter portability and ordinary merged inference reload verified. No quality claim, real book judgments or source test data; zero human field reviews and formal data/protocol gates remain open. Separately, the real BGC source-assignment recovery pilot completed once and passed independent audit; its fixed512-update LoRA arms remained below matched lexical genre/topic recovery. This is source-only learning, not semantic field admission; human labels remain empty.",
+      "source_recovery_observation": {
+        "path": "research/results/book_source_recovery_20261008.json",
+        "bytes": 241313,
+        "sha256": "561b42ba2c0330e08eab8f7ae0653ca60bceb814c2232e6e1ec1caf5bc94e6af"
+      }
     }
   },
   "study_design": "configs/research/study_design.json",

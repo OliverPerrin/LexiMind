@@ -74,6 +74,11 @@ ARTIFACTS: dict[str, tuple[str, str]] = {
         "research/results/book_supervision_20261003.json",
     ),
     "recurrent_ppo_review": ("model_study", "docs/research/rnn_ppo_review.md"),
+    "source_recovery_observations": (
+        "model_study",
+        "research/results/book_source_recovery_20261008.json",
+    ),
+    "source_recovery_config": ("model_study", "configs/research/book_source_recovery.json"),
     "field_baseline_config": ("model_study", "configs/research/book_field_baseline.json"),
     "field_baseline_runtime": ("model_study", "src/research/field_baseline.py"),
     "field_baseline_inputs": ("model_study", "src/research/field_baseline_data.py"),
