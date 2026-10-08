@@ -20,8 +20,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 23838,
-      "sha256": "7390b0a252f112cd7d905081bb0f64b138bae187f2c8face7ff0a6963ab03874"
+      "bytes": 27510,
+      "sha256": "71ec81c23c662c8bb504477931beb9472ff4340712ce89ee2b5b89ae95fd1df7"
     },
     {
       "id": "study_decisions",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 10658,
-      "sha256": "7659f30eaecb720bfd54c9f0306252b281756142267fd29a19376ad9962b449b"
+      "bytes": 11063,
+      "sha256": "65cb78dba12f3193cda3bc6b1b2daa95d906f910f28e86ac2e833225d762c52f"
     },
     {
       "id": "research_entry",
@@ -405,8 +405,8 @@
       "id": "recurrent_ppo_review",
       "scope": "model_study",
       "path": "docs/research/rnn_ppo_review.md",
-      "bytes": 17302,
-      "sha256": "962a2caf74a6b486c49a9a950785fde09e2fd99a8455c02f0b768c69de02b155"
+      "bytes": 20308,
+      "sha256": "ef28664cc264ff1083aac96c343b07c301490d63097a1da67b02326d77747d1a"
     },
     {
       "id": "source_recovery_observations",
@@ -414,6 +414,27 @@
       "path": "research/results/book_source_recovery_20261008.json",
       "bytes": 241313,
       "sha256": "561b42ba2c0330e08eab8f7ae0653ca60bceb814c2232e6e1ec1caf5bc94e6af"
+    },
+    {
+      "id": "puffer_cuda_smoke_observations",
+      "scope": "model_study",
+      "path": "research/results/puffer_cuda_smoke_20261008.json",
+      "bytes": 7717,
+      "sha256": "691f58b9eb9d47c9338ad85c9bf2b535953310aa818ebb548a2ba9ca49ae0ab2"
+    },
+    {
+      "id": "source_learning_curves_observations",
+      "scope": "model_study",
+      "path": "research/results/book_source_learning_curves_20261008.json",
+      "bytes": 343277,
+      "sha256": "4e4ff686772fac688f57d76ad60899c26cee9f8c6f29f1bb1c0f13ebba9fb762"
+    },
+    {
+      "id": "source_learning_curves_config",
+      "scope": "model_study",
+      "path": "configs/research/book_source_learning_curves.json",
+      "bytes": 6816,
+      "sha256": "bf336dea86045bb0359b2182c3ace92417003b83854f452c75edd258c722ff2d"
     },
     {
       "id": "source_recovery_config",
@@ -433,8 +454,8 @@
       "id": "field_baseline_runtime",
       "scope": "model_study",
       "path": "src/research/field_baseline.py",
-      "bytes": 60457,
-      "sha256": "32c9aff5ac6713c318e9d868e13aece696c921e19b59288ec292843b2e8b57ce"
+      "bytes": 69340,
+      "sha256": "e6c29f566b1f9b7567b8325ab9f4c151e4b15857f8360aa94d1848993599af35"
     },
     {
       "id": "field_baseline_inputs",

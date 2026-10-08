@@ -78,6 +78,18 @@ ARTIFACTS: dict[str, tuple[str, str]] = {
         "model_study",
         "research/results/book_source_recovery_20261008.json",
     ),
+    "puffer_cuda_smoke_observations": (
+        "model_study",
+        "research/results/puffer_cuda_smoke_20261008.json",
+    ),
+    "source_learning_curves_observations": (
+        "model_study",
+        "research/results/book_source_learning_curves_20261008.json",
+    ),
+    "source_learning_curves_config": (
+        "model_study",
+        "configs/research/book_source_learning_curves.json",
+    ),
     "source_recovery_config": ("model_study", "configs/research/book_source_recovery.json"),
     "field_baseline_config": ("model_study", "configs/research/book_field_baseline.json"),
     "field_baseline_runtime": ("model_study", "src/research/field_baseline.py"),

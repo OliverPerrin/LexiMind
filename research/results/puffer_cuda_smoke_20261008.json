@@ -1,0 +1,165 @@
+{
+  "actual_agent_steps": 4194304,
+  "actual_eval_episodes": 255,
+  "actual_rollout_epochs": 32,
+  "as_of": "2026-10-08",
+  "build_receipt": {
+    "bytes": 56550,
+    "path": "outputs/puffer_cuda_20261008/build_receipt.json",
+    "sha256": "ac00093bafda6d6f5f90f5b1e27a7a1b66978d3fdc2039da56cbd0704deaf1d6"
+  },
+  "build_stage_note": "The build receipt correctly records not-yet-GPU-executed; the later smoke receipt records the separately authorized GPU execution.",
+  "checkpoint_interval": 8,
+  "checkpoints": {
+    "checkpoints/0000000001048576.bin": {
+      "all_float32_master_weights_finite": true,
+      "bytes": 64768,
+      "parameters": 16192,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/checkpoints/0000000001048576.bin",
+      "sha256": "21890dc8f8f1f1e896c8109774b305e3efc8c4945428654d3ad1f812809b2987"
+    },
+    "checkpoints/0000000002097152.bin": {
+      "all_float32_master_weights_finite": true,
+      "bytes": 64768,
+      "parameters": 16192,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/checkpoints/0000000002097152.bin",
+      "sha256": "c52c228206e76fcdaa68ddb8f98b290e94af2f9dd167b7ab6fe8f008ac779e83"
+    },
+    "checkpoints/0000000003145728.bin": {
+      "all_float32_master_weights_finite": true,
+      "bytes": 64768,
+      "parameters": 16192,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/checkpoints/0000000003145728.bin",
+      "sha256": "3cc6a1f54f218b4fc2192fdee1059dff4aef3ee644e206a7584557f31e94a49b"
+    },
+    "checkpoints/0000000004194304.bin": {
+      "all_float32_master_weights_finite": true,
+      "bytes": 64768,
+      "parameters": 16192,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/checkpoints/0000000004194304.bin",
+      "sha256": "4740435f45d271a2d2540be055b8fbd1d0d7abc101acbaa6f1a0b1223429c92f"
+    }
+  },
+  "command": "timeout 300s ./puffer train --train.total_timesteps=4194304 --base.seed=17 --base.run_id=leximind_puffer5_breakout_smoke_20261008 --base.checkpoint_interval=8 --base.eval_episodes=128",
+  "current_binary_check_boundary": "Current saved bytes independently match the build receipt; no execution-time hash was recorded, so this is not retrospective execution-byte proof.",
+  "current_saved_binary_and_raylib_verified_against_build": {
+    "PufferLib/puffer": {
+      "bytes": 2048912,
+      "path": "outputs/puffer_cuda_20261008/PufferLib/puffer",
+      "sha256": "6773b2ed4f41edd8e3cbf1770b094633fe007dcd3dda81e0c782dc9e11a903ae"
+    },
+    "toolchain/raylib-5.5_linux_amd64.tar.gz": {
+      "bytes": 1781595,
+      "path": "outputs/puffer_cuda_20261008/toolchain/raylib-5.5_linux_amd64.tar.gz",
+      "sha256": "3d95ef03d5b38dfa55c0a16ca122d382134b078f0e5b270b52fe7eae0549c000"
+    }
+  },
+  "eval_episode_threshold": 128,
+  "exit_code": 0,
+  "final_eval_mean_episode_length": 514.7254638671875,
+  "final_eval_score": 0.6039215922355652,
+  "finite_displayed_loss_values": 24,
+  "finite_displayed_loss_values_note": "24 displayed finite values include repeated dashboard displays; this is not continuous loss monitoring.",
+  "gpu_sampling": {
+    "continuous_peak_verified": false,
+    "period_seconds": 1,
+    "post_run_query_observation": "Saved post-run query output listed no compute processes; query exit status and stderr were not recorded, so GPU release is not proven.",
+    "sample_count": 2,
+    "sampled_max_memory_mib": 1829.0,
+    "upstream_reported_vram_gib": 1.59912109375
+  },
+  "hyperparameter_tuning_performed": false,
+  "kind": "puffer5_native_cuda_engineering_observation",
+  "leximind_training_performed": false,
+  "limitations": [
+    "One seed and one fixed smoke; no baselines, tuning, replication or PPO-quality evidence.",
+    "128 is an upstream evaluation stopping threshold; vectorized evaluation actually completed 255 episodes.",
+    "Upstream internal uptime and end-to-end wall time are different quantities; neither establishes LexiMind throughput.",
+    "One-second GPU polling produced two samples and cannot establish true peak memory.",
+    "No LexiMind PPO simulator, reward contract, semantic judgments, recommendation test or production integration was exercised.",
+    "Displayed finite losses include repeated dashboard displays and do not establish continuous finiteness.",
+    "Post-run GPU query output was empty, but no query exit status or stderr was saved; GPU release is not proven.",
+    "Binary identity at smoke execution is receipt-based: no execution-time binary hash was saved. A later current-binary/build-hash check cannot retrospectively prove the executed bytes."
+  ],
+  "paid_compute": false,
+  "production_promoted": false,
+  "raw_references": {
+    "breakout.ini": {
+      "bytes": 953,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/breakout.ini",
+      "sha256": "ba73db9127cbe9222e7dffec14399cd132065e9cf4a858e58ac553c62d847f17"
+    },
+    "command.txt": {
+      "bytes": 184,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/command.txt",
+      "sha256": "959bdecd49ad7691081521c3ff610bbf77c129364253adcc8e75b12bad583dcb"
+    },
+    "default.ini": {
+      "bytes": 5129,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/default.ini",
+      "sha256": "7f493977f49f2537a59c18c2a283f062e5d6063d9e130c2d15f6be075cda1084"
+    },
+    "execution.json": {
+      "bytes": 100,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/execution.json",
+      "sha256": "6b21bc59cd4381dfcca0c17c73eb09733ab22a3f477ed4f5482801370c55e83d"
+    },
+    "gpu_after.csv": {
+      "bytes": 0,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/gpu_after.csv",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "gpu_poll.csv": {
+      "bytes": 129,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/gpu_poll.csv",
+      "sha256": "055ee0d97926f8259a9d8af9f98a0ddc6c109b76e278aea4ca28ae74779437b7"
+    },
+    "resolved_and_metrics.ini": {
+      "bytes": 5097,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/resolved_and_metrics.ini",
+      "sha256": "a9e17f3a7a024a94c3a265c57fea1b5f0db84b64e3660703391663dbc8c4afac"
+    },
+    "stderr.log": {
+      "bytes": 0,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.log": {
+      "bytes": 5846,
+      "path": "outputs/puffer_cuda_20261008/smoke_001/stdout.log",
+      "sha256": "14d03f4e286d64c74504f71f4b5379ca3102d71e9a10fd4a133b6f400189afd3"
+    }
+  },
+  "retry_performed": false,
+  "schema_version": 1,
+  "scope": "Pinned upstream Breakout native CUDA build and PPO execution only; no LexiMind environment, task training, PPO-quality or recommendation claim.",
+  "seed": 17,
+  "smoke_receipt": {
+    "bytes": 3691,
+    "path": "outputs/puffer_cuda_20261008/smoke_001/smoke_receipt.json",
+    "sha256": "4eb8497d62147e47add497b002afe13874b3dcf3815acb88886a2e1bf27330c9"
+  },
+  "status": "completed_fixed_engineering_smoke",
+  "toolchain": {
+    "architecture": "sm_89",
+    "build_cpu_affinity": "0-3",
+    "gpu": "user-owned RTX4070 under WSL2",
+    "nvcc": "13.0.88",
+    "nvcc_threads": 4,
+    "private_toolkit": "CUDA13.0.2",
+    "system_toolchain_modified": false
+  },
+  "transfer_manifest": {
+    "bytes": 2339,
+    "path": "outputs/puffer_cuda_20261008/smoke_transfer_manifest.json",
+    "sha256": "cb870290726c25865467af8a708a7b57ac2bbec81184cfcde67746d1806936f3"
+  },
+  "upstream": {
+    "binary_sha256": "6773b2ed4f41edd8e3cbf1770b094633fe007dcd3dda81e0c782dc9e11a903ae",
+    "commit": "6ffa5b10dbbbe4d1e8288367c7d9d3acd3bad4a2",
+    "repo": "https://github.com/PufferAI/PufferLib",
+    "target": "breakout --cu sm_89"
+  },
+  "upstream_reported_uptime_seconds": 0.22890925407409668,
+  "wall_seconds": 1.194140217
+}
