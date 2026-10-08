@@ -93,6 +93,12 @@ ARTIFACTS: dict[str, tuple[str, str]] = {
     "multitask_runtime": ("model_study", "src/models/multitask.py"),
     "model_factory": ("model_study", "src/models/factory.py"),
     "trainer_runtime": ("model_study", "src/training/trainer.py"),
+    "training_runtime_helpers": ("model_study", "src/training/utils.py"),
+    "book_lora_recipe": ("model_study", "configs/training/book_lora.yaml"),
+    "training_readiness_observations": (
+        "model_study",
+        "research/results/training_readiness_20261008.json",
+    ),
     "training_metrics": ("model_study", "src/training/metrics.py"),
     "training_entry": ("model_study", "scripts/train.py"),
     "profile_entry": ("model_study", "scripts/profile_training.py"),

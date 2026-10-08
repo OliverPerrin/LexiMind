@@ -13,15 +13,15 @@
       "id": "preparation_status",
       "scope": "common",
       "path": "configs/research/preparation.json",
-      "bytes": 9404,
-      "sha256": "d87d98929e7e7a0e78ab727574eb09bd4bfa7daf1db5d225b977ed05b5e4b2b8"
+      "bytes": 11539,
+      "sha256": "2d76d17242f7e0fc5eedd3531061ecdd1bc69a6169d0e90c8204b57177c2a0d5"
     },
     {
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 11021,
-      "sha256": "ac8fa5c5b8438bd3ffcd8d1028f7c0f56ea1b122c33777b201ca275e92330b40"
+      "bytes": 17752,
+      "sha256": "42922032501a472bd29dafde88eaea1ee75f4bde8184c12db1b0f91d258177e2"
     },
     {
       "id": "study_decisions",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 10152,
-      "sha256": "fdc8677b009605fda9ddd7aa0daff0fb3e84f5c815099eec88e818a48169bd82"
+      "bytes": 10434,
+      "sha256": "8d7d3b1acdfb738baf3074bbed40e0e65c342f6a3216231b8d26cbd151190600"
     },
     {
       "id": "research_entry",
@@ -237,8 +237,8 @@
       "id": "field_review_app",
       "scope": "model_study",
       "path": "src/research/review_app.py",
-      "bytes": 25499,
-      "sha256": "3b0cfc9888d3a6be88c296a5641479b1b7ad95fda3ccfffe6ee2106739b6147e"
+      "bytes": 50613,
+      "sha256": "66b2e4cc29e2470eb3788c2cbd4d779770bd42180a940a83723dc8802e8abe06"
     },
     {
       "id": "book_partitions",
@@ -468,8 +468,8 @@
       "id": "runtime_architecture",
       "scope": "model_study",
       "path": "docs/architecture.md",
-      "bytes": 10134,
-      "sha256": "93be7483229f6710e7f972b038a7ee57b629896165cc19d32aa3949a1dc6db41"
+      "bytes": 11689,
+      "sha256": "db80d55ef17ad3dd254c363dc0bc7c95128cdc8f10640f77b09288e917bae218"
     },
     {
       "id": "attention_runtime",
@@ -517,8 +517,29 @@
       "id": "trainer_runtime",
       "scope": "model_study",
       "path": "src/training/trainer.py",
-      "bytes": 34550,
-      "sha256": "37f599517db69002e01af804c56358cbf8f2fe6305140e8c27911e136b65ab29"
+      "bytes": 35034,
+      "sha256": "0dd16afba914319aaeb07e6bd6fe4d8c2cb60522ee202730b26937dd7dfc641a"
+    },
+    {
+      "id": "training_runtime_helpers",
+      "scope": "model_study",
+      "path": "src/training/utils.py",
+      "bytes": 17354,
+      "sha256": "900ef271820a7b79e286b1b73ab1322faa30bb2310424bc3e7f72531370878d6"
+    },
+    {
+      "id": "book_lora_recipe",
+      "scope": "model_study",
+      "path": "configs/training/book_lora.yaml",
+      "bytes": 927,
+      "sha256": "ade733246d679b4e0ce140936b4a58d578cccc27f7c1aca0d2bc04cbcc582de3"
+    },
+    {
+      "id": "training_readiness_observations",
+      "scope": "model_study",
+      "path": "research/results/training_readiness_20261008.json",
+      "bytes": 9505,
+      "sha256": "52c54e1b14e224a8078b7c66122309b465dcb255efcb9cb51590bae03c046f64"
     },
     {
       "id": "training_metrics",
@@ -531,15 +552,15 @@
       "id": "training_entry",
       "scope": "model_study",
       "path": "scripts/train.py",
-      "bytes": 16854,
-      "sha256": "63f3ef48e7e47b19840f1f9e7f26d31218469733b1a26b53fda116b19f407eb7"
+      "bytes": 13428,
+      "sha256": "afd385407f1b661089a200caf4a3bf23391836c6330213423bc6c06f7352e9e7"
     },
     {
       "id": "profile_entry",
       "scope": "model_study",
       "path": "scripts/profile_training.py",
-      "bytes": 10346,
-      "sha256": "d8287a3943077f2f935ad4e1ffd28e6ae01199bc778a4f02fe3fee7ed3395642"
+      "bytes": 11961,
+      "sha256": "8aad2457636e8001c6ad0f733426639b10a2b7f41ca6139babf3f925b50a3d6b"
     },
     {
       "id": "training_data_contract",
@@ -566,15 +587,15 @@
       "id": "inference_contract",
       "scope": "model_study",
       "path": "src/inference/pipeline.py",
-      "bytes": 15336,
-      "sha256": "38edd1191e8835b9801f66c1340fd6d60f0e644210e4d50816cf4602325f4957"
+      "bytes": 15654,
+      "sha256": "da5e22e8917424a7c2a6e952cdbd0e9f4c63e7ddfd7b4cc3f1908e50b1199a00"
     },
     {
       "id": "inference_factory",
       "scope": "model_study",
       "path": "src/inference/factory.py",
-      "bytes": 3757,
-      "sha256": "44368798a05aa0022d373e043b9e384512d4174f72b571660ab54fa5c2482e4a"
+      "bytes": 7428,
+      "sha256": "f696a9aa04dc5fee585d4bfff7049afd55645a2ace129c314f0582178d3c7a7c"
     },
     {
       "id": "licensed_books",
@@ -776,8 +797,8 @@
       "id": "annotation_guide",
       "scope": "book_study",
       "path": "docs/research/annotation_preparation.md",
-      "bytes": 3518,
-      "sha256": "9963f637a838261599b28c1f38d83cb5dce6a07d5f45f9e1260f00a335c543e3"
+      "bytes": 9354,
+      "sha256": "97ee0e6bb81d78c1d9b4314ea9793a2d639d77bbb8750b3b3e3540ff9261fa01"
     },
     {
       "id": "mood_rubric",

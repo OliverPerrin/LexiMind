@@ -1,0 +1,37 @@
+# @package _global_
+# Opt-in runtime recipe, not experiment authorization or a reviewed dataset.
+defaults:
+  - default@training
+  - _self_
+
+device: cuda  # Supply device=mps explicitly on the Mac; device=cuda on the RTX 4070.
+data:
+  topic_problem_type: multi_label
+model:
+  activation: gated-gelu-tanh
+  dropout: 0.0
+training:
+  dataloader:
+    batch_size: 4
+    num_workers: 0
+  optimizer:
+    lr: 0.0005
+    weight_decay: 0.0
+  trainer:
+    tasks: [topic]
+    gradient_accumulation_steps: 2
+    generation_metrics: false
+    max_train_samples: null
+    max_val_samples: null
+  tokenizer_max_length: 256
+  book_lora:
+    enabled: true
+    base_repo: google/flan-t5-base
+    base_revision: 7bcac572ce56db69c1ea7c8af255c5d7c9672fc2
+    base_weight_sha256: 1dfb70afdcedceb9f9fae2f9b68e004ad934361fb35b9b2bd50b45ea90790fc8
+    dtype: float32
+    threads: 4
+    mps_memory_fraction: 0.35
+    rank: 4
+    alpha: 8
+    dropout: 0.0

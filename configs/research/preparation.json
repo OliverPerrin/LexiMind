@@ -2,8 +2,8 @@
   "schema_version": 1,
   "status": "draft",
   "paused_by_user": false,
-  "as_of": "2026-10-02",
-  "instruction": "User authorized bounded local MacBook training and evaluation on 2026-10-02. Apple M5/16GB is available; RTX4070 remains unavailable for several days. Formal MTL/book studies still need their declared data/protocol evidence. Paid calls and remote compute are not authorized.",
+  "as_of": "2026-10-08",
+  "instruction": "User authorized bounded local MacBook work on 2026-10-02 and user-owned RTX 4070/WSL Ubuntu profiling through Tailscale/SSH on 2026-10-08. Apple M5/16GB engineering execution is verified. RTX 4070 is reported available; SSH access and CUDA execution remain pending after port 2222 timeout. Formal MTL/book studies retain their declared data/protocol gates. Paid cloud compute and teacher API spend remain unauthorized.",
   "paid_spend_authorized": false,
   "hardware_available": true,
   "proposed_first_comparison": [
@@ -15,7 +15,7 @@
     "formal_mtl_comparison",
     "teacher_api_generation",
     "paid_compute",
-    "rtx4070_execution"
+    "rtx4070_execution_pending_connection"
   ],
   "gates": {
     "literature_gate": {
@@ -178,7 +178,7 @@
       "note": "120 source-linked work references; packet remains empty with no queries, human judgments or gold."
     },
     "runtime_preparation": {
-      "status": "m5_continuation_and_paired_denoising_observed",
+      "status": "m5_synthetic_book_lora_engineering_verified_cuda_pending",
       "evidence": [
         {
           "path": "src/models/adapters.py",
@@ -197,8 +197,8 @@
         },
         {
           "path": "src/training/trainer.py",
-          "bytes": 34550,
-          "sha256": "37f599517db69002e01af804c56358cbf8f2fe6305140e8c27911e136b65ab29"
+          "bytes": 35034,
+          "sha256": "0dd16afba914319aaeb07e6bd6fe4d8c2cb60522ee202730b26937dd7dfc641a"
         },
         {
           "path": "research/results/macbook_pilot_20261002.json",
@@ -214,14 +214,58 @@
           "path": "research/results/book_denoising_20261002.json",
           "bytes": 8681,
           "sha256": "ffcd2d18b5ac204f83da7a046e0226c66f4d4921b8fe50e54e67994adbf69403"
+        },
+        {
+          "path": "src/training/utils.py",
+          "bytes": 17354,
+          "sha256": "900ef271820a7b79e286b1b73ab1322faa30bb2310424bc3e7f72531370878d6"
+        },
+        {
+          "path": "scripts/train.py",
+          "bytes": 13428,
+          "sha256": "afd385407f1b661089a200caf4a3bf23391836c6330213423bc6c06f7352e9e7"
+        },
+        {
+          "path": "scripts/profile_training.py",
+          "bytes": 11961,
+          "sha256": "8aad2457636e8001c6ad0f733426639b10a2b7f41ca6139babf3f925b50a3d6b"
+        },
+        {
+          "path": "configs/training/book_lora.yaml",
+          "bytes": 927,
+          "sha256": "ade733246d679b4e0ce140936b4a58d578cccc27f7c1aca0d2bc04cbcc582de3"
+        },
+        {
+          "path": "src/inference/factory.py",
+          "bytes": 7428,
+          "sha256": "f696a9aa04dc5fee585d4bfff7049afd55645a2ace129c314f0582178d3c7a7c"
+        },
+        {
+          "path": "src/inference/pipeline.py",
+          "bytes": 15654,
+          "sha256": "da5e22e8917424a7c2a6e952cdbd0e9f4c63e7ddfd7b4cc3f1908e50b1199a00"
+        },
+        {
+          "path": "scripts/inference.py",
+          "bytes": 5096,
+          "sha256": "7bab06236d34869f3619e0af7bd514deaa5051d6724c951b286dd533aa23e3e9"
+        },
+        {
+          "path": "research/results/training_readiness_20261008.json",
+          "bytes": 9505,
+          "sha256": "52c54e1b14e224a8078b7c66122309b465dcb255efcb9cb51590bae03c046f64"
         }
       ],
-      "note": "Native M5 training and checkpoint reload verified. Two-seed word reconstruction: continued CE reduced validation content loss more than sparse-reward RL; exact recovery remains poor. No book-field model or CUDA result is claimed."
+      "note": "Current trainer/helper/entry/recipe/inference hashes refreshed only after focused existing checks and bounded synthetic M5 execution. Four successful batch 1/2/4/8 diagnostics select batch four/accumulation two at 256 tokens; initial trace export failure retained. Two-row engineering updates, frozen base/adapter weights-only restore, merged native inference and tokenizer contract rejections verified. No real book-field quality or CUDA result; zero completed human field reviews and formal data/protocol gates remain open."
     }
   },
   "study_design": "configs/research/study_design.json",
   "preparation_manifest": "research/preparation/manifest.json",
   "scope_decision": "Book-domain field supervision first; accepted joint/specialist/merge comparison retained. Generic corpora are optional controls, not product label truth.",
   "source_decisions": "research/preparation/book_field_sources.json",
-  "local_pilot": "configs/research/macbook_pilot.json"
+  "local_pilot": "configs/research/macbook_pilot.json",
+  "hardware_context": {
+    "m5": "Available and bounded synthetic runtime verified",
+    "rtx4070": "Reported available; user-owned WSL Ubuntu profiling authorized; connection/CUDA verification pending"
+  }
 }

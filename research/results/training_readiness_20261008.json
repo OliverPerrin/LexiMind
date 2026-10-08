@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-08",
+  "kind": "local_training_runtime_engineering_readiness",
+  "status": "m5_engineering_verified_reviewed_field_data_pending_cuda_unverified",
+  "scope": "Native pinned FLAN-T5-base encoder Q/V LoRA plus private topic head; synthetic runtime/checkpoint plumbing only",
+  "base": {
+    "repo": "google/flan-t5-base",
+    "revision": "7bcac572ce56db69c1ea7c8af255c5d7c9672fc2",
+    "weight_sha256": "1dfb70afdcedceb9f9fae2f9b68e004ad934361fb35b9b2bd50b45ea90790fc8",
+    "activation": "gated-gelu-tanh",
+    "trainable_parameters": 184368
+  },
+  "m5": {
+    "device": "mps",
+    "dtype": "float32",
+    "cpu_operator_fallback": false,
+    "memory_fraction": 0.35,
+    "fixture": "96 fabricated title/description rows,48 synthetic label columns,all cells observed, balanced known positive/negative targets",
+    "real_book_text_or_human_gold_used": false,
+    "tokenizer_max_length": 256,
+    "warmup_outer_microbatches": 3,
+    "timed_outer_microbatches": 17,
+    "nominal_effective_batch_size": 8,
+    "timing_boundary": "Profiler, metrics, per-step device synchronization; excludes initialization; constant scheduler",
+    "gradient_comparison_limit": "Nominal effective batch8; separate warmup and active loops flush partial windows. The conditions have different sample counts and optimizer update counts, so they are not gradient-equivalent model comparisons.",
+    "successful_matrix": [
+      {
+        "batch_size": 1,
+        "gradient_accumulation_steps": 8,
+        "nominal_effective_batch_size": 8,
+        "status": "completed",
+        "process_exit_code": 0,
+        "warmup_outer_microbatches": 3,
+        "timed_active_outer_microbatches": 17,
+        "median_microbatch_seconds": 0.06127441598800942,
+        "mean_microbatch_seconds": 0.06168643123408615,
+        "synthetic_samples_per_second_using_mean": 16.211020478802293,
+        "max_observed_mps_driver_bytes": 2248884224,
+        "receipt": "outputs/runtime_readiness_synthetic_20261008/batch1_verified/summary.json",
+        "receipt_sha256": "0f23e8070d94c556fab3a68636fd2a199be42027ce5a1c01865232cddaa87b82",
+        "optimizer_updates_warmup": 1,
+        "optimizer_updates_active": 3,
+        "optimizer_updates_total": 4
+      },
+      {
+        "batch_size": 2,
+        "gradient_accumulation_steps": 4,
+        "nominal_effective_batch_size": 8,
+        "status": "completed",
+        "process_exit_code": 0,
+        "warmup_outer_microbatches": 3,
+        "timed_active_outer_microbatches": 17,
+        "median_microbatch_seconds": 0.10774970799684525,
+        "mean_microbatch_seconds": 0.10878797311691896,
+        "synthetic_samples_per_second_using_mean": 18.384385173262828,
+        "max_observed_mps_driver_bytes": 2173403136,
+        "receipt": "outputs/runtime_readiness_synthetic_20261008/batch2/summary.json",
+        "receipt_sha256": "f8f10af22811485a8601b3cd2539d18ed8ea700022f714d29b34794d419e3f6d",
+        "optimizer_updates_warmup": 1,
+        "optimizer_updates_active": 5,
+        "optimizer_updates_total": 6
+      },
+      {
+        "batch_size": 4,
+        "gradient_accumulation_steps": 2,
+        "nominal_effective_batch_size": 8,
+        "status": "completed",
+        "process_exit_code": 0,
+        "warmup_outer_microbatches": 3,
+        "timed_active_outer_microbatches": 17,
+        "median_microbatch_seconds": 0.20082416597870179,
+        "mean_microbatch_seconds": 0.20173749759081094,
+        "synthetic_samples_per_second_using_mean": 19.827746689479103,
+        "max_observed_mps_driver_bytes": 2173419520,
+        "receipt": "outputs/runtime_readiness_synthetic_20261008/batch4/summary.json",
+        "receipt_sha256": "5aa35b385ebf2d3f90bc11832b908227e4c1dea965374eaa8d3a35d74af6778a",
+        "optimizer_updates_warmup": 2,
+        "optimizer_updates_active": 9,
+        "optimizer_updates_total": 11
+      },
+      {
+        "batch_size": 8,
+        "gradient_accumulation_steps": 1,
+        "nominal_effective_batch_size": 8,
+        "status": "completed",
+        "process_exit_code": 0,
+        "warmup_outer_microbatches": 3,
+        "timed_active_outer_microbatches": 17,
+        "median_microbatch_seconds": 0.4056026670150459,
+        "mean_microbatch_seconds": 0.4104493432387244,
+        "synthetic_samples_per_second_using_mean": 19.490833964733774,
+        "max_observed_mps_driver_bytes": 3314319360,
+        "receipt": "outputs/runtime_readiness_synthetic_20261008/batch8/summary.json",
+        "receipt_sha256": "379c42f3386e6fd9abb65e378e6544384ba307c9f2d373814bbb85f905739653",
+        "optimizer_updates_warmup": 3,
+        "optimizer_updates_active": 17,
+        "optimizer_updates_total": 20
+      }
+    ],
+    "initial_failed_probe": {
+      "path": "outputs/runtime_readiness_synthetic_20261008/batch1_execution.log",
+      "process_exit_code": 1,
+      "reason": "Duplicate Kineto trace export after loop/summary/first trace completed; corrected and separately rerun as batch1_verified"
+    },
+    "selected_preset": {
+      "batch_size": 4,
+      "gradient_accumulation_steps": 2,
+      "reason": "Batch eight plateaued/slightly lower observed sample throughput and about1 GiB higher sampled driver memory"
+    }
+  },
+  "checkpoint_engineering": {
+    "optimizer_updates_per_smoke": 1,
+    "fabricated_rows_per_smoke": 2,
+    "smokes": [
+      "pretrained_smoke",
+      "pretrained_smoke_v2"
+    ],
+    "final_artifacts": "outputs/runtime_readiness_synthetic_20261008/pretrained_smoke_v4/checkpoints",
+    "metadata_only_derivatives": [
+      "pretrained_smoke_v3",
+      "pretrained_smoke_v4"
+    ],
+    "derivative_optimizer_updates": 0,
+    "native_weights_unchanged_sha256": "b6387c7d30b3d67b9e4c060fed2cf5cd974c00d367db2a9c1fbfb33dc4f34aca",
+    "adapter_weights_only_resume_verified": true,
+    "frozen_base_after_restore_verified": true,
+    "inference_parity": {
+      "checkpoint": "checkpoints/last.pt",
+      "device": "mps",
+      "input_kind": "fabricated_title_description_only",
+      "training_inference_ids_and_masks_exact": true,
+      "encoding_lengths": [
+        16,
+        256
+      ],
+      "max_abs_adapter_merged_logit_deltas": [
+        8.195638656616211e-08,
+        5.21540641784668e-08
+      ],
+      "tolerance": 2e-05,
+      "ordered_labels_rejected_before_mutation": true,
+      "explicit_default_tokenizer_semantics_rejected": true,
+      "book_field_api_passed": true
+    },
+    "bindings": [
+      "ordered labels",
+      "problem type",
+      "input format",
+      "mapping SHA256",
+      "native architecture/activation",
+      "pinned base/head initialization",
+      "tokenizer effective max_length/padding/truncation/lower",
+      "vocabulary and special token IDs",
+      "fastbackend normalizer/pretokenizer/pieces",
+      "wrapper padding_side/truncation_side"
+    ],
+    "manual_rejections_verified": [
+      "reordered current label contract before private parameter mutation",
+      "512/default max padding config",
+      "same vocabulary with altered normalizer",
+      "same backend with altered left truncation",
+      "same backend with altered left padding"
+    ],
+    "final_v4_factory_reload": "CPU short/long native predictions completed with paired contracts; model weights equal previously parity-checked v2",
+    "current_v4_adapter_restore": {
+      "adapter_weights_only_restore_v4": "passed exact current binding/architecture/label/tokenizer contract",
+      "reordered_labels_rejected_before_mutation": true,
+      "wrong_truncation_side_rejected_before_mutation": true,
+      "trainable_tensors_restored_exactly": true,
+      "frozen_base_after_restore_verified": true,
+      "training_updates": 0,
+      "source_test_used": false,
+      "real_books_or_human_gold_used": false
+    }
+  },
+  "cuda": {
+    "hardware": "User-reported RTX 4070 with WSL Ubuntu",
+    "profiling_authorized": "2026-10-08",
+    "connection": "Pending root SSH verification after port 2222 timeout",
+    "execution_verified": false,
+    "performance_measured": false
+  },
+  "data_gate": {
+    "human_reviews_completed": 0,
+    "human_gold_labels": 0,
+    "ready": false,
+    "requirements": [
+      "Independent human review/source conflict adjudication",
+      "Explicit positive and negative coverage per enabled label; omitted labels unknown",
+      "Source/dataset admission and split freeze",
+      "Separate formal study protocol/budget/evaluation gates"
+    ]
+  },
+  "model_quality_claim": false,
+  "paid_cloud_compute_authorized": false,
+  "raw_evidence": [
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/benchmark_summary.json",
+      "bytes": 5952,
+      "sha256": "4669a75827a7356679ab4230706025bff3faad29071dcc996465ce458cb2112d"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/pretrained_smoke_v2/inference_parity.json",
+      "bytes": 472,
+      "sha256": "caaceaad8c0da5fb92e5db98999bc3d5af0338b0c1569e97286fd5f063f0a520"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/pretrained_smoke_v4/derivative_receipt.json",
+      "bytes": 558,
+      "sha256": "ca1c072a08d088eb58f4900c6f79a3cb4e46268816ccca1b9b805ecaa953a983"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/pretrained_smoke_v4/adapter_restore_receipt.json",
+      "bytes": 409,
+      "sha256": "509d4a89f2dd66e5fcb2e797ebde0b04f94f7c7fa5fe07b4dd8176b5ac6eae2d"
+    }
+  ],
+  "software_checks": {
+    "focused_existing_checks_passed": 74,
+    "new_test_files_or_scripts": 0,
+    "ruff": "passed"
+  }
+}

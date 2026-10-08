@@ -1,29 +1,33 @@
 """
-Profile LexiMind training with PyTorch Profiler.
+Profile the production LexiMind training loop on CUDA, MPS or CPU.
 
 Runs a few training steps under torch.profiler to capture:
-- CUDA kernel timing (per-operator breakdown)
-- GPU memory usage (peak allocations, memory timeline)
-- CPU/GPU overlap and idle time
+- CUDA kernel timing, or CPU operator traces on MPS/CPU
+- CUDA allocation traces/peak, or sampled MPS driver allocations
+- Synchronized diagnostic step timing and observed device memory
 - Chrome trace (viewable in chrome://tracing or Perfetto UI)
 
 Outputs:
     outputs/profile/           -- Chrome trace + stacks
-    stdout                     -- Summary table of top CUDA operations
+    summary.json + stdout     -- Timing, memory basis and operator summaries
 
 Usage:
     python scripts/profile_training.py                   # default: 20 steps
     python scripts/profile_training.py training=default      # explicit reviewed paths required
     PROFILE_STEPS=40 python scripts/profile_training.py   # custom step count
+    PROFILE_OUTPUT_DIR=outputs/profile-mps python scripts/profile_training.py training=book_lora device=mps data.processed.topic=/path/to/reviewed/splits
 
 Author: Oliver Perrin
 """
 
 from __future__ import annotations
 
+import json
 import os
+import shutil
 import sys
-from dataclasses import fields
+import time
+from dataclasses import asdict, fields
 from pathlib import Path
 from typing import Callable, Dict
 
@@ -35,11 +39,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from scripts.train import set_seed
 from src.data.dataloader import build_task_dataloaders
 from src.data.dataset import load_training_datasets, validate_task_directories
 from src.data.tokenization import Tokenizer, TokenizerConfig
-from src.models.factory import ModelConfig, build_multitask_model
 from src.training.trainer import Trainer, TrainerConfig
+from src.training.utils import (
+    build_training_model,
+    build_training_optimizer,
+    prepare_training_runtime,
+)
 
 
 class ProfileLoader:
@@ -78,26 +87,32 @@ def main(cfg: DictConfig) -> None:
         raise ValueError("PROFILE_STEPS must be at least 7 for warmup and an active trace")
 
     data_cfg = cfg.data
-    if data_cfg.get("topic_problem_type", "single_label") != "single_label":
+    if data_cfg.get("topic_problem_type", "single_label") != "single_label" and not cfg.get(
+        "training", {}
+    ).get("book_lora", {}).get("enabled", False):
         raise ValueError(
             "The legacy profiler does not support partial book labels; no profile was started"
         )
+    if cfg.get("resume_from"):
+        raise ValueError("Profiler starts from the configured base; resume_from is unsupported")
     trainer_cfg = cfg.training.get("trainer", {})
     enabled_tasks = list(trainer_cfg.get("tasks", ["summarization", "emotion", "topic"]))
     validate_task_directories(data_cfg.processed, enabled_tasks)
 
-    device = torch.device(cfg.device)
-    if device.type != "cuda":
-        print("Profiler requires CUDA. Set device=cuda.")
-        return
+    set_seed(cfg.seed)
+    device, snapshot = prepare_training_runtime(cfg)
+    if device.type not in {"cuda", "mps", "cpu"}:
+        raise ValueError("Profiler supports CUDA, MPS or CPU")
 
     print(f"Profiling {profile_steps} steps ({warmup_steps} warmup + {active_steps} active)")
-    print(f"GPU: {torch.cuda.get_device_name()}")
+    device_name = torch.cuda.get_device_name() if device.type == "cuda" else str(device)
+    print(f"Device: {device_name}")
 
     # ---------- Setup (mirrors train.py) ----------
 
-    torch.backends.cudnn.benchmark = True
-    if torch.cuda.get_device_capability()[0] >= 8:
+    if device.type == "cuda":
+        torch.backends.cudnn.benchmark = True
+    if device.type == "cuda" and torch.cuda.get_device_capability()[0] >= 8:
         torch.set_float32_matmul_precision("high")
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.allow_tf32 = True
@@ -105,7 +120,11 @@ def main(cfg: DictConfig) -> None:
     # Index only the required prefix; profiling does not read validation/test.
     max_samples = max(200, profile_steps * 10 * 3)
     train_datasets, _ = load_training_datasets(
-        data_cfg.processed, enabled_tasks, max_train_samples=max_samples, include_validation=False
+        data_cfg.processed,
+        enabled_tasks,
+        max_train_samples=max_samples,
+        include_validation=False,
+        topic_problem_type=data_cfg.get("topic_problem_type", "single_label"),
     )
     emotion_classes = getattr(train_datasets.get("emotion"), "emotion_classes", [])
     topic_classes = getattr(train_datasets.get("topic"), "topic_classes", [])
@@ -114,7 +133,9 @@ def main(cfg: DictConfig) -> None:
     max_len = int(cfg.training.get("tokenizer_max_length") or tok_cfg.get("max_length", 512))
     tokenizer = Tokenizer(
         TokenizerConfig(
-            pretrained_model_name=tok_cfg.get("pretrained_model_name", "google/flan-t5-base"),
+            pretrained_model_name=str(snapshot)
+            if snapshot
+            else tok_cfg.get("pretrained_model_name", "google/flan-t5-base"),
             max_length=max_len,
         )
     )
@@ -126,78 +147,24 @@ def main(cfg: DictConfig) -> None:
         shuffle=True,
         batch_size=int(dl_cfg.get("batch_size", 8)),
         num_workers=int(dl_cfg.get("num_workers", 0)),
-        pin_memory=True,
+        pin_memory=device.type == "cuda",
         max_length=max_len,
         classification_max_length=min(256, max_len),
     )
 
-    # Build model
-    grad_ckpt = cfg.training.get(
-        "gradient_checkpointing", cfg.model.get("gradient_checkpointing", False)
-    )
-    use_rel_pos = cfg.training.get(
-        "use_relative_position_bias", cfg.model.get("use_relative_position_bias", False)
-    )
-
-    model_cfg = ModelConfig(
-        d_model=cfg.model.d_model,
-        vocab_size=getattr(cfg.model, "vocab_size", None),
-        num_encoder_layers=cfg.model.num_encoder_layers,
-        num_decoder_layers=cfg.model.num_decoder_layers,
-        num_attention_heads=cfg.model.num_attention_heads,
-        ffn_dim=cfg.model.ffn_dim,
-        dropout=cfg.model.dropout,
-        use_pretrained=cfg.model.use_pretrained,
-        pretrained_model_name=cfg.model.pretrained_model_name,
-        activation=getattr(cfg.model, "activation", "gelu"),
-        use_relative_position_bias=use_rel_pos,
-        gradient_checkpointing=grad_ckpt,
-    )
-
-    model = build_multitask_model(
+    model, adapter_binding = build_training_model(
+        cfg,
         tokenizer,
         num_emotions=len(emotion_classes),
         num_topics=len(topic_classes),
-        config=model_cfg,
-    ).to(device)
-
-    # Freeze layers (same as train.py)
-    freeze_layers = cfg.training.get("freeze_encoder_layers", 0)
-    if freeze_layers > 0:
-        if hasattr(model.encoder, "embed_tokens"):
-            for p in model.encoder.embed_tokens.parameters():
-                p.requires_grad = False
-        if hasattr(model.encoder, "layers"):
-            for i, layer in enumerate(model.encoder.layers):
-                if i < freeze_layers:
-                    for p in layer.parameters():
-                        p.requires_grad = False
-
-    # Compile (same as train.py)
-    if trainer_cfg.get("use_pcgrad", False):
-        torch._functorch.config.donated_buffer = False
-    compile_mode = "default" if grad_ckpt else "reduce-overhead"
-    compile_dynamic = compile_mode == "default"
-    if cfg.training.get("compile_encoder", True):
-        model.encoder = torch.compile(model.encoder, mode=compile_mode, dynamic=compile_dynamic)
-    if cfg.training.get("compile_decoder", True):
-        model.decoder = torch.compile(model.decoder, mode=compile_mode, dynamic=compile_dynamic)
-
-    # Optimizer
-    opt_cfg = cfg.training.get("optimizer", {})
-    use_fused = "fused" in torch.optim.AdamW.__init__.__code__.co_varnames
-    optimizer = torch.optim.AdamW(
-        model.parameters(),
-        lr=float(opt_cfg.get("lr", 3e-5)),
-        weight_decay=float(opt_cfg.get("weight_decay", 0.01)),
-        eps=float(opt_cfg.get("eps", 1e-8)),
-        betas=tuple(float(value) for value in opt_cfg.get("betas", (0.9, 0.999))),
-        fused=use_fused,
+        topic_problem_type=data_cfg.get("topic_problem_type", "single_label"),
+        snapshot=snapshot,
     )
+    optimizer = build_training_optimizer(model, cfg, device)
 
     # ---------- Profile loop ----------
 
-    out_dir = PROJECT_ROOT / "outputs" / "profile"
+    out_dir = Path(os.environ.get("PROFILE_OUTPUT_DIR", str(PROJECT_ROOT / "outputs" / "profile")))
     out_dir.mkdir(parents=True, exist_ok=True)
 
     settings = {
@@ -215,20 +182,49 @@ def main(cfg: DictConfig) -> None:
         {task: ProfileLoader(loader, profile_steps) for task, loader in train_loaders.items()}, 1
     )
 
+    def synchronize():
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        elif device.type == "mps":
+            torch.mps.synchronize()
+
+    observed_memory = []
+
+    def memory():
+        if device.type == "cuda":
+            return torch.cuda.max_memory_allocated(device)
+        if device.type == "mps":
+            return torch.mps.driver_allocated_memory()
+        return None
+
     # Warmup outside profiler to let torch.compile finish
     print(f"\nWarmup ({warmup_steps} steps)...")
     profile_epoch(trainer, train_loaders, warmup_steps)
-    torch.cuda.synchronize()
+    synchronize()
 
     # Profile
     print(f"Profiling ({active_steps} steps)...")
     trace_path = str(out_dir / "trace")
+    if device.type == "cuda":
+        torch.cuda.reset_peak_memory_stats(device)
+    step_times = []
+    started = previous = time.perf_counter()
+
+    def completed_step():
+        nonlocal previous
+        synchronize()
+        now = time.perf_counter()
+        step_times.append(now - previous)
+        observed_memory.append(memory())
+        prof.step()
+        previous = time.perf_counter()
+
+    activities = [torch.profiler.ProfilerActivity.CPU]
+    if device.type == "cuda":
+        activities.append(torch.profiler.ProfilerActivity.CUDA)
 
     with torch.profiler.profile(
-        activities=[
-            torch.profiler.ProfilerActivity.CPU,
-            torch.profiler.ProfilerActivity.CUDA,
-        ],
+        activities=activities,
         schedule=torch.profiler.schedule(
             wait=1,
             warmup=2,
@@ -241,38 +237,71 @@ def main(cfg: DictConfig) -> None:
         with_stack=True,
         with_flops=True,
     ) as prof:
-        profile_epoch(trainer, train_loaders, active_steps, prof.step)
+        metrics = profile_epoch(trainer, train_loaders, active_steps, completed_step)
 
-    torch.cuda.synchronize()
+    synchronize()
 
-    # ---------- Summary ----------
-
-    print("\n" + "=" * 80)
-    print("TOP CUDA OPERATIONS (by total CUDA time)")
-    print("=" * 80)
-    print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=25))
-
-    print("\n" + "=" * 80)
-    print("TOP CUDA OPERATIONS (by GPU memory)")
-    print("=" * 80)
-    print(prof.key_averages().table(sort_by="self_cuda_memory_usage", row_limit=15))
-
-    # Memory summary
-    print("\n" + "=" * 80)
-    print("GPU MEMORY SUMMARY")
-    print("=" * 80)
-    print(torch.cuda.memory_summary(abbreviated=True))
+    elapsed = time.perf_counter() - started
+    report = {
+        "device": str(device),
+        "profile_steps": profile_steps,
+        "warmup_steps": warmup_steps,
+        "active_steps": active_steps,
+        "batch_size": int(dl_cfg.get("batch_size", 8)),
+        "gradient_accumulation_steps": trainer.config.gradient_accumulation_steps,
+        "nominal_effective_batch_size": int(dl_cfg.get("batch_size", 8))
+        * trainer.config.gradient_accumulation_steps,
+        "optimizer_updates_including_warmup": trainer.global_step,
+        "accumulation_boundary": "Warmup and active loops each flush their final partial accumulation window",
+        "synchronized_elapsed_seconds": elapsed,
+        "step_seconds": step_times,
+        "memory_basis": "CUDA allocator peak"
+        if device.type == "cuda"
+        else "MPS driver samples"
+        if device.type == "mps"
+        else "unavailable",
+        "max_observed_device_bytes": max(
+            (value for value in observed_memory if value is not None), default=None
+        ),
+        "metrics": metrics,
+        "test_split_opened": False,
+        "adapter_binding": asdict(adapter_binding) if adapter_binding else None,
+        "model_config": model._leximind_training_model_config,
+        "indexed_train_samples": {task: len(dataset) for task, dataset in train_datasets.items()},
+        "trace_scope": "CPU and CUDA kernels"
+        if device.type == "cuda"
+        else "CPU operations; MPS device timing measured by synchronization"
+        if device.type == "mps"
+        else "CPU operations",
+        "timing_scope": "Diagnostic loop with profiler, per-step synchronization and metrics; not unconstrained throughput",
+        "training_dtype": "bfloat16 autocast" if trainer.use_bfloat16 else "float32",
+        "trainable_parameters": sum(p.numel() for p in model.parameters() if p.requires_grad),
+    }
+    (out_dir / "summary.json").write_text(json.dumps(report, indent=2) + "\n")
+    print(
+        prof.key_averages().table(
+            sort_by="cuda_time_total" if device.type == "cuda" else "cpu_time_total", row_limit=25
+        )
+    )
+    print(json.dumps(report, indent=2))
 
     # Export Chrome trace
     chrome_trace = out_dir / "chrome_trace.json"
-    prof.export_chrome_trace(str(chrome_trace))
+    # tensorboard_trace_handler already saved this Kineto trace; exporting the
+    # same profiler result again fails on recent PyTorch releases.
+    saved_traces = list(Path(trace_path).glob("*.pt.trace.json"))
+    if not saved_traces:
+        raise RuntimeError("Profiler callback did not save an active Chrome trace")
+    shutil.copyfile(max(saved_traces, key=lambda path: path.stat().st_mtime_ns), chrome_trace)
     print(f"\nChrome trace: {chrome_trace}")
     print("  Open in: chrome://tracing or https://ui.perfetto.dev")
 
     # Export stacks for flamegraph
     stacks_path = out_dir / "profiler_stacks.txt"
-    prof.export_stacks(str(stacks_path), "self_cuda_time_total")
-    print(f"CUDA stacks: {stacks_path}")
+    prof.export_stacks(
+        str(stacks_path), "self_cuda_time_total" if device.type == "cuda" else "self_cpu_time_total"
+    )
+    print(f"Profiler stacks: {stacks_path}")
     print(f"  Generate flamegraph: flamegraph.pl {stacks_path} > flamegraph.svg")
 
     print(f"\nTensorBoard traces: {trace_path}/")

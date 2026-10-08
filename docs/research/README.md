@@ -1,7 +1,9 @@
 # Research: current work
 
-**Bounded local MacBook training is authorized.** The formal MTL and book studies
-still need their data/protocol evidence; paid calls and remote compute remain
+**The local training runtime is ready for reviewed data.** Bounded MacBook work
+and the user's RTX 4070/WSL profiling were authorized through 8 October. CUDA
+execution remains unverified while the SSH connection is pending. Formal MTL and
+book studies still need their data/protocol evidence; paid cloud compute remains
 unapproved. The Gradio demo and custom FLAN/T5 implementation stay.
 
 Read [dataset decisions](dataset_decisions.md) for the current direction and next
@@ -13,6 +15,126 @@ The [study decisions](study_decisions.md) and
 [machine-readable design](../../configs/research/study_design.json) retain joint
 adaptation, specialists, task arithmetic and TIES under comparable training budgets.
 Book recommendation relevance is evaluated separately from model-task accuracy.
+
+## Current runtime readiness
+
+The opt-in `training=book_lora` recipe shares model construction, adapter attachment,
+freezing and optimizer setup between `train.py` and the existing profiler. It uses
+the cached, revision-pinned native FLAN-T5-base with `gated-gelu-tanh`, encoder Q/V
+rank-four LoRA, a private topic head, and a frozen decoder. The 48-column synthetic
+fixture has 184,368 trainable parameters that receive AdamW state; the real count
+depends on the exported label vocabulary. MPS uses float32, disabled CPU operator fallback and a 35%
+memory fraction. CUDA uses float32 weights with native BF16 autocast; unsupported
+unscaled FP16 execution is rejected. Compilation remains disabled.
+
+The [8 October engineering receipt](../../research/results/training_readiness_20261008.json)
+records fabricated title/description inputs, 48 synthetic target columns and no
+real book judgments. Each completed M5 condition ran three warmup and 17 timed
+outer microbatches at length 256, with nominal effective batch eight:
+
+| Microbatch / accumulation | Mean seconds per microbatch | Fabricated rows/sec | Maximum sampled MPS driver GiB |
+| --- | ---: | ---: | ---: |
+| 1 / 8 | 0.0617 | 16.21 | 2.09 |
+| 2 / 4 | 0.1088 | 18.38 | 2.02 |
+| 4 / 2 | 0.2017 | 19.83 | 2.02 |
+| 8 / 1 | 0.4104 | 19.49 | 3.09 |
+
+Batch four is the starting preset. Batch eight plateaued with greater observed
+memory. These are diagnostic timings with profiling, metrics and per-step device
+synchronization; they exclude initialization and do not estimate real book model
+quality. Separate warmup/timed loops flush partial accumulation windows, so the
+conditions are not gradient-equivalent comparisons. The initial batch-one trace
+export failed after its loop completed; its failed receipt is preserved, the
+duplicate export was fixed, and a fresh batch-one measurement completed.
+
+Two fabricated rows then exercised one optimizer update and native merged-weight
+checkpoint saving. Adapter continuation and ordinary inference reload were checked
+with exact short/long token IDs and masks. Ordered labels, loss/input/mapping,
+tokenizer length/padding, vocabulary, backend normalization and special-token IDs
+are bound before restoration. The final v4 artifacts add backend/direction binding without
+another optimizer update; earlier artifacts remain preserved.
+
+Real field training still waits on independently reviewed labels and source/split
+admission: the current packet has **zero completed human reviews**. Supply explicit
+positive and negative evidence for every enabled label and report both counts;
+omissions remain unknown. Runtime feasibility does not fill these data gates,
+calibrate thresholds, establish a perfect model, or verify RTX 4070 performance.
+
+Use Python 3.11 with the existing pinned dependency files. Install the appropriate
+PyTorch build for the target hardware; the observed Mac environment used PyTorch
+2.14.0. The existing MLflow SQLite backend also needs SQL dependencies:
+
+```sh
+python3.11 -m venv .venv
+.venv/bin/python -m pip install torch -r requirements-test.txt SQLAlchemy alembic sqlparse
+```
+
+After separate data/experiment approval, set an explicit reviewed split directory
+and a fresh output directory. The pinned FLAN snapshot must already be cached:
+
+```sh
+LEXIMIND_SPLITS=/absolute/path/to/reviewed/book-field-splits
+LEXIMIND_RUN=outputs/reviewed-field-run-001
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTORCH_ENABLE_MPS_FALLBACK=0 \
+  .venv/bin/python scripts/train.py training=book_lora device=mps \
+  "data.processed.topic=$LEXIMIND_SPLITS" \
+  "checkpoint_out=$LEXIMIND_RUN/checkpoints/best.pt" \
+  "labels_out=$LEXIMIND_RUN/labels.json" "history_out=$LEXIMIND_RUN/history.json" \
+  "+training.trainer.tracking_uri=sqlite:///$LEXIMIND_RUN/mlruns.db"
+```
+
+For the user-owned RTX host, use the same command with explicit `device=cuda` after
+access and the CUDA environment are verified. The M5 preset has not been tuned or
+measured on that GPU. Do not select candidate source files as reviewed training data.
+
+Profile a fresh bounded run through the same construction and loss path:
+
+```sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTORCH_ENABLE_MPS_FALLBACK=0 \
+  PROFILE_STEPS=20 PROFILE_OUTPUT_DIR=outputs/reviewed-field-profile-001 \
+  .venv/bin/python scripts/profile_training.py training=book_lora device=mps \
+  "data.processed.topic=$LEXIMIND_SPLITS" training.scheduler.name=constant \
+  "+training.trainer.tracking_uri=sqlite:///outputs/reviewed-field-profile-001.db"
+```
+
+Use explicit `device=cuda` for an authorized CUDA profile. Profiling reads training
+rows only; the summary states timing/memory boundaries and actual optimizer updates.
+The constant scheduler isolates this diagnostic from the separate warmup boundary.
+
+Native `last.pt`/`best.pt` contain merged ordinary model weights; matching
+`.adapter.pt` files contain small base-bound factors and the private head. Paired
+`labels.json`, `model_config.yaml` and `tokenizer_config.json` are required contracts.
+Files are individually atomic, not an atomic multi-file transaction. Inference
+restores the paired architecture and encoding settings automatically:
+
+```sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python scripts/inference.py \
+  --checkpoint "$LEXIMIND_RUN/checkpoints/last.pt" --device mps \
+  --title "Book title" --threshold 0.5 "Book description"
+```
+
+Use `--device cuda` on the verified RTX host. The explicit threshold is an operating
+choice, not a calibration result. Keep each title paired with its description.
+
+Weights-only continuation uses the adapter artifact, exact reviewed labels and the
+same base/seed/tokenization in a fresh output directory. It resets optimizer,
+scheduler and RNG state. `max_epochs=2` below means continue through epoch two:
+
+```sh
+LEXIMIND_PREVIOUS=outputs/reviewed-field-run-001
+LEXIMIND_RUN=outputs/reviewed-field-run-002
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTORCH_ENABLE_MPS_FALLBACK=0 \
+  .venv/bin/python scripts/train.py training=book_lora device=mps \
+  "data.processed.topic=$LEXIMIND_SPLITS" \
+  "resume_from=$LEXIMIND_PREVIOUS/checkpoints/last.adapter.pt" \
+  "resume_labels=$LEXIMIND_PREVIOUS/checkpoints/labels.json" training.trainer.max_epochs=2 \
+  "checkpoint_out=$LEXIMIND_RUN/checkpoints/best.pt" \
+  "labels_out=$LEXIMIND_RUN/labels.json" "history_out=$LEXIMIND_RUN/history.json" \
+  "+training.trainer.tracking_uri=sqlite:///$LEXIMIND_RUN/mlruns.db"
+```
+
+Use explicit `device=cuda` after CUDA access is verified. A merged full-model
+checkpoint is an inference artifact, not an adapter-resume substitute.
 
 ## Working commands
 

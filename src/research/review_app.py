@@ -9,11 +9,13 @@ import sys
 from pathlib import Path
 
 from src.research.book_fields import FACETS
-from src.research.builders.book_fields import checked, reference
+from src.research.book_partitions import group_overrides
+from src.research.builders.book_fields import checked, jsonl_rows, reference
 from src.research.builders.field_review import CONTRACT, MAX_RECORDS
-from src.research.candidate_io import create_or_verify, json_bytes
+from src.research.candidate_io import create_or_verify, json_bytes, sha
 from src.research.field_reviews import validate_review_record
 from src.research.io import read_json
+from src.utils.labels import BOOK_INPUT_FORMAT, LabelMetadata
 
 ROOT = Path(__file__).resolve().parents[2]
 DRAFT_KIND = "leximind_human_field_review_draft"
@@ -136,7 +138,14 @@ def build(root: Path, manifest_path: Path, output: Path) -> dict:
     return {"path": str(output), **create_or_verify(output, [page])}
 
 
-def import_draft(root: Path, manifest_path: Path, draft_path: Path, output: Path) -> dict:
+def import_draft(
+    root: Path,
+    manifest_path: Path,
+    draft_path: Path,
+    output: Path,
+    *,
+    preserve_conflicts: bool = False,
+) -> dict:
     output = _local_output(root, output)
     if output == draft_path.resolve():
         raise ValueError("Output must be separate from the human draft")
@@ -179,43 +188,605 @@ def import_draft(root: Path, manifest_path: Path, draft_path: Path, output: Path
         review["human_review"] = entry["human_review"]
         row = bundle["rows"][rid]
         try:
-            validate_review_record(review, row["candidate"], row["input"], bundle["mapping"])
+            validator = (
+                _validate_independent_assertions if preserve_conflicts else validate_review_record
+            )
+            validator(review, row["candidate"], row["input"], bundle["mapping"])
         except (KeyError, TypeError, ValueError) as error:
             raise ValueError(f"{rid}: {error}") from error
+    if preserve_conflicts:
+        packet = {
+            "schema_version": 2,
+            "kind": "leximind_field_review_candidate",
+            "bindings": bundle["bindings"],
+            "training_authorized": False,
+            "human_gold": False,
+            "records": packet["records"],
+            "conflicts": _conflicts(packet["records"], bundle),
+            "adjudications": [],
+        }
     _check_sources(root, bundle)
     return {
         "path": str(output),
         "human_records": len(seen),
+        "source_conflicts": len(packet["conflicts"]) if preserve_conflicts else 0,
         "training_authorized": False,
         **create_or_verify(output, [json_bytes(packet)]),
     }
 
 
+def _validate_independent_assertions(
+    review: dict, candidate: dict, payload: dict, mapping: dict
+) -> None:
+    """Keep source/agent validation strict; validate human assertions independently.
+
+    An isolated copy with unknown comparison states permits a human assertion to
+    disagree with source metadata without changing source evidence or weakening
+    the legacy validator. Mandatory conflicts are derived from the real source.
+    """
+    validate_review_record({**review, "human_review": None}, candidate, payload, mapping)
+    isolated = copy.deepcopy(candidate)
+    isolated["fields"] = {field: {"positive": [], "negative": []} for field in FACETS}
+    validate_review_record({**review, "agent_review": None}, isolated, payload, mapping)
+
+
+def _conflicts(records: list[dict], bundle: dict) -> list[dict]:
+    conflicts = []
+    for review in records:
+        rid = review["record_id"]
+        source = bundle["rows"][rid]["candidate"]["fields"]
+        for decision in (review["human_review"] or {}).get("decisions", []):
+            opposite = {"positive": "negative", "negative": "positive"}.get(decision["state"])
+            if opposite and decision["label"] in source[decision["field"]][opposite]:
+                assertion = {
+                    "record_id": rid,
+                    "input_sha256": review["input_sha256"],
+                    "field": decision["field"],
+                    "label": decision["label"],
+                    "source_state": opposite,
+                    "human_review": review["human_review"]["reviewer"],
+                    "human_decision": decision,
+                }
+                conflicts.append({**assertion, "assertion_sha256": sha(json_bytes(assertion))})
+    return conflicts
+
+
+def _candidate(root: Path, bundle: dict, path: Path) -> dict:
+    packet = read_json(path)
+    if (
+        not isinstance(packet, dict)
+        or set(packet)
+        != {
+            "schema_version",
+            "kind",
+            "bindings",
+            "training_authorized",
+            "human_gold",
+            "records",
+            "conflicts",
+            "adjudications",
+        }
+        or type(packet["schema_version"]) is not int
+        or packet["schema_version"] != 2
+        or packet["kind"] != "leximind_field_review_candidate"
+        or packet["bindings"] != bundle["bindings"]
+        or packet["training_authorized"] is not False
+        or packet["human_gold"] is not False
+        or not isinstance(packet["records"], list)
+    ):
+        raise ValueError("Expected a pinned v2 conflict-preserving candidate")
+    prior = {r["record_id"]: r for r in bundle["packet"]["records"]}
+    seen = set()
+    for review in packet["records"]:
+        rid = review["record_id"]
+        if rid not in prior or rid in seen:
+            raise ValueError("Unknown or repeated candidate identity")
+        seen.add(rid)
+        if {k: v for k, v in review.items() if k != "human_review"} != {
+            k: v for k, v in prior[rid].items() if k != "human_review"
+        }:
+            raise ValueError("Candidate changed pinned agent/source references")
+        row = bundle["rows"][rid]
+        _validate_independent_assertions(review, row["candidate"], row["input"], bundle["mapping"])
+    if seen != set(prior) or packet["conflicts"] != _conflicts(packet["records"], bundle):
+        raise ValueError("Candidate conflicts or record coverage changed")
+    _validate_adjudications(packet["adjudications"], packet["conflicts"], bundle)
+    return packet
+
+
+def _validate_adjudications(values: object, conflicts: list[dict], bundle: dict) -> None:
+    if not isinstance(values, list):
+        raise ValueError("Adjudications must be an explicit list")
+    by_hash = {c["assertion_sha256"]: c for c in conflicts}
+    seen = set()
+    for value in values:
+        if not isinstance(value, dict) or set(value) != {
+            "assertion_sha256",
+            "choice",
+            "reviewer",
+            "evidence",
+            "rationale",
+        }:
+            raise ValueError(
+                "Adjudication requires assertion hash, choice, reviewer, evidence and rationale"
+            )
+        digest = value["assertion_sha256"]
+        if not isinstance(digest, str) or digest not in by_hash or digest in seen:
+            raise ValueError("Unknown or repeated adjudication assertion")
+        seen.add(digest)
+        conflict = by_hash[digest]
+        if value["choice"] not in {"human", "source", "unknown"}:
+            raise ValueError("Adjudication choice must be human, source or unknown")
+        # Reuse strict human provenance/evidence validation without implying a source override.
+        decision = {
+            "field": conflict["field"],
+            "label": conflict["label"],
+            "state": "unknown",
+            "evidence": value["evidence"],
+            "rationale": value["rationale"],
+        }
+        prior = next(
+            r for r in bundle["packet"]["records"] if r["record_id"] == conflict["record_id"]
+        )
+        review = {**prior, "human_review": {"reviewer": value["reviewer"], "decisions": [decision]}}
+        row = bundle["rows"][conflict["record_id"]]
+        _validate_independent_assertions(review, row["candidate"], row["input"], bundle["mapping"])
+
+
+def adjudicate(
+    root: Path, manifest_path: Path, candidate_path: Path, draft_path: Path, output: Path
+) -> dict:
+    output = _local_output(root, output)
+    bundle = _load(root, manifest_path)
+    candidate_ref = reference(root, candidate_path)
+    packet = _candidate(root, bundle, candidate_path)
+    if output in {
+        candidate_path.resolve(),
+        draft_path.resolve(),
+        *((root / r["path"]).resolve() for r in bundle["refs"]),
+    }:
+        raise ValueError("Adjudication output must preserve all input evidence")
+    if draft_path.stat().st_size > 8_000_000:
+        raise ValueError("Adjudication draft exceeds the 8 MB bound")
+    draft = read_json(draft_path)
+    if (
+        not isinstance(draft, dict)
+        or set(draft) != {"schema_version", "kind", "candidate", "adjudications"}
+        or type(draft["schema_version"]) is not int
+        or draft["schema_version"] != 1
+        or draft["kind"] != "leximind_field_adjudication_draft"
+        or draft["candidate"] != candidate_ref
+        or not isinstance(draft["adjudications"], list)
+        or not draft["adjudications"]
+    ):
+        raise ValueError("Expected a nonempty adjudication draft bound to this exact candidate")
+    packet["adjudications"] = [*packet["adjudications"], *draft["adjudications"]]
+    _validate_adjudications(packet["adjudications"], packet["conflicts"], bundle)
+    _check_sources(root, bundle)
+    checked(root, candidate_ref)
+    return {
+        "path": str(output),
+        "adjudications": len(packet["adjudications"]),
+        "unresolved_conflicts": len(packet["conflicts"]) - len(packet["adjudications"]),
+        "training_authorized": False,
+        **create_or_verify(output, [json_bytes(packet)]),
+    }
+
+
+def _validate_development_separation(
+    root: Path, train_manifest: dict, bindings: dict, assignments: dict, overrides: dict
+) -> None:
+    """Require common split evidence and disjoint resolved train/dev identities."""
+    train_sources = train_manifest["bindings"]["sources"]
+    keys = (
+        "archive",
+        "mapping",
+        "assignments",
+        "components",
+        "partition_manifest",
+        "field_manifest",
+        "field_references",
+    )
+    if any(train_sources.get(key) != bindings[key] for key in keys):
+        raise ValueError("Train/dev exports require identical source and partition bindings")
+    records = train_manifest.get("records")
+    if (
+        not isinstance(records, list)
+        or not records
+        or type(train_manifest.get("rows")) is not int
+        or train_manifest["rows"] != len(records)
+    ):
+        raise ValueError("Training export requires complete identity metadata")
+    identities, groups = set(), set()
+    for record in records:
+        if (
+            not isinstance(record, dict)
+            or set(record)
+            != {
+                "record_id",
+                "input_sha256",
+                "group_id",
+                "effective_group_id",
+                "source_split",
+                "effective_split",
+            }
+            or not isinstance(record["record_id"], str)
+            or record["record_id"] in identities
+            or not isinstance(record["effective_group_id"], str)
+            or record["source_split"] != "train"
+            or record["effective_split"] != "train"
+        ):
+            raise ValueError("Malformed or repeated training export identity")
+        identities.add(record["record_id"])
+        groups.add(record["effective_group_id"])
+    resolved = {}
+    for assignment in jsonl_rows(checked(root, bindings["assignments"])):
+        if assignment["record_id"] in identities:
+            if assignment["record_id"] in resolved:
+                raise ValueError("Repeated training source assignment")
+            resolved[assignment["record_id"]] = assignment
+    if set(resolved) != identities:
+        raise ValueError("Training export identity missing from common assignments")
+    for record in records:
+        assignment = resolved[record["record_id"]]
+        group = assignment["group_id"]
+        overlay = overrides.get(group)
+        if (
+            assignment["source_split"] != "train"
+            or assignment["review_required"]
+            or record["group_id"] != group
+            or record["effective_group_id"] != (overlay["component_id"] if overlay else group)
+            or (overlay["proposed_split"] if overlay else assignment["proposed_split"]) != "train"
+            or (overlay and overlay["status"] != "candidate_not_admitted")
+        ):
+            raise ValueError(
+                "Training export identity disagrees with original/effective split evidence"
+            )
+    dev_groups = {
+        overrides[a["group_id"]]["component_id"] if a["group_id"] in overrides else a["group_id"]
+        for a in assignments.values()
+    }
+    if identities & set(assignments) or groups & dev_groups:
+        raise ValueError("Train/dev exports overlap record or effective group identities")
+
+
+def export_review(
+    root: Path,
+    manifest_path: Path,
+    candidate_path: Path,
+    output: Path,
+    *,
+    role: str,
+    labels: list[str] | None = None,
+    training_labels: Path | None = None,
+) -> dict:
+    """Export explicit reviewed supervision; source metadata never completes missing labels."""
+    output = _local_output(root, output)
+    if output.exists():
+        raise FileExistsError("Export requires a new directory; preserve prior data")
+    if role not in {"train", "dev"}:
+        raise ValueError("Export role must be train or dev")
+    bundle = _load(root, manifest_path)
+    candidate_ref = reference(root, candidate_path)
+    packet = _candidate(root, bundle, candidate_path)
+    bindings = bundle["bindings"]["sources"]
+    if not {"assignments", "components", "partition_manifest", "field_manifest"} <= set(bindings):
+        raise ValueError(
+            "Export requires pinned original assignments and effective partition components"
+        )
+    partition = read_json(checked(root, bindings["partition_manifest"]))
+    fields = read_json(checked(root, bindings["field_manifest"]))
+    if (
+        partition["components"] != bindings["components"]
+        or partition["inputs"]["fields"] != bindings["field_manifest"]
+        or any(
+            partition["inputs"][key] != bindings[key] or fields[key] != bindings[key]
+            for key in ("archive", "assignments", "field_references")
+        )
+        or partition["inputs"]["field_mapping"] != bindings["mapping"]
+        or fields["mapping"] != bindings["mapping"]
+    ):
+        raise ValueError("Export partition, fields and source bindings disagree")
+    wanted = {r["record_id"] for r in packet["records"] if r["human_review"] is not None}
+    assignments = {}
+    counts: dict[str, int] = {}
+    for assignment in jsonl_rows(checked(root, bindings["assignments"])):
+        group = assignment["group_id"]
+        counts[group] = counts.get(group, 0) + 1
+        if assignment["record_id"] in wanted:
+            if assignment["record_id"] in assignments:
+                raise ValueError("Repeated source assignment")
+            assignments[assignment["record_id"]] = assignment
+    if set(assignments) != wanted:
+        raise ValueError("Reviewed identities missing from source assignments")
+    source_candidates = {}
+    for candidate in jsonl_rows(checked(root, bindings["field_references"])):
+        if candidate["record_id"] in wanted:
+            if candidate["record_id"] in source_candidates:
+                raise ValueError("Repeated source field reference")
+            source_candidates[candidate["record_id"]] = candidate
+    if set(source_candidates) != wanted:
+        raise ValueError("Reviewed identities missing from source fields")
+    overrides = group_overrides(jsonl_rows(checked(root, bindings["components"])))
+    vocabulary = [
+        f"{field}:{label}"
+        for field in FACETS
+        for label in bundle["mapping"]["facets"][field]["labels"]
+    ]
+    schema_ref = None
+    if role == "dev":
+        if labels is not None or training_labels is None:
+            raise ValueError(
+                "Dev export requires --training-labels from a reviewed train export, not --labels"
+            )
+        schema_ref = reference(root, training_labels)
+        schema = read_json(checked(root, schema_ref))
+        if (
+            set(schema)
+            != {"schema_version", "problem_type", "input_format", "labels", "mapping_sha256"}
+            or type(schema["schema_version"]) is not int
+            or schema["schema_version"] != 1
+            or schema["problem_type"] != "multi_label"
+            or schema["input_format"] != BOOK_INPUT_FORMAT
+            or schema["mapping_sha256"] != bindings["mapping"]["sha256"]
+        ):
+            raise ValueError("Dev labels must match the exact training format and mapping")
+        train_manifest_path = training_labels.parent / "manifest.json"
+        train_manifest_ref = reference(root, train_manifest_path)
+        train_manifest = read_json(checked(root, train_manifest_ref))
+        if (
+            train_manifest.get("kind") != "leximind_reviewed_field_export"
+            or train_manifest.get("role") != "train"
+            or train_manifest.get("files", {}).get("labels.json")
+            != {"sha256": schema_ref["sha256"], "bytes": schema_ref["bytes"]}
+            or set(train_manifest.get("coverage", {})) != set(schema["labels"])
+            or any(
+                counts.get("positive", 0) < 1 or counts.get("negative", 0) < 1
+                for counts in train_manifest["coverage"].values()
+            )
+        ):
+            raise ValueError(
+                "Dev metadata must come from a reviewed train export with both-sign coverage"
+            )
+        train_file_ref = {
+            "path": str(
+                (training_labels.parent / "train.jsonl").resolve().relative_to(root.resolve())
+            ),
+            **train_manifest["files"]["train.jsonl"],
+        }
+        checked(root, train_file_ref)
+        checked(root, train_manifest["candidate"])
+        _validate_development_separation(root, train_manifest, bindings, assignments, overrides)
+        labels = schema["labels"]
+    elif training_labels is not None:
+        raise ValueError("--training-labels applies to dev only")
+    labels = vocabulary if labels is None else labels
+    LabelMetadata([], labels, "multi_label", BOOK_INPUT_FORMAT, bindings["mapping"]["sha256"])
+    if any(label not in vocabulary for label in labels):
+        raise ValueError("Requested label outside the pinned mapping")
+    coverage = {label: {"positive": 0, "negative": 0} for label in labels}
+    excluded_decisions = 0
+    resolutions = {a["assertion_sha256"]: a for a in packet["adjudications"]}
+    conflicts = {(c["record_id"], c["field"], c["label"]): c for c in packet["conflicts"]}
+    rows, provenance = [], []
+    positive_count = negative_count = 0
+    for review in packet["records"]:
+        if review["human_review"] is None:
+            continue
+        rid = review["record_id"]
+        assignment, candidate = assignments[rid], source_candidates[rid]
+        row = bundle["rows"][rid]
+        group = assignment["group_id"]
+        overlay = overrides.get(group)
+        effective = overlay["proposed_split"] if overlay else assignment["proposed_split"]
+        if (
+            assignment["source_split"] != role
+            or effective != role
+            or assignment["review_required"]
+            or candidate["group"]["review_required"]
+            or counts[group] != 1
+            or candidate["group"]["group_id"] != group
+            or candidate["source"]["source_split"] != role
+            or candidate["group"]["proposed_split"] != assignment["proposed_split"]
+            or candidate["source"] != row["candidate"]["source"]
+            or candidate["fields"] != row["candidate"]["fields"]
+            or candidate["input_sha256"] != review["input_sha256"]
+            or (overlay and overlay["status"] != "candidate_not_admitted")
+        ):
+            raise ValueError(
+                f"{rid}: original/effective role or unambiguous singleton group failed"
+            )
+        targets: dict[str, list[str]] = {"positive": [], "negative": []}
+        for decision in review["human_review"]["decisions"]:
+            state = decision["state"]
+            conflict = conflicts.get((rid, decision["field"], decision["label"]))
+            if conflict:
+                resolution = resolutions.get(conflict["assertion_sha256"])
+                if resolution is None:
+                    raise ValueError(f"{rid}: resolve every source conflict before export")
+                choice = resolution["choice"]
+                state = (
+                    decision["state"]
+                    if choice == "human"
+                    else conflict["source_state"]
+                    if choice == "source"
+                    else "unknown"
+                )
+            column = f"{decision['field']}:{decision['label']}"
+            if column not in coverage:
+                excluded_decisions += 1
+                continue
+            if state != "unknown":
+                targets[state].append(column)
+                coverage[column][state] += 1
+        if not targets["positive"] and not targets["negative"]:
+            continue
+        for values in targets.values():
+            values.sort()
+        positive_count += len(targets["positive"])
+        negative_count += len(targets["negative"])
+        rows.append({**row["input"], **targets})
+        provenance.append(
+            {
+                "record_id": rid,
+                "input_sha256": review["input_sha256"],
+                "group_id": group,
+                "effective_group_id": overlay["component_id"] if overlay else group,
+                "source_split": role,
+                "effective_split": effective,
+            }
+        )
+    if not rows:
+        raise ValueError(
+            "Export requires nonempty explicit supervision in the requested vocabulary"
+        )
+    if role == "train":
+        missing = {
+            label: counts
+            for label, counts in coverage.items()
+            if not counts["positive"] or not counts["negative"]
+        }
+        if missing:
+            raise ValueError(
+                "Each requested training label needs explicit positive AND negative supervision; "
+                "use an explicitly reviewed --labels subset if appropriate: " + json.dumps(missing)
+            )
+    schema = {
+        "schema_version": 1,
+        "problem_type": "multi_label",
+        "input_format": BOOK_INPUT_FORMAT,
+        "labels": labels,
+        "mapping_sha256": bindings["mapping"]["sha256"],
+    }
+    split = "train" if role == "train" else "val"
+    # JSONL needs one compact object per physical line, unlike pretty packet JSON.
+    raw_rows = b"".join(
+        (json.dumps(r, ensure_ascii=False, separators=(",", ":")) + "\n").encode() for r in rows
+    )
+    schema_bytes = json_bytes(schema)
+    manifest = {
+        "schema_version": 1,
+        "kind": "leximind_reviewed_field_export",
+        "role": role,
+        "candidate": candidate_ref,
+        "bindings": bundle["bindings"],
+        "records": provenance,
+        "rows": len(rows),
+        "reviewed_records": len(wanted),
+        "unknown_only_or_excluded_records": len(wanted) - len(rows),
+        "positive_labels": positive_count,
+        "negative_labels": negative_count,
+        "human_gold": False,
+        "formal_study_admitted": False,
+        "training_authorized": False,
+        "unknown_labels": "masked; no implicit source/agent completion",
+        "coverage": {
+            label: {**counts, "unknown": len(rows) - sum(counts.values())}
+            for label, counts in coverage.items()
+        },
+        "excluded_decisions": excluded_decisions,
+        "training_labels": schema_ref,
+        "training_export_manifest": train_manifest_ref if role == "dev" else None,
+        "readiness_scope": "At least one example per sign is feasibility only, not sufficient study quality",
+        "files": {
+            f"{split}.jsonl": {"sha256": sha(raw_rows), "bytes": len(raw_rows)},
+            "labels.json": {"sha256": sha(schema_bytes), "bytes": len(schema_bytes)},
+        },
+    }
+    _check_sources(root, bundle)
+    checked(root, candidate_ref)
+    if schema_ref is not None:
+        checked(root, schema_ref)
+        checked(root, train_manifest_ref)
+        checked(root, train_file_ref)
+    output.mkdir(parents=True, exist_ok=False)
+    create_or_verify(output / f"{split}.jsonl", [raw_rows])
+    create_or_verify(output / "labels.json", [schema_bytes])
+    create_or_verify(output / "manifest.json", [json_bytes(manifest)])
+    return {
+        "path": str(output),
+        "rows": len(rows),
+        "role": role,
+        "positive_labels": positive_count,
+        "negative_labels": negative_count,
+        "formal_study_admitted": False,
+        "training_authorized": False,
+    }
+
+
 def configure_parser(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("mode", choices=("build", "import"))
+    parser.add_argument("mode", choices=("build", "import", "adjudicate", "export"))
     parser.add_argument(
         "--manifest",
         type=Path,
         default=ROOT / "research/preparation/book_field_review_manifest.json",
     )
-    parser.add_argument("--draft", type=Path, help="Exported human JSON; required for import")
+    parser.add_argument("--candidate", type=Path, help="Pinned v2 candidate for adjudicate/export")
+    parser.add_argument(
+        "--preserve-conflicts",
+        action="store_true",
+        help="Import as v2 candidate; preserve opposing source/human assertions",
+    )
+    parser.add_argument(
+        "--labels",
+        nargs="+",
+        help="Explicit ordered facet:label training subset; default full mapping",
+    )
+    parser.add_argument(
+        "--training-labels",
+        type=Path,
+        help="Exact train export labels.json; required for dev export",
+    )
+    parser.add_argument(
+        "--role", choices=("train", "dev"), help="Explicit original/effective role for export"
+    )
+    parser.add_argument(
+        "--draft",
+        type=Path,
+        help="Exported human/adjudication JSON; required for import/adjudicate",
+    )
     parser.add_argument(
         "--output",
         type=Path,
         required=True,
-        help="New file under data/research_candidates; existing different bytes are never overwritten",
+        help="New candidate file, or new export directory, under data/research_candidates",
     )
 
 
 def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    if (args.mode == "import") != (args.draft is not None):
-        parser.error("Supply --draft for import only")
+    if (args.mode in {"import", "adjudicate"}) != (args.draft is not None):
+        parser.error("Supply --draft for import or adjudicate only")
+    if (args.mode in {"adjudicate", "export"}) != (args.candidate is not None):
+        parser.error("Supply --candidate for adjudicate or export only")
+    if args.preserve_conflicts and args.mode != "import":
+        parser.error("--preserve-conflicts applies to import only")
+    if (args.mode == "export") != (args.role is not None):
+        parser.error("Supply --role for export only")
+    if args.mode != "export" and (args.labels is not None or args.training_labels is not None):
+        parser.error("Label selection applies to export only")
     try:
-        result = (
-            build(ROOT, args.manifest, args.output)
-            if args.mode == "build"
-            else import_draft(ROOT, args.manifest, args.draft, args.output)
-        )
+        if args.mode == "build":
+            result = build(ROOT, args.manifest, args.output)
+        elif args.mode == "import":
+            result = import_draft(
+                ROOT,
+                args.manifest,
+                args.draft,
+                args.output,
+                preserve_conflicts=args.preserve_conflicts,
+            )
+        elif args.mode == "adjudicate":
+            result = adjudicate(ROOT, args.manifest, args.candidate, args.draft, args.output)
+        else:
+            result = export_review(
+                ROOT,
+                args.manifest,
+                args.candidate,
+                args.output,
+                role=args.role,
+                labels=args.labels,
+                training_labels=args.training_labels,
+            )
     except (KeyError, TypeError, ValueError, OSError) as error:
         print(str(error), file=sys.stderr)
         return 1
@@ -257,7 +828,7 @@ function saved(){return decisions.get(row().record_id);}
 function decision(){return saved()?.decisions.find(d=>d.field===facet&&d.label===label);}
 function progress(){let n=0;for(const r of decisions.values())n+=r.decisions.length;$('progress').textContent=`${n} explicit decisions across ${decisions.size} of ${rows.length} records`;}
 function conflict(state){return state!=='unknown'&&row().candidate.fields[facet][state==='positive'?'negative':'positive'].includes(label);}
-function showConflict(){const yes=label&&conflict($('state').value);$('conflict').textContent=yes?'Conflicts with a source label. Your draft can retain this decision; import requires separate adjudication.':'';}
+function showConflict(){const yes=label&&conflict($('state').value);$('conflict').textContent=yes?'Conflicts with a source label. Your draft can retain this decision; import with --preserve-conflicts retains it for separate adjudication.':'';}
 function drawEvidence(){const text=row().input;$('evidence').textContent=evidence.length?evidence.map(e=>`${e.input_field} [${e.start}, ${e.end}): “${cp(text[e.input_field]).slice(e.start,e.end).join('')}”`).join('\n\n'):'No evidence attached.';}
 function drawLabels(){const container=$('labels');container.replaceChildren();for(const name of data.facets[facet].labels){const d=saved()?.decisions.find(d=>d.field===facet&&d.label===name),b=document.createElement('button');b.className='label';b.dataset.state=d?.state||'unknown';b.dataset.reviewed=String(!!d);b.dataset.active=String(name===label);const text=document.createElement('span'),badge=document.createElement('b');text.textContent=nice(name);badge.textContent=d?.state||'unknown';b.append(text,badge);b.onclick=()=>openLabel(name);container.append(b);}}
 function canLeave(){return !editing||confirm('Discard the unsaved edits for this label? Saved decisions will remain.');}
@@ -271,10 +842,10 @@ const today=new Date();$('date').value=`${today.getFullYear()}-${String(today.ge
 document.addEventListener('selectionchange',()=>{const s=getSelection();if(!s?.rangeCount||s.isCollapsed)return;const range=s.getRangeAt(0),start=range.startContainer.nodeType===1?range.startContainer:range.startContainer.parentElement,end=range.endContainer.nodeType===1?range.endContainer:range.endContainer.parentElement,box=start?.closest('[data-source-field]');if(!box||box!==end?.closest('[data-source-field]')){selection=null;return;}const before=range.cloneRange();before.selectNodeContents(box);before.setEnd(range.startContainer,range.startOffset);const a=cp(before.toString()).length,b=a+cp(range.toString()).length;selection={record_id:row().record_id,input_field:box.dataset.sourceField,start:a,end:b};});
 $('attach').onclick=async()=>{try{if(!selection||selection.record_id!==row().record_id)throw Error('Select a passage within the source title or description first.');const selected={...selection},text=cp(row().input[selected.input_field]).slice(selected.start,selected.end).join(''),key=`${row().record_id}/${facet}/${label}`;if(!text)throw Error('The selected passage is empty.');const span={input_field:selected.input_field,start:selected.start,end:selected.end,sha256:await digest(text)};if(key!==`${row().record_id}/${facet}/${label}`)throw Error('Selection changed; attach the evidence again.');if(!evidence.some(e=>canonical(e)===canonical(span)))evidence.push(span);editing=true;drawEvidence();message('Evidence attached. Add a rationale and save the decision.');}catch(e){message(e.message,true);}};
 $('clear-evidence').onclick=()=>{evidence=[];editing=true;drawEvidence();};$('state').onchange=()=>{editing=true;showConflict();};$('rationale').oninput=()=>{editing=true;};
-$('save').onclick=()=>{const id=$('reviewer').value.trim(),date=$('date').value,rationale=$('rationale').value.trim();if(!id||!date||!evidence.length||!rationale)return message('Add your identity, review date, selected evidence and a rationale before saving.',true);if(saved()&&saved().reviewer.id!==id)return message(`This record already has decisions by ${saved().reviewer.id}. Keep that identity or use a separate draft.`,true);const d={field:facet,label,state:$('state').value,evidence:structuredClone(evidence),rationale},review={reviewer:{kind:'human',id,method:'direct_source_review',reviewed_at:date},decisions:[...(saved()?.decisions||[]).filter(x=>x.field!==facet||x.label!==label),d]};decisions.set(row().record_id,review);editing=false;unexported=true;drawLabels();progress();message(conflict(d.state)?'Decision saved in draft with a source conflict. Import will require separate adjudication.':'Decision saved. Export your draft to keep it.',conflict(d.state));};
+$('save').onclick=()=>{const id=$('reviewer').value.trim(),date=$('date').value,rationale=$('rationale').value.trim();if(!id||!date||!evidence.length||!rationale)return message('Add your identity, review date, selected evidence and a rationale before saving.',true);if(saved()&&saved().reviewer.id!==id)return message(`This record already has decisions by ${saved().reviewer.id}. Keep that identity or use a separate draft.`,true);const d={field:facet,label,state:$('state').value,evidence:structuredClone(evidence),rationale},review={reviewer:{kind:'human',id,method:'direct_source_review',reviewed_at:date},decisions:[...(saved()?.decisions||[]).filter(x=>x.field!==facet||x.label!==label),d]};decisions.set(row().record_id,review);editing=false;unexported=true;drawLabels();progress();message(conflict(d.state)?'Decision saved in draft with a source conflict. Use review import --preserve-conflicts, then adjudicate before export.':'Decision saved. Export your draft to keep it.',conflict(d.state));};
 $('remove').onclick=()=>{if(saved()){saved().decisions=saved().decisions.filter(d=>d.field!==facet||d.label!==label);if(!saved().decisions.length)decisions.delete(row().record_id);unexported=true;}editing=false;openLabel(label);progress();message('Decision removed; the field is unknown.');};
 function draft(){return{schema_version:1,kind:'leximind_human_field_review_draft',bindings:data.bindings,records:rows.filter(r=>decisions.has(r.record_id)).map(r=>({record_id:r.record_id,input_sha256:r.candidate.input_sha256,human_review:decisions.get(r.record_id)}))};}
-$('export').onclick=()=>{if(editing)return message('Save or remove the current unsaved decision before exporting.',true);if(!decisions.size)return message('There are no explicit human decisions to export yet.',true);const blob=new Blob([JSON.stringify(draft(),null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='leximind-human-review.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);unexported=false;message('JSON draft exported. Import it with the review command to validate evidence and source conflicts.');};
+$('export').onclick=()=>{if(editing)return message('Save or remove the current unsaved decision before exporting.',true);if(!decisions.size)return message('There are no explicit human decisions to export yet.',true);const blob=new Blob([JSON.stringify(draft(),null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='leximind-human-review.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);unexported=false;message('JSON draft exported. Use review import --preserve-conflicts to retain every decision, then adjudicate conflicts before training export.');};
 $('resume').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>8000000)throw Error('Draft exceeds the 8 MB limit.');if((editing||unexported)&&!confirm('Replace this page’s work with the selected draft? Export first to retain it.'))return;const d=JSON.parse(await file.text()),pending=new Map();if(d.schema_version!==1||d.kind!=='leximind_human_field_review_draft'||canonical(d.bindings)!==canonical(data.bindings)||!Array.isArray(d.records)||!d.records.length||d.records.length>rows.length)throw Error('Draft does not match this pinned worksheet.');for(const item of d.records){const source=rows.find(r=>r.record_id===item.record_id),review=item.human_review;if(!source||pending.has(item.record_id)||item.input_sha256!==source.candidate.input_sha256||review?.reviewer?.kind!=='human'||review.reviewer.method!=='direct_source_review'||typeof review.reviewer.id!=='string'||!review.reviewer.id.trim()||!/^\d{4}-\d{2}-\d{2}$/.test(review.reviewer.reviewed_at)||!Array.isArray(review.decisions)||!review.decisions.length)throw Error('Malformed human review.');const seen=new Set();for(const x of review.decisions){const key=`${x.field}/${x.label}`;if(!data.facets[x.field]?.labels.includes(x.label)||!states.has(x.state)||seen.has(key)||typeof x.rationale!=='string'||!x.rationale.trim()||!Array.isArray(x.evidence)||!x.evidence.length)throw Error('Malformed or repeated field decision.');seen.add(key);for(const span of x.evidence){const text=source.input[span.input_field];if(typeof text!=='string'||!Number.isInteger(span.start)||!Number.isInteger(span.end)||span.start<0||span.end<=span.start||span.end>cp(text).length||await digest(cp(text).slice(span.start,span.end).join(''))!==span.sha256)throw Error('Evidence offsets or hash do not match the source.');}}pending.set(item.record_id,review);}decisions.clear();pending.forEach((v,k)=>decisions.set(k,v));$('reviewer').value=d.records[0].human_review.reviewer.id;editing=false;unexported=false;draw();message('Draft restored. Source conflicts are checked during import.');}catch(error){message(error.message,true);}finally{e.target.value='';}};
 addEventListener('beforeunload',e=>{if(editing||unexported){e.preventDefault();e.returnValue='';}});draw();
 </script></html>"""
