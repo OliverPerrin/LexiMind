@@ -437,6 +437,7 @@ def execute(
         "book_source_assignment_recovery_pilot",
         "book_source_assignment_learning_curves",
         "book_source_assignment_data_scaling",
+        "book_source_assignment_loss_weighting",
     }:
         return execute_source_recovery(config_path, output, root=root, prepare_only=prepare_only)
     validate_config(config)
@@ -691,12 +692,33 @@ SOURCE_DATA_SCALING = {
 }
 
 
+SOURCE_LOSS_WEIGHTING = {
+    **SOURCE_DATA_SCALING,
+    "kind": "book_source_assignment_loss_weighting",
+    "arms": ["unweighted", "weighted"],
+    "max_total_seconds": 2400,
+    "comparison": "fresh_contemporaneous_unweighted_vs_weighted_lora_controls_historical_scaling_descriptive_only",
+    "weighting": {
+        "rule": "train_global_coefficient_inverse_sqrt_per_facet",
+        "lower": 0.25,
+        "upper": 4.0,
+        "bisection_iterations": 96,
+        "float64_residual_tolerance": 1e-12,
+        "float32_residual_tolerance": 1e-7,
+        "renormalize_after_cast_or_clipping": False,
+    },
+    "postrun_audit_caps_seconds": {"cpu": 600, "gpu": 600},
+}
+
+
 def validate_source_recovery_config(config: dict) -> None:
     """Reject protocol drift rather than silently adapting this one bounded pilot."""
     import json
 
     contract = (
-        SOURCE_DATA_SCALING
+        SOURCE_LOSS_WEIGHTING
+        if config.get("kind") == SOURCE_LOSS_WEIGHTING["kind"]
+        else SOURCE_DATA_SCALING
         if config.get("kind") == SOURCE_DATA_SCALING["kind"]
         else SOURCE_LEARNING_CURVES
         if config.get("kind") == SOURCE_LEARNING_CURVES["kind"]
@@ -711,7 +733,134 @@ def validate_source_recovery_config(config: dict) -> None:
             raise ValueError(f"Source recovery must retain the existing {key} pin")
 
 
-def source_recovery_loss(logits, positives, facet_bounds):
+def _validate_source_weights(logits, weights) -> None:
+    if weights is None:
+        return
+    import torch
+
+    if (
+        weights.shape != (logits.shape[1],)
+        or weights.dtype != torch.float32
+        or weights.device != logits.device
+        or not torch.isfinite(weights).all()
+        or (weights < 0.25).any()
+        or (weights > 4).any()
+    ):
+        raise ValueError(
+            "Applied source weights require finite FP32 C-vector on logits device in[0.25,4]"
+        )
+
+
+def source_recovery_weights(train, mapping, schedules) -> dict:
+    """One deterministic train-only vector; preserve global facet mass within fixed tolerances."""
+    import math
+
+    import torch
+
+    labels = _labels(mapping)
+    active = [[f for f in FACETS if row["fields"][f]["positive"]] for row in train]
+    eligible = sum(bool(facets) for facets in active)
+    if eligible != 16383 or len(train) != 16384:
+        raise ValueError("Weighting requires the fixed16383eligible/16384selected train rows")
+    mass = {f: {label: 0.0 for label in labels[f]} for f in FACETS}
+    support = {f: {label: 0 for label in labels[f]} for f in FACETS}
+    for row, facets in zip(train, active, strict=True):
+        for f in facets:
+            share = 1 / (eligible * len(facets) * len(row["fields"][f]["positive"]))
+            for label in row["fields"][f]["positive"]:
+                mass[f][label] += share
+                support[f][label] += 1
+    vector, result = [], {}
+    for f in FACETS:
+        total = math.fsum(mass[f].values())
+        probabilities = [mass[f][label] / total for label in labels[f]]
+        if any(m <= 0 or not math.isfinite(m) for m in probabilities):
+            raise ValueError("All48 labels require positive train support/coefficient mass")
+        lower, upper = 0.0, 4 * max(math.sqrt(m) for m in probabilities)
+        for _ in range(96):
+            midpoint = (lower + upper) / 2
+            mean = math.fsum(
+                m * min(4.0, max(0.25, midpoint / math.sqrt(m))) for m in probabilities
+            )
+            if mean < 1:
+                lower = midpoint
+            else:
+                upper = midpoint
+        scalar = (lower + upper) / 2
+        exact = [min(4.0, max(0.25, scalar / math.sqrt(m))) for m in probabilities]
+        applied = torch.tensor(exact, dtype=torch.float32).tolist()
+        residual64 = math.fsum(m * w for m, w in zip(probabilities, exact, strict=True)) - 1
+        residual32 = math.fsum(m * w for m, w in zip(probabilities, applied, strict=True)) - 1
+        if abs(residual64) > 1e-12 or abs(residual32) > 1e-7:
+            raise ValueError("Fixed coefficient normalization gate failed")
+        vector.extend(applied)
+        result[f] = {
+            "labels": labels[f],
+            "positive_groups": support[f],
+            "global_mass": mass[f],
+            "facet_mass": total,
+            "conditional_mass": probabilities,
+            "scalar": scalar,
+            "weights_float64": exact,
+            "weights_applied_float32": applied,
+            "normalization_residual_float64": residual64,
+            "normalization_residual_float32": residual32,
+            "lower_cap_count": sum(w == 0.25 for w in applied),
+            "upper_cap_count": sum(w == 4 for w in applied),
+            "applied_global_weighted_facet_mass": math.fsum(
+                mass[f][label] * w for label, w in zip(labels[f], applied, strict=True)
+            ),
+        }
+    tensor = torch.tensor(vector, dtype=torch.float32)
+    scheduled = {}
+    weights_by_label = {
+        f: dict(zip(labels[f], result[f]["weights_applied_float32"], strict=True)) for f in FACETS
+    }
+    for seed in (17, 29):
+        totals = {f: 0.0 for f in FACETS}
+        unweighted = {f: 0.0 for f in FACETS}
+        batches: Counter[int] = Counter()
+        for epoch in schedules[str(seed)]:
+            if sorted(epoch) != list(range(len(train))):
+                raise ValueError("Weight schedule must retain every fixed train row")
+            for start in range(0, len(epoch), 16):
+                indices = [i for i in epoch[start : start + 16] if active[i]]
+                if not indices:
+                    raise ValueError("Weight schedule has no supervised rows")
+                batches[len(indices)] += 1
+                for i in indices:
+                    for f in active[i]:
+                        base = 1 / (
+                            4096
+                            * len(indices)
+                            * len(active[i])
+                            * len(train[i]["fields"][f]["positive"])
+                        )
+                        for label in train[i]["fields"][f]["positive"]:
+                            unweighted[f] += base
+                            totals[f] += base * weights_by_label[f][label]
+        if dict(batches) != {15: 4, 16: 4092} and dict(batches) != {16: 4092, 15: 4}:
+            raise ValueError("Weight schedule eligible batch counts changed")
+        scheduled[str(seed)] = {
+            "unweighted_facet_mass": unweighted,
+            "weighted_facet_mass": totals,
+            "weighted_minus_unweighted_facet_mass": {f: totals[f] - unweighted[f] for f in FACETS},
+            "weighted_total": math.fsum(totals.values()),
+            "eligible_batch_size_counts": dict(batches),
+        }
+    return {
+        "schema_version": 1,
+        "kind": "train_only_source_loss_weight_vector",
+        "facets": result,
+        "label_order": [label for f in FACETS for label in labels[f]],
+        "applied_weights": vector,
+        "tensor_sha256": _recovery_tensor_hash(tensor),
+        "scheduled_mass": scheduled,
+        "semantics": "Global train facet normalization only, not exact batch-schedule normalization. Weights scale rows/facets and redistribute co-positive targets; gradient norms, clipping and update magnitudes are not preserved. No within-row renormalization.",
+    }
+
+
+def source_recovery_loss(logits, positives, facet_bounds, *, label_weights=None):
     """Uniform source-presence CE; facet mean per row, then eligible-row mean.
 
     The softmax competes across every label, including unassigned and co-positive
@@ -727,6 +876,7 @@ def source_recovery_loss(logits, positives, facet_bounds):
         or not facet_bounds
     ):
         raise ValueError("Recovery logits/positive indicators must be finite matching BxC tensors")
+    _validate_source_weights(logits, label_weights)
     cursor = 0
     losses, eligible = [], []
     for start, stop in facet_bounds.values():
@@ -736,7 +886,10 @@ def source_recovery_loss(logits, positives, facet_bounds):
         observed = positives[:, start:stop]
         count = observed.sum(dim=1)
         log_probs = torch.log_softmax(logits[:, start:stop].float(), dim=1)
-        losses.append(-(log_probs * observed).sum(dim=1) / count.clamp_min(1))
+        terms = log_probs * observed
+        if label_weights is not None:
+            terms = terms * label_weights[start:stop]
+        losses.append(-terms.sum(dim=1) / count.clamp_min(1))
         eligible.append(count > 0)
     if cursor != logits.shape[1]:
         raise ValueError("Recovery facets must cover every logit")
@@ -748,7 +901,7 @@ def source_recovery_loss(logits, positives, facet_bounds):
     return row_loss[row_count > 0].mean()
 
 
-def source_recovery_fit_totals(logits, positives, facet_bounds) -> dict:
+def source_recovery_fit_totals(logits, positives, facet_bounds, *, label_weights=None) -> dict:
     """Additive eval-mode objective totals, correctly weighted by eligible rows."""
     import torch
 
@@ -757,6 +910,7 @@ def source_recovery_fit_totals(logits, positives, facet_bounds) -> dict:
         raise ValueError("Fit diagnostic requires matching BxC logits and positive indicators")
     if not torch.isfinite(logits).all():
         raise ValueError("Fit diagnostic requires finite logits")
+    _validate_source_weights(logits, label_weights)
     entropy, availability = [], []
     cursor = 0
     for start, stop in facet_bounds.values():
@@ -764,7 +918,16 @@ def source_recovery_fit_totals(logits, positives, facet_bounds) -> dict:
             raise ValueError("Fit facets must partition every logit")
         cursor = stop
         counts = positives[:, start:stop].sum(dim=1)
-        entropy.append(counts.clamp_min(1).float().log())
+        if label_weights is None:
+            entropy.append(counts.clamp_min(1).float().log())
+        else:
+            weights = label_weights[start:stop]
+            coefficients = positives[:, start:stop] * weights
+            mass = coefficients.sum(dim=1).clamp_min(torch.finfo(torch.float32).tiny)
+            entropy.append(
+                -(coefficients * (weights.log() - mass.log()[:, None])).sum(dim=1)
+                / counts.clamp_min(1)
+            )
         availability.append(counts > 0)
     if cursor != logits.shape[1] or not availability:
         raise ValueError("Fit facets must cover every logit")
@@ -776,7 +939,10 @@ def source_recovery_fit_totals(logits, positives, facet_bounds) -> dict:
     return {
         "eligible_rows": count,
         "excluded_rows": len(logits) - count,
-        "cross_entropy_sum": float(source_recovery_loss(logits, positives, facet_bounds)) * count
+        "cross_entropy_sum": float(
+            source_recovery_loss(logits, positives, facet_bounds, label_weights=label_weights)
+        )
+        * count
         if count
         else 0.0,
         "target_entropy_floor_sum": float(floors[eligible].sum()),
@@ -998,6 +1164,67 @@ def _scaling_primary_comparison(root, config, report) -> dict:
     return result
 
 
+def _verify_weighting_history(
+    root, config, train, dev, mapping, schedules, *, encoded=None, lexical_ranked=None
+) -> dict:
+    names = (
+        "historical_scaling_examples",
+        "historical_scaling_tokenization",
+        "historical_scaling_schedules",
+        "historical_scaling_lexical_rankings",
+        "historical_scaling_report",
+    )
+    refs = {name: config[name] for name in names}
+    for reference in refs.values():
+        if _reference(root, root / reference["path"]) != reference:
+            raise ValueError("Weighting historical reference changed")
+    old = read_json(root / refs["historical_scaling_examples"]["path"])
+    if train != old["train"] or dev != old["dev"] or mapping != old["mapping"]:
+        raise ValueError("Weight trial must retain every exact prior scaling row and mapping")
+    old_schedule = read_json(root / refs["historical_scaling_schedules"]["path"])["indices"]
+    if schedules != old_schedule:
+        raise ValueError("Weight trial schedules differ from scaling")
+    old_lex = read_json(root / refs["historical_scaling_lexical_rankings"]["path"])["records"]
+    if [r["record_id"] for r in old_lex] != [r["record_id"] for r in dev]:
+        raise ValueError("Historical lexical development identities differ")
+    proof = {
+        "references": refs,
+        "full_rows_mapping_schedules_exact": True,
+        "historical_lexical_rows_bound": True,
+        "visible_tokens_decoded_text_exact": False,
+        "fresh_lexical_refit_exact": False,
+    }
+    if encoded is not None:
+        previous = read_json(root / refs["historical_scaling_tokenization"]["path"])["records"]
+        for split in ("train", "dev"):
+            if len(encoded[split]) != len(previous[split]):
+                raise ValueError("Weight token counts differ")
+            for current, prior in zip(encoded[split], previous[split], strict=True):
+
+                def visible(record):
+                    return [
+                        t
+                        for t, m in zip(record["input_ids"], record["attention_mask"], strict=True)
+                        if m
+                    ]
+
+                if (
+                    current["record_id"] != prior["record_id"]
+                    or visible(current) != visible(prior)
+                    or current["decoded_control_text"] != prior["decoded_control_text"]
+                    or current["decoded_control_sha256"] != prior["decoded_control_sha256"]
+                ):
+                    raise ValueError("Weight trial prior visible tokens/decoded controls changed")
+        proof["visible_tokens_decoded_text_exact"] = True
+    if lexical_ranked is not None:
+        if lexical_ranked != old_lex:
+            raise ValueError(
+                "Fresh matched lexical refit differs from audited prior scores/rankings"
+            )
+        proof["fresh_lexical_refit_exact"] = True
+    return proof
+
+
 def execute_source_recovery(
     config_path: Path, output: Path, *, root: Path = ROOT, prepare_only: bool = False
 ) -> dict:
@@ -1088,6 +1315,15 @@ def execute_source_recovery(
                             "Planned batch has no source-positive row; no replacement or resampling"
                         )
                 schedules[str(seed)].append(indices)
+        weighting_proof = None
+        weight_receipt = None
+        if config["kind"] == SOURCE_LOSS_WEIGHTING["kind"]:
+            weighting_proof = _verify_weighting_history(
+                root, config, train, dev, mapping, schedules
+            )
+            weight_receipt = source_recovery_weights(train, mapping, schedules)
+            _write(output / "loss_weights.json", weight_receipt)
+            check("train_only_weights_and_history_verified")
         examples_path = output / "examples.json"
         _write(
             examples_path,
@@ -1168,6 +1404,11 @@ def execute_source_recovery(
                 root, config, train, dev, mapping, encoded=encoded
             )
             check("historical_visible_tokens_verified")
+        if weighting_proof is not None:
+            weighting_proof = _verify_weighting_history(
+                root, config, train, dev, mapping, schedules, encoded=encoded
+            )
+            check("weighting_tokens_verified")
         token_path = output / "tokenization.json"
         _write(
             token_path,
@@ -1258,7 +1499,17 @@ def execute_source_recovery(
             report["scheduled_presentations_per_arm"] = scheduled_presentations
             report["source_supervised_presentations_per_arm"] = supervised_presentations
             report["semantics"]["historical_comparison"] = config["comparison"]
-        if not prepare_only:
+        if weighting_proof is not None:
+            report["weighting_history_proof"] = weighting_proof
+            report["loss_weights"] = _reference(root, output / "loss_weights.json")
+            report["weight_vector"] = weight_receipt
+            report["semantics"]["loss"] = config["loss"]
+            report["semantics"]["weighting"] = config["weighting_semantics"]
+            report["scheduled_presentations_per_arm"] = config["scheduled_presentations_per_arm"]
+            report["source_supervised_presentations_per_arm"] = config[
+                "source_supervised_presentations_per_arm"
+            ]
+        if not prepare_only or weighting_proof is not None:
             check("matched_lexical_fitting")
             fitted = fit_rankers(train, mapping, config["tfidf"], texts=lexical_texts["train"])
             check("matched_lexical_evaluation")
@@ -1271,6 +1522,22 @@ def execute_source_recovery(
             report["matched_lexical_artifacts"] = _save_fitted(
                 root, output, fitted, config["tfidf"]
             )
+            if weighting_proof is not None:
+                report["weighting_history_proof"] = _verify_weighting_history(
+                    root,
+                    config,
+                    train,
+                    dev,
+                    mapping,
+                    schedules,
+                    encoded=encoded,
+                    lexical_ranked=lexical_ranked,
+                )
+                report["statistical_fitting_performed"] = True
+                if prepare_only:
+                    report["status"] = "prepared_weights_and_lexical_verified_not_neural_trained"
+                check("fresh_lexical_refit_verified")
+        if not prepare_only:
             check("neural_initialization")
             _fit_source_recovery(
                 root,
@@ -1379,6 +1646,8 @@ def _fit_source_recovery(
         return batch
 
     class SourceRecoveryTrainer(Trainer):
+        source_weights: torch.Tensor | None = None
+
         def _forward_task(self, task, batch, *, summarize_metrics=True):
             if task != "source_recovery":
                 return super()._forward_task(task, batch, summarize_metrics=summarize_metrics)
@@ -1386,7 +1655,9 @@ def _fit_source_recovery(
             logits = self.model.forward(
                 "topic", {k: batch[k] for k in ("input_ids", "attention_mask")}
             )
-            return source_recovery_loss(logits, batch["labels"], bounds), {}
+            return source_recovery_loss(
+                logits, batch["labels"], bounds, label_weights=getattr(self, "source_weights", None)
+            ), {}
 
     with initialize_config_dir(config_dir=str(root / "configs"), version_base=None):
         cfg = compose(config_name="config", overrides=["training=book_lora", "device=cuda"])
@@ -1413,7 +1684,13 @@ def _fit_source_recovery(
     learning_curves = config["kind"] in {
         SOURCE_LEARNING_CURVES["kind"],
         SOURCE_DATA_SCALING["kind"],
+        SOURCE_LOSS_WEIGHTING["kind"],
     }
+    applied_weights = (
+        torch.tensor(report["weight_vector"]["applied_weights"], dtype=torch.float32, device=device)
+        if config["kind"] == SOURCE_LOSS_WEIGHTING["kind"]
+        else None
+    )
 
     def evaluate(model, split, method, key, update):
         rows = train if split == "train" else dev
@@ -1426,6 +1703,7 @@ def _fit_source_recovery(
             "cross_entropy_sum": 0.0,
             "target_entropy_floor_sum": 0.0,
         }
+        weighted_totals = dict(totals)
         with torch.no_grad():
             for begin in range(0, len(rows), 16):
                 indices = list(range(begin, min(begin + 16, len(rows))))
@@ -1442,6 +1720,15 @@ def _fit_source_recovery(
                     )
                     for name, value in values.items():
                         totals[name] += value
+                    if applied_weights is not None:
+                        weighted_values = source_recovery_fit_totals(
+                            logits,
+                            indicators[split][indices].to(device),
+                            bounds,
+                            label_weights=applied_weights,
+                        )
+                        for name, value in weighted_values.items():
+                            weighted_totals[name] += value
                 for f, (start, stop) in bounds.items():
                     scores[f].append(logits[:, start:stop].float().softmax(dim=1).cpu().numpy())
                     if learning_curves:
@@ -1458,7 +1745,7 @@ def _fit_source_recovery(
             if learning_curves
             else None,
         )
-        fit = None
+        fit: dict | None = None
         if learning_curves:
             denominator = totals["eligible_rows"]
             ce = totals["cross_entropy_sum"] / denominator if denominator else None
@@ -1473,10 +1760,29 @@ def _fit_source_recovery(
                 "mode": "eval_bf16_autocast",
                 "row_weighting": "eligible_row_count",
             }
+            if applied_weights is not None:
+                weight_ce = (
+                    weighted_totals["cross_entropy_sum"] / denominator if denominator else None
+                )
+                weight_floor = (
+                    weighted_totals["target_entropy_floor_sum"] / denominator
+                    if denominator
+                    else None
+                )
+                fit["weighted_objective"] = {
+                    **weighted_totals,
+                    "cross_entropy": weight_ce,
+                    "target_entropy_floor": weight_floor,
+                    "excess_cross_entropy": weight_ce - weight_floor
+                    if weight_ce is not None and weight_floor is not None
+                    else None,
+                    "weight_tensor_sha256": report["weight_vector"]["tensor_sha256"],
+                }
         return ranked, ranking_metrics(ranked, report["mapping"], methods=(method,)), fit
 
     for seed in config["seeds"]:
         expected_initial = None
+        expected_endpoint_zero: dict[str, str] = {}
         for arm in config["arms"]:
             check(f"initialize_{seed}_{arm}")
             cfg.seed = seed
@@ -1532,6 +1838,15 @@ def _fit_source_recovery(
                 device,
                 tokenizer,
             )
+            if config["kind"] == SOURCE_LOSS_WEIGHTING["kind"]:
+                trainer.source_weights = applied_weights if arm == "weighted" else None
+                arm_report_objective = (
+                    "weighted_positive_terms"
+                    if arm == "weighted"
+                    else "original_unweighted_positive_terms"
+                )
+            if config["kind"] == SOURCE_LOSS_WEIGHTING["kind"] and optimizer.state:
+                raise ValueError("Fresh weighting optimizer must have zero initial state entries")
             if not trainer.use_bfloat16:
                 raise ValueError("Trainer did not enable BF16 autocast")
             key = f"{seed}_{arm}"
@@ -1544,6 +1859,11 @@ def _fit_source_recovery(
                 "endpoints": {},
                 "training": {},
             }
+            if config["kind"] == SOURCE_LOSS_WEIGHTING["kind"]:
+                arm_report["training_objective"] = arm_report_objective
+                arm_report["weight_tensor_sha256"] = report["weight_vector"]["tensor_sha256"]
+                arm_report["initial_optimizer_state_entries"] = len(optimizer.state)
+                arm_report["fresh_optimizer_verified"] = True
             report["arms"][key] = arm_report
             arm_output = output / key
             arm_output.mkdir()
@@ -1563,10 +1883,29 @@ def _fit_source_recovery(
                 arm_output=arm_output,
                 arm_report=arm_report,
                 study_started=study_started,
+                expected_endpoint_zero=expected_endpoint_zero,
             ):
                 check(f"evaluate_{key}_{trainer.global_step}")
                 evaluation_start = time.monotonic()
                 ranked, metrics, dev_fit = evaluate(model, "dev", arm, key, trainer.global_step)
+                if config["kind"] == SOURCE_LOSS_WEIGHTING["kind"] and trainer.global_step == 0:
+                    import hashlib
+
+                    zero_hash = hashlib.sha256(
+                        json_bytes([row["methods"][arm] for row in ranked])
+                    ).hexdigest()
+                    if expected_endpoint_zero and expected_endpoint_zero["sha256"] != zero_hash:
+                        raise ValueError(
+                            "Paired endpoint0 predictions differ ignoring method names"
+                        )
+                    is_second_arm = bool(expected_endpoint_zero)
+                    expected_endpoint_zero["sha256"] = zero_hash
+                    arm_report["endpoint_zero_prediction_sha256"] = zero_hash
+                    arm_report["paired_endpoint_zero_predictions_verified"] = is_second_arm
+                    if is_second_arm:
+                        report["arms"][f"{seed}_unweighted"][
+                            "paired_endpoint_zero_predictions_verified"
+                        ] = True
                 train_fit = None
                 if learning_curves and trainer.global_step == config["primary_endpoint"]:
                     train_started = time.monotonic()
@@ -1595,7 +1934,11 @@ def _fit_source_recovery(
                     raise ValueError("Head-only factors changed")
                 if arm == "head_only" and adaptation_norm != 0:
                     raise ValueError("Head-only encoder acquired an effective adapter delta")
-                if arm == "lora_head" and trainer.global_step and adaptation_norm == 0:
+                if (
+                    (arm == "lora_head" or config["kind"] == SOURCE_LOSS_WEIGHTING["kind"])
+                    and trainer.global_step
+                    and adaptation_norm == 0
+                ):
                     raise ValueError("LoRA arm has no effective adaptation")
                 check(f"save_{key}_{trainer.global_step}")
                 checkpoint = arm_output / f"endpoint_{trainer.global_step}.research.pt"
@@ -1627,6 +1970,9 @@ def _fit_source_recovery(
                         for n in sorted(state_names)
                     },
                 }
+                if config["kind"] == SOURCE_LOSS_WEIGHTING["kind"]:
+                    artifact["loss_weight_vector"] = report["weight_vector"]
+                    artifact["training_objective"] = arm_report["training_objective"]
                 atomic_write(checkpoint, lambda stream: torch.save(artifact, stream))
                 rank_path = arm_output / f"endpoint_{trainer.global_step}.rankings.json"
                 _write(rank_path, {"schema_version": 1, "records": ranked})
@@ -1723,7 +2069,10 @@ def _fit_source_recovery(
                         loaders, train=True, epoch=epoch, step_callback=step_checked
                     )
                     arm_report["training"][str(epoch)]["seconds"] = time.monotonic() - epoch_start
-                    if config["kind"] == SOURCE_DATA_SCALING["kind"]:
+                    if config["kind"] in {
+                        SOURCE_DATA_SCALING["kind"],
+                        SOURCE_LOSS_WEIGHTING["kind"],
+                    }:
                         arm_report["actual_scheduled_presentations"] = (
                             trainer.global_step * config["batch_size"]
                         )
