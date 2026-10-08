@@ -114,6 +114,19 @@ fixed neural budget require a future protocol; this bounded result does not
 predict that more updates would win. Human field labels remain empty. No
 automatic RL or neural website promotion follows from this pilot.
 
+The [subsequent broader-exposure diagnostic](../../research/results/book_source_data_scaling_20261008.json)
+retained the old training prefix and development cohort while using 16,384
+training groups in four passes at the same 4,096-update budget. It completed and
+passed CPU/GPU audit. LoRA mean final genre/topic group recall at 3 was 87.48% /
+92.41%, above the refitted lexical 84.97% / 91.09%; label macro was 77.38% /
+87.52%, slightly below lexical 77.72% / 88.54%, with opposing seed crossings.
+Source development loss kept improving at the final endpoint, with a smaller
+train/dev gap than the historical smaller-cohort run. These are descriptive
+historical comparisons: unique exposure and repetition changed together, with
+no fresh small-cohort controls. Preserve lexical controls and inspect support
+and source-objective limits; no automatic more-epoch, PPO or product promotion
+follows. Human semantic field labels and formal admission remain unresolved.
+
 ## Modern books beyond Gutenberg
 
 Open Library supplies modern **catalogue** coverage; publisher blurbs match field

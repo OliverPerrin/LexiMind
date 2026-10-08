@@ -1,0 +1,5255 @@
+{
+  "arms": {
+    "17_head_only": {
+      "actual_batch_inputs": {
+        "1": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_17_epoch_1.batch_hashes.json",
+          "sha256": "1a9e72d0627b7fcfa0978d35f4841876703da0b6cdb50975cddc2acf89cd770e"
+        },
+        "2": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_17_epoch_2.batch_hashes.json",
+          "sha256": "78ebecd320bc32e32df9a5354f1299bd2a99e09ab50755a62039d9d5349d8928"
+        },
+        "3": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_17_epoch_3.batch_hashes.json",
+          "sha256": "9424dd76f7371b1c1ade45816a71a423fefa97a11f7e3ff2572b3f97a325c933"
+        },
+        "4": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_17_epoch_4.batch_hashes.json",
+          "sha256": "82c9ea6af9e564b9af165d61e59a6b541b6e8ca48edd19d2866ea03495b7a550"
+        }
+      },
+      "actual_scheduled_presentations": 65536,
+      "actual_source_supervised_presentations": 65532,
+      "actual_updates": 4096,
+      "arm": "head_only",
+      "endpoints": {
+        "0": {
+          "actual_updates": 0,
+          "artifact": {
+            "bytes": 1210957,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_0.research.pt",
+            "sha256": "2d935043cebf87fe35d6f750f311f5a0d9039a6ba17b8aeb731b9de94d661ad1"
+          },
+          "dev_fit": {
+            "cross_entropy": 2.1017343252897263,
+            "cross_entropy_sum": 2152.1759490966797,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 1.8684048759751022,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 4.550438394999219,
+          "evaluation_and_save_seconds": 4.550049744999342,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 19696,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_0.receipt.json",
+            "sha256": "23e4fdc5a1a44807a902300def197cbc086a4817fa6bf157c811c2b1b087ebda"
+          },
+          "metrics": {
+            "head_only": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.5012919896640826,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.7952196382428941,
+                "label_macro_recall_at_k": {
+                  "1": 0.3298681859429523,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.1525879917184265,
+                  "3": 0.4509316770186336,
+                  "5": 0.8347826086956521
+                },
+                "group_macro_reciprocal_rank": 0.42627033422064364,
+                "label_macro_recall_at_k": {
+                  "1": 0.06977912684060965,
+                  "3": 0.34704694355138077,
+                  "5": 0.7303085194294716
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.024787535410764873,
+                  "3": 0.10372993389990558,
+                  "5": 0.3191218130311615
+                },
+                "group_macro_reciprocal_rank": 0.22170148862783462,
+                "label_macro_recall_at_k": {
+                  "1": 0.07142857142857142,
+                  "3": 0.12357814911721295,
+                  "5": 0.2910295591159796
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.028803869832893576,
+                  "3": 0.0850923482849604,
+                  "5": 0.14204045734388743
+                },
+                "group_macro_reciprocal_rank": 0.1617019705373941,
+                "label_macro_recall_at_k": {
+                  "1": 0.05248379545054736,
+                  "3": 0.11808143547273983,
+                  "5": 0.21784280663285926
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10873330,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_0.rankings.json",
+            "sha256": "177f55a3701761274f7148cb683c10883c85272d23058bc45ba743874cf444ec"
+          }
+        },
+        "1024": {
+          "actual_updates": 1024,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_1024.research.pt",
+            "sha256": "f7d8a105ee3a05eed99a5f0c72af624d1ee84c00f30c8b245e4dc88899cea0ff"
+          },
+          "dev_fit": {
+            "cross_entropy": 1.2098171515390277,
+            "cross_entropy_sum": 1238.8527631759644,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.9764877022244036,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 50.22650888899989,
+          "evaluation_and_save_seconds": 4.077117503999034,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 19628,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_1024.receipt.json",
+            "sha256": "20e34fd438f0fa958a635ef6597201d952afe1f792c2ad063df0271c6457c92b"
+          },
+          "metrics": {
+            "head_only": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.6854005167958657,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.8863049095607239,
+                "label_macro_recall_at_k": {
+                  "1": 0.3333333333333333,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8501035196687371,
+                  "3": 0.9604554865424432,
+                  "5": 0.9850931677018634
+                },
+                "group_macro_reciprocal_rank": 0.9597426796805677,
+                "label_macro_recall_at_k": {
+                  "1": 0.26845840867992765,
+                  "3": 0.5648928142685646,
+                  "5": 0.8171428571428571
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.41180358829084046,
+                  "3": 0.6312086874409822,
+                  "5": 0.8376298394711993
+                },
+                "group_macro_reciprocal_rank": 0.7202253836814743,
+                "label_macro_recall_at_k": {
+                  "1": 0.18210714558188856,
+                  "3": 0.32733374516915514,
+                  "5": 0.5637449851735566
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.35993843447669305,
+                  "3": 0.6112576956904133,
+                  "5": 0.7104221635883905
+                },
+                "group_macro_reciprocal_rank": 0.5925821069340759,
+                "label_macro_recall_at_k": {
+                  "1": 0.16971668168137602,
+                  "3": 0.31528446831310347,
+                  "5": 0.3895168758580077
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10875132,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_1024.rankings.json",
+            "sha256": "ac9ca1f9509ea942ca8bbbf5006b15e672c7466b4af058e0f2d7d90eb12570d9"
+          }
+        },
+        "2048": {
+          "actual_updates": 2048,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_2048.research.pt",
+            "sha256": "b992a552b85237188382559258e949e4cb0cc6a79397369e7efd2f5f8f4bbd4b"
+          },
+          "dev_fit": {
+            "cross_entropy": 1.0518111428245902,
+            "cross_entropy_sum": 1077.0546102523804,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.8184816935099661,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 95.93560702200011,
+          "evaluation_and_save_seconds": 4.097934202000033,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 19961,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_2048.receipt.json",
+            "sha256": "8789ec3cc40e1e6623b099a2338ced0959144aec5cca35b7a84195b64137f482"
+          },
+          "metrics": {
+            "head_only": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.6854005167958657,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.888242894056848,
+                "label_macro_recall_at_k": {
+                  "1": 0.3333333333333333,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8569358178053831,
+                  "3": 0.9753623188405798,
+                  "5": 0.9910973084886129
+                },
+                "group_macro_reciprocal_rank": 0.9660573794735284,
+                "label_macro_recall_at_k": {
+                  "1": 0.2895853784551795,
+                  "3": 0.726713542559881,
+                  "5": 0.902798833819242
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.4620868744098206,
+                  "3": 0.7499527856468367,
+                  "5": 0.8874409820585457
+                },
+                "group_macro_reciprocal_rank": 0.7774593992724304,
+                "label_macro_recall_at_k": {
+                  "1": 0.23401240473628732,
+                  "3": 0.4747831487412798,
+                  "5": 0.6472737768847592
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.4580035180299033,
+                  "3": 0.7407651715039578,
+                  "5": 0.8218997361477572
+                },
+                "group_macro_reciprocal_rank": 0.6898013906460444,
+                "label_macro_recall_at_k": {
+                  "1": 0.22628967963021082,
+                  "3": 0.4299682578645509,
+                  "5": 0.5361102150293612
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10875766,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_2048.rankings.json",
+            "sha256": "3f141be04479ad5539ec4e006270183a52c127dc2b8a231ff4c68a744a9f3133"
+          }
+        },
+        "4096": {
+          "actual_updates": 4096,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_4096.research.pt",
+            "sha256": "8ad8a1bab5c54a68229f4a426689671ddad235a1e52af333bc254d1edaa80386"
+          },
+          "dev_fit": {
+            "cross_entropy": 0.8988290848210454,
+            "cross_entropy_sum": 920.4009828567505,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.6654996355064213,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 230.29567499899895,
+          "evaluation_and_save_seconds": 50.55614108000009,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 36128,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_4096.receipt.json",
+            "sha256": "21bd8dec742cecb549f875cb4faff91ba81f85eb3622114fb321f7a611c4280c"
+          },
+          "metrics": {
+            "head_only": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.7241602067183462,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.9166666666666671,
+                "label_macro_recall_at_k": {
+                  "1": 0.4221417679361605,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8606625258799172,
+                  "3": 0.9786749482401657,
+                  "5": 0.9942028985507245
+                },
+                "group_macro_reciprocal_rank": 0.9679917184265012,
+                "label_macro_recall_at_k": {
+                  "1": 0.30481682365532103,
+                  "3": 0.78055679414623,
+                  "5": 0.9451895043731778
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.5180358829084043,
+                  "3": 0.8198300283286116,
+                  "5": 0.9148253068932956
+                },
+                "group_macro_reciprocal_rank": 0.8201953774899949,
+                "label_macro_recall_at_k": {
+                  "1": 0.3092163575105415,
+                  "3": 0.5934176034800204,
+                  "5": 0.7207605321197846
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.5314423922603343,
+                  "3": 0.8080474934036941,
+                  "5": 0.895778364116095
+                },
+                "group_macro_reciprocal_rank": 0.7565144247512708,
+                "label_macro_recall_at_k": {
+                  "1": 0.28822506231866013,
+                  "3": 0.54893508416435,
+                  "5": 0.7072172942246757
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10878126,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/endpoint_4096.rankings.json",
+            "sha256": "edf6a623b380063b2529ec53c71d47cae5e99fec30d772849ef18aec217776e8"
+          }
+        }
+      },
+      "final_train_fit": {
+        "evaluation_and_save_seconds": 46.539748007000526,
+        "full_metric_receipt": {
+          "bytes": 14801,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/final_train.receipt.json",
+          "sha256": "f06c206c73d19b6b4f2028b3a067bdeb65cc30ef5333a36dccfcbd7bdaceea64"
+        },
+        "metrics": {
+          "head_only": {
+            "audience": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 3
+              },
+              "evaluated_groups": 4096,
+              "excluded_groups_without_observed_positives": 12288,
+              "group_macro_recall_at_k": {
+                "1": 0.7270100911458334,
+                "3": 1.0,
+                "5": 1.0
+              },
+              "group_macro_reciprocal_rank": 0.9347330729166713,
+              "label_macro_recall_at_k": {
+                "1": 0.45188625041151603,
+                "3": 1.0,
+                "5": 1.0
+              },
+              "observed_positive_count": 5499,
+              "zero_evaluation_support_labels": []
+            },
+            "form": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 12862,
+              "excluded_groups_without_observed_positives": 3522,
+              "group_macro_recall_at_k": {
+                "1": 0.8498937438449184,
+                "3": 0.9826880215622245,
+                "5": 0.997246410615249
+              },
+              "group_macro_reciprocal_rank": 0.9607546408393883,
+              "label_macro_recall_at_k": {
+                "1": 0.2950758378809849,
+                "3": 0.7881736869160746,
+                "5": 0.9712888666361715
+              },
+              "observed_positive_count": 15354,
+              "zero_evaluation_support_labels": []
+            },
+            "genre": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 5759,
+              "excluded_groups_without_observed_positives": 10625,
+              "group_macro_recall_at_k": {
+                "1": 0.516397522718067,
+                "3": 0.8106413150431214,
+                "5": 0.9076807316084979
+              },
+              "group_macro_reciprocal_rank": 0.821131650950195,
+              "label_macro_recall_at_k": {
+                "1": 0.29920479624075663,
+                "3": 0.5586349634455263,
+                "5": 0.6719426697967618
+              },
+              "observed_positive_count": 9534,
+              "zero_evaluation_support_labels": []
+            },
+            "topic": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 6030,
+              "excluded_groups_without_observed_positives": 10354,
+              "group_macro_recall_at_k": {
+                "1": 0.5334162520729693,
+                "3": 0.8024599226091763,
+                "5": 0.9015892758430073
+              },
+              "group_macro_reciprocal_rank": 0.7680436366935935,
+              "label_macro_recall_at_k": {
+                "1": 0.32683443174149995,
+                "3": 0.5889324371722942,
+                "5": 0.7299754987436361
+              },
+              "observed_positive_count": 8072,
+              "zero_evaluation_support_labels": []
+            }
+          }
+        },
+        "objective": {
+          "cross_entropy": 0.9153211948774546,
+          "cross_entropy_sum": 14995.707135677338,
+          "eligible_rows": 16383,
+          "excess_cross_entropy": 0.6811968925809392,
+          "excluded_rows": 1,
+          "mode": "eval_bf16_autocast",
+          "row_weighting": "eligible_row_count",
+          "target_entropy_floor": 0.23412430229651537,
+          "target_entropy_floor_sum": 3835.6584445238113
+        },
+        "rankings": {
+          "bytes": 174169297,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/17_head_only/final_train.rankings.json",
+          "sha256": "c28da6074a5ffb0382b65f13b393b1fb4987dcafeb84d549bcff1dd0ec627e76"
+        }
+      },
+      "frozen_base_verified_all_endpoints": true,
+      "head_only_factors_unchanged": true,
+      "seed": 17,
+      "training": {
+        "1": {
+          "seconds": 40.98314738299996,
+          "source_recovery_loss": 1.4182700493838638,
+          "total_loss": 1.4182700493838638
+        },
+        "2": {
+          "seconds": 41.05278615399948,
+          "source_recovery_loss": 1.1485198951559141,
+          "total_loss": 1.1485198951559141
+        },
+        "3": {
+          "seconds": 41.30143986300027,
+          "source_recovery_loss": 1.0257105398341082,
+          "total_loss": 1.0257105398341082
+        },
+        "4": {
+          "seconds": 41.04101304299911,
+          "source_recovery_loss": 0.9473032485111617,
+          "total_loss": 0.9473032485111617
+        }
+      }
+    },
+    "17_lora_head": {
+      "actual_batch_inputs": {
+        "1": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_17_epoch_1.batch_hashes.json",
+          "sha256": "1a9e72d0627b7fcfa0978d35f4841876703da0b6cdb50975cddc2acf89cd770e"
+        },
+        "2": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_17_epoch_2.batch_hashes.json",
+          "sha256": "78ebecd320bc32e32df9a5354f1299bd2a99e09ab50755a62039d9d5349d8928"
+        },
+        "3": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_17_epoch_3.batch_hashes.json",
+          "sha256": "9424dd76f7371b1c1ade45816a71a423fefa97a11f7e3ff2572b3f97a325c933"
+        },
+        "4": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_17_epoch_4.batch_hashes.json",
+          "sha256": "82c9ea6af9e564b9af165d61e59a6b541b6e8ca48edd19d2866ea03495b7a550"
+        }
+      },
+      "actual_scheduled_presentations": 65536,
+      "actual_source_supervised_presentations": 65532,
+      "actual_updates": 4096,
+      "arm": "lora_head",
+      "endpoints": {
+        "0": {
+          "actual_updates": 0,
+          "artifact": {
+            "bytes": 1210957,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_0.research.pt",
+            "sha256": "a19bde0370c47e9059cebb4b80db48c9f8e1c4cb970879ca61850b950a37c9e4"
+          },
+          "dev_fit": {
+            "cross_entropy": 2.1017343252897263,
+            "cross_entropy_sum": 2152.1759490966797,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 1.8684048759751022,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 3.8190637569987302,
+          "evaluation_and_save_seconds": 3.818679203001011,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 19697,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_0.receipt.json",
+            "sha256": "3ecf70f86175fba11d48d1d20dc300031fba7e1038e01aa39ef6b3a27187a00a"
+          },
+          "metrics": {
+            "lora_head": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.5012919896640826,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.7952196382428941,
+                "label_macro_recall_at_k": {
+                  "1": 0.3298681859429523,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.1525879917184265,
+                  "3": 0.4509316770186336,
+                  "5": 0.8347826086956521
+                },
+                "group_macro_reciprocal_rank": 0.42627033422064364,
+                "label_macro_recall_at_k": {
+                  "1": 0.06977912684060965,
+                  "3": 0.34704694355138077,
+                  "5": 0.7303085194294716
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.024787535410764873,
+                  "3": 0.10372993389990558,
+                  "5": 0.3191218130311615
+                },
+                "group_macro_reciprocal_rank": 0.22170148862783462,
+                "label_macro_recall_at_k": {
+                  "1": 0.07142857142857142,
+                  "3": 0.12357814911721295,
+                  "5": 0.2910295591159796
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.028803869832893576,
+                  "3": 0.0850923482849604,
+                  "5": 0.14204045734388743
+                },
+                "group_macro_reciprocal_rank": 0.1617019705373941,
+                "label_macro_recall_at_k": {
+                  "1": 0.05248379545054736,
+                  "3": 0.11808143547273983,
+                  "5": 0.21784280663285926
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10873330,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_0.rankings.json",
+            "sha256": "3605a0bb8fa51b204e0cd12aece8ec728db9b400b976e278fd74cd87bd40f9e3"
+          }
+        },
+        "1024": {
+          "actual_updates": 1024,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_1024.research.pt",
+            "sha256": "7c63799a6606531d68baaca5754bad826c016c16a9a733fddad9b12f1641da5a"
+          },
+          "dev_fit": {
+            "cross_entropy": 0.7655457886867225,
+            "cross_entropy_sum": 783.9188876152039,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.5322163393720984,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 47.72698114640847,
+          "elapsed_seconds": 95.25717458599865,
+          "evaluation_and_save_seconds": 4.094101474998752,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 20289,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_1024.receipt.json",
+            "sha256": "aee5e2bbfd0f6cb1a9b327a99d84d437c9e2b9e78db678ae732abf9beb5f27c8"
+          },
+          "metrics": {
+            "lora_head": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.8036175710594315,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.9631782945736436,
+                "label_macro_recall_at_k": {
+                  "1": 0.5846800071099136,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8708074534161491,
+                  "3": 0.987784679089027,
+                  "5": 0.9979296066252588
+                },
+                "group_macro_reciprocal_rank": 0.977639751552795,
+                "label_macro_recall_at_k": {
+                  "1": 0.4315224588931414,
+                  "3": 0.8639067055393586,
+                  "5": 0.9827405247813411
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.5402266288951844,
+                  "3": 0.8156751652502359,
+                  "5": 0.9094900849858358
+                },
+                "group_macro_reciprocal_rank": 0.8409709192287093,
+                "label_macro_recall_at_k": {
+                  "1": 0.3245914871619856,
+                  "3": 0.6162174217031815,
+                  "5": 0.7590462116278316
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.6141160949868075,
+                  "3": 0.862796833773087,
+                  "5": 0.9131486367634124
+                },
+                "group_macro_reciprocal_rank": 0.8309041515505894,
+                "label_macro_recall_at_k": {
+                  "1": 0.41345171969504413,
+                  "3": 0.720856316680307,
+                  "5": 0.7796996590744858
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10887350,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_1024.rankings.json",
+            "sha256": "d071fd5ebb9d111f4fa7fc44bbae56ebcf0cacbfbf3115916efceaa2502169b7"
+          }
+        },
+        "2048": {
+          "actual_updates": 2048,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_2048.research.pt",
+            "sha256": "8e61b80897b40d6e95ed7ba68eff13bbba1a81e12567a8b84c7dff042a8c9a06"
+          },
+          "dev_fit": {
+            "cross_entropy": 0.65906468546018,
+            "cross_entropy_sum": 674.8822379112244,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.425735236145556,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 61.71565915424523,
+          "elapsed_seconds": 186.81003968299956,
+          "evaluation_and_save_seconds": 4.027814365999802,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 20389,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_2048.receipt.json",
+            "sha256": "4c3a87ab90fd13b1a514e593d3143eead438795a131c7183163793c4cdad1efb"
+          },
+          "metrics": {
+            "lora_head": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.768733850129199,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.9437984496124033,
+                "label_macro_recall_at_k": {
+                  "1": 0.5123759273291983,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8786749482401657,
+                  "3": 0.9906832298136646,
+                  "5": 0.998550724637681
+                },
+                "group_macro_reciprocal_rank": 0.9839544513457558,
+                "label_macro_recall_at_k": {
+                  "1": 0.469137409032329,
+                  "3": 0.9145519256527204,
+                  "5": 0.9811661807580175
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.5728045325779038,
+                  "3": 0.8385741265344664,
+                  "5": 0.934183191690274
+                },
+                "group_macro_reciprocal_rank": 0.8735779486487701,
+                "label_macro_recall_at_k": {
+                  "1": 0.39908504305007225,
+                  "3": 0.6735297399965893,
+                  "5": 0.8263113765560451
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.7011873350923484,
+                  "3": 0.9140281442392261,
+                  "5": 0.9520668425681618
+                },
+                "group_macro_reciprocal_rank": 0.8935965383194934,
+                "label_macro_recall_at_k": {
+                  "1": 0.5722212173889325,
+                  "3": 0.8484985466126156,
+                  "5": 0.898230890345864
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10894825,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_2048.rankings.json",
+            "sha256": "752c7fa0c6d560afd5dcda48215f4e3d5f5d1fc55b3cdb5bc1f2fc3f79fbfd42"
+          }
+        },
+        "4096": {
+          "actual_updates": 4096,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_4096.research.pt",
+            "sha256": "5179c812b6b097b833bdfe7aeab891cad49777035214aff7e2e0d9b786687cb7"
+          },
+          "dev_fit": {
+            "cross_entropy": 0.6122090020217001,
+            "cross_entropy_sum": 626.902018070221,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.3788795527070761,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 82.07184201564968,
+          "elapsed_seconds": 412.7610284829989,
+          "evaluation_and_save_seconds": 50.96894511699975,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 36399,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_4096.receipt.json",
+            "sha256": "a82022a1cc15b3e749ab27faad23090132b01530e765265c5aa69434ed3cac1c"
+          },
+          "metrics": {
+            "lora_head": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.7784237726098192,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.950904392764858,
+                "label_macro_recall_at_k": {
+                  "1": 0.6154649977079883,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8726708074534162,
+                  "3": 0.991304347826087,
+                  "5": 0.9991718426501034
+                },
+                "group_macro_reciprocal_rank": 0.9798136645962734,
+                "label_macro_recall_at_k": {
+                  "1": 0.5347964737432044,
+                  "3": 0.9497934653065566,
+                  "5": 0.9913702623906706
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.6084513692162419,
+                  "3": 0.8805949008498583,
+                  "5": 0.9441926345609065
+                },
+                "group_macro_reciprocal_rank": 0.9046888349296279,
+                "label_macro_recall_at_k": {
+                  "1": 0.45580969607630595,
+                  "3": 0.7933197377586866,
+                  "5": 0.8870933068725874
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.7135004397537381,
+                  "3": 0.91622691292876,
+                  "5": 0.9547053649956024
+                },
+                "group_macro_reciprocal_rank": 0.8986851172867003,
+                "label_macro_recall_at_k": {
+                  "1": 0.5863972216791918,
+                  "3": 0.8604050766306288,
+                  "5": 0.9109345786716152
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10906427,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/endpoint_4096.rankings.json",
+            "sha256": "39801514c7fec3e686d9bd9c48e8b71c80257d2d4540d6cf3b0665e7c9d17d0b"
+          }
+        }
+      },
+      "final_train_fit": {
+        "evaluation_and_save_seconds": 46.936905335998745,
+        "full_metric_receipt": {
+          "bytes": 15018,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/final_train.receipt.json",
+          "sha256": "7f7de4adddd78aa7259a1b5ac08a266c9343a607309898b825d6d545d2c4d3c6"
+        },
+        "metrics": {
+          "lora_head": {
+            "audience": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 3
+              },
+              "evaluated_groups": 4096,
+              "excluded_groups_without_observed_positives": 12288,
+              "group_macro_recall_at_k": {
+                "1": 0.7941487630208335,
+                "3": 1.0,
+                "5": 1.0
+              },
+              "group_macro_reciprocal_rank": 0.9761555989583344,
+              "label_macro_recall_at_k": {
+                "1": 0.6772455701037337,
+                "3": 1.0,
+                "5": 1.0
+              },
+              "observed_positive_count": 5499,
+              "zero_evaluation_support_labels": []
+            },
+            "form": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 12862,
+              "excluded_groups_without_observed_positives": 3522,
+              "group_macro_recall_at_k": {
+                "1": 0.8928886124501121,
+                "3": 0.9955359456797801,
+                "5": 0.9993067433784273
+              },
+              "group_macro_reciprocal_rank": 0.9915085782408131,
+              "label_macro_recall_at_k": {
+                "1": 0.5736576409930382,
+                "3": 0.9674802494104443,
+                "5": 0.9942881826451586
+              },
+              "observed_positive_count": 15354,
+              "zero_evaluation_support_labels": []
+            },
+            "genre": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 5759,
+              "excluded_groups_without_observed_positives": 10625,
+              "group_macro_recall_at_k": {
+                "1": 0.6390432366730395,
+                "3": 0.9081148347514039,
+                "5": 0.968834288360249
+              },
+              "group_macro_reciprocal_rank": 0.9245728688166601,
+              "label_macro_recall_at_k": {
+                "1": 0.45248791353291906,
+                "3": 0.7867432010289367,
+                "5": 0.908230466558403
+              },
+              "observed_positive_count": 9534,
+              "zero_evaluation_support_labels": []
+            },
+            "topic": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 6030,
+              "excluded_groups_without_observed_positives": 10354,
+              "group_macro_recall_at_k": {
+                "1": 0.7435876174682157,
+                "3": 0.9519624101713658,
+                "5": 0.9820895522388061
+              },
+              "group_macro_reciprocal_rank": 0.9345142392157308,
+              "label_macro_recall_at_k": {
+                "1": 0.6751357469924091,
+                "3": 0.9316739716197805,
+                "5": 0.9691111918389967
+              },
+              "observed_positive_count": 8072,
+              "zero_evaluation_support_labels": []
+            }
+          }
+        },
+        "objective": {
+          "cross_entropy": 0.5254084751394681,
+          "cross_entropy_sum": 8607.767048209906,
+          "eligible_rows": 16383,
+          "excess_cross_entropy": 0.2912841728429527,
+          "excluded_rows": 1,
+          "mode": "eval_bf16_autocast",
+          "row_weighting": "eligible_row_count",
+          "target_entropy_floor": 0.23412430229651537,
+          "target_entropy_floor_sum": 3835.6584445238113
+        },
+        "rankings": {
+          "bytes": 174591456,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/17_lora_head/final_train.rankings.json",
+          "sha256": "1befcf4a1df7a50482da0b2d0b3032456f1e01379bd9a17a7a68c69738786d83"
+        }
+      },
+      "frozen_base_verified_all_endpoints": true,
+      "head_only_factors_unchanged": null,
+      "seed": 17,
+      "training": {
+        "1": {
+          "seconds": 86.76430084700041,
+          "source_recovery_loss": 1.0653192051977385,
+          "total_loss": 1.0653192051977385
+        },
+        "2": {
+          "seconds": 86.9629359669998,
+          "source_recovery_loss": 0.6962217041291296,
+          "total_loss": 0.6962217041291296
+        },
+        "3": {
+          "seconds": 86.8530252799992,
+          "source_recovery_loss": 0.6177552791777998,
+          "total_loss": 0.6177552791777998
+        },
+        "4": {
+          "seconds": 87.00575635999849,
+          "source_recovery_loss": 0.5684776037523989,
+          "total_loss": 0.5684776037523989
+        }
+      }
+    },
+    "29_head_only": {
+      "actual_batch_inputs": {
+        "1": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_29_epoch_1.batch_hashes.json",
+          "sha256": "b2038264f1aced0bda620f63ebb4ecd240afa6aca19b41d744e4e17ded3bdc01"
+        },
+        "2": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_29_epoch_2.batch_hashes.json",
+          "sha256": "c1b9d535d296b7957a5f0be67f30940f29d18836551532300d76afac09b3e2ba"
+        },
+        "3": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_29_epoch_3.batch_hashes.json",
+          "sha256": "1a6ab0b5b1e04629b6ee73f57eb116a8ea0aa7d3ba2ed9c1275d65fe5dafa245"
+        },
+        "4": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_29_epoch_4.batch_hashes.json",
+          "sha256": "5022e3b37655326f4453eae2eb1f628d7e71cb161eb77582e46819174066df02"
+        }
+      },
+      "actual_scheduled_presentations": 65536,
+      "actual_source_supervised_presentations": 65532,
+      "actual_updates": 4096,
+      "arm": "head_only",
+      "endpoints": {
+        "0": {
+          "actual_updates": 0,
+          "artifact": {
+            "bytes": 1210957,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_0.research.pt",
+            "sha256": "bd0593a8f5293faf8d2b531ac2767ea066a7f783956fd9d0cb75be8a7dc84d4f"
+          },
+          "dev_fit": {
+            "cross_entropy": 2.10369585826993,
+            "cross_entropy_sum": 2154.184558868408,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 1.8703664089553058,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 3.8722060860000056,
+          "evaluation_and_save_seconds": 3.8717851510009496,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 19601,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_0.receipt.json",
+            "sha256": "3bb70bb06db98db5c25c2994db0114a31fd0be46141ab6ca13230243f18cc8c7"
+          },
+          "metrics": {
+            "head_only": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.2590439276485788,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.6679586563307494,
+                "label_macro_recall_at_k": {
+                  "1": 0.3240277660838409,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.02815734989648033,
+                  "3": 0.5807453416149069,
+                  "5": 0.850103519668737
+                },
+                "group_macro_reciprocal_rank": 0.35813664596273254,
+                "label_macro_recall_at_k": {
+                  "1": 0.10781341107871721,
+                  "3": 0.44232756393696715,
+                  "5": 0.7280935285506608
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.0453257790368272,
+                  "3": 0.14329556185080264,
+                  "5": 0.25
+                },
+                "group_macro_reciprocal_rank": 0.2153763611270698,
+                "label_macro_recall_at_k": {
+                  "1": 0.06590136054421769,
+                  "3": 0.15212740347280462,
+                  "5": 0.29306891936236446
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.018469656992084433,
+                  "3": 0.07387862796833773,
+                  "5": 0.1319261213720317
+                },
+                "group_macro_reciprocal_rank": 0.13561936068908884,
+                "label_macro_recall_at_k": {
+                  "1": 0.05217391304347826,
+                  "3": 0.16262662319633833,
+                  "5": 0.23175527407946084
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10875872,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_0.rankings.json",
+            "sha256": "8e696297b04f17323cbf70fa95912a3cf364804a85a345665888b79ba10e03b0"
+          }
+        },
+        "1024": {
+          "actual_updates": 1024,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_1024.research.pt",
+            "sha256": "fbea1000590d7a2a60d5007cfd4a7cad78e1f8d429da576e8bfbd94c17bd6b14"
+          },
+          "dev_fit": {
+            "cross_entropy": 1.2092361161485314,
+            "cross_entropy_sum": 1238.2577829360962,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.9759066668339074,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 49.327975647998755,
+          "evaluation_and_save_seconds": 3.766989846000797,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 19643,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_1024.receipt.json",
+            "sha256": "5ab7c289c31b55d9a9e5a6edcbfe427c0c8113848420064a6b4a8e991c7c24af"
+          },
+          "metrics": {
+            "head_only": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.6854005167958657,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.8863049095607239,
+                "label_macro_recall_at_k": {
+                  "1": 0.3333333333333333,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8525879917184266,
+                  "3": 0.9592132505175984,
+                  "5": 0.9857142857142858
+                },
+                "group_macro_reciprocal_rank": 0.9603637976929901,
+                "label_macro_recall_at_k": {
+                  "1": 0.27134221500535116,
+                  "3": 0.5534642428399932,
+                  "5": 0.8228571428571428
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.40047214353163363,
+                  "3": 0.6389990557129369,
+                  "5": 0.830547686496695
+                },
+                "group_macro_reciprocal_rank": 0.7143641611771923,
+                "label_macro_recall_at_k": {
+                  "1": 0.17089077425833388,
+                  "3": 0.33694002800059014,
+                  "5": 0.553532566872903
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.3652154793315743,
+                  "3": 0.6020228671943711,
+                  "5": 0.7060246262093226
+                },
+                "group_macro_reciprocal_rank": 0.5961191277107365,
+                "label_macro_recall_at_k": {
+                  "1": 0.17216034725024593,
+                  "3": 0.3074135279116676,
+                  "5": 0.38177848413787335
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10874109,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_1024.rankings.json",
+            "sha256": "77729ad6a1b90a52ffd28a5381cfeda5dd97463ef248f63289e91b68d1e8efaa"
+          }
+        },
+        "2048": {
+          "actual_updates": 2048,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_2048.research.pt",
+            "sha256": "51428f546dab9d0ff1de6bc203565ba7fa8442e963388cfa531b1e348e35c62e"
+          },
+          "dev_fit": {
+            "cross_entropy": 1.050192835740745,
+            "cross_entropy_sum": 1075.397463798523,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.816863386426121,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 94.86836733399832,
+          "evaluation_and_save_seconds": 3.7957778830004827,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 20022,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_2048.receipt.json",
+            "sha256": "0b1c56544da670c8601d3dc08a1ca97ab863e8a47286e374f8448f838e2ff392"
+          },
+          "metrics": {
+            "head_only": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.6854005167958657,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.8863049095607239,
+                "label_macro_recall_at_k": {
+                  "1": 0.33628020543908393,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8575569358178055,
+                  "3": 0.9747412008281574,
+                  "5": 0.9904761904761905
+                },
+                "group_macro_reciprocal_rank": 0.9660573794735284,
+                "label_macro_recall_at_k": {
+                  "1": 0.28958085765951946,
+                  "3": 0.7246127022237465,
+                  "5": 0.8970845481049563
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.4540604343720492,
+                  "3": 0.7364966949952786,
+                  "5": 0.878470254957507
+                },
+                "group_macro_reciprocal_rank": 0.7646294608759198,
+                "label_macro_recall_at_k": {
+                  "1": 0.23512337099481082,
+                  "3": 0.4626118320390039,
+                  "5": 0.6481568224106617
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.4553649956024626,
+                  "3": 0.7302110817941951,
+                  "5": 0.8179419525065963
+                },
+                "group_macro_reciprocal_rank": 0.689483742311985,
+                "label_macro_recall_at_k": {
+                  "1": 0.22319901533551398,
+                  "3": 0.42449264949550486,
+                  "5": 0.532541547926524
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10875507,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_2048.rankings.json",
+            "sha256": "0d95f0d2e2adb113e88ea746f493ff3ac7c0ee96daafcdc01b4e26839454e566"
+          }
+        },
+        "4096": {
+          "actual_updates": 4096,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_4096.research.pt",
+            "sha256": "09367b5cb46a51307db3716187e425f383596011fd2df891275219bff8220141"
+          },
+          "dev_fit": {
+            "cross_entropy": 0.8939027590677142,
+            "cross_entropy_sum": 915.3564252853394,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.6605733097530901,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 229.16352786399875,
+          "evaluation_and_save_seconds": 50.9832311500013,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 36123,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_4096.receipt.json",
+            "sha256": "aafe53fa5be46e85da35401cd77290b849804d22d70ed40e4a4180784ddd5437"
+          },
+          "metrics": {
+            "head_only": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.7125322997416021,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.9102067183462537,
+                "label_macro_recall_at_k": {
+                  "1": 0.39991954571393834,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8631469979296067,
+                  "3": 0.979296066252588,
+                  "5": 0.9942028985507245
+                },
+                "group_macro_reciprocal_rank": 0.9704761904761906,
+                "label_macro_recall_at_k": {
+                  "1": 0.30801169654118427,
+                  "3": 0.7862710798605157,
+                  "5": 0.9451895043731778
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.5163833805476866,
+                  "3": 0.8087346553352216,
+                  "5": 0.9110481586402265
+                },
+                "group_macro_reciprocal_rank": 0.820542842426695,
+                "label_macro_recall_at_k": {
+                  "1": 0.3097973856777766,
+                  "3": 0.5829363919355431,
+                  "5": 0.7162062309312717
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.5657431838170626,
+                  "3": 0.8150835532102025,
+                  "5": 0.8931398416886543
+                },
+                "group_macro_reciprocal_rank": 0.780873371058047,
+                "label_macro_recall_at_k": {
+                  "1": 0.32460328506173936,
+                  "3": 0.5648579944622769,
+                  "5": 0.7042623948630333
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10878079,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/endpoint_4096.rankings.json",
+            "sha256": "1006575731ae1618e28e876406202269483763ea0653d0fb406ae8d34137dbdd"
+          }
+        }
+      },
+      "final_train_fit": {
+        "evaluation_and_save_seconds": 47.10110162700039,
+        "full_metric_receipt": {
+          "bytes": 14776,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/final_train.receipt.json",
+          "sha256": "5631c8d4e3c9a05f717e01368ad5afaa6bbd10cdfba26c2536145b553f20ca0f"
+        },
+        "metrics": {
+          "head_only": {
+            "audience": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 3
+              },
+              "evaluated_groups": 4096,
+              "excluded_groups_without_observed_positives": 12288,
+              "group_macro_recall_at_k": {
+                "1": 0.7204182942708334,
+                "3": 1.0,
+                "5": 1.0
+              },
+              "group_macro_reciprocal_rank": 0.9307047526041716,
+              "label_macro_recall_at_k": {
+                "1": 0.43550941817977673,
+                "3": 1.0,
+                "5": 1.0
+              },
+              "observed_positive_count": 5499,
+              "zero_evaluation_support_labels": []
+            },
+            "form": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 12862,
+              "excluded_groups_without_observed_positives": 3522,
+              "group_macro_recall_at_k": {
+                "1": 0.8512154667495989,
+                "3": 0.9826880215622242,
+                "5": 0.9973241590214066
+              },
+              "group_macro_reciprocal_rank": 0.9620822874321565,
+              "label_macro_recall_at_k": {
+                "1": 0.29663942935005866,
+                "3": 0.7878353768660536,
+                "5": 0.970555969593111
+              },
+              "observed_positive_count": 15354,
+              "zero_evaluation_support_labels": []
+            },
+            "genre": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 5759,
+              "excluded_groups_without_observed_positives": 10625,
+              "group_macro_recall_at_k": {
+                "1": 0.5140041673901746,
+                "3": 0.8061932048388029,
+                "5": 0.907727035943741
+              },
+              "group_macro_reciprocal_rank": 0.8210165598904962,
+              "label_macro_recall_at_k": {
+                "1": 0.29268985536366504,
+                "3": 0.5520142252509915,
+                "5": 0.6737457959288811
+              },
+              "observed_positive_count": 9534,
+              "zero_evaluation_support_labels": []
+            },
+            "topic": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 6030,
+              "excluded_groups_without_observed_positives": 10354,
+              "group_macro_recall_at_k": {
+                "1": 0.5381978993919301,
+                "3": 0.8093421779988942,
+                "5": 0.9029712548369265
+              },
+              "group_macro_reciprocal_rank": 0.7759101840317068,
+              "label_macro_recall_at_k": {
+                "1": 0.342906773955783,
+                "3": 0.6032047446422446,
+                "5": 0.7357055589889862
+              },
+              "observed_positive_count": 8072,
+              "zero_evaluation_support_labels": []
+            }
+          }
+        },
+        "objective": {
+          "cross_entropy": 0.913987982551788,
+          "cross_entropy_sum": 14973.865118145943,
+          "eligible_rows": 16383,
+          "excess_cross_entropy": 0.6798636802552727,
+          "excluded_rows": 1,
+          "mode": "eval_bf16_autocast",
+          "row_weighting": "eligible_row_count",
+          "target_entropy_floor": 0.23412430229651537,
+          "target_entropy_floor_sum": 3835.6584445238113
+        },
+        "rankings": {
+          "bytes": 174168120,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/29_head_only/final_train.rankings.json",
+          "sha256": "841875af2009eb097fca191822e6310fb05d953b15d519e08ec984b555892630"
+        }
+      },
+      "frozen_base_verified_all_endpoints": true,
+      "head_only_factors_unchanged": true,
+      "seed": 29,
+      "training": {
+        "1": {
+          "seconds": 41.102146970999456,
+          "source_recovery_loss": 1.41706991387764,
+          "total_loss": 1.41706991387764
+        },
+        "2": {
+          "seconds": 41.18143734399928,
+          "source_recovery_loss": 1.1475420070346445,
+          "total_loss": 1.1475420070346445
+        },
+        "3": {
+          "seconds": 41.18872243599981,
+          "source_recovery_loss": 1.0249749282374978,
+          "total_loss": 1.0249749282374978
+        },
+        "4": {
+          "seconds": 40.999042651999844,
+          "source_recovery_loss": 0.9469143819296733,
+          "total_loss": 0.9469143819296733
+        }
+      }
+    },
+    "29_lora_head": {
+      "actual_batch_inputs": {
+        "1": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_29_epoch_1.batch_hashes.json",
+          "sha256": "b2038264f1aced0bda620f63ebb4ecd240afa6aca19b41d744e4e17ded3bdc01"
+        },
+        "2": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_29_epoch_2.batch_hashes.json",
+          "sha256": "c1b9d535d296b7957a5f0be67f30940f29d18836551532300d76afac09b3e2ba"
+        },
+        "3": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_29_epoch_3.batch_hashes.json",
+          "sha256": "1a6ab0b5b1e04629b6ee73f57eb116a8ea0aa7d3ba2ed9c1275d65fe5dafa245"
+        },
+        "4": {
+          "bytes": 624832,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/seed_29_epoch_4.batch_hashes.json",
+          "sha256": "5022e3b37655326f4453eae2eb1f628d7e71cb161eb77582e46819174066df02"
+        }
+      },
+      "actual_scheduled_presentations": 65536,
+      "actual_source_supervised_presentations": 65532,
+      "actual_updates": 4096,
+      "arm": "lora_head",
+      "endpoints": {
+        "0": {
+          "actual_updates": 0,
+          "artifact": {
+            "bytes": 1210957,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_0.research.pt",
+            "sha256": "180b880852610fa72a055011acfa006481042721bddfde3c6084028dbc451f09"
+          },
+          "dev_fit": {
+            "cross_entropy": 2.10369585826993,
+            "cross_entropy_sum": 2154.184558868408,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 1.8703664089553058,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 0.0,
+          "elapsed_seconds": 3.831801115999042,
+          "evaluation_and_save_seconds": 3.831408055999418,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 19599,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_0.receipt.json",
+            "sha256": "b219d3ddbb523a0312f1133835807b6a2f669a129764edc4776449e6a493dbc7"
+          },
+          "metrics": {
+            "lora_head": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.2590439276485788,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.6679586563307494,
+                "label_macro_recall_at_k": {
+                  "1": 0.3240277660838409,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.02815734989648033,
+                  "3": 0.5807453416149069,
+                  "5": 0.850103519668737
+                },
+                "group_macro_reciprocal_rank": 0.35813664596273254,
+                "label_macro_recall_at_k": {
+                  "1": 0.10781341107871721,
+                  "3": 0.44232756393696715,
+                  "5": 0.7280935285506608
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.0453257790368272,
+                  "3": 0.14329556185080264,
+                  "5": 0.25
+                },
+                "group_macro_reciprocal_rank": 0.2153763611270698,
+                "label_macro_recall_at_k": {
+                  "1": 0.06590136054421769,
+                  "3": 0.15212740347280462,
+                  "5": 0.29306891936236446
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.018469656992084433,
+                  "3": 0.07387862796833773,
+                  "5": 0.1319261213720317
+                },
+                "group_macro_reciprocal_rank": 0.13561936068908884,
+                "label_macro_recall_at_k": {
+                  "1": 0.05217391304347826,
+                  "3": 0.16262662319633833,
+                  "5": 0.23175527407946084
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10875872,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_0.rankings.json",
+            "sha256": "9f2d8b31433136c9847ea4beeab21b8dbf2388075f207052f1b2118b91cfa1f6"
+          }
+        },
+        "1024": {
+          "actual_updates": 1024,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_1024.research.pt",
+            "sha256": "facd540f19dc48a1cddcfe87d4e9cd9a179f9c04197c09dae280f3c07250ff56"
+          },
+          "dev_fit": {
+            "cross_entropy": 0.7071503540500998,
+            "cross_entropy_sum": 724.1219625473022,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.4738209047354758,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 55.12567316647421,
+          "elapsed_seconds": 95.61378174699894,
+          "evaluation_and_save_seconds": 4.040899114001149,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 20363,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_1024.receipt.json",
+            "sha256": "9d65c8ab748db1fc8a0ae6c45e17c70d33d6d51261fdde81936b2ef0329fc744"
+          },
+          "metrics": {
+            "lora_head": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.7532299741602068,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.9341085271317832,
+                "label_macro_recall_at_k": {
+                  "1": 0.5135163200583762,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8749482401656316,
+                  "3": 0.9927536231884058,
+                  "5": 0.998550724637681
+                },
+                "group_macro_reciprocal_rank": 0.9809523809523809,
+                "label_macro_recall_at_k": {
+                  "1": 0.46861936818126887,
+                  "3": 0.9321612550987846,
+                  "5": 0.9856559766763848
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.5650141643059491,
+                  "3": 0.8195939565627951,
+                  "5": 0.9149197355996224
+                },
+                "group_macro_reciprocal_rank": 0.8596499188567175,
+                "label_macro_recall_at_k": {
+                  "1": 0.3725140150564753,
+                  "3": 0.6336956072950094,
+                  "5": 0.8200663893579819
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.6708443271767811,
+                  "3": 0.8973175021987688,
+                  "5": 0.947669305189094
+                },
+                "group_macro_reciprocal_rank": 0.8721646378107891,
+                "label_macro_recall_at_k": {
+                  "1": 0.4830230636603168,
+                  "3": 0.7949894047306039,
+                  "5": 0.8778960674534965
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10886517,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_1024.rankings.json",
+            "sha256": "eb6ba6e646a4265bbca18b3a3858c0d24ffc8ce6231e7e06add9b609f4a9e5ab"
+          }
+        },
+        "2048": {
+          "actual_updates": 2048,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_2048.research.pt",
+            "sha256": "15b64e04c10a6995788a8161dd9a3ebd4bff48014f412ad9d9396c37b0bbbb2d"
+          },
+          "dev_fit": {
+            "cross_entropy": 0.6531710401177406,
+            "cross_entropy_sum": 668.8471450805664,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.41984159080311656,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 69.2324267937804,
+          "elapsed_seconds": 187.07068720700045,
+          "evaluation_and_save_seconds": 4.069100319000427,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 20225,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_2048.receipt.json",
+            "sha256": "a97fea03744746f96a6eb5e50970a6909c7ccf4539bb4ddf27caa61985849686"
+          },
+          "metrics": {
+            "lora_head": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.7726098191214471,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.9457364341085275,
+                "label_macro_recall_at_k": {
+                  "1": 0.5535441984040115,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8757763975155279,
+                  "3": 0.9921325051759834,
+                  "5": 0.9995859213250518
+                },
+                "group_macro_reciprocal_rank": 0.9815734989648034,
+                "label_macro_recall_at_k": {
+                  "1": 0.46518082639927577,
+                  "3": 0.936289387364349,
+                  "5": 0.9942857142857143
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.5647780925401323,
+                  "3": 0.8463644948064211,
+                  "5": 0.9223796033994335
+                },
+                "group_macro_reciprocal_rank": 0.8600028001586072,
+                "label_macro_recall_at_k": {
+                  "1": 0.4011155855117898,
+                  "3": 0.736141504546837,
+                  "5": 0.857209562277017
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.7104221635883906,
+                  "3": 0.9237027264731751,
+                  "5": 0.9608619173262972
+                },
+                "group_macro_reciprocal_rank": 0.8992098184415224,
+                "label_macro_recall_at_k": {
+                  "1": 0.5899637405045243,
+                  "3": 0.87299227123495,
+                  "5": 0.918941047318352
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10895898,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_2048.rankings.json",
+            "sha256": "c02c81fb3347cf3073b11cd0f7a36e62be1d06b2bbdb7536caafff62e09badab"
+          }
+        },
+        "4096": {
+          "actual_updates": 4096,
+          "artifact": {
+            "bytes": 1211021,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_4096.research.pt",
+            "sha256": "5aff8ee0403a6993381c87a3186e29a960bccc0f27c0d69c86bd9b407b74926a"
+          },
+          "dev_fit": {
+            "cross_entropy": 0.6124876574613154,
+            "cross_entropy_sum": 627.187361240387,
+            "eligible_rows": 1024,
+            "excess_cross_entropy": 0.3791582081466913,
+            "excluded_rows": 0,
+            "mode": "eval_bf16_autocast",
+            "row_weighting": "eligible_row_count",
+            "target_entropy_floor": 0.23332944931462407,
+            "target_entropy_floor_sum": 238.92935609817505
+          },
+          "effective_adapter_l2": 88.18665970646718,
+          "elapsed_seconds": 413.64178502399955,
+          "evaluation_and_save_seconds": 51.599775024002156,
+          "frozen_base_verified": true,
+          "full_metrics_tensor_hash_receipt": {
+            "bytes": 36256,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_4096.receipt.json",
+            "sha256": "d490c74f0d653b5177ad9c4a549f9b5de068e5b29b403823b8da67c8a731f012"
+          },
+          "metrics": {
+            "lora_head": {
+              "audience": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 3
+                },
+                "evaluated_groups": 258,
+                "excluded_groups_without_observed_positives": 766,
+                "group_macro_recall_at_k": {
+                  "1": 0.7919896640826873,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "group_macro_reciprocal_rank": 0.9567183462532303,
+                "label_macro_recall_at_k": {
+                  "1": 0.5935281075467991,
+                  "3": 1.0,
+                  "5": 1.0
+                },
+                "observed_positive_count": 333,
+                "zero_evaluation_support_labels": []
+              },
+              "form": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 805,
+                "excluded_groups_without_observed_positives": 219,
+                "group_macro_recall_at_k": {
+                  "1": 0.8761904761904762,
+                  "3": 0.9902691511387163,
+                  "5": 0.9995859213250518
+                },
+                "group_macro_reciprocal_rank": 0.9829606625258799,
+                "label_macro_recall_at_k": {
+                  "1": 0.4461741188337903,
+                  "3": 0.9406098678169279,
+                  "5": 0.9942857142857143
+                },
+                "observed_positive_count": 963,
+                "zero_evaluation_support_labels": []
+              },
+              "genre": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 353,
+                "excluded_groups_without_observed_positives": 671,
+                "group_macro_recall_at_k": {
+                  "1": 0.5746931067044383,
+                  "3": 0.8690273843248347,
+                  "5": 0.9520774315391879
+                },
+                "group_macro_reciprocal_rank": 0.8766615977664136,
+                "label_macro_recall_at_k": {
+                  "1": 0.400539102574107,
+                  "3": 0.7542916030010198,
+                  "5": 0.8702502840303987
+                },
+                "observed_positive_count": 597,
+                "zero_evaluation_support_labels": [
+                  "erotica"
+                ]
+              },
+              "topic": {
+                "all_scores_zero_groups": 0,
+                "effective_k": {
+                  "1": 1,
+                  "3": 3,
+                  "5": 5
+                },
+                "evaluated_groups": 379,
+                "excluded_groups_without_observed_positives": 645,
+                "group_macro_recall_at_k": {
+                  "1": 0.715699208443272,
+                  "3": 0.9320580474934037,
+                  "5": 0.9700967458223394
+                },
+                "group_macro_reciprocal_rank": 0.9080820454831007,
+                "label_macro_recall_at_k": {
+                  "1": 0.6237979761420047,
+                  "3": 0.8899923836789804,
+                  "5": 0.934959625142018
+                },
+                "observed_positive_count": 504,
+                "zero_evaluation_support_labels": []
+              }
+            }
+          },
+          "rankings": {
+            "bytes": 10906547,
+            "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/endpoint_4096.rankings.json",
+            "sha256": "95b8ab21eaf0bae2acf506ba6684cb1724bd05f78c2eea8277df57bf98cc92b8"
+          }
+        }
+      },
+      "final_train_fit": {
+        "evaluation_and_save_seconds": 47.51619876699988,
+        "full_metric_receipt": {
+          "bytes": 14998,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/final_train.receipt.json",
+          "sha256": "4f00bfacbc8d53008d4290e8cff669f93bc36f5e26b41a5c0da06a6b5224d5cb"
+        },
+        "metrics": {
+          "lora_head": {
+            "audience": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 3
+              },
+              "evaluated_groups": 4096,
+              "excluded_groups_without_observed_positives": 12288,
+              "group_macro_recall_at_k": {
+                "1": 0.7913411458333335,
+                "3": 1.0,
+                "5": 1.0
+              },
+              "group_macro_reciprocal_rank": 0.9725341796875017,
+              "label_macro_recall_at_k": {
+                "1": 0.6275755545230797,
+                "3": 1.0,
+                "5": 1.0
+              },
+              "observed_positive_count": 5499,
+              "zero_evaluation_support_labels": []
+            },
+            "form": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 12862,
+              "excluded_groups_without_observed_positives": 3522,
+              "group_macro_recall_at_k": {
+                "1": 0.8970740683149336,
+                "3": 0.9961579329290414,
+                "5": 0.9995723837661327
+              },
+              "group_macro_reciprocal_rank": 0.9939226662520086,
+              "label_macro_recall_at_k": {
+                "1": 0.49329429842937905,
+                "3": 0.9673882939115884,
+                "5": 0.9960853759699952
+              },
+              "observed_positive_count": 15354,
+              "zero_evaluation_support_labels": []
+            },
+            "genre": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 5759,
+              "excluded_groups_without_observed_positives": 10625,
+              "group_macro_recall_at_k": {
+                "1": 0.6466834519881987,
+                "3": 0.9086386525438447,
+                "5": 0.9661168026856523
+              },
+              "group_macro_reciprocal_rank": 0.9281836297637643,
+              "label_macro_recall_at_k": {
+                "1": 0.4372954282923734,
+                "3": 0.7609743541453328,
+                "5": 0.8810514263952104
+              },
+              "observed_positive_count": 9534,
+              "zero_evaluation_support_labels": []
+            },
+            "topic": {
+              "all_scores_zero_groups": 0,
+              "effective_k": {
+                "1": 1,
+                "3": 3,
+                "5": 5
+              },
+              "evaluated_groups": 6030,
+              "excluded_groups_without_observed_positives": 10354,
+              "group_macro_recall_at_k": {
+                "1": 0.7491984521835277,
+                "3": 0.9543394140409069,
+                "5": 0.9843698175787728
+              },
+              "group_macro_reciprocal_rank": 0.9378602033289106,
+              "label_macro_recall_at_k": {
+                "1": 0.6826053622496383,
+                "3": 0.9350696194786782,
+                "5": 0.9744688539270081
+              },
+              "observed_positive_count": 8072,
+              "zero_evaluation_support_labels": []
+            }
+          }
+        },
+        "objective": {
+          "cross_entropy": 0.5182598933758538,
+          "cross_entropy_sum": 8490.651833176613,
+          "eligible_rows": 16383,
+          "excess_cross_entropy": 0.2841355910793384,
+          "excluded_rows": 1,
+          "mode": "eval_bf16_autocast",
+          "row_weighting": "eligible_row_count",
+          "target_entropy_floor": 0.23412430229651537,
+          "target_entropy_floor_sum": 3835.6584445238113
+        },
+        "rankings": {
+          "bytes": 174606093,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/29_lora_head/final_train.rankings.json",
+          "sha256": "4be0f951927e0d537a51dc2ddc8a201445d978ff56fd3660ae622b7f72ba9cf9"
+        }
+      },
+      "frozen_base_verified_all_endpoints": true,
+      "head_only_factors_unchanged": null,
+      "seed": 29,
+      "training": {
+        "1": {
+          "seconds": 87.15445142399949,
+          "source_recovery_loss": 1.0250493447529152,
+          "total_loss": 1.0250493447529152
+        },
+        "2": {
+          "seconds": 86.81865848200141,
+          "source_recovery_loss": 0.6737843112787232,
+          "total_loss": 0.6737843112787232
+        },
+        "3": {
+          "seconds": 86.8601018670015,
+          "source_recovery_loss": 0.6062089397746604,
+          "total_loss": 0.6062089397746604
+        },
+        "4": {
+          "seconds": 86.97596180999972,
+          "source_recovery_loss": 0.5611637495458126,
+          "total_loss": 0.5611637495458126
+        }
+      }
+    }
+  },
+  "audit_transfer_manifest": {
+    "bytes": 2425,
+    "path": "outputs/book_source_data_scaling_20261008/independent_audit_transfer_manifest.json",
+    "sha256": "d103b86cc0c1b8512b35aba6714ac331a025aeb004e138eb9e8e65cc81a1d8a3"
+  },
+  "code_transfer_setup": {
+    "bytes": 443,
+    "path": "outputs/book_source_data_scaling_20261008/transfer_setup.json",
+    "sha256": "f4c2af1ff2cc8bd5073b186933ea0ce2dc5629f838fea86a313a8326fde80010"
+  },
+  "cohort": {
+    "actual_updates_per_arm": 4096,
+    "dev": 1024,
+    "epochs_per_arm": 4,
+    "facets": [
+      "genre",
+      "topic",
+      "form",
+      "audience"
+    ],
+    "labels": 48,
+    "scheduled_presentations_per_arm": 65536,
+    "source_supervised_presentations_per_arm": 65532,
+    "train": 16384,
+    "whole_empty_rows": {
+      "dev": 0,
+      "train": 1
+    }
+  },
+  "comparison_cohort_proof": {
+    "additional_train_rows": 12288,
+    "comparison": "audited_historical4096_cohort_descriptive_only_not_isolated_data_size_causal_effect",
+    "development_rows": 1024,
+    "full_dev_rows_exact": true,
+    "full_train_prefix_rows_exact": true,
+    "historical_train_prefix_rows": 4096,
+    "mapping_exact": true,
+    "references": {
+      "historical_examples": {
+        "bytes": 12423239,
+        "path": "outputs/book_source_learning_curves_20261008/run_001/examples.json",
+        "sha256": "6a7b6ced4c50eba3693180445442ffb81fbcc13baa2c5a56efc667338ee5ac79"
+      },
+      "historical_tokenization": {
+        "bytes": 45784301,
+        "path": "outputs/book_source_learning_curves_20261008/run_001/tokenization.json",
+        "sha256": "6402a8245afca7980a479ad023238cdb1ec84ca31d937b3830594ba96234ace0"
+      },
+      "previous_source_learning_curves_observation": {
+        "bytes": 343277,
+        "path": "research/results/book_source_learning_curves_20261008.json",
+        "sha256": "4e4ff686772fac688f57d76ad60899c26cee9f8c6f29f1bb1c0f13ebba9fb762"
+      }
+    },
+    "visible_tokens_and_decoded_text_verified": true
+  },
+  "comparison_support_strata": {
+    "additional_train": {
+      "facets": {
+        "audience": {
+          "eligible_rows": 3057,
+          "groups_without_observed_positives": 9231,
+          "positive_groups": {
+            "children": 2593,
+            "middle_grade": 1028,
+            "teen_young_adult": 484
+          }
+        },
+        "form": {
+          "eligible_rows": 9662,
+          "groups_without_observed_positives": 2626,
+          "positive_groups": {
+            "fiction": 4854,
+            "graphic_narrative": 593,
+            "life_writing": 798,
+            "literary_collection": 150,
+            "nonfiction": 4663,
+            "poetry": 167,
+            "reference": 311
+          }
+        },
+        "genre": {
+          "eligible_rows": 4359,
+          "groups_without_observed_positives": 7929,
+          "positive_groups": {
+            "adventure": 234,
+            "erotica": 8,
+            "fantasy": 514,
+            "gothic_horror": 82,
+            "historical_fiction": 584,
+            "humor": 211,
+            "literary_fiction": 987,
+            "mystery": 676,
+            "mystery_suspense": 1314,
+            "paranormal_fiction": 230,
+            "romance": 1021,
+            "science_fiction": 292,
+            "spiritual_fiction": 91,
+            "suspense_thriller": 755,
+            "western": 209
+          }
+        },
+        "topic": {
+          "eligible_rows": 4475,
+          "groups_without_observed_positives": 7813,
+          "positive_groups": {
+            "arts": 478,
+            "business": 120,
+            "cooking": 412,
+            "crafts": 121,
+            "finance": 33,
+            "games": 48,
+            "health": 454,
+            "history": 640,
+            "language": 60,
+            "literature": 126,
+            "parenting": 180,
+            "pets": 42,
+            "philosophy": 467,
+            "politics": 322,
+            "psychology": 270,
+            "religion": 615,
+            "science": 339,
+            "self_development": 506,
+            "social_issues": 233,
+            "sports": 209,
+            "technology": 82,
+            "test_preparation": 58,
+            "travel": 109
+          }
+        }
+      },
+      "objective_eligible_rows": 12287,
+      "rows": 12288,
+      "unique_groups": 12288,
+      "whole_empty_rows": 1
+    },
+    "dev": {
+      "facets": {
+        "audience": {
+          "eligible_rows": 258,
+          "groups_without_observed_positives": 766,
+          "positive_groups": {
+            "children": 214,
+            "middle_grade": 74,
+            "teen_young_adult": 45
+          }
+        },
+        "form": {
+          "eligible_rows": 805,
+          "groups_without_observed_positives": 219,
+          "positive_groups": {
+            "fiction": 400,
+            "graphic_narrative": 49,
+            "life_writing": 68,
+            "literary_collection": 14,
+            "nonfiction": 395,
+            "poetry": 12,
+            "reference": 25
+          }
+        },
+        "genre": {
+          "eligible_rows": 353,
+          "groups_without_observed_positives": 671,
+          "positive_groups": {
+            "adventure": 21,
+            "erotica": 0,
+            "fantasy": 45,
+            "gothic_horror": 2,
+            "historical_fiction": 39,
+            "humor": 20,
+            "literary_fiction": 73,
+            "mystery": 51,
+            "mystery_suspense": 116,
+            "paranormal_fiction": 18,
+            "romance": 97,
+            "science_fiction": 21,
+            "spiritual_fiction": 8,
+            "suspense_thriller": 72,
+            "western": 14
+          }
+        },
+        "topic": {
+          "eligible_rows": 379,
+          "groups_without_observed_positives": 645,
+          "positive_groups": {
+            "arts": 52,
+            "business": 6,
+            "cooking": 38,
+            "crafts": 10,
+            "finance": 5,
+            "games": 2,
+            "health": 42,
+            "history": 57,
+            "language": 7,
+            "literature": 10,
+            "parenting": 11,
+            "pets": 6,
+            "philosophy": 43,
+            "politics": 29,
+            "psychology": 17,
+            "religion": 27,
+            "science": 29,
+            "self_development": 49,
+            "social_issues": 30,
+            "sports": 16,
+            "technology": 4,
+            "test_preparation": 7,
+            "travel": 7
+          }
+        }
+      },
+      "objective_eligible_rows": 1024,
+      "rows": 1024,
+      "unique_groups": 1024,
+      "whole_empty_rows": 0
+    },
+    "expanded_train": {
+      "facets": {
+        "audience": {
+          "eligible_rows": 4096,
+          "groups_without_observed_positives": 12288,
+          "positive_groups": {
+            "children": 3483,
+            "middle_grade": 1378,
+            "teen_young_adult": 638
+          }
+        },
+        "form": {
+          "eligible_rows": 12862,
+          "groups_without_observed_positives": 3522,
+          "positive_groups": {
+            "fiction": 6401,
+            "graphic_narrative": 776,
+            "life_writing": 1068,
+            "literary_collection": 197,
+            "nonfiction": 6276,
+            "poetry": 226,
+            "reference": 410
+          }
+        },
+        "genre": {
+          "eligible_rows": 5759,
+          "groups_without_observed_positives": 10625,
+          "positive_groups": {
+            "adventure": 310,
+            "erotica": 9,
+            "fantasy": 701,
+            "gothic_horror": 113,
+            "historical_fiction": 781,
+            "humor": 281,
+            "literary_fiction": 1284,
+            "mystery": 894,
+            "mystery_suspense": 1758,
+            "paranormal_fiction": 293,
+            "romance": 1327,
+            "science_fiction": 387,
+            "spiritual_fiction": 117,
+            "suspense_thriller": 1015,
+            "western": 264
+          }
+        },
+        "topic": {
+          "eligible_rows": 6030,
+          "groups_without_observed_positives": 10354,
+          "positive_groups": {
+            "arts": 645,
+            "business": 162,
+            "cooking": 581,
+            "crafts": 171,
+            "finance": 50,
+            "games": 71,
+            "health": 629,
+            "history": 863,
+            "language": 69,
+            "literature": 162,
+            "parenting": 241,
+            "pets": 54,
+            "philosophy": 639,
+            "politics": 441,
+            "psychology": 377,
+            "religion": 824,
+            "science": 446,
+            "self_development": 713,
+            "social_issues": 308,
+            "sports": 299,
+            "technology": 114,
+            "test_preparation": 71,
+            "travel": 142
+          }
+        }
+      },
+      "objective_eligible_rows": 16383,
+      "rows": 16384,
+      "unique_groups": 16384,
+      "whole_empty_rows": 1
+    },
+    "original_train": {
+      "facets": {
+        "audience": {
+          "eligible_rows": 1039,
+          "groups_without_observed_positives": 3057,
+          "positive_groups": {
+            "children": 890,
+            "middle_grade": 350,
+            "teen_young_adult": 154
+          }
+        },
+        "form": {
+          "eligible_rows": 3200,
+          "groups_without_observed_positives": 896,
+          "positive_groups": {
+            "fiction": 1547,
+            "graphic_narrative": 183,
+            "life_writing": 270,
+            "literary_collection": 47,
+            "nonfiction": 1613,
+            "poetry": 59,
+            "reference": 99
+          }
+        },
+        "genre": {
+          "eligible_rows": 1400,
+          "groups_without_observed_positives": 2696,
+          "positive_groups": {
+            "adventure": 76,
+            "erotica": 1,
+            "fantasy": 187,
+            "gothic_horror": 31,
+            "historical_fiction": 197,
+            "humor": 70,
+            "literary_fiction": 297,
+            "mystery": 218,
+            "mystery_suspense": 444,
+            "paranormal_fiction": 63,
+            "romance": 306,
+            "science_fiction": 95,
+            "spiritual_fiction": 26,
+            "suspense_thriller": 260,
+            "western": 55
+          }
+        },
+        "topic": {
+          "eligible_rows": 1555,
+          "groups_without_observed_positives": 2541,
+          "positive_groups": {
+            "arts": 167,
+            "business": 42,
+            "cooking": 169,
+            "crafts": 50,
+            "finance": 17,
+            "games": 23,
+            "health": 175,
+            "history": 223,
+            "language": 9,
+            "literature": 36,
+            "parenting": 61,
+            "pets": 12,
+            "philosophy": 172,
+            "politics": 119,
+            "psychology": 107,
+            "religion": 209,
+            "science": 107,
+            "self_development": 207,
+            "social_issues": 75,
+            "sports": 90,
+            "technology": 32,
+            "test_preparation": 13,
+            "travel": 33
+          }
+        }
+      },
+      "objective_eligible_rows": 4096,
+      "rows": 4096,
+      "unique_groups": 4096,
+      "whole_empty_rows": 0
+    }
+  },
+  "dependency_versions": {
+    "numpy": "2.2.6",
+    "python": "3.10.12",
+    "scikit-learn": "1.7.2",
+    "scipy": "1.15.3",
+    "torch": "2.14.0+cu130",
+    "transformers": "5.17.0"
+  },
+  "device": {
+    "bf16_supported": true,
+    "name": "NVIDIA GeForce RTX 4070"
+  },
+  "execution_commit": "5c9f1363f1108e901008a71cc809de46b96a6fa7",
+  "execution_setup": {
+    "bytes": 4615,
+    "path": "outputs/book_source_data_scaling_20261008/execution_setup.json",
+    "sha256": "7050c0cebd79e7b9fb5500f8b66a0ad5d6a6a8166c705867e65169758baa022a"
+  },
+  "formal_dataset_admission": false,
+  "historical_descriptive_R3_deltas_all_facets": {
+    "17_head_only": {
+      "audience": {
+        "group_macro_R3_difference": 0.0,
+        "label_macro_R3_difference": 0.0
+      },
+      "form": {
+        "group_macro_R3_difference": -0.00248447204968949,
+        "label_macro_R3_difference": -0.021820728291316427
+      },
+      "genre": {
+        "group_macro_R3_difference": 0.020774315391879017,
+        "label_macro_R3_difference": 0.02756193670372875
+      },
+      "topic": {
+        "group_macro_R3_difference": 0.009674582233949236,
+        "label_macro_R3_difference": 0.007791717189951641
+      }
+    },
+    "17_lora_head": {
+      "audience": {
+        "group_macro_R3_difference": 0.0,
+        "label_macro_R3_difference": 0.0
+      },
+      "form": {
+        "group_macro_R3_difference": 0.0031055900621118626,
+        "label_macro_R3_difference": 0.0339240126430318
+      },
+      "genre": {
+        "group_macro_R3_difference": 0.07186024551463643,
+        "label_macro_R3_difference": 0.09863666419676964
+      },
+      "topic": {
+        "group_macro_R3_difference": 0.019788918205804973,
+        "label_macro_R3_difference": 0.05614897030406252
+      }
+    },
+    "29_head_only": {
+      "audience": {
+        "group_macro_R3_difference": 0.0,
+        "label_macro_R3_difference": 0.0
+      },
+      "form": {
+        "group_macro_R3_difference": -0.001242236024844745,
+        "label_macro_R3_difference": -0.004201680672268893
+      },
+      "genre": {
+        "group_macro_R3_difference": 0.007082152974504097,
+        "label_macro_R3_difference": 0.018187521300917275
+      },
+      "topic": {
+        "group_macro_R3_difference": 0.008355321020228956,
+        "label_macro_R3_difference": 0.025409514957071555
+      }
+    },
+    "29_lora_head": {
+      "audience": {
+        "group_macro_R3_difference": 0.0,
+        "label_macro_R3_difference": 0.0
+      },
+      "form": {
+        "group_macro_R3_difference": 0.009109730848861242,
+        "label_macro_R3_difference": 0.011086043820783376
+      },
+      "genre": {
+        "group_macro_R3_difference": 0.07020774315391887,
+        "label_macro_R3_difference": 0.07369535979305719
+      },
+      "topic": {
+        "group_macro_R3_difference": 0.041336851363236504,
+        "label_macro_R3_difference": 0.052011839589686026
+      }
+    }
+  },
+  "historical_full_text_reference_only": {
+    "bytes": 27361,
+    "path": "research/results/book_field_baseline_20261003.json",
+    "sha256": "d9774a2cbe6a58c82791c350509274d0cda07e6445e0daee7f2ea4540427890e"
+  },
+  "historical_lexical_differences_all_methods": {
+    "frequency": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": 0.0,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.0,
+        "label_macro_recall_at_k": {
+          "1": 0.0,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.03706004140786745,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.0031055900621117516,
+        "label_macro_recall_at_k": {
+          "1": 0.0,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": 0.0,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": -0.000499500499500205,
+        "label_macro_recall_at_k": {
+          "1": 0.0,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": 0.0,
+          "3": 0.0,
+          "5": 0.055628847845206664
+        },
+        "group_macro_reciprocal_rank": 0.005632762837076644,
+        "label_macro_recall_at_k": {
+          "1": 0.0,
+          "3": 0.0,
+          "5": 0.0
+        }
+      }
+    },
+    "label_name": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": 0.0,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.0,
+        "label_macro_recall_at_k": {
+          "1": 0.0,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.000621118012422317,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.0006211180124222615,
+        "label_macro_recall_at_k": {
+          "1": -0.006002400960384124,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": 0.006373937677053826,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.004249291784702569,
+        "label_macro_recall_at_k": {
+          "1": 0.003793183940242778,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": 0.009234828496042236,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.005277044854881174,
+        "label_macro_recall_at_k": {
+          "1": 0.013967285363166382,
+          "3": 0.0,
+          "5": 0.0
+        }
+      }
+    },
+    "positive_centroid": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": 0.011627906976744207,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.0025839793281653423,
+        "label_macro_recall_at_k": {
+          "1": 0.03834582245797191,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": -0.03105590062111807,
+          "3": -0.0006211180124225946,
+          "5": 0.0006211180124223725
+        },
+        "group_macro_reciprocal_rank": -0.013664596273291862,
+        "label_macro_recall_at_k": {
+          "1": 0.03518343684670977,
+          "3": 0.03148789533896745,
+          "5": 0.005714285714285783
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": 0.00401322001888571,
+          "3": 0.01699716713881061,
+          "5": 0.021246458923512734
+        },
+        "group_macro_reciprocal_rank": 0.007521593923860204,
+        "label_macro_recall_at_k": {
+          "1": 0.05776804533474361,
+          "3": 0.0740076256924056,
+          "5": 0.06766753311841844
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": 0.03562005277044855,
+          "3": 0.021987686895338587,
+          "5": 0.023746701846965923
+        },
+        "group_macro_reciprocal_rank": 0.024936910984458605,
+        "label_macro_recall_at_k": {
+          "1": 0.11301806926420321,
+          "3": 0.08875972105768426,
+          "5": 0.08961508668080231
+        }
+      }
+    }
+  },
+  "historical_primary_comparison": {
+    "arms": {
+      "17_head_only": {
+        "genre": {
+          "group_macro_recall_at_k": {
+            "current": 0.8198300283286116,
+            "difference": 0.020774315391879017,
+            "historical": 0.7990557129367326
+          },
+          "label_macro_recall_at_k": {
+            "current": 0.5934176034800204,
+            "difference": 0.02756193670372875,
+            "historical": 0.5658556667762916
+          }
+        },
+        "topic": {
+          "group_macro_recall_at_k": {
+            "current": 0.8080474934036941,
+            "difference": 0.009674582233949236,
+            "historical": 0.7983729111697448
+          },
+          "label_macro_recall_at_k": {
+            "current": 0.54893508416435,
+            "difference": 0.007791717189951641,
+            "historical": 0.5411433669743984
+          }
+        }
+      },
+      "17_lora_head": {
+        "genre": {
+          "group_macro_recall_at_k": {
+            "current": 0.8805949008498583,
+            "difference": 0.07186024551463643,
+            "historical": 0.8087346553352218
+          },
+          "label_macro_recall_at_k": {
+            "current": 0.7933197377586866,
+            "difference": 0.09863666419676964,
+            "historical": 0.6946830735619169
+          }
+        },
+        "topic": {
+          "group_macro_recall_at_k": {
+            "current": 0.91622691292876,
+            "difference": 0.019788918205804973,
+            "historical": 0.896437994722955
+          },
+          "label_macro_recall_at_k": {
+            "current": 0.8604050766306288,
+            "difference": 0.05614897030406252,
+            "historical": 0.8042561063265663
+          }
+        }
+      },
+      "29_head_only": {
+        "genre": {
+          "group_macro_recall_at_k": {
+            "current": 0.8087346553352216,
+            "difference": 0.007082152974504097,
+            "historical": 0.8016525023607175
+          },
+          "label_macro_recall_at_k": {
+            "current": 0.5829363919355431,
+            "difference": 0.018187521300917275,
+            "historical": 0.5647488706346259
+          }
+        },
+        "topic": {
+          "group_macro_recall_at_k": {
+            "current": 0.8150835532102025,
+            "difference": 0.008355321020228956,
+            "historical": 0.8067282321899736
+          },
+          "label_macro_recall_at_k": {
+            "current": 0.5648579944622769,
+            "difference": 0.025409514957071555,
+            "historical": 0.5394484795052054
+          }
+        }
+      },
+      "29_lora_head": {
+        "genre": {
+          "group_macro_recall_at_k": {
+            "current": 0.8690273843248347,
+            "difference": 0.07020774315391887,
+            "historical": 0.7988196411709159
+          },
+          "label_macro_recall_at_k": {
+            "current": 0.7542916030010198,
+            "difference": 0.07369535979305719,
+            "historical": 0.6805962432079626
+          }
+        },
+        "topic": {
+          "group_macro_recall_at_k": {
+            "current": 0.9320580474934037,
+            "difference": 0.041336851363236504,
+            "historical": 0.8907211961301672
+          },
+          "label_macro_recall_at_k": {
+            "current": 0.8899923836789804,
+            "difference": 0.052011839589686026,
+            "historical": 0.8379805440892943
+          }
+        }
+      }
+    },
+    "claim_boundary": "audited_historical4096_cohort_descriptive_only_not_isolated_data_size_causal_effect",
+    "descriptive_two_seed_mean_differences": {
+      "head_only": {
+        "genre": {
+          "group_macro_recall_at_k": 0.013928234183191557,
+          "label_macro_recall_at_k": 0.022874729002323013
+        },
+        "topic": {
+          "group_macro_recall_at_k": 0.009014951627089096,
+          "label_macro_recall_at_k": 0.016600616073511598
+        }
+      },
+      "lora_head": {
+        "genre": {
+          "group_macro_recall_at_k": 0.07103399433427765,
+          "label_macro_recall_at_k": 0.08616601199491342
+        },
+        "topic": {
+          "group_macro_recall_at_k": 0.03056288478452074,
+          "label_macro_recall_at_k": 0.05408040494687427
+        }
+      }
+    },
+    "endpoint": 4096,
+    "historical_reference": {
+      "bytes": 343277,
+      "path": "research/results/book_source_learning_curves_20261008.json",
+      "sha256": "4e4ff686772fac688f57d76ad60899c26cee9f8c6f29f1bb1c0f13ebba9fb762"
+    }
+  },
+  "historical_raw_report_reference": {
+    "bytes": 2326366,
+    "path": "outputs/book_source_learning_curves_20261008/run_001/report.json",
+    "sha256": "54461d9942b5d139c495a98f37f36ab59a2e0416eeac3265f90b4b811c05013e"
+  },
+  "human_gold": false,
+  "implementation_sha256": {
+    "src/models/adapters.py": "04026d30b3379258f86801c5a94844402fd351e7a97f3e70c108bd8c085321a1",
+    "src/research/field_baseline.py": "2f49c33edfb0618d35605d5f281e867227cea27b5f90831d054142ca769662e3",
+    "src/research/field_baseline_data.py": "f00adee140283a227133d6bc8256c447bc54cd94ee4752e905fdf876b3dc65f3",
+    "src/training/trainer.py": "0dd16afba914319aaeb07e6bd6fe4d8c2cb60522ee202730b26937dd7dfc641a",
+    "src/training/utils.py": "900ef271820a7b79e286b1b73ab1322faa30bb2310424bc3e7f72531370878d6"
+  },
+  "independent_audit": {
+    "cross_entropy_tolerance": {
+      "absolute": 2e-06,
+      "reason": "savedfloat32 logprobs versus originalfloat32batchmeans",
+      "relative": 2e-06
+    },
+    "dev_objective_reconstructions": 16,
+    "eligible_presentations_per_condition": 65532,
+    "evidence_references": [
+      {
+        "bytes": 16,
+        "path": "outputs/book_source_data_scaling_20261008/audit_cpu_001.execution.json",
+        "sha256": "d24219f6de94b955cf36d25bd2aca88e2d35eef45b9317b7083f55ec8fe9653c"
+      },
+      {
+        "bytes": 0,
+        "path": "outputs/book_source_data_scaling_20261008/audit_cpu_001.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 99,
+        "path": "outputs/book_source_data_scaling_20261008/audit_cpu_001.stdout.log",
+        "sha256": "5b6215979c7806d77c380fa3e8507931234095c4977c5bbfb19858c220abfdaf"
+      },
+      {
+        "bytes": 16,
+        "path": "outputs/book_source_data_scaling_20261008/audit_gpu_001.execution.json",
+        "sha256": "d24219f6de94b955cf36d25bd2aca88e2d35eef45b9317b7083f55ec8fe9653c"
+      },
+      {
+        "bytes": 1752,
+        "path": "outputs/book_source_data_scaling_20261008/audit_gpu_001.stderr.log",
+        "sha256": "b5b03a6a3739f185221c6b8a3c84fc9c494ee86acf2cc54e66dcafbf4ccd5287"
+      },
+      {
+        "bytes": 5284,
+        "path": "outputs/book_source_data_scaling_20261008/audit_gpu_001.stdout.log",
+        "sha256": "08f4f9eab630a82d440ca3e35201cc519ab770d422a9b2f6b40d596471189267"
+      },
+      {
+        "bytes": 16,
+        "path": "outputs/book_source_data_scaling_20261008/audit_gpu_after.execution.json",
+        "sha256": "d24219f6de94b955cf36d25bd2aca88e2d35eef45b9317b7083f55ec8fe9653c"
+      },
+      {
+        "bytes": 0,
+        "path": "outputs/book_source_data_scaling_20261008/audit_gpu_after.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "outputs/book_source_data_scaling_20261008/audit_gpu_after.stdout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 16,
+        "path": "outputs/book_source_data_scaling_20261008/audit_gpu_before.execution.json",
+        "sha256": "d24219f6de94b955cf36d25bd2aca88e2d35eef45b9317b7083f55ec8fe9653c"
+      },
+      {
+        "bytes": 0,
+        "path": "outputs/book_source_data_scaling_20261008/audit_gpu_before.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "outputs/book_source_data_scaling_20261008/audit_gpu_before.stdout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 135,
+        "path": "outputs/book_source_data_scaling_20261008/audit_probe_001.frozen.sha256",
+        "sha256": "5ac8856f7a1962ae3cbe0ddc5934dd49f4f80f7e33209a01f66f2a354f9698b8"
+      },
+      {
+        "bytes": 21051,
+        "path": "outputs/book_source_data_scaling_20261008/independent_audit_probe.py",
+        "sha256": "dff4c725dff76be50c8a59c731546422ebf3527c01b0d04e96af712001ef02b7"
+      }
+    ],
+    "final_train_aggregates_independently_verified": 4,
+    "gpu_release": {
+      "query_exit_code": 0,
+      "stderr_empty": true,
+      "stdout_empty": true
+    },
+    "history": [
+      {
+        "exit_code": 0,
+        "stage": "cpu_001"
+      },
+      {
+        "exit_code": 0,
+        "restores": 16,
+        "stage": "gpu_001"
+      }
+    ],
+    "lexical_train_only_refit_all_saved_scores_verified": true,
+    "paired_arm_epoch_references_verified": 16,
+    "probe_sha256": "dff4c725dff76be50c8a59c731546422ebf3527c01b0d04e96af712001ef02b7",
+    "ranking_rows_and_observed_labels_bound_to_examples": true,
+    "receipt": {
+      "bytes": 31952,
+      "path": "outputs/book_source_data_scaling_20261008/run_001/independent_audit.json",
+      "sha256": "518861b0428667d7b0923773fc64e68dde557bb86198fd0869a7d5216208440a"
+    },
+    "records_per_restore": 32,
+    "report_sha256": "5ccbe4c510e71697b10acdbd291564be8fa7f51fdd927fb41aafb28ac1142302",
+    "restores": [
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "17_head_only",
+        "endpoint": 0,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "17_head_only",
+        "endpoint": 1024,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "17_head_only",
+        "endpoint": 2048,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "17_head_only",
+        "endpoint": 4096,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "17_lora_head",
+        "endpoint": 0,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "17_lora_head",
+        "endpoint": 1024,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "17_lora_head",
+        "endpoint": 2048,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "17_lora_head",
+        "endpoint": 4096,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "29_head_only",
+        "endpoint": 0,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "29_head_only",
+        "endpoint": 1024,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "29_head_only",
+        "endpoint": 2048,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "29_head_only",
+        "endpoint": 4096,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "29_lora_head",
+        "endpoint": 0,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "29_lora_head",
+        "endpoint": 1024,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "29_lora_head",
+        "endpoint": 2048,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      },
+      {
+        "bf16_max_log_probability_error": 0.0,
+        "bf16_max_probability_error": 0.0,
+        "condition": "29_lora_head",
+        "endpoint": 4096,
+        "frozen_binding_verified": true,
+        "production_loader_rejected": true
+      }
+    ],
+    "scheduled_presentations_per_condition": 65536,
+    "shared_batch_proofs_verified": 8,
+    "status": "independent_audit_pass",
+    "support_strata_match": true,
+    "tensor_hashes_reconstructed": 24576,
+    "training_rerun_performed": false,
+    "whole_empty_training_rows_retained": 1
+  },
+  "initialization_comparison_to_historical": [
+    {
+      "all_dev_label_order_equal": true,
+      "all_dev_probability_max_abs_difference": 0.0,
+      "changed_tensor_count": 0,
+      "condition": "17_head_only",
+      "endpoint": 0,
+      "initialization_exact_equal": true,
+      "interpretation": "Observed prefix consistency diagnostic; nondeterminism alone is not a correctness rejection.",
+      "per_facet": {
+        "audience": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "form": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "genre": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "topic": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        }
+      },
+      "state_parameter_max_abs_difference": 0.0,
+      "state_tensor_hashes_exact_equal": true
+    },
+    {
+      "all_dev_label_order_equal": true,
+      "all_dev_probability_max_abs_difference": 0.0,
+      "changed_tensor_count": 0,
+      "condition": "17_lora_head",
+      "endpoint": 0,
+      "initialization_exact_equal": true,
+      "interpretation": "Observed prefix consistency diagnostic; nondeterminism alone is not a correctness rejection.",
+      "per_facet": {
+        "audience": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "form": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "genre": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "topic": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        }
+      },
+      "state_parameter_max_abs_difference": 0.0,
+      "state_tensor_hashes_exact_equal": true
+    },
+    {
+      "all_dev_label_order_equal": true,
+      "all_dev_probability_max_abs_difference": 0.0,
+      "changed_tensor_count": 0,
+      "condition": "29_head_only",
+      "endpoint": 0,
+      "initialization_exact_equal": true,
+      "interpretation": "Observed prefix consistency diagnostic; nondeterminism alone is not a correctness rejection.",
+      "per_facet": {
+        "audience": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "form": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "genre": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "topic": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        }
+      },
+      "state_parameter_max_abs_difference": 0.0,
+      "state_tensor_hashes_exact_equal": true
+    },
+    {
+      "all_dev_label_order_equal": true,
+      "all_dev_probability_max_abs_difference": 0.0,
+      "changed_tensor_count": 0,
+      "condition": "29_lora_head",
+      "endpoint": 0,
+      "initialization_exact_equal": true,
+      "interpretation": "Observed prefix consistency diagnostic; nondeterminism alone is not a correctness rejection.",
+      "per_facet": {
+        "audience": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "form": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "genre": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        },
+        "topic": {
+          "label_order_changed_rows": 0,
+          "probability_max_abs_difference": 0.0,
+          "probability_mean_abs_difference": 0.0
+        }
+      },
+      "state_parameter_max_abs_difference": 0.0,
+      "state_tensor_hashes_exact_equal": true
+    }
+  ],
+  "interpretation": {
+    "claim_boundary": "audited_historical4096_cohort_descriptive_only_not_isolated_data_size_causal_effect",
+    "exploratory": "Repeatedly inspected development cohort; no confirmatory, significance, unseen-test, precision/F1, human-gold or semantic-quality claim.",
+    "fit": "Both expanded LoRA development CE decreased2048\u21924096; finaltrain CE is lower but considerably closer to dev than historical smaller-cohort finals. This is consistent with reduced observed source-objective overfitting, not proof of a causal data-size effect or semantic relevance.",
+    "historical": "Both expanded-cohort LoRA seeds improved genre/topic group and label recallat3 over their historical smaller-cohort finals. Head-only changes, both seeds, all signs and lexical changes are retained. This is descriptive: unique data exposure/repetition changed jointly and no contemporary small-cohort controls were run.",
+    "new_lexical": "Expanded LoRA two-seed group-macro means exceed refitted centroid lexical genre/topic; label-macro means are slightly below refitted lexical. Seed17/29 per-label macro crossings are retained, so no all-metric lexical superiority claim.",
+    "next_decision": "Keep lexical controls and inspect label/support/objective limits under a new fixed protocol. No automatic extra epochs, PPO or neural website promotion; human semantic field labels remain empty."
+  },
+  "kind": "book_source_assignment_data_exposure_observation",
+  "legacy_artifacts_verified_unchanged": [
+    {
+      "bytes": 4373,
+      "path": "configs/research/book_source_recovery.json",
+      "sha256": "ad20bd928cf270ccd53e56a26f473acca75b5ae559113ee6aba79e431624de6c"
+    },
+    {
+      "bytes": 6816,
+      "path": "configs/research/book_source_learning_curves.json",
+      "sha256": "bf336dea86045bb0359b2182c3ace92417003b83854f452c75edd258c722ff2d"
+    },
+    {
+      "bytes": 241313,
+      "path": "research/results/book_source_recovery_20261008.json",
+      "sha256": "561b42ba2c0330e08eab8f7ae0653ca60bceb814c2232e6e1ec1caf5bc94e6af"
+    },
+    {
+      "bytes": 343277,
+      "path": "research/results/book_source_learning_curves_20261008.json",
+      "sha256": "4e4ff686772fac688f57d76ad60899c26cee9f8c6f29f1bb1c0f13ebba9fb762"
+    }
+  ],
+  "matched_lexical_metrics": {
+    "frequency": {
+      "audience": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 3
+        },
+        "evaluated_groups": 258,
+        "excluded_groups_without_observed_positives": 766,
+        "group_macro_recall_at_k": {
+          "1": 0.6854005167958657,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "group_macro_reciprocal_rank": 0.8863049095607239,
+        "label_macro_recall_at_k": {
+          "1": 0.3333333333333333,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "observed_positive_count": 333,
+        "zero_evaluation_support_labels": []
+      },
+      "form": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 805,
+        "excluded_groups_without_observed_positives": 219,
+        "group_macro_recall_at_k": {
+          "1": 0.4641821946169772,
+          "3": 0.9333333333333333,
+          "5": 0.9786749482401655
+        },
+        "group_macro_reciprocal_rank": 0.7433599526767228,
+        "label_macro_recall_at_k": {
+          "1": 0.14285714285714285,
+          "3": 0.42857142857142855,
+          "5": 0.7142857142857143
+        },
+        "observed_positive_count": 963,
+        "zero_evaluation_support_labels": []
+      },
+      "genre": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 353,
+        "excluded_groups_without_observed_positives": 671,
+        "group_macro_recall_at_k": {
+          "1": 0.1561378659112371,
+          "3": 0.5240321057601512,
+          "5": 0.6601038715769592
+        },
+        "group_macro_reciprocal_rank": 0.5362926733323337,
+        "label_macro_recall_at_k": {
+          "1": 0.07142857142857142,
+          "3": 0.21428571428571427,
+          "5": 0.35714285714285715
+        },
+        "observed_positive_count": 597,
+        "zero_evaluation_support_labels": [
+          "erotica"
+        ]
+      },
+      "topic": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 379,
+        "excluded_groups_without_observed_positives": 645,
+        "group_macro_recall_at_k": {
+          "1": 0.12752858399296393,
+          "3": 0.2631926121372032,
+          "5": 0.4615215479331574
+        },
+        "group_macro_reciprocal_rank": 0.32047775018747193,
+        "label_macro_recall_at_k": {
+          "1": 0.043478260869565216,
+          "3": 0.13043478260869565,
+          "5": 0.21739130434782608
+        },
+        "observed_positive_count": 504,
+        "zero_evaluation_support_labels": []
+      }
+    },
+    "label_name": {
+      "audience": {
+        "all_scores_zero_groups": 814,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 3
+        },
+        "evaluated_groups": 258,
+        "excluded_groups_without_observed_positives": 766,
+        "group_macro_recall_at_k": {
+          "1": 0.6369509043927649,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "group_macro_reciprocal_rank": 0.8559431524547807,
+        "label_macro_recall_at_k": {
+          "1": 0.34204017101213363,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "observed_positive_count": 333,
+        "zero_evaluation_support_labels": []
+      },
+      "form": {
+        "all_scores_zero_groups": 637,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 805,
+        "excluded_groups_without_observed_positives": 219,
+        "group_macro_recall_at_k": {
+          "1": 0.315527950310559,
+          "3": 0.5451345755693582,
+          "5": 0.9697722567287784
+        },
+        "group_macro_reciprocal_rank": 0.5496066252587957,
+        "label_macro_recall_at_k": {
+          "1": 0.2630311600227795,
+          "3": 0.5467659396489156,
+          "5": 0.7705545509342978
+        },
+        "observed_positive_count": 963,
+        "zero_evaluation_support_labels": []
+      },
+      "genre": {
+        "all_scores_zero_groups": 737,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 353,
+        "excluded_groups_without_observed_positives": 671,
+        "group_macro_recall_at_k": {
+          "1": 0.13418319169027382,
+          "3": 0.25670443814919736,
+          "5": 0.30967894239848914
+        },
+        "group_macro_reciprocal_rank": 0.3415000407210044,
+        "label_macro_recall_at_k": {
+          "1": 0.14311473903705973,
+          "3": 0.23856065624529768,
+          "5": 0.3057035434620765
+        },
+        "observed_positive_count": 597,
+        "zero_evaluation_support_labels": [
+          "erotica"
+        ]
+      },
+      "topic": {
+        "all_scores_zero_groups": 638,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 379,
+        "excluded_groups_without_observed_positives": 645,
+        "group_macro_recall_at_k": {
+          "1": 0.24999999999999997,
+          "3": 0.38192612137203164,
+          "5": 0.4234828496042217
+        },
+        "group_macro_reciprocal_rank": 0.42405988841152936,
+        "label_macro_recall_at_k": {
+          "1": 0.2615914025922107,
+          "3": 0.3488567455927042,
+          "5": 0.4188004174814562
+        },
+        "observed_positive_count": 504,
+        "zero_evaluation_support_labels": []
+      }
+    },
+    "positive_centroid": {
+      "audience": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 3
+        },
+        "evaluated_groups": 258,
+        "excluded_groups_without_observed_positives": 766,
+        "group_macro_recall_at_k": {
+          "1": 0.7416020671834626,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "group_macro_reciprocal_rank": 0.9218346253229975,
+        "label_macro_recall_at_k": {
+          "1": 0.691598140196271,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "observed_positive_count": 333,
+        "zero_evaluation_support_labels": []
+      },
+      "form": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 805,
+        "excluded_groups_without_observed_positives": 219,
+        "group_macro_recall_at_k": {
+          "1": 0.7509316770186335,
+          "3": 0.9795031055900619,
+          "5": 0.9991718426501034
+        },
+        "group_macro_reciprocal_rank": 0.9117184265010353,
+        "label_macro_recall_at_k": {
+          "1": 0.6439471267711425,
+          "3": 0.9115482721117381,
+          "5": 0.9913702623906706
+        },
+        "observed_positive_count": 963,
+        "zero_evaluation_support_labels": []
+      },
+      "genre": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 353,
+        "excluded_groups_without_observed_positives": 671,
+        "group_macro_recall_at_k": {
+          "1": 0.5251180358829086,
+          "3": 0.8496694995278568,
+          "5": 0.942162417374882
+        },
+        "group_macro_reciprocal_rank": 0.8475594676019604,
+        "label_macro_recall_at_k": {
+          "1": 0.4598070388396504,
+          "3": 0.7771516331373972,
+          "5": 0.8817208484566615
+        },
+        "observed_positive_count": 597,
+        "zero_evaluation_support_labels": [
+          "erotica"
+        ]
+      },
+      "topic": {
+        "all_scores_zero_groups": 0,
+        "effective_k": {
+          "1": 1,
+          "3": 3,
+          "5": 5
+        },
+        "evaluated_groups": 379,
+        "excluded_groups_without_observed_positives": 645,
+        "group_macro_recall_at_k": {
+          "1": 0.6598504837291119,
+          "3": 0.9109498680738787,
+          "5": 0.9573438874230432
+        },
+        "group_macro_reciprocal_rank": 0.8680051844959498,
+        "label_macro_recall_at_k": {
+          "1": 0.5929561159307518,
+          "3": 0.8854474257742373,
+          "5": 0.9357344230229139
+        },
+        "observed_positive_count": 504,
+        "zero_evaluation_support_labels": []
+      }
+    }
+  },
+  "metric_storage": "Every endpoint/facet aggregate and final training metric retained inline; full per-label metrics/log probabilities and tensor hashes remain in hash-addressed raw report/ranking/artifact references and endpoint receipts. Selected identity lists remain in referenced examples/schedules.",
+  "model_promoted": false,
+  "observed_report_copy": {
+    "bytes": 5884308,
+    "path": "outputs/book_source_data_scaling_20261008/raw_report.initial.json",
+    "sha256": "5ccbe4c510e71697b10acdbd291564be8fa7f51fdd927fb41aafb28ac1142302"
+  },
+  "paid_spend": 0,
+  "primary_endpoint": 4096,
+  "primary_outcomes": {
+    "aggregation": "Both seeds and each paired difference retained; two-seed means descriptive only.",
+    "endpoint": 4096,
+    "facets": [
+      "genre",
+      "topic"
+    ],
+    "metrics": [
+      "group_macro_recall_at_3",
+      "label_macro_recall_at_3"
+    ]
+  },
+  "primary_paired_lora_minus_head_differences": {
+    "17": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": 0.054263565891472965,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.03423772609819098,
+        "label_macro_recall_at_k": {
+          "1": 0.19332322977182786,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.01200828157349898,
+          "3": 0.012629399585921353,
+          "5": 0.004968944099378869
+        },
+        "group_macro_reciprocal_rank": 0.011821946169772168,
+        "label_macro_recall_at_k": {
+          "1": 0.22997965008788335,
+          "3": 0.1692366711603266,
+          "5": 0.04618075801749277
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": 0.09041548630783758,
+          "3": 0.06076487252124663,
+          "5": 0.029367327667610965
+        },
+        "group_macro_reciprocal_rank": 0.08449345743963299,
+        "label_macro_recall_at_k": {
+          "1": 0.14659333856576445,
+          "3": 0.1999021342786662,
+          "5": 0.16633277475280273
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": 0.18205804749340382,
+          "3": 0.10817941952506593,
+          "5": 0.05892700087950742
+        },
+        "group_macro_reciprocal_rank": 0.14217069253542947,
+        "label_macro_recall_at_k": {
+          "1": 0.2981721593605317,
+          "3": 0.3114699924662788,
+          "5": 0.20371728444693948
+        }
+      }
+    },
+    "29": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": 0.07945736434108519,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.046511627906976605,
+        "label_macro_recall_at_k": {
+          "1": 0.19360856183286074,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.01304347826086949,
+          "3": 0.010973084886128248,
+          "5": 0.0053830227743272285
+        },
+        "group_macro_reciprocal_rank": 0.012484472049689277,
+        "label_macro_recall_at_k": {
+          "1": 0.13816242229260606,
+          "3": 0.1543387879564122,
+          "5": 0.04909620991253649
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": 0.05830972615675167,
+          "3": 0.06029272898961313,
+          "5": 0.04102927289896141
+        },
+        "group_macro_reciprocal_rank": 0.05611875533971866,
+        "label_macro_recall_at_k": {
+          "1": 0.09074171689633043,
+          "3": 0.1713552110654767,
+          "5": 0.15404405309912705
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": 0.14995602462620938,
+          "3": 0.11697449428320117,
+          "5": 0.07695690413368506
+        },
+        "group_macro_reciprocal_rank": 0.12720867442505368,
+        "label_macro_recall_at_k": {
+          "1": 0.29919469108026536,
+          "3": 0.32513438921670346,
+          "5": 0.2306972302789847
+        }
+      }
+    }
+  },
+  "primary_seed_differences_from_refitted_positive_centroid": {
+    "17_head_only": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": -0.01744186046511631,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": -0.0051679586563304625,
+        "label_macro_recall_at_k": {
+          "1": -0.2694563722601105,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.1097308488612837,
+          "3": -0.0008281573498962747,
+          "5": -0.004968944099378869
+        },
+        "group_macro_reciprocal_rank": 0.05627329192546593,
+        "label_macro_recall_at_k": {
+          "1": -0.3391303031158215,
+          "3": -0.13099147796550803,
+          "5": -0.04618075801749277
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": -0.007082152974504319,
+          "3": -0.029839471199245127,
+          "5": -0.02733711048158649
+        },
+        "group_macro_reciprocal_rank": -0.0273640901119655,
+        "label_macro_recall_at_k": {
+          "1": -0.1505906813291089,
+          "3": -0.18373402965737684,
+          "5": -0.1609603163368769
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": -0.12840809146877763,
+          "3": -0.1029023746701846,
+          "5": -0.0615655233069482
+        },
+        "group_macro_reciprocal_rank": -0.11149075974467892,
+        "label_macro_recall_at_k": {
+          "1": -0.3047310536120917,
+          "3": -0.3365123416098873,
+          "5": -0.22851712879823816
+        }
+      }
+    },
+    "17_lora_head": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": 0.036821705426356655,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.029069767441860517,
+        "label_macro_recall_at_k": {
+          "1": -0.07613314248828262,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.12173913043478268,
+          "3": 0.011801242236025078,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.0680952380952381,
+        "label_macro_recall_at_k": {
+          "1": -0.10915065302793814,
+          "3": 0.03824519319481856,
+          "5": 0.0
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": 0.08333333333333326,
+          "3": 0.0309254013220015,
+          "5": 0.0020302171860244744
+        },
+        "group_macro_reciprocal_rank": 0.05712936732766749,
+        "label_macro_recall_at_k": {
+          "1": -0.003997342763344458,
+          "3": 0.01616810462128937,
+          "5": 0.005372458415925818
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": 0.05364995602462619,
+          "3": 0.005277044854881341,
+          "5": -0.0026385224274407815
+        },
+        "group_macro_reciprocal_rank": 0.03067993279075054,
+        "label_macro_recall_at_k": {
+          "1": -0.006558894251559977,
+          "3": -0.025042349143608478,
+          "5": -0.024799844351298672
+        }
+      }
+    },
+    "29_head_only": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": -0.029069767441860406,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": -0.011627906976743874,
+        "label_macro_recall_at_k": {
+          "1": -0.29167859448233263,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.11221532091097319,
+          "3": -0.00020703933747390213,
+          "5": -0.004968944099378869
+        },
+        "group_macro_reciprocal_rank": 0.05875776397515531,
+        "label_macro_recall_at_k": {
+          "1": -0.33593543022995825,
+          "3": -0.12527719225122236,
+          "5": -0.04618075801749277
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": -0.008734655335221997,
+          "3": -0.040934844192635156,
+          "5": -0.031114258734655564
+        },
+        "group_macro_reciprocal_rank": -0.027016625175265485,
+        "label_macro_recall_at_k": {
+          "1": -0.1500096531618738,
+          "3": -0.19421524120185407,
+          "5": -0.16551461752538987
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": -0.09410729991204936,
+          "3": -0.09586631486367614,
+          "5": -0.06420404573438887
+        },
+        "group_macro_reciprocal_rank": -0.08713181343790277,
+        "label_macro_recall_at_k": {
+          "1": -0.26835283086901246,
+          "3": -0.3205894313119604,
+          "5": -0.23147202815988055
+        }
+      }
+    },
+    "29_lora_head": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": 0.050387596899224785,
+          "3": 0.0,
+          "5": 0.0
+        },
+        "group_macro_reciprocal_rank": 0.03488372093023273,
+        "label_macro_recall_at_k": {
+          "1": -0.0980700326494719,
+          "3": 0.0,
+          "5": 0.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.12525879917184268,
+          "3": 0.010766045548654346,
+          "5": 0.00041407867494835937
+        },
+        "group_macro_reciprocal_rank": 0.07124223602484459,
+        "label_macro_recall_at_k": {
+          "1": -0.1977730079373522,
+          "3": 0.029061595705189847,
+          "5": 0.002915451895043719
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": 0.049575070821529676,
+          "3": 0.019357884796977975,
+          "5": 0.009915014164305846
+        },
+        "group_macro_reciprocal_rank": 0.029102130164453177,
+        "label_macro_recall_at_k": {
+          "1": -0.059267936265543386,
+          "3": -0.022860030136377385,
+          "5": -0.01147056442626282
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": 0.055848724714160025,
+          "3": 0.02110817941952503,
+          "5": 0.012752858399296185
+        },
+        "group_macro_reciprocal_rank": 0.04007686098715091,
+        "label_macro_recall_at_k": {
+          "1": 0.030841860211252903,
+          "3": 0.004544957904743074,
+          "5": -0.00077479788089585
+        }
+      }
+    }
+  },
+  "primary_two_seed_descriptive_means": {
+    "head_only": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": 0.7183462532299743,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "group_macro_reciprocal_rank": 0.9134366925064603,
+        "label_macro_recall_at_k": {
+          "1": 0.4110306568250494,
+          "3": 1.0,
+          "5": 1.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.861904761904762,
+          "3": 0.9789855072463769,
+          "5": 0.9942028985507245
+        },
+        "group_macro_reciprocal_rank": 0.969233954451346,
+        "label_macro_recall_at_k": {
+          "1": 0.3064142600982527,
+          "3": 0.7834139370033728,
+          "5": 0.9451895043731778
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": 0.5172096317280455,
+          "3": 0.8142823418319166,
+          "5": 0.912936732766761
+        },
+        "group_macro_reciprocal_rank": 0.820369109958345,
+        "label_macro_recall_at_k": {
+          "1": 0.309506871594159,
+          "3": 0.5881769977077818,
+          "5": 0.7184833815255282
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": 0.5485927880386985,
+          "3": 0.8115655233069483,
+          "5": 0.8944591029023747
+        },
+        "group_macro_reciprocal_rank": 0.7686938979046589,
+        "label_macro_recall_at_k": {
+          "1": 0.30641417369019974,
+          "3": 0.5568965393133134,
+          "5": 0.7057398445438545
+        }
+      }
+    },
+    "lora_head": {
+      "audience": {
+        "group_macro_recall_at_k": {
+          "1": 0.7852067183462532,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "group_macro_reciprocal_rank": 0.9538113695090442,
+        "label_macro_recall_at_k": {
+          "1": 0.6044965526273938,
+          "3": 1.0,
+          "5": 1.0
+        }
+      },
+      "form": {
+        "group_macro_recall_at_k": {
+          "1": 0.8744306418219462,
+          "3": 0.9907867494824016,
+          "5": 0.9993788819875775
+        },
+        "group_macro_reciprocal_rank": 0.9813871635610767,
+        "label_macro_recall_at_k": {
+          "1": 0.49048529628849735,
+          "3": 0.9452016665617422,
+          "5": 0.9928279883381925
+        }
+      },
+      "genre": {
+        "group_macro_recall_at_k": {
+          "1": 0.5915722379603401,
+          "3": 0.8748111425873465,
+          "5": 0.9481350330500472
+        },
+        "group_macro_reciprocal_rank": 0.8906752163480207,
+        "label_macro_recall_at_k": {
+          "1": 0.4281743993252065,
+          "3": 0.7738056703798533,
+          "5": 0.8786717954514931
+        }
+      },
+      "topic": {
+        "group_macro_recall_at_k": {
+          "1": 0.714599824098505,
+          "3": 0.9241424802110818,
+          "5": 0.9624010554089709
+        },
+        "group_macro_reciprocal_rank": 0.9033835813849005,
+        "label_macro_recall_at_k": {
+          "1": 0.6050975989105982,
+          "3": 0.8751987301548045,
+          "5": 0.9229471019068166
+        }
+      }
+    }
+  },
+  "protocol": {
+    "bytes": 8214,
+    "path": "configs/research/book_source_data_scaling.json",
+    "sha256": "5f3a743e969c3c451d8b686e2b33352bfde8e5529f6d7e0d2a3c12665087de45"
+  },
+  "raw_archive": {
+    "bytes": 165925521,
+    "path": "outputs/book_source_data_scaling_20261008/run_001_raw.tar.gz",
+    "sha256": "8bcbbb4bd1141130d8ac20d95fe0145ea1d9fe5d73fd81eaa6c4b5414b01dffe"
+  },
+  "raw_archive_receipt": {
+    "bytes": 280,
+    "path": "outputs/book_source_data_scaling_20261008/raw_archive_receipt.json",
+    "sha256": "209d2705e9fbf2ea6432b47c8a0ac796a6242877e17c1a9e5f0e62bb5e9925ca"
+  },
+  "raw_references": {
+    "examples": {
+      "bytes": 42224137,
+      "path": "outputs/book_source_data_scaling_20261008/run_001/examples.json",
+      "sha256": "92b48f0fd65229a6999cf67bd9da02e7d35ccef65cfdaac8389da7eccab5acbd"
+    },
+    "matched_lexical_artifacts": {
+      "centroids": {
+        "audience": {
+          "bytes": 373461,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/fitted/centroids_audience.npz",
+          "sha256": "0cd3658b95377bebbbc45a0cd7a59db5b8c1990699c17651610d103302b09c77"
+        },
+        "form": {
+          "bytes": 752724,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/fitted/centroids_form.npz",
+          "sha256": "dd939939756d486db075f1c5c07ec0b8c751bd30ceb4f793fc222bd9ed882a07"
+        },
+        "genre": {
+          "bytes": 1169734,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/fitted/centroids_genre.npz",
+          "sha256": "d17c0efaba8c8850dac24544b2be9ff20fcd644883056ebf8de78b6b6f91165d"
+        },
+        "topic": {
+          "bytes": 1320919,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/fitted/centroids_topic.npz",
+          "sha256": "011140dad857ea589da7399328bc991ebc15e497a9a827a2558aaac4724f8d65"
+        }
+      },
+      "label_name_vectors": {
+        "audience": {
+          "bytes": 1051,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/fitted/label_name_vectors_audience.npz",
+          "sha256": "abf16a3f4fcc9c5d6313d4328897ea57d02badef5c6f63ef6778ca7722d46e0c"
+        },
+        "form": {
+          "bytes": 1068,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/fitted/label_name_vectors_form.npz",
+          "sha256": "eda74a4f113c859725f1a293396c8d99371799144fa50767ad7dff3ac56bd4ae"
+        },
+        "genre": {
+          "bytes": 1214,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/fitted/label_name_vectors_genre.npz",
+          "sha256": "e0d0a813b0d1999104bdfe98fa408f7de4dc62f820d0a73d086ed9243dea10fc"
+        },
+        "topic": {
+          "bytes": 1175,
+          "path": "outputs/book_source_data_scaling_20261008/run_001/fitted/label_name_vectors_topic.npz",
+          "sha256": "1a2d2907bd088702e55a40fdfdf17608ff159d2d272f0a1f22228af0d9941518"
+        }
+      },
+      "vectorizer": {
+        "bytes": 925233,
+        "path": "outputs/book_source_data_scaling_20261008/run_001/fitted/vectorizer.json",
+        "sha256": "4fade48f879967a22e4e55e39f6efefbf021eecfd6d8f068b86a1603100f84bf"
+      }
+    },
+    "matched_lexical_rankings": {
+      "bytes": 21707349,
+      "path": "outputs/book_source_data_scaling_20261008/run_001/matched_lexical_rankings.json",
+      "sha256": "c8d9d879d9542f1bdfde7897d369cde702e51595e72d51923f87b26aa4714436"
+    },
+    "schedules": {
+      "bytes": 5391856,
+      "path": "outputs/book_source_data_scaling_20261008/run_001/schedules.json",
+      "sha256": "1b79021d860795e6e2abe5e4fef70434208402464966bf78f8725fbfe5f86c81"
+    },
+    "tokenization": {
+      "bytes": 155729913,
+      "path": "outputs/book_source_data_scaling_20261008/run_001/tokenization.json",
+      "sha256": "6155dc1ba0cba050c741229e0af449cef668ce457ab36c176e8a9a70e8ae6a12"
+    }
+  },
+  "raw_report": {
+    "bytes": 5884308,
+    "path": "outputs/book_source_data_scaling_20261008/run_001/report.json",
+    "sha256": "5ccbe4c510e71697b10acdbd291564be8fa7f51fdd927fb41aafb28ac1142302"
+  },
+  "raw_transfer_manifest": {
+    "bytes": 18266,
+    "path": "outputs/book_source_data_scaling_20261008/raw_transfer_manifest.json",
+    "sha256": "ca7a9b7340d3f472fa7fb24b5c83e57429a80e283bf4381c2aa4245f57ecfeed"
+  },
+  "raw_transfer_receipt": {
+    "bytes": 396,
+    "path": "outputs/book_source_data_scaling_20261008/raw_transfer_receipt.json",
+    "sha256": "feba8fa9e07cea8306809d2fff7b4a488277d3f55ee5cb8f139eba3326ae964c"
+  },
+  "referenced_hash_verification": {
+    "legacy_config_results_byte_equal_execution_commit": true,
+    "raw_run_bytes_verified": 1134267269,
+    "raw_run_files_verified": 82,
+    "unique_refs_verified": 131
+  },
+  "resolved_runtime_config": {
+    "checkpoint_out": "checkpoints/best.pt",
+    "data": {
+      "processed": {
+        "emotion": null,
+        "summarization": null,
+        "topic": null
+      },
+      "tokenizer": {
+        "lower": false,
+        "max_length": 512,
+        "pretrained_model_name": "google/flan-t5-base"
+      },
+      "topic_problem_type": "multi_label"
+    },
+    "device": "cuda",
+    "history_out": "outputs/training_history.json",
+    "labels_out": "artifacts/labels.json",
+    "model": {
+      "activation": "gated-gelu-tanh",
+      "d_model": 768,
+      "dropout": 0.0,
+      "ffn_dim": 2048,
+      "gradient_checkpointing": false,
+      "num_attention_heads": 12,
+      "num_decoder_layers": 12,
+      "num_encoder_layers": 12,
+      "pretrained_model_name": "google/flan-t5-base",
+      "use_pretrained": true,
+      "use_relative_position_bias": true,
+      "vocab_size": 32128
+    },
+    "resume_from": null,
+    "resume_labels": null,
+    "seed": 17,
+    "training": {
+      "book_lora": {
+        "alpha": 8,
+        "base_repo": "google/flan-t5-base",
+        "base_revision": "7bcac572ce56db69c1ea7c8af255c5d7c9672fc2",
+        "base_weight_sha256": "1dfb70afdcedceb9f9fae2f9b68e004ad934361fb35b9b2bd50b45ea90790fc8",
+        "dropout": 0.0,
+        "dtype": "float32",
+        "enabled": true,
+        "mps_memory_fraction": 0.35,
+        "rank": 4,
+        "threads": 4
+      },
+      "compile_decoder": false,
+      "compile_encoder": false,
+      "dataloader": {
+        "batch_size": 4,
+        "num_workers": 0
+      },
+      "freeze_encoder_layers": 0,
+      "gradient_checkpointing": false,
+      "optimizer": {
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "lr": 0.0005,
+        "weight_decay": 0.0
+      },
+      "scheduler": {
+        "name": "cosine",
+        "warmup_steps": 0
+      },
+      "tokenizer_max_length": 256,
+      "trainer": {
+        "early_stopping_patience": 3,
+        "generation_metrics": false,
+        "gradient_accumulation_steps": 1,
+        "gradient_clip_norm": 1.0,
+        "gradient_conflict_frequency": 0,
+        "label_smoothing": 0.0,
+        "max_epochs": 1,
+        "max_train_samples": null,
+        "max_val_samples": null,
+        "task_sampling": "round_robin",
+        "task_sampling_alpha": 0.5,
+        "task_weights": {
+          "emotion": 1.0,
+          "summarization": 1.0,
+          "topic": 1.0
+        },
+        "tasks": [
+          "topic"
+        ],
+        "use_pcgrad": false,
+        "validation_max_length": 128
+      },
+      "use_relative_position_bias": true
+    }
+  },
+  "rl_training_performed": false,
+  "runtime_configuration_references": {
+    "configs/config.yaml": {
+      "bytes": 502,
+      "path": "configs/config.yaml",
+      "sha256": "8befc6cf00d1c9dc9f1e0a2c31c213f2492c761d248a396dd9c49ff9d45c474f"
+    },
+    "configs/data/datasets.yaml": {
+      "bytes": 521,
+      "path": "configs/data/datasets.yaml",
+      "sha256": "d1b88223510281288c383fba65b572e735d7e1996a046ee4fc3b9a435208f41a"
+    },
+    "configs/model/base.yaml": {
+      "bytes": 675,
+      "path": "configs/model/base.yaml",
+      "sha256": "c258e97b06546d67838c785999cf0c895fca2103330c160418529f46d89d4f25"
+    },
+    "configs/training/book_lora.yaml": {
+      "bytes": 1010,
+      "path": "configs/training/book_lora.yaml",
+      "sha256": "541749750e94507a2ba4d977dbef1cabf7789fff3b1348b13d09b56e7d4a4bfa"
+    },
+    "configs/training/default.yaml": {
+      "bytes": 928,
+      "path": "configs/training/default.yaml",
+      "sha256": "0576b3bca2c0ff97111611f53e9cac4682ecf8f3e1211b1a39d76c4946823995"
+    }
+  },
+  "schema_version": 1,
+  "secondary_outcomes": {
+    "additional": "Form/audience recallat3 and endpoints0/1024/2048 plus finaltrain diagnostic are descriptive. Paired historical4096final differences remain explicitly historical/descriptive only.",
+    "facets": [
+      "genre",
+      "topic",
+      "form",
+      "audience"
+    ],
+    "metrics": [
+      "group_macro_recall_at_1",
+      "group_macro_recall_at_5",
+      "label_macro_recall_at_1",
+      "label_macro_recall_at_5",
+      "group_macro_reciprocal_rank",
+      "per_label_support_and_recovery",
+      "eval_mode_source_cross_entropy",
+      "target_entropy_floor",
+      "excess_cross_entropy"
+    ]
+  },
+  "semantics": {
+    "comparison": "Matched lexical control decodes exact truncated formatted neural input. Prior full literal title/newline/description TF-IDF is an external reference, not an input-matched comparison.",
+    "historical_comparison": "audited_historical4096_cohort_descriptive_only_not_isolated_data_size_causal_effect",
+    "loss": "Uniform known-positive distribution per facet; mean eligible facets within each row, then mean eligible rows. Whole-empty rows excluded only from loss. Softmax pressures unassigned labels and co-positives compete; omissions remain semantically unknown.",
+    "metrics": "Observed publisher-source assignment recovery only, not semantic negatives, human gold, precision, F1 or accuracy.",
+    "selection": "Endpoint4096 primary; all other declared endpoints diagnostic; all seeds/arms retained, no best checkpoint selection."
+  },
+  "source_provenance": {
+    "bindings": {
+      "archive": {
+        "bytes": 48690771,
+        "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+        "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+      },
+      "assignments": {
+        "bytes": 19176017,
+        "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/assignments.jsonl",
+        "sha256": "df8484993cf99d85b5646f1ba2fa863c39f0f8df4259ae0f7a5f094b9be4ed69"
+      },
+      "candidate_manifest": {
+        "bytes": 18995,
+        "path": "research/preparation/bgc_candidate_manifest.json",
+        "sha256": "be54f692cdfa0cad29ff03de57009ed376fc41e04ff9805806d5817eb6a02dee"
+      },
+      "components": {
+        "bytes": 44021,
+        "path": "data/research_candidates/book-partitions-v1/components.jsonl",
+        "sha256": "1eff85204e6917944287bca71cf79ae86f57b427f355ce11b09d527ed37f70aa"
+      },
+      "constraints": {
+        "bytes": 15541,
+        "path": "data/research_candidates/book-partitions-v1/constraints.jsonl",
+        "sha256": "2cb872a2dcb469103bdab058583163b6df624a2ece16cf11b2b32bef59bf9072"
+      },
+      "field_manifest": {
+        "bytes": 6428,
+        "path": "research/preparation/book_field_manifest.json",
+        "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
+      },
+      "field_references": {
+        "bytes": 14336341,
+        "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/fields-b2e001706648-df8484993cf9/field_references.jsonl.gz",
+        "sha256": "8f841f9707a6c65f296319855bfbce5b29b43700ed63555b4ee4232ca8b0a43a"
+      },
+      "grouping_manifest": {
+        "bytes": 6381,
+        "path": "research/preparation/bgc_group_manifest.json",
+        "sha256": "e33d8d063060a96b02fb87a6f1c7d1bc1278f7a55d8b4bccd8b7df96e82f8abf"
+      },
+      "mapping": {
+        "bytes": 39092,
+        "path": "research/preparation/book_field_mapping.json",
+        "sha256": "b2e001706648bfce0f55c2e285d25e8870531b364af711da2d984f87e6945ca7"
+      },
+      "partition_input:archive": {
+        "bytes": 48690771,
+        "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+        "sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c"
+      },
+      "partition_input:assignments": {
+        "bytes": 19176017,
+        "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/assignments.jsonl",
+        "sha256": "df8484993cf99d85b5646f1ba2fa863c39f0f8df4259ae0f7a5f094b9be4ed69"
+      },
+      "partition_input:candidate_manifest": {
+        "bytes": 18995,
+        "path": "research/preparation/bgc_candidate_manifest.json",
+        "sha256": "be54f692cdfa0cad29ff03de57009ed376fc41e04ff9805806d5817eb6a02dee"
+      },
+      "partition_input:catalogue": {
+        "bytes": 246566,
+        "path": "web/data/books.json",
+        "sha256": "2adb8d4bdeb13cf367b76ea1fcbd8a4cccacad72699eb356b168974db221d777"
+      },
+      "partition_input:field_mapping": {
+        "bytes": 39092,
+        "path": "research/preparation/book_field_mapping.json",
+        "sha256": "b2e001706648bfce0f55c2e285d25e8870531b364af711da2d984f87e6945ca7"
+      },
+      "partition_input:field_references": {
+        "bytes": 14336341,
+        "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/fields-b2e001706648-df8484993cf9/field_references.jsonl.gz",
+        "sha256": "8f841f9707a6c65f296319855bfbce5b29b43700ed63555b4ee4232ca8b0a43a"
+      },
+      "partition_input:fields": {
+        "bytes": 6428,
+        "path": "research/preparation/book_field_manifest.json",
+        "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
+      },
+      "partition_input:groups": {
+        "bytes": 6381,
+        "path": "research/preparation/bgc_group_manifest.json",
+        "sha256": "e33d8d063060a96b02fb87a6f1c7d1bc1278f7a55d8b4bccd8b7df96e82f8abf"
+      },
+      "partition_input:licensed_manifest": {
+        "bytes": 7753,
+        "path": "research/preparation/licensed_books_manifest.json",
+        "sha256": "810f823565504cbf4db8422e7e753f7a52273f2f717842ebedaa3a3910e89053"
+      },
+      "partition_input:licensed_sources": {
+        "bytes": 7705,
+        "path": "research/preparation/licensed_books_sources.json",
+        "sha256": "02dd9de53b398fefd671ab9b12e09c17e3af6cea7dcbe6e2976c70e1e446cfa0"
+      },
+      "partition_input:packet": {
+        "bytes": 160645,
+        "path": "data/research_candidates/book-group-review-v1/review.jsonl",
+        "sha256": "63139b5c6ec871e1c66f260efe03a211fa7807c33d4c0e6d5c2c587db8f9e7e4"
+      },
+      "partition_input:review": {
+        "bytes": 26389,
+        "path": "research/preparation/book_group_review.json",
+        "sha256": "8c6f8fb7e38ffddba360edf5134eb95776a2b3b51e43ae49c95eb16b47d7797c"
+      },
+      "partition_input:review_groups": {
+        "bytes": 998113,
+        "path": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/review_groups.jsonl",
+        "sha256": "fcb423e1d41f3348a1e4f3f6794460d4890146457247a0d505660982faf558d2"
+      },
+      "partition_manifest": {
+        "bytes": 41532,
+        "path": "research/preparation/book_partition_manifest.json",
+        "sha256": "c45173e71a2196090f319e77ad4a17eff0a03c3a137f852bf621183dbccf8e73"
+      }
+    },
+    "claim": "Observed authored source-label retrieval on a bounded development subset only",
+    "counts": {
+      "eligible": {
+        "dev": 2306,
+        "train": 36250
+      },
+      "eligible_not_selected": {
+        "dev": 1282,
+        "train": 19866
+      },
+      "excluded_by_first_reason": {
+        "cross_source_component": 53,
+        "effective_reserved": 14027,
+        "non_singleton_group": 3423,
+        "source_effective_disagreement": 18143,
+        "source_reserved": 17692
+      },
+      "group_overlap": 0,
+      "input_hash_overlap": 0,
+      "record_overlap": 0,
+      "selected": {
+        "dev": 1024,
+        "train": 16384
+      },
+      "selected_groups": {
+        "dev": 1024,
+        "train": 16384
+      },
+      "shortfall": {
+        "dev": 0,
+        "train": 0
+      },
+      "source_groups": 89910,
+      "source_records": 91894
+    },
+    "decoded_records": 17408,
+    "exclusion_order": [
+      "non_singleton_group",
+      "cross_source_component",
+      "review_required",
+      "source_reserved",
+      "effective_reserved",
+      "source_effective_disagreement"
+    ],
+    "human_gold": false,
+    "human_labels_created": 0,
+    "negative_labels_created": 0,
+    "policy": "bgc-field-retrieval-v1",
+    "selected_record_ids_reference": {
+      "bytes": 42224137,
+      "path": "outputs/book_source_data_scaling_20261008/run_001/examples.json",
+      "sha256": "92b48f0fd65229a6999cf67bd9da02e7d35ccef65cfdaac8389da7eccab5acbd"
+    },
+    "selection": "SHA256(policy:role:record_id), then record_id; no label stratification or resampling",
+    "source_declared_license": "CC BY-NC 4.0; README retains Penguin Random House/content-provider attribution",
+    "source_members_opened": [
+      "BlurbGenreCollection_EN_train.txt",
+      "BlurbGenreCollection_EN_dev.txt"
+    ],
+    "source_omissions": "unknown",
+    "test_records_decoded": 0,
+    "training_eligible": false,
+    "vocabulary": {
+      "audience": [
+        "children",
+        "middle_grade",
+        "teen_young_adult"
+      ],
+      "form": [
+        "fiction",
+        "graphic_narrative",
+        "life_writing",
+        "literary_collection",
+        "nonfiction",
+        "poetry",
+        "reference"
+      ],
+      "genre": [
+        "adventure",
+        "erotica",
+        "fantasy",
+        "gothic_horror",
+        "historical_fiction",
+        "humor",
+        "literary_fiction",
+        "mystery",
+        "mystery_suspense",
+        "paranormal_fiction",
+        "romance",
+        "science_fiction",
+        "spiritual_fiction",
+        "suspense_thriller",
+        "western"
+      ],
+      "topic": [
+        "arts",
+        "business",
+        "cooking",
+        "crafts",
+        "finance",
+        "games",
+        "health",
+        "history",
+        "language",
+        "literature",
+        "parenting",
+        "pets",
+        "philosophy",
+        "politics",
+        "psychology",
+        "religion",
+        "science",
+        "self_development",
+        "social_issues",
+        "sports",
+        "technology",
+        "test_preparation",
+        "travel"
+      ]
+    }
+  },
+  "status": "completed_and_independently_audited_source_recovery_only",
+  "study_id": "bgc-source-assignment-data-exposure-20261008",
+  "timings": {
+    "total_seconds": 1341.768391239999
+  }
+}
