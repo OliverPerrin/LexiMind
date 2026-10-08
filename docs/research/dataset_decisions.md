@@ -145,6 +145,20 @@ before execution; never derive weights from dev misses. Coefficient mass is not
 gradient mass, and no causal claim or new training/promotion follows from these
 saved-output correlations. Unknown omissions and human-label gaps remain.
 
+The [fresh source-loss weighting controls](../../research/results/book_source_loss_weighting_20261008.json)
+completed once and passed independent audit. Weighted-minus-unweighted mean
+changes at the fixed 4,096-update endpoint were −2.9721 / +2.4633 percentage
+points for genre group/label recall at 3, and +0.6376 / +1.8315 for topic.
+Genre group fell in both seeds; genre label had opposing signs; both topic
+metrics improved in both seeds. Preserve every sign and the original baseline.
+The rule improved the weighted loss while worsening original uniform loss;
+these are different objectives with different entropy floors. This mixed joint
+primary result does not support applying the rule across all facets or product
+promotion. A follow-up needs a separate frozen hypothesis and fresh controls.
+Mac lexical-tie preflight and CPU checker-only failures remain in provenance;
+training evidence was unchanged. Unknown omissions, semantic-label gaps and
+formal admission remain unresolved.
+
 ## Modern books beyond Gutenberg
 
 Open Library supplies modern **catalogue** coverage; publisher blurbs match field

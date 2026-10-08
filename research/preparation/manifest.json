@@ -27,8 +27,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 37968,
-      "sha256": "b3fec87999771a6a47812f7b2bb08a0ff4b38aa836e71c2e35324cf7c25c2449"
+      "bytes": 40026,
+      "sha256": "9418940f0644bda26f0eeeaee6295ff415608e7429724b862b69c88af2a3c16a"
     },
     {
       "id": "study_decisions",
@@ -62,8 +62,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 11655,
-      "sha256": "e75b54d86e2800b1e691021216c8c612d5287ba6432578bdb9d932ae0b932bb7"
+      "bytes": 11798,
+      "sha256": "0e4e03080307ae231bbd1d314b9dfa4c076b91702828d3b5b6cf0761b2e87be5"
     },
     {
       "id": "research_entry",
@@ -451,6 +451,13 @@
       "sha256": "584339da3950ffaf2d22cb268db43a541e8e1d760516134ad04a71a2ab08e186"
     },
     {
+      "id": "source_loss_weighting_observations",
+      "scope": "model_study",
+      "path": "research/results/book_source_loss_weighting_20261008.json",
+      "bytes": 263117,
+      "sha256": "cb32f4f3536c670416294a02756c78004c5c5c6e8e7285b5192725aea20b38bf"
+    },
+    {
       "id": "source_loss_weighting_config",
       "scope": "model_study",
       "path": "configs/research/book_source_loss_weighting.json",
@@ -706,8 +713,8 @@
       "id": "dataset_decisions",
       "scope": "model_study",
       "path": "docs/research/dataset_decisions.md",
-      "bytes": 12840,
-      "sha256": "399d264e17d4af1828c182526ec6adebfe035125391a5e1620d0a4d5c2db425a"
+      "bytes": 13834,
+      "sha256": "b32fa8523a0e73a7e64a9b479493c90bab53674e0a4bc7d96c8a07e5462ee90f"
     },
     {
       "id": "goemotions_candidate",

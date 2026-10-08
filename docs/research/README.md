@@ -565,31 +565,69 @@ source-loss diagnostics. No new training is authorized by this analysis itself;
 unknown omissions remain unknown, human semantic gold stays empty, and no PPO,
 semantic-negative BCE or product promotion follows.
 
-### Planned training-only source-loss weighting
+### Training-only source-loss weighting, 8 October
 
-The [fixed weighting protocol](../../configs/research/book_source_loss_weighting.json)
-compares fresh unweighted and weighted LoRA+head controls for seeds 17/29 on the
-same audited 16,384/1,024 rows, tokens and schedules. Four epochs / 4,096 updates
-per arm, endpoints 0/1024/2048/4096 and the same optimizer/model recipe remain.
-Whole-run budget is 2400 seconds; independent post-run CPU/GPU audits have
-separate 600-second caps. No weighting results are claimed yet.
+The [fixed trial](../../configs/research/book_source_loss_weighting.json)
+completed once in 1727.84 seconds and [passed independent audit](../../research/results/book_source_loss_weighting_20261008.json).
+Fresh unweighted/weighted LoRA controls used the same 16,384/1,024 rows, cached
+tokens, schedules, initializations and empty optimizers, with seeds 17/29 and
+4,096 updates each. The applied train-only weights were fixed before training;
+all 16 development endpoints and four final training reports remain available.
 
-Training-only global target coefficient masses define per-facet probabilities.
-A fixed 96-step float64 bisection chooses the inverse-square-root scalar so
-clipped weights in [0.25,4] have conditional mass-weighted mean one. Applied FP32
-vectors, caps, residuals and hashes are retained without post-cast normalization.
-The original positive/facet/row divisors remain: weights scale singleton rows and
-redistribute co-positive targets. Gradient norms, clipping and update magnitudes
-are not preserved. Global facet normalization does not imply exact scheduled
-batch-mass normalization; both are recorded.
+At the predeclared final endpoint, **group macro / label macro** source recall
+at 3 was:
 
-Every endpoint records original and weighted source CE, their corresponding
-entropy floors/excess, and full rankings/log probabilities for audit. Lexical
-controls refit on identical training text; all primary group/label outcomes and
-both seed signs remain. This is source-only, exploratory, with unknown omissions
-and no semantic-negative, human-gold, significance or product-admission claim.
-After audited completion, append the immutable visual/evidence entry to the
-[single portable gallery](visuals.html).
+| Arm / seed | Genre | Topic |
+| --- | ---: | ---: |
+| Unweighted, 17 | 88.30% / 79.69% | 91.62% / 86.39% |
+| Weighted, 17 | 84.32% / 78.55% | 92.77% / 89.70% |
+| Unweighted, 29 | 86.76% / 72.77% | 92.68% / 88.79% |
+| Weighted, 29 | 84.79% / 78.84% | 92.81% / 89.15% |
+| Unweighted descriptive two-seed mean | 87.53% / 76.23% | 92.15% / 87.59% |
+| Weighted descriptive two-seed mean | 84.56% / 78.69% | 92.79% / 89.42% |
+| Matched centroid TF-IDF | 84.97% / 77.72% | 91.09% / 88.54% |
+
+Every weighted-minus-unweighted primary change is retained, in percentage points:
+
+| Seed | Genre group | Genre label | Topic group | Topic label |
+| --- | ---: | ---: | ---: | ---: |
+| 17 | -3.9754 | -1.1397 | +1.1434 | +3.3087 |
+| 29 | -1.9688 | +6.0662 | +0.1319 | +0.3544 |
+| Descriptive mean | -2.9721 | +2.4633 | +0.6376 | +1.8315 |
+
+Genre group recovery fell in both seeds, while genre label recovery had opposite
+signs. Topic group and label recovery improved in both seeds. This is a mixed
+four-primary-outcome tradeoff, not a general improvement or promotion result.
+All four facets, cutoffs and per-label values—including unsupported nulls—remain
+in the compact result and hash-addressed raw evidence.
+
+Weighted-arm development CE improved **under the weighted objective** against
+its paired controls (0.81363 to 0.76061 for seed 17; 0.86325 to 0.76893 for 29),
+while original unweighted CE worsened (0.61203 to 0.67187; 0.61054 to 0.64831).
+Both arms are evaluated under each common objective separately, with its correct
+entropy floor/excess. These losses are not interchangeable. The weights also
+change row/facet scale and co-positive target proportions; equal gradient norms,
+clipping or update magnitudes were not claimed.
+
+The initial Mac prepare failed the unchanged exact lexical gate: 510 exchanged
+features were tied at total frequency nine. Its failure and diagnosis remain;
+this did not uniquely identify an architecture or dependency cause. A separately
+numbered WSL prepare using the original runtime passed exact lexical, row, token
+and schedule checks before training. The first CPU audit then failed only on
+integer-versus-JSON-string keys in a serialized weight vector; a separately frozen
+checker normalized those comparisons and passed. No training/runtime/source
+changes or training rerun followed. The first GPU audit restored all 16
+checkpoints with exact probability/log-probability agreement on 32 fixed
+development rows per checkpoint, frozen bindings
+and production-loader rejection.
+
+Retain unweighted and lexical controls. The joint primary tradeoff does not
+support applying this rule across every facet; any follow-up requires its own
+fixed hypothesis and fresh controls. Publisher assignments and unknown omissions
+remain distinct from human semantic gold. No significance, generalization,
+semantic-negative BCE, PPO or product promotion follows. The audited visual will
+be appended to the [single portable gallery](visuals.html) with its actual PR and
+commit-pinned evidence after publication.
 
 Rebuild prepared book candidates offline from the preserved source cache:
 
