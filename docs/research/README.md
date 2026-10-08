@@ -366,29 +366,63 @@ empty, formal admission remains unresolved, and there is no automatic RL,
 neural website promotion or paid compute. Research artifacts preserve all head
 and adapter factors and are rejected by ordinary inference loading.
 
-### Planned source learning curves
+### Source learning curves, 8 October
 
-The [new fixed duration protocol](../../configs/research/book_source_learning_curves.json)
-keeps the previous cohort, source-only objective, paired seeds/initialization,
-inputs and optimizer. Each arm starts fresh for 16 epochs / 4096 updates;
-endpoints 0/512/1024/2048/4096 are retained, with 4096 primary and a cooperative
-1800-second whole-run budget. The earlier protocol and observations remain
-unchanged. No duration results are claimed yet. Genre/topic group-macro and
-label-macro recall at 3 are predeclared primary outcomes at 4096; other facets,
-cutoffs, intermediate endpoints and fit diagnostics are secondary. Development
-data have already been inspected, so this is exploratory and descriptive, with
-no confirmatory or significance claim.
+The [fixed duration protocol](../../configs/research/book_source_learning_curves.json)
+completed once: four fresh arms, 16 epochs / 4096 updates each, in 1191.70 seconds.
+The [result](../../research/results/book_source_learning_curves_20261008.json)
+retains all 20 development endpoints and four final training reports. The
+predeclared 4096 endpoint remains primary; intermediate checkpoints are
+exploratory diagnostics. Independent audit passed: all 20 development objectives
+and four final training
+aggregates were reconstructed, alongside 32 shared batch proofs / 24,576 tensor
+hashes and the matched lexical scores. All 20 BF16 checkpoint restores matched
+probabilities and log probabilities exactly on 32 fixed development rows each;
+frozen bindings and ordinary inference-loader rejection were verified. An
+initial CPU probe failed only on tuple/list serialization comparison; that
+failure was preserved, the checker alone was normalized, and the corrected
+CPU audit passed. No training rerun was performed.
 
-Every endpoint records development eval-mode source cross-entropy, its uniform
-co-positive target entropy floor and excess cross-entropy, weighted by eligible
-rows across batches. The final endpoint also records full training-cohort
-rankings, group/label macro recovery and the same fit diagnostics. These help
-distinguish improved optimization from overfitting. Float32 log probabilities
-permit independent loss reconstruction even when probabilities underflow;
-shared tensor hashes reconstruct actual paired batches from saved tokens and
-schedules. This remains a bounded publisher-assignment diagnostic, with no
-semantic-negative, human-gold, significance or promotion claim. PPO exploration
-is a separate track and requires coordinated GPU use.
+Head only means a frozen encoder with a trained head. Primary observed-source
+recall at 3, shown as **group macro / label macro**:
+
+| Arm / seed | Genre | Topic |
+| --- | ---: | ---: |
+| Head only, 17 | 79.91% / 56.59% | 79.84% / 54.11% |
+| Head only, 29 | 80.17% / 56.47% | 80.67% / 53.94% |
+| LoRA + head, 17 | 80.87% / 69.47% | 89.64% / 80.43% |
+| LoRA + head, 29 | 79.88% / 68.06% | 89.07% / 83.80% |
+| LoRA descriptive two-seed mean | 80.38% / 68.76% | 89.36% / 82.11% |
+| Matched positive-centroid TF-IDF | 83.27% / 70.31% | 88.90% / 79.67% |
+
+Final LoRA means remained below lexical genre recovery and exceeded lexical
+topic recovery on both primary aggregation measures. Seed-29 LoRA genre group
+recall was slightly below its paired head-only arm; LoRA did not dominate every
+outcome. All facet/cutoff aggregates, label supports and per-seed paired
+differences remain available with hash-addressed per-label evidence.
+
+LoRA development source cross-entropy worsened from 2048 to 4096 updates:
+0.72474 to 0.80267 for seed 17 and 0.72686 to 0.82962 for seed 29. Final training
+cross-entropy was only 0.31146 / 0.31316. This pattern is consistent with
+source-objective overfitting; it does not justify selecting an earlier checkpoint
+after inspecting development results. Eligible-row-weighted loss, target entropy
+floor and excess loss are recorded at every endpoint, with full final training
+rankings. Saved float32 log probabilities enable independent loss reconstruction
+when probabilities underflow; shared tensor hashes reconstruct paired batches.
+
+This repeatedly inspected development cohort makes the study exploratory and
+descriptive, not confirmatory. Publisher-assignment competition is distinct from
+semantic partial-label BCE: unknown omissions remain unknown even though softmax
+pressures unassigned and co-positive labels. No semantic-quality, precision/F1,
+significance or recommendation claim follows. Seven of eight original
+endpoint-0/512 state-and-prediction comparisons were exact. Only seed-17 LoRA at 512 differed: maximum parameter difference
+0.00107625 and probability difference 0.02084035 despite matching initialization,
+cohort, inputs and schedules. The cause is unproven; CUDA nondeterminism is
+possible, and the duration protocol omitted the earlier 256-update evaluation.
+Exact replication across all earlier LoRA checkpoints is not claimed.
+Retain the strong lexical control and investigate source/objective and label
+support before proposing a new fixed experiment. Do not automatically add more
+epochs or promote PPO/neural website inference. Human field labels remain empty.
 
 Rebuild prepared book candidates offline from the preserved source cache:
 

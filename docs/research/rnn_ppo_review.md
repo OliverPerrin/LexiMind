@@ -4,6 +4,9 @@ Reviewed **3 October 2026** against the local implementation and primary sources
 This is a methods and integration review. No PufferLib installation, RNN training,
 GPU reservation or recommendation experiment was performed.
 
+The historical review below retains that 3 October scope. A separately verified
+8 October CUDA build and engineering smoke are recorded in the dated addendum.
+
 **Decision:** strengthen the native supervised baseline first. A small recurrent
 aggregator is a useful later hypothesis for ordered passages or reader sessions.
 PufferLib is worth revisiting for a fast, interactive recommendation simulator,
@@ -208,6 +211,54 @@ committed 14 September 2026. Source SHA-256 receipts for key inspected files:
 | PufferLib 5.0 `src/algo.cu` | `beb55f848076b6e089b015cf90970bb0d7a38290aa6e1ff74c961d9d4e1471f1` |
 | PufferLib historical 3.0 `pufferlib/models.py` | `eb8e0edb5f7f270a5cfe847288acac300223130503a94a4fb4ec071c60e131b9` |
 | PufferLib historical 3.0 `pufferlib/pufferl.py` | `ebe89e96a2515e7b0370d7b4833ae64bb46c1a68c20d13fd014a10abc4e33323` |
+
+## Addendum, 8 October 2026: verified native CUDA engineering smoke
+
+A private CUDA 13.0.2 toolkit (nvcc 13.0.88) built the pinned PufferLib 5.0
+source `6ffa5b10dbbbe4d1e8288367c7d9d3acd3bad4a2` for
+`breakout --cu sm_89` on the user-owned RTX4070/WSL host. The
+[compact observation](../../research/results/puffer_cuda_smoke_20261008.json)
+binds the build, binary, configuration, logs, checkpoint and transfer hashes.
+The build-stage receipt's “not GPU executed” status precedes the separately
+authorized smoke; it is preserved as historical evidence.
+
+The single fixed seed-17 smoke exited 0 after **4,194,304 agent steps / 32 rollout
+epochs**, saving four checkpoints at intervals of eight epochs. All checkpoint
+FP32 master weights and the 24 displayed loss values were finite. Those values
+include repeated dashboard displays and do not provide continuous loss
+monitoring. Evaluation
+used a stopping threshold of 128 episodes; upstream vectorization actually
+completed **255 episodes**, with recorded mean score **0.6039215922355652** and
+mean episode length 514.7254638671875. End-to-end wall time was
+**1.194140217 seconds**, while upstream reported internal uptime
+**0.22890925407409668 seconds**. These timings measure different scopes.
+
+One-second GPU polling yielded only two samples, with sampled maximum memory
+1829 MiB; upstream separately reported 1.59912109375 GiB. Neither value proves
+true continuous peak memory. The saved post-run query listed no compute
+processes, but its exit status and stderr were not recorded; GPU release is
+therefore not proven. No tuning or
+retry was performed. This verifies this native build and upstream Breakout
+execution path. It establishes no LexiMind PPO integration, PPO quality gain,
+recommendation relevance, RNN advantage or semantic-task performance. Binary
+provenance at execution remains receipt-based because no execution-time binary
+hash was saved. A later comparison of the current binary with the build hash
+cannot retrospectively prove the exact bytes executed. The current saved binary
+and raylib archive were subsequently checked independently against the build
+receipt and match its byte counts and SHA-256 hashes.
+
+Key SHA-256 receipts:
+
+| Evidence | SHA-256 |
+| --- | --- |
+| Build receipt | `ac00093bafda6d6f5f90f5b1e27a7a1b66978d3fdc2039da56cbd0704deaf1d6` |
+| Smoke receipt | `4eb8497d62147e47add497b002afe13874b3dcf3815acb88886a2e1bf27330c9` |
+| Native binary | `6773b2ed4f41edd8e3cbf1770b094633fe007dcd3dda81e0c782dc9e11a903ae` |
+| Transferred smoke evidence | `cb870290726c25865467af8a708a7b57ac2bbec81184cfcde67746d1806936f3` |
+
+The prior review’s LexiMind task/environment and supervised-control gates remain
+open. A future simulator study needs its own fixed observations, rewards,
+baselines, seeds and evaluation contract; this smoke supplies no such evidence.
 
 [mingru]: https://arxiv.org/html/2410.01201v3
 [rwkv]: https://arxiv.org/abs/2305.13048v2

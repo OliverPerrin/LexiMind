@@ -20,8 +20,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 25378,
-      "sha256": "083f8080a8d2328237af87c1582b86135ffe44306e0cb02badea53a35845a479"
+      "bytes": 27510,
+      "sha256": "71ec81c23c662c8bb504477931beb9472ff4340712ce89ee2b5b89ae95fd1df7"
     },
     {
       "id": "study_decisions",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 10788,
-      "sha256": "a91f540f2ec29192376b57e08a5a715829227e7715769c256c52c9dfce244e6c"
+      "bytes": 11063,
+      "sha256": "65cb78dba12f3193cda3bc6b1b2daa95d906f910f28e86ac2e833225d762c52f"
     },
     {
       "id": "research_entry",
@@ -405,8 +405,8 @@
       "id": "recurrent_ppo_review",
       "scope": "model_study",
       "path": "docs/research/rnn_ppo_review.md",
-      "bytes": 17302,
-      "sha256": "962a2caf74a6b486c49a9a950785fde09e2fd99a8455c02f0b768c69de02b155"
+      "bytes": 20308,
+      "sha256": "ef28664cc264ff1083aac96c343b07c301490d63097a1da67b02326d77747d1a"
     },
     {
       "id": "source_recovery_observations",
@@ -414,6 +414,20 @@
       "path": "research/results/book_source_recovery_20261008.json",
       "bytes": 241313,
       "sha256": "561b42ba2c0330e08eab8f7ae0653ca60bceb814c2232e6e1ec1caf5bc94e6af"
+    },
+    {
+      "id": "puffer_cuda_smoke_observations",
+      "scope": "model_study",
+      "path": "research/results/puffer_cuda_smoke_20261008.json",
+      "bytes": 7717,
+      "sha256": "691f58b9eb9d47c9338ad85c9bf2b535953310aa818ebb548a2ba9ca49ae0ab2"
+    },
+    {
+      "id": "source_learning_curves_observations",
+      "scope": "model_study",
+      "path": "research/results/book_source_learning_curves_20261008.json",
+      "bytes": 343277,
+      "sha256": "4e4ff686772fac688f57d76ad60899c26cee9f8c6f29f1bb1c0f13ebba9fb762"
     },
     {
       "id": "source_learning_curves_config",
