@@ -20,8 +20,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 21134,
-      "sha256": "a3fbc379d6ba15258085e8da25aa6855a860e3291f7ae385dfbe8453d59024c6"
+      "bytes": 22864,
+      "sha256": "bbfa5ac9809a6a3a6ed331208580dbd32a82b426a2246b54b7790d660d783330"
     },
     {
       "id": "study_decisions",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 10434,
-      "sha256": "8d7d3b1acdfb738baf3074bbed40e0e65c342f6a3216231b8d26cbd151190600"
+      "bytes": 10527,
+      "sha256": "70a384861150a1ec5ce47d68ae7f9e4d5229596ddbfeb6f3ed4b8225075111d5"
     },
     {
       "id": "research_entry",
@@ -409,6 +409,13 @@
       "sha256": "962a2caf74a6b486c49a9a950785fde09e2fd99a8455c02f0b768c69de02b155"
     },
     {
+      "id": "source_recovery_config",
+      "scope": "model_study",
+      "path": "configs/research/book_source_recovery.json",
+      "bytes": 4373,
+      "sha256": "ad20bd928cf270ccd53e56a26f473acca75b5ae559113ee6aba79e431624de6c"
+    },
+    {
       "id": "field_baseline_config",
       "scope": "model_study",
       "path": "configs/research/book_field_baseline.json",
@@ -419,8 +426,8 @@
       "id": "field_baseline_runtime",
       "scope": "model_study",
       "path": "src/research/field_baseline.py",
-      "bytes": 25961,
-      "sha256": "5ccac6621b4fac9b24b53bdf14a6cff0f113279a7c6bd54a1e16ccac0d4944bd"
+      "bytes": 60457,
+      "sha256": "32c9aff5ac6713c318e9d868e13aece696c921e19b59288ec292843b2e8b57ce"
     },
     {
       "id": "field_baseline_inputs",

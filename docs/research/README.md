@@ -320,6 +320,35 @@ The older 32-row purposive packet includes effective test records and must not b
 used as this diagnostic's training seed. No worksheet creates human evidence by
 being generated or viewed.
 
+### Planned bounded neural source-assignment recovery
+
+The [8 October protocol](../../configs/research/book_source_recovery.json) fixes
+4096 training and 1024 development groups from the existing BGC cohort, all four
+facets and 48 labels. Seeds 17 and 29 each compare an identically initialized
+frozen-encoder head with encoder Q/V LoRA plus that head. Each arm receives 512
+updates in two full passes, batch 16, on the owned CUDA host with BF16 autocast
+and FP32 parameters. The cooperative 900-second budget includes preparation,
+initialization, training, evaluation and saving; failures are retained without
+retries or changes to the recipe.
+
+Uniform observed-positive source targets use a facet mean within each eligible
+row and then a row mean. Softmax pressures unassigned labels and co-positives
+compete; omissions remain semantically unknown. Endpoints 0 and 256 are
+diagnostic, with 512 fixed as primary. All arms and seeds retain full rankings,
+observed-positive recovery metrics and research-only artifacts. A fresh lexical
+control uses the exact decoded 256-token neural input; the earlier full-text
+baseline is a historical reference. This is a planned weak-label diagnostic,
+with no result, human-gold, formal-admission or promotion claim.
+
+FLAN may have encountered public BGC records or blurbs during pretraining;
+exposure is unknown. The shared base controls exposure within each neural pair,
+but lexical versus neural recovery does not isolate the effect of pretraining.
+Preparation uses the existing command and does not load model weights:
+
+```sh
+python scripts/research.py field-baseline --config configs/research/book_source_recovery.json --output outputs/new-source-recovery-preparation --prepare-only
+```
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh
