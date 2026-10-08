@@ -96,6 +96,24 @@ rare-label limits and the separate 32-record training-only review worksheet.
 The old purposive review packet contains effective test records and is not used
 as a training seed. No human labels or formal field-study admission were created.
 
+The [8 October neural source-recovery pilot](../../research/results/book_source_recovery_20261008.json)
+completed and passed independent audit on the same fixed 4096/1024 cohort. At the
+predeclared 512-update endpoint, Q/V LoRA improved genre/topic observed-positive
+recall at 3 over each paired frozen-encoder head. Both seeds remained below the
+matched positive-centroid TF-IDF control: descriptive LoRA means were 75.24% /
+74.66%, versus 83.27% / 88.90% for genre/topic. All four facets, seeds and
+endpoints are retained; no best-seed or earlier-checkpoint selection was made.
+
+This is source-assignment learning, distinct from semantic partial-label BCE.
+Per-facet softmax pressures unassigned labels and co-positives compete; source
+omissions stay unknown. Publisher-label recovery supplies no precision/F1,
+human-gold, semantic-quality, significance or product-admission evidence. Unknown
+FLAN exposure to public blurbs also limits lexical-versus-neural interpretation.
+Keep the strong lexical control. Data/objective investigation and any longer
+fixed neural budget require a future protocol; this bounded result does not
+predict that more updates would win. Human field labels remain empty. No
+automatic RL or neural website promotion follows from this pilot.
+
 ## Modern books beyond Gutenberg
 
 Open Library supplies modern **catalogue** coverage; publisher blurbs match field
