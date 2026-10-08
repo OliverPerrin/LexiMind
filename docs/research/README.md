@@ -424,6 +424,67 @@ Retain the strong lexical control and investigate source/objective and label
 support before proposing a new fixed experiment. Do not automatically add more
 epochs or promote PPO/neural website inference. Human field labels remain empty.
 
+### Broader source exposure, 8 October
+
+The [fixed data-exposure protocol](../../configs/research/book_source_data_scaling.json)
+completed once and [passed independent audit](../../research/results/book_source_data_scaling_20261008.json).
+Four fresh arms trained on 16,384 original-training singleton groups for four
+passes / 4,096 updates each, retaining seeds 17/29 and both head-only/LoRA arms.
+The exact old 4,096-row training prefix and all 1,024 development rows/tokens
+were preserved. Each arm had 65,536 scheduled presentations, of which 65,532
+had observed positives: the one whole-empty row remained selected and contributed
+no objective loss. The whole run took 1341.77 seconds within its 1800-second cap.
+
+At the predeclared final 4,096-update endpoint, observed-source recall at 3 is
+shown as **group macro / label macro**. Head only means frozen encoder, trained head.
+
+| Arm / seed | Genre | Topic |
+| --- | ---: | ---: |
+| Head only, 17 | 81.98% / 59.34% | 80.80% / 54.89% |
+| Head only, 29 | 80.87% / 58.29% | 81.51% / 56.49% |
+| LoRA + head, 17 | 88.06% / 79.33% | 91.62% / 86.04% |
+| LoRA + head, 29 | 86.90% / 75.43% | 93.21% / 89.00% |
+| LoRA descriptive two-seed mean | 87.48% / 77.38% | 92.41% / 87.52% |
+| Refitted positive-centroid TF-IDF | 84.97% / 77.72% | 91.09% / 88.54% |
+
+Both LoRA seeds exceeded the refitted lexical **group-macro** recall at 3 for
+both facets, while the LoRA **label-macro means remained slightly below** it.
+The label results cross by seed: genre LoRA-17 is above lexical and LoRA-29
+below; topic LoRA-17 is below and LoRA-29 above. No all-metric lexical-superiority
+claim follows. Both head-only and LoRA historical differences, including negative
+form differences, remain in the compact result and hash-addressed full evidence.
+
+Against the earlier audited smaller-cohort LoRA finals, descriptive mean changes
+were +7.10 / +8.62 percentage points for genre group/label recall at 3, and
++3.06 / +5.41 points for topic. Unique data exposure and repetition changed
+jointly, and the smaller-cohort arms were historical rather than fresh
+contemporaneous controls; this cannot isolate a causal data-size effect.
+
+Expanded-cohort LoRA development cross-entropy decreased from 2048 to 4096
+updates: 0.65906 to 0.61221 for seed 17 and 0.65317 to 0.61249 for seed 29.
+Final training values were 0.52541 / 0.51826. Unlike the historical smaller-cohort
+pattern, final development loss continued to improve and the train/dev gap was
+smaller. This is consistent with less observed source-objective overfitting,
+with the same historical-comparison limitation. All 16 development checkpoints,
+four final training reports, target entropy floors/excess loss, all facet/cutoff
+metrics and original/additional/expanded/development label supports are retained.
+
+Independent CPU audit reconstructed every development/final-training objective,
+refitted the lexical controls, recounted supports and verified eight shared batch
+proofs / 16 paired arm-epoch references / 24,576 tensor hashes. All 16 BF16
+checkpoint restores matched probabilities and log probabilities exactly on 32
+fixed development rows each; frozen bindings and ordinary-loader rejection
+passed. CPU/GPU audits both passed on their first runs, without a training rerun.
+The 82 original raw files (1,134,267,269 bytes) were transferred and hash-verified.
+
+Keep the lexical controls and inspect label/support/objective limits before a
+new fixed experiment. Development has already been inspected and weak publisher
+assignments remain distinct from semantic partial-label BCE: omissions stay
+unknown despite softmax competition. Rare development supports still limit
+interpretation. This supplies no semantic gold, precision/F1, significance,
+recommendation or product-admission evidence. There is no automatic extra-epoch,
+PPO or neural website promotion; human semantic field labels remain empty.
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh

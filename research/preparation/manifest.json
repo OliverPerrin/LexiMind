@@ -20,8 +20,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 27510,
-      "sha256": "71ec81c23c662c8bb504477931beb9472ff4340712ce89ee2b5b89ae95fd1df7"
+      "bytes": 31404,
+      "sha256": "96f5c274bc8accf804f9e6ea0d4a7c122ae26cc2924ac76fc1a91ea1c04f98ab"
     },
     {
       "id": "study_decisions",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 11063,
-      "sha256": "65cb78dba12f3193cda3bc6b1b2daa95d906f910f28e86ac2e833225d762c52f"
+      "bytes": 11303,
+      "sha256": "51d3e87f8d10c0b20d93e1e5e299d230f4f5aa8f9b342e2882793260e6285553"
     },
     {
       "id": "research_entry",
@@ -430,6 +430,20 @@
       "sha256": "4e4ff686772fac688f57d76ad60899c26cee9f8c6f29f1bb1c0f13ebba9fb762"
     },
     {
+      "id": "source_data_scaling_observations",
+      "scope": "model_study",
+      "path": "research/results/book_source_data_scaling_20261008.json",
+      "bytes": 187548,
+      "sha256": "584339da3950ffaf2d22cb268db43a541e8e1d760516134ad04a71a2ab08e186"
+    },
+    {
+      "id": "source_data_scaling_config",
+      "scope": "model_study",
+      "path": "configs/research/book_source_data_scaling.json",
+      "bytes": 8214,
+      "sha256": "5f3a743e969c3c451d8b686e2b33352bfde8e5529f6d7e0d2a3c12665087de45"
+    },
+    {
       "id": "source_learning_curves_config",
       "scope": "model_study",
       "path": "configs/research/book_source_learning_curves.json",
@@ -454,15 +468,15 @@
       "id": "field_baseline_runtime",
       "scope": "model_study",
       "path": "src/research/field_baseline.py",
-      "bytes": 69340,
-      "sha256": "e6c29f566b1f9b7567b8325ab9f4c151e4b15857f8360aa94d1848993599af35"
+      "bytes": 78387,
+      "sha256": "2f49c33edfb0618d35605d5f281e867227cea27b5f90831d054142ca769662e3"
     },
     {
       "id": "field_baseline_inputs",
       "scope": "model_study",
       "path": "src/research/field_baseline_data.py",
-      "bytes": 19751,
-      "sha256": "b963c80d82e3d7dd7655851507ee9c70888cf993d1b469532c0dfcb31a8d9b37"
+      "bytes": 20199,
+      "sha256": "f00adee140283a227133d6bc8256c447bc54cd94ee4752e905fdf876b3dc65f3"
     },
     {
       "id": "field_baseline_review",
@@ -671,8 +685,8 @@
       "id": "dataset_decisions",
       "scope": "model_study",
       "path": "docs/research/dataset_decisions.md",
-      "bytes": 10580,
-      "sha256": "adb9adb9d62e2b1ecafb73f9989ec44d151492d4df7f70dfda9ef002b3c2b273"
+      "bytes": 11546,
+      "sha256": "7a566dcf9db0c1990fa670250b00e7d69d5fd6467949be96360758c0115873ce"
     },
     {
       "id": "goemotions_candidate",
