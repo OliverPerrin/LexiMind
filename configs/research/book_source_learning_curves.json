@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "kind": "book_source_assignment_learning_curves",
+  "seeds": [
+    17,
+    29
+  ],
+  "arms": [
+    "head_only",
+    "lora_head"
+  ],
+  "facets": [
+    "genre",
+    "topic",
+    "form",
+    "audience"
+  ],
+  "top_k": [
+    1,
+    3,
+    5
+  ],
+  "train_limit": 4096,
+  "dev_limit": 1024,
+  "selection_salt": "bgc-field-retrieval-v1",
+  "tfidf": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 2,
+    "max_features": 20000,
+    "sublinear_tf": true,
+    "lowercase": true,
+    "strip_accents": "unicode",
+    "stop_words": "english"
+  },
+  "batch_size": 16,
+  "epochs": 16,
+  "updates": 4096,
+  "endpoints": [
+    0,
+    512,
+    1024,
+    2048,
+    4096
+  ],
+  "primary_endpoint": 4096,
+  "max_length": 256,
+  "max_total_seconds": 1800,
+  "device": "cuda",
+  "parameter_dtype": "float32",
+  "autocast_dtype": "bfloat16",
+  "gradient_accumulation_steps": 1,
+  "gradient_clip_norm": 1.0,
+  "optimizer": {
+    "lr": 0.0005,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.0
+  },
+  "scheduler": "constant",
+  "lora": {
+    "rank": 4,
+    "alpha": 8,
+    "dropout": 0.0
+  },
+  "dropout": 0.0,
+  "schedule": "Python random.Random(seed + epoch).shuffle over fixed cohort indices; epoch is 1 through 16; same schedule in both arms",
+  "promote": false,
+  "paid_spend_authorized": false,
+  "formal_dataset_admission": false,
+  "human_gold": false,
+  "study_id": "bgc-source-assignment-learning-curves-20261008",
+  "status": "fixed_before_duration_training",
+  "authorization": "User authorized continued training on the user-owned RTX4070 on 2026-10-08. This protocol freezes a fresh paired16-epoch duration experiment; no paid compute, automatic rerun, formal admission or promotion.",
+  "field_manifest": {
+    "path": "research/preparation/book_field_manifest.json",
+    "bytes": 6428,
+    "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
+  },
+  "partition_manifest": {
+    "path": "research/preparation/book_partition_manifest.json",
+    "bytes": 41532,
+    "sha256": "c45173e71a2196090f319e77ad4a17eff0a03c3a137f852bf621183dbccf8e73"
+  },
+  "base": {
+    "repo": "google/flan-t5-base",
+    "revision": "7bcac572ce56db69c1ea7c8af255c5d7c9672fc2",
+    "weight_sha256": "1dfb70afdcedceb9f9fae2f9b68e004ad934361fb35b9b2bd50b45ea90790fc8"
+  },
+  "prior_full_text_reference": {
+    "path": "research/results/book_field_baseline_20261003.json",
+    "bytes": 27361,
+    "sha256": "d9774a2cbe6a58c82791c350509274d0cda07e6445e0daee7f2ea4540427890e"
+  },
+  "loss": "For each eligible row/facet, uniform target mass over observed source positives. Mean eligible facets within each row, then mean eligible rows. Whole-empty rows retain cohort/order but are excluded from loss; every planned batch must have eligible rows. Softmax pressures unassigned labels and co-positives compete; unknown omissions are not semantic negatives.",
+  "input": "Title: {title}\nDescription: {description}, max 256 cached FLAN tokens with longest padding to multiple8. Token-matched lexical control decodes exact visible model IDs excluding special tokens, fit on train only. Historical full raw text baseline is reference only.",
+  "evaluation": "All seeds/arms/facets/labels/endpoints retained.4096updates primary;0/512/1024/2048 diagnostic. Dev eval-mode row-meanCE, target entropy floor, excessCE every endpoint; finaltrain same objective/full rankings/metrics for optimization-vs-generalization diagnosis. Weight eligible rows across batches, never average batchmeans; report whole-empty exclusions. Per-label float32 log_probability from log_softmax retained for independent CE audit despite probability underflow. No bestcheckpoint/seed selection, precision/F1/accuracy/semantic-quality/significance claim.",
+  "artifacts": "Fresh initialization and optimizer; previous artifacts are references, never resumes. Dedicated research-only checkpoint kind with all factors/privatehead and frozenbindings. Newprotocol stores shared perseed/epoch actual tensor hashes+shapes linked to exact tokens/masks and schedules; pairedarm reconstruction must match. All20dev and4finaltrain fullrankings include logprobabilities. Original512protocol/rawresults remain immutable.",
+  "budget": "1800 seconds whole-run cooperative budget includes all source preparation, tokenization, matched lexical fitting, initialization,16epochsperarm, all endpointdev and finaltrain evaluation and saves. Stop/preserve on failure, no adaptive reruns or hyperparameter changes.",
+  "limitations": [
+    "FLAN pretraining may have exposed the base to public BGC records or blurbs; exposure is unknown. The identical base controls this within each paired neural arm, but lexical versus neural recovery is not an isolated comparison of pretraining.",
+    "Publisher assignments and the authored mapping are incomplete weak source labels. Recovery metrics do not establish semantic correctness or recommendation relevance.",
+    "This development cohort has already been inspected in lexical and512-update neural experiments. This duration study is exploratory/descriptive, not confirmatory; no significance or unseen-test claim."
+  ],
+  "batch_evidence": "shared_schedule_token_hashes",
+  "fit_diagnostics": "dev_every_endpoint_and_final_train",
+  "initialization": "fresh_base_head_factors_and_optimizer_not_resume",
+  "previous_source_recovery_observation": {
+    "path": "research/results/book_source_recovery_20261008.json",
+    "bytes": 241313,
+    "sha256": "561b42ba2c0330e08eab8f7ae0653ca60bceb814c2232e6e1ec1caf5bc94e6af"
+  },
+  "duration_interpretation": "Changes training duration only. Hypothesis is improved source-assignment fitting; longer training may overfit, remain below lexical recovery, or degrade. Finaltrain/dev excessCE and allfacet group/label macro recovery distinguish these outcomes; no semantic data admission or PPO follows automatically.",
+  "primary_outcomes": {
+    "endpoint": 4096,
+    "facets": [
+      "genre",
+      "topic"
+    ],
+    "metrics": [
+      "group_macro_recall_at_3",
+      "label_macro_recall_at_3"
+    ],
+    "aggregation": "Both seeds and each paired difference retained; two-seed means descriptive only."
+  },
+  "secondary_outcomes": {
+    "facets": [
+      "genre",
+      "topic",
+      "form",
+      "audience"
+    ],
+    "metrics": [
+      "group_macro_recall_at_1",
+      "group_macro_recall_at_5",
+      "label_macro_recall_at_1",
+      "label_macro_recall_at_5",
+      "group_macro_reciprocal_rank",
+      "per_label_support_and_recovery",
+      "eval_mode_source_cross_entropy",
+      "target_entropy_floor",
+      "excess_cross_entropy"
+    ],
+    "additional": "Form/audience recallat3 and all intermediateendpoint measurements are descriptive diagnostics; finaltrain diagnostic compares fit to finaldev."
+  }
+}

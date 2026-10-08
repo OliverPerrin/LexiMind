@@ -433,7 +433,10 @@ def execute(
             "Field baseline output already exists; preserve it and use a new directory"
         )
     config = read_json(config_path)
-    if config.get("kind") == "book_source_assignment_recovery_pilot":
+    if config.get("kind") in {
+        "book_source_assignment_recovery_pilot",
+        "book_source_assignment_learning_curves",
+    }:
         return execute_source_recovery(config_path, output, root=root, prepare_only=prepare_only)
     validate_config(config)
     config_ref = _reference(root, config_path)
@@ -658,11 +661,31 @@ SOURCE_RECOVERY = {
 }
 
 
+SOURCE_LEARNING_CURVES = {
+    **SOURCE_RECOVERY,
+    "kind": "book_source_assignment_learning_curves",
+    "epochs": 16,
+    "updates": 4096,
+    "endpoints": [0, 512, 1024, 2048, 4096],
+    "primary_endpoint": 4096,
+    "max_total_seconds": 1800,
+    "schedule": "Python random.Random(seed + epoch).shuffle over fixed cohort indices; epoch is 1 through 16; same schedule in both arms",
+    "batch_evidence": "shared_schedule_token_hashes",
+    "fit_diagnostics": "dev_every_endpoint_and_final_train",
+    "initialization": "fresh_base_head_factors_and_optimizer_not_resume",
+}
+
+
 def validate_source_recovery_config(config: dict) -> None:
     """Reject protocol drift rather than silently adapting this one bounded pilot."""
     import json
 
-    for key, expected in SOURCE_RECOVERY.items():
+    contract = (
+        SOURCE_LEARNING_CURVES
+        if config.get("kind") == SOURCE_LEARNING_CURVES["kind"]
+        else SOURCE_RECOVERY
+    )
+    for key, expected in contract.items():
         if json.dumps(config.get(key), sort_keys=True) != json.dumps(expected, sort_keys=True):
             raise ValueError(f"Source recovery requires fixed {key}")
     legacy = read_json(ROOT / "configs/research/book_field_baseline.json")
@@ -708,7 +731,44 @@ def source_recovery_loss(logits, positives, facet_bounds):
     return row_loss[row_count > 0].mean()
 
 
-def source_recovery_rankings(scores, rows: list[dict], mapping: dict, method: str) -> list[dict]:
+def source_recovery_fit_totals(logits, positives, facet_bounds) -> dict:
+    """Additive eval-mode objective totals, correctly weighted by eligible rows."""
+    import torch
+
+    # Reuse objective validation even when no row is eligible in this batch.
+    if logits.ndim != 2 or positives.shape != logits.shape or positives.dtype != torch.bool:
+        raise ValueError("Fit diagnostic requires matching BxC logits and positive indicators")
+    if not torch.isfinite(logits).all():
+        raise ValueError("Fit diagnostic requires finite logits")
+    entropy, availability = [], []
+    cursor = 0
+    for start, stop in facet_bounds.values():
+        if start != cursor or stop <= start or stop > logits.shape[1]:
+            raise ValueError("Fit facets must partition every logit")
+        cursor = stop
+        counts = positives[:, start:stop].sum(dim=1)
+        entropy.append(counts.clamp_min(1).float().log())
+        availability.append(counts > 0)
+    if cursor != logits.shape[1] or not availability:
+        raise ValueError("Fit facets must cover every logit")
+    mask = torch.stack(availability, dim=1)
+    facet_count = mask.sum(dim=1)
+    eligible = facet_count > 0
+    count = int(eligible.sum())
+    floors = (torch.stack(entropy, dim=1) * mask).sum(dim=1) / facet_count.clamp_min(1)
+    return {
+        "eligible_rows": count,
+        "excluded_rows": len(logits) - count,
+        "cross_entropy_sum": float(source_recovery_loss(logits, positives, facet_bounds)) * count
+        if count
+        else 0.0,
+        "target_entropy_floor_sum": float(floors[eligible].sum()),
+    }
+
+
+def source_recovery_rankings(
+    scores, rows: list[dict], mapping: dict, method: str, *, log_scores=None
+) -> list[dict]:
     """Validate facet probability rankings and retain all labels and source outcomes."""
     import numpy as np
 
@@ -725,7 +785,7 @@ def source_recovery_rankings(scores, rows: list[dict], mapping: dict, method: st
             or not np.allclose(values.sum(axis=1), 1, atol=1e-5, rtol=1e-5)
         ):
             raise ValueError("Recovery scores must be finite per-facet probability vectors")
-    return [
+    ranked = [
         {
             "record_id": row["record_id"],
             "group_id": row["group_id"],
@@ -743,6 +803,25 @@ def source_recovery_rankings(scores, rows: list[dict], mapping: dict, method: st
         }
         for i, row in enumerate(rows)
     ]
+
+    if log_scores is not None:
+        if set(log_scores) != set(FACETS):
+            raise ValueError("Recovery log probabilities require all facets")
+        for facet, vocabulary in labels.items():
+            log_values = np.asarray(log_scores[facet])
+            if (
+                log_values.shape != np.asarray(scores[facet]).shape
+                or not np.isfinite(log_values).all()
+                or not np.allclose(np.exp(log_values), scores[facet], atol=1e-7, rtol=1e-5)
+            ):
+                raise ValueError(
+                    "Recovery log probabilities must be finite and exponentiate to saved scores"
+                )
+            positions = {label: i for i, label in enumerate(vocabulary)}
+            for i, row in enumerate(ranked):
+                for entry in row["methods"][method][facet]["ranking"]:
+                    entry["log_probability"] = float(log_values[i, positions[entry["label"]]])
+    return ranked
 
 
 def _recovery_tensor_hash(tensor) -> str:
@@ -787,7 +866,9 @@ def execute_source_recovery(
     def check(phase):
         progress["phase"] = phase
         if time.monotonic() - started > config["max_total_seconds"]:
-            raise TimeoutError("Source recovery exceeded its fixed 900-second cooperative budget")
+            raise TimeoutError(
+                f"Source recovery exceeded its fixed {config['max_total_seconds']}-second cooperative budget"
+            )
         if _reference(root, config_path) != config_ref:
             raise ValueError("Source recovery protocol changed during execution")
         if any(_reference(root, root / name) != ref for name, ref in runtime_references.items()):
@@ -796,6 +877,12 @@ def execute_source_recovery(
     try:
         bundle = prepare_field_baseline_data(root, config)
         check("source_verified")
+        if config.get("kind") == SOURCE_LEARNING_CURVES["kind"]:
+            prior = config["previous_source_recovery_observation"]
+            if _reference(root, root / prior["path"]) != prior:
+                raise ValueError(
+                    "Previous source-recovery observation differs from its protocol pin"
+                )
         historical = config["prior_full_text_reference"]
         if _reference(root, root / historical["path"]) != historical:
             raise ValueError("Historical full-text reference changed")
@@ -818,7 +905,7 @@ def execute_source_recovery(
         schedules: dict[str, list[list[int]]] = {}
         for seed in config["seeds"]:
             schedules[str(seed)] = []
-            for epoch in (1, 2):
+            for epoch in range(1, config["epochs"] + 1):
                 indices = list(range(len(train)))
                 random.Random(seed + epoch).shuffle(indices)
                 for begin in range(0, len(indices), 16):
@@ -976,7 +1063,7 @@ def execute_source_recovery(
                 "loss": "Uniform known-positive distribution per facet; mean eligible facets within each row, then mean eligible rows. Whole-empty rows excluded only from loss. Softmax pressures unassigned labels and co-positives compete; omissions remain semantically unknown.",
                 "metrics": "Observed publisher-source assignment recovery only, not semantic negatives, human gold, precision, F1 or accuracy.",
                 "comparison": "Matched lexical control decodes exact truncated formatted neural input. Prior full literal title/newline/description TF-IDF is an external reference, not an input-matched comparison.",
-                "selection": "Endpoint512 primary; endpoints0/256 diagnostic; all seeds/arms retained, no best checkpoint selection.",
+                "selection": f"Endpoint{config['primary_endpoint']} primary; all other declared endpoints diagnostic; all seeds/arms retained, no best checkpoint selection.",
             },
             "timings": {},
         }
@@ -1068,11 +1155,13 @@ def _fit_source_recovery(
 
     labels = _labels(report["mapping"])
     positions = {f: {label: bounds[f][0] + i for i, label in enumerate(labels[f])} for f in FACETS}
-    indicators = torch.zeros((len(train), 48), dtype=torch.bool)
-    for i, row in enumerate(train):
-        for f in FACETS:
-            for label in row["fields"][f]["positive"]:
-                indicators[i, positions[f][label]] = True
+    indicators = {}
+    for split, rows in (("train", train), ("dev", dev)):
+        indicators[split] = torch.zeros((len(rows), 48), dtype=torch.bool)
+        for i, row in enumerate(rows):
+            for f in FACETS:
+                for label in row["fields"][f]["positive"]:
+                    indicators[split][i, positions[f][label]] = True
 
     def collate(indices, split):
         records = [encoded[split][i] for i in indices]
@@ -1090,7 +1179,7 @@ def _fit_source_recovery(
             masks[j, : len(visible)] = True
         batch = {"input_ids": ids, "attention_mask": masks}
         if split == "train":
-            batch["labels"] = indicators[indices]
+            batch["labels"] = indicators[split][indices]
         return batch
 
     class SourceRecoveryTrainer(Trainer):
@@ -1125,6 +1214,68 @@ def _fit_source_recovery(
             for name in ("torch", "transformers", "numpy", "scipy", "scikit-learn")
         },
     }
+    learning_curves = config["kind"] == SOURCE_LEARNING_CURVES["kind"]
+
+    def evaluate(model, split, method, key, update):
+        rows = train if split == "train" else dev
+        model.eval()
+        scores: dict[str, list] = {f: [] for f in FACETS}
+        log_scores: dict[str, list] = {f: [] for f in FACETS}
+        totals = {
+            "eligible_rows": 0,
+            "excluded_rows": 0,
+            "cross_entropy_sum": 0.0,
+            "target_entropy_floor_sum": 0.0,
+        }
+        with torch.no_grad():
+            for begin in range(0, len(rows), 16):
+                indices = list(range(begin, min(begin + 16, len(rows))))
+                batch = {
+                    k: v.to(device) for k, v in collate(indices, split).items() if k != "labels"
+                }
+                with torch.autocast("cuda", dtype=torch.bfloat16):
+                    logits = model.forward("topic", batch)
+                if logits.shape != (len(indices), 48) or not torch.isfinite(logits).all():
+                    raise ValueError("Nonfinite or malformed neural evaluation logits")
+                if learning_curves:
+                    values = source_recovery_fit_totals(
+                        logits, indicators[split][indices].to(device), bounds
+                    )
+                    for name, value in values.items():
+                        totals[name] += value
+                for f, (start, stop) in bounds.items():
+                    scores[f].append(logits[:, start:stop].float().softmax(dim=1).cpu().numpy())
+                    if learning_curves:
+                        log_scores[f].append(
+                            logits[:, start:stop].float().log_softmax(dim=1).cpu().numpy()
+                        )
+                check(f"evaluate_{key}_{update}_{split}")
+        ranked = source_recovery_rankings(
+            {f: np.concatenate(v) for f, v in scores.items()},
+            rows,
+            report["mapping"],
+            method,
+            log_scores={f: np.concatenate(v) for f, v in log_scores.items()}
+            if learning_curves
+            else None,
+        )
+        fit = None
+        if learning_curves:
+            denominator = totals["eligible_rows"]
+            ce = totals["cross_entropy_sum"] / denominator if denominator else None
+            floor = totals["target_entropy_floor_sum"] / denominator if denominator else None
+            fit = {
+                **totals,
+                "cross_entropy": ce,
+                "target_entropy_floor": floor,
+                "excess_cross_entropy": ce - floor
+                if ce is not None and floor is not None
+                else None,
+                "mode": "eval_bf16_autocast",
+                "row_weighting": "eligible_row_count",
+            }
+        return ranked, ranking_metrics(ranked, report["mapping"], methods=(method,)), fit
+
     for seed in config["seeds"]:
         expected_initial = None
         for arm in config["arms"]:
@@ -1165,7 +1316,7 @@ def _fit_source_recovery(
                 model,
                 optimizer,
                 TrainerConfig(
-                    max_epochs=2,
+                    max_epochs=config["epochs"],
                     gradient_accumulation_steps=1,
                     gradient_clip_norm=1.0,
                     scheduler_type="constant",
@@ -1216,32 +1367,24 @@ def _fit_source_recovery(
             ):
                 check(f"evaluate_{key}_{trainer.global_step}")
                 evaluation_start = time.monotonic()
-                model.eval()
-                scores: dict[str, list] = {f: [] for f in FACETS}
-                with torch.no_grad():
-                    for begin in range(0, len(dev), 16):
-                        batch = {
-                            k: v.to(device)
-                            for k, v in collate(
-                                list(range(begin, min(begin + 16, len(dev)))), "dev"
-                            ).items()
-                        }
-                        with torch.autocast("cuda", dtype=torch.bfloat16):
-                            logits = model.forward("topic", batch)
-                        if (
-                            logits.shape != (len(batch["input_ids"]), 48)
-                            or not torch.isfinite(logits).all()
-                        ):
-                            raise ValueError("Nonfinite or malformed neural evaluation logits")
-                        for f, (start, stop) in bounds.items():
-                            scores[f].append(
-                                logits[:, start:stop].float().softmax(dim=1).cpu().numpy()
-                            )
-                        check(f"evaluate_{key}_{trainer.global_step}")
-                ranked = source_recovery_rankings(
-                    {f: np.concatenate(v) for f, v in scores.items()}, dev, report["mapping"], arm
-                )
-                metrics = ranking_metrics(ranked, report["mapping"], methods=(arm,))
+                ranked, metrics, dev_fit = evaluate(model, "dev", arm, key, trainer.global_step)
+                train_fit = None
+                if learning_curves and trainer.global_step == config["primary_endpoint"]:
+                    train_started = time.monotonic()
+                    train_ranked, train_metrics, train_objective = evaluate(
+                        model, "train", arm, key, trainer.global_step
+                    )
+                    train_path = arm_output / "final_train.rankings.json"
+                    _write(train_path, {"schema_version": 1, "records": train_ranked})
+                    train_fit = {
+                        "metrics": train_metrics,
+                        "objective": train_objective,
+                        "rankings": _reference(root, train_path),
+                        "evaluation_and_save_seconds": time.monotonic() - train_started,
+                    }
+                    arm_report["final_train_fit"] = train_fit
+                    _write(arm_output / "final_train.receipt.json", train_fit)
+                    check(f"final_train_saved_{key}")
                 delta = extract_effective_delta(model, binding, task_id="source_recovery")
                 adaptation_norm = float(
                     sum(v.double().square().sum().item() for v in delta.shared.values()) ** 0.5
@@ -1299,32 +1442,72 @@ def _fit_source_recovery(
                     "evaluation_and_save_seconds": time.monotonic() - evaluation_start,
                     "elapsed_seconds": time.monotonic() - study_started,
                 }
+                if learning_curves:
+                    receipt["dev_fit"] = dev_fit
+                    if train_fit is not None:
+                        receipt["final_train_fit"] = train_fit
                 arm_report["endpoints"][str(trainer.global_step)] = receipt
                 _write(arm_output / f"endpoint_{trainer.global_step}.receipt.json", receipt)
                 check(f"saved_{key}_{trainer.global_step}")
 
             endpoint()
             with mlflow.start_run(run_name=key):
-                for epoch in (1, 2):
+                for epoch in range(1, config["epochs"] + 1):
                     batches = [
                         collate(schedules[str(seed)][epoch - 1][i : i + 16], "train")
                         for i in range(0, 4096, 16)
                     ]
-                    batch_path = arm_output / f"epoch_{epoch}.batches.json"
-                    _write(
-                        batch_path,
-                        {
-                            "schedule": report["schedules"],
-                            "epoch": epoch,
-                            "batches": [
-                                {
-                                    "input_ids": b["input_ids"].tolist(),
-                                    "attention_mask": b["attention_mask"].tolist(),
-                                }
-                                for b in batches
-                            ],
-                        },
-                    )
+                    if learning_curves:
+                        batch_path = output / f"seed_{seed}_epoch_{epoch}.batch_hashes.json"
+                        _write(
+                            batch_path,
+                            {
+                                "schema_version": 1,
+                                "kind": "reconstructable_actual_batch_tensor_proof",
+                                "seed": seed,
+                                "epoch": epoch,
+                                "schedule": report["schedules"],
+                                "tokenization": report["tokenization"],
+                                "examples": report["examples"],
+                                "padding": {
+                                    "side": "right",
+                                    "pad_token_id": tokenizer.pad_token_id,
+                                    "rule": "longest visible row rounded up to multiple8",
+                                },
+                                "tensor_hash_format": "SHA256(json_bytes(shape,dtype) + contiguous CPU NumPy C-order tensor bytes)",
+                                "batches": [
+                                    {
+                                        "batch_index": j,
+                                        "schedule_offset": j * 16,
+                                        "rows": len(b["input_ids"]),
+                                        "tensor_shapes": {
+                                            name: list(value.shape) for name, value in b.items()
+                                        },
+                                        "tensor_sha256": {
+                                            name: _recovery_tensor_hash(value)
+                                            for name, value in b.items()
+                                        },
+                                    }
+                                    for j, b in enumerate(batches)
+                                ],
+                            },
+                        )
+                    else:
+                        batch_path = arm_output / f"epoch_{epoch}.batches.json"
+                        _write(
+                            batch_path,
+                            {
+                                "schedule": report["schedules"],
+                                "epoch": epoch,
+                                "batches": [
+                                    {
+                                        "input_ids": b["input_ids"].tolist(),
+                                        "attention_mask": b["attention_mask"].tolist(),
+                                    }
+                                    for b in batches
+                                ],
+                            },
+                        )
                     arm_report.setdefault("actual_batch_inputs", {})[str(epoch)] = _reference(
                         root, batch_path
                     )
@@ -1345,7 +1528,8 @@ def _fit_source_recovery(
                         raise ValueError(
                             "Recovery update count differs from its fixed record schedule"
                         )
-                    endpoint()
+                    if trainer.global_step in config["endpoints"]:
+                        endpoint()
             del endpoint, step_checked, trainer, optimizer, model, batches
             gc.collect()
             torch.cuda.empty_cache()

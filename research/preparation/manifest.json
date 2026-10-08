@@ -20,8 +20,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 23838,
-      "sha256": "7390b0a252f112cd7d905081bb0f64b138bae187f2c8face7ff0a6963ab03874"
+      "bytes": 25378,
+      "sha256": "083f8080a8d2328237af87c1582b86135ffe44306e0cb02badea53a35845a479"
     },
     {
       "id": "study_decisions",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 10658,
-      "sha256": "7659f30eaecb720bfd54c9f0306252b281756142267fd29a19376ad9962b449b"
+      "bytes": 10788,
+      "sha256": "a91f540f2ec29192376b57e08a5a715829227e7715769c256c52c9dfce244e6c"
     },
     {
       "id": "research_entry",
@@ -416,6 +416,13 @@
       "sha256": "561b42ba2c0330e08eab8f7ae0653ca60bceb814c2232e6e1ec1caf5bc94e6af"
     },
     {
+      "id": "source_learning_curves_config",
+      "scope": "model_study",
+      "path": "configs/research/book_source_learning_curves.json",
+      "bytes": 6816,
+      "sha256": "bf336dea86045bb0359b2182c3ace92417003b83854f452c75edd258c722ff2d"
+    },
+    {
       "id": "source_recovery_config",
       "scope": "model_study",
       "path": "configs/research/book_source_recovery.json",
@@ -433,8 +440,8 @@
       "id": "field_baseline_runtime",
       "scope": "model_study",
       "path": "src/research/field_baseline.py",
-      "bytes": 60457,
-      "sha256": "32c9aff5ac6713c318e9d868e13aece696c921e19b59288ec292843b2e8b57ce"
+      "bytes": 69340,
+      "sha256": "e6c29f566b1f9b7567b8325ab9f4c151e4b15857f8360aa94d1848993599af35"
     },
     {
       "id": "field_baseline_inputs",

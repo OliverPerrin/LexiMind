@@ -366,6 +366,30 @@ empty, formal admission remains unresolved, and there is no automatic RL,
 neural website promotion or paid compute. Research artifacts preserve all head
 and adapter factors and are rejected by ordinary inference loading.
 
+### Planned source learning curves
+
+The [new fixed duration protocol](../../configs/research/book_source_learning_curves.json)
+keeps the previous cohort, source-only objective, paired seeds/initialization,
+inputs and optimizer. Each arm starts fresh for 16 epochs / 4096 updates;
+endpoints 0/512/1024/2048/4096 are retained, with 4096 primary and a cooperative
+1800-second whole-run budget. The earlier protocol and observations remain
+unchanged. No duration results are claimed yet. Genre/topic group-macro and
+label-macro recall at 3 are predeclared primary outcomes at 4096; other facets,
+cutoffs, intermediate endpoints and fit diagnostics are secondary. Development
+data have already been inspected, so this is exploratory and descriptive, with
+no confirmatory or significance claim.
+
+Every endpoint records development eval-mode source cross-entropy, its uniform
+co-positive target entropy floor and excess cross-entropy, weighted by eligible
+rows across batches. The final endpoint also records full training-cohort
+rankings, group/label macro recovery and the same fit diagnostics. These help
+distinguish improved optimization from overfitting. Float32 log probabilities
+permit independent loss reconstruction even when probabilities underflow;
+shared tensor hashes reconstruct actual paired batches from saved tokens and
+schedules. This remains a bounded publisher-assignment diagnostic, with no
+semantic-negative, human-gold, significance or promotion claim. PPO exploration
+is a separate track and requires coordinated GPU use.
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh
