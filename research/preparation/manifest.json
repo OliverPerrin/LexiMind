@@ -20,15 +20,15 @@
       "id": "research_visual_archive",
       "scope": "common",
       "path": "docs/research/visuals.html",
-      "bytes": 349447,
-      "sha256": "8d1fea0621c7e44dc5646784cf3be3b677feb5a9b4743985482355d6e066846b"
+      "bytes": 367338,
+      "sha256": "f3e70b1898883e923d1cc5ebde9bdd3d224c42ccf81954d3fdff585b4be0cf57"
     },
     {
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 40026,
-      "sha256": "9418940f0644bda26f0eeeaee6295ff415608e7429724b862b69c88af2a3c16a"
+      "bytes": 40209,
+      "sha256": "4b279a54f523e725309c8d9ecd798f3d0ca79170640711111b742986d2448e57"
     },
     {
       "id": "study_decisions",

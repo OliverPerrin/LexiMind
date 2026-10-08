@@ -20,7 +20,7 @@ Book recommendation relevance is evaluated separately from model-task accuracy.
 
 [Download the standalone visual gallery](visuals.html) and open the HTML locally;
 GitHub displays HTML source rather than rendering it. The single file works
-offline and preserves the three interactive 8 October snapshots with stable
+offline and preserves the four interactive 8 October snapshots with stable
 anchors, PR links, commit-pinned result/research-note links and source hashes.
 
 Append future snapshots to the gallery's `archive-payload` entries, retaining
@@ -625,9 +625,11 @@ Retain unweighted and lexical controls. The joint primary tradeoff does not
 support applying this rule across every facet; any follow-up requires its own
 fixed hypothesis and fresh controls. Publisher assignments and unknown omissions
 remain distinct from human semantic gold. No significance, generalization,
-semantic-negative BCE, PPO or product promotion follows. The audited visual will
-be appended to the [single portable gallery](visuals.html) with its actual PR and
-commit-pinned evidence after publication.
+semantic-negative BCE, PPO or product promotion follows. The audited visual is archived in the
+[single portable gallery](visuals.html#loss-weighting), linked to
+[PR #20](https://github.com/OliverPerrin/LexiMind/pull/20) and commit-pinned evidence.
+This is the same previously inspected development cohort, so the comparison is
+exploratory rather than a fresh held-out generalization test.
 
 Rebuild prepared book candidates offline from the preserved source cache:
 
