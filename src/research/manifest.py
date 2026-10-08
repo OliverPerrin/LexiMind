@@ -95,6 +95,10 @@ ARTIFACTS: dict[str, tuple[str, str]] = {
         "model_study",
         "research/results/book_source_data_scaling_20261008.json",
     ),
+    "source_loss_weighting_config": (
+        "model_study",
+        "configs/research/book_source_loss_weighting.json",
+    ),
     "source_data_scaling_config": ("model_study", "configs/research/book_source_data_scaling.json"),
     "source_learning_curves_config": (
         "model_study",

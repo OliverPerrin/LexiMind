@@ -373,7 +373,10 @@ def prepare_field_baseline_data(root: Path, config: dict) -> dict:
     root = root.resolve()
     fields, partition, groups, audit, mapping, bindings = _load_bindings(root, config)
     caps = None
-    if config.get("kind") == "book_source_assignment_data_scaling":
+    if config.get("kind") in {
+        "book_source_assignment_data_scaling",
+        "book_source_assignment_loss_weighting",
+    }:
         from .field_baseline import validate_source_recovery_config
 
         validate_source_recovery_config(config)

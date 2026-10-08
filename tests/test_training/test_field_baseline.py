@@ -417,3 +417,93 @@ def test_execute_persists_auditable_synthetic_run_or_preparation_without_fitting
         assert not centroids[2].any()
         assert len(json.loads((output / "rankings.json").read_text())["records"]) == 4
         assert report["metrics"]["positive_centroid"]["genre"]["evaluated_groups"] == 3
+
+
+def test_source_weighting_all_ones_preserves_loss_and_gradient():
+    torch = pytest.importorskip("torch")
+    labels = torch.tensor([[True, False, True], [False, True, False]])
+    bounds = {"facet": [0, 3]}
+    original = torch.tensor([[1.0, -0.5, 0.2], [0.1, 0.3, -1.0]], requires_grad=True)
+    weighted = original.detach().clone().requires_grad_(True)
+    loss = baseline.source_recovery_loss(original, labels, bounds)
+    other = baseline.source_recovery_loss(weighted, labels, bounds, label_weights=torch.ones(3))
+    loss.backward()
+    other.backward()
+    assert torch.equal(loss, other)
+    assert torch.equal(original.grad, weighted.grad)
+    a = baseline.source_recovery_fit_totals(original.detach(), labels, bounds)
+    b = baseline.source_recovery_fit_totals(
+        weighted.detach(), labels, bounds, label_weights=torch.ones(3)
+    )
+    assert a["cross_entropy_sum"] == b["cross_entropy_sum"]
+    assert a["target_entropy_floor_sum"] == pytest.approx(b["target_entropy_floor_sum"], abs=1e-7)
+
+
+def test_source_weighting_closed_form_gradient_and_correct_entropy_floor():
+    torch = pytest.importorskip("torch")
+    logits = torch.tensor(
+        [[0.4, -0.2, 0.1, 0.0, 1.0], [0.0, 0.5, -0.3, 0.2, -0.1], [0.0] * 5], requires_grad=True
+    )
+    positives = torch.tensor(
+        [[True, True, False, False, False], [False, False, True, True, True], [False] * 5]
+    )
+    weights = torch.tensor([0.5, 2.0, 4.0, 1.0, 3.0])
+    bounds = {"a": [0, 3], "b": [3, 5]}
+    loss = baseline.source_recovery_loss(logits, positives, bounds, label_weights=weights)
+    loss.backward()
+    expected = torch.zeros_like(logits)
+    for row, facet_count in [(0, 1), (1, 2)]:
+        for start, stop in bounds.values():
+            target = positives[row, start:stop]
+            if not target.any():
+                continue
+            coefficients = target * weights[start:stop] / target.sum()
+            probabilities = logits.detach()[row, start:stop].softmax(0)
+            expected[row, start:stop] = (coefficients.sum() * probabilities - coefficients) / (
+                2 * facet_count
+            )
+    assert torch.allclose(logits.grad, expected, atol=1e-7, rtol=1e-6)
+    assert torch.equal(logits.grad[2], torch.zeros(5))
+    assert torch.equal(logits.grad[0, 3:], torch.zeros(2))
+    optimum = torch.tensor([[0.0, log(3.0), -1000.0]])
+    known = torch.tensor([[True, True, False]])
+    fit = baseline.source_recovery_fit_totals(
+        optimum, known, {"facet": [0, 3]}, label_weights=torch.tensor([1.0, 3.0, 2.0])
+    )
+    assert fit["cross_entropy_sum"] == pytest.approx(fit["target_entropy_floor_sum"], abs=2e-7)
+    assert fit["target_entropy_floor_sum"] != pytest.approx(log(2.0))
+    singleton = baseline.source_recovery_fit_totals(
+        torch.zeros((1, 2)),
+        torch.tensor([[True, False]]),
+        {"facet": [0, 2]},
+        label_weights=torch.tensor([0.25, 4.0]),
+    )
+    assert singleton["target_entropy_floor_sum"] == 0.0
+    assert singleton["cross_entropy_sum"] == pytest.approx(0.25 * log(2.0))
+
+
+def test_source_weighting_fixed_protocol_and_invalid_weight_guards():
+    torch = pytest.importorskip("torch")
+    config = json.loads(
+        (baseline.ROOT / "configs/research/book_source_loss_weighting.json").read_text()
+    )
+    baseline.validate_source_recovery_config(config)
+    for mutate in [
+        lambda c: c.update(arms=["head_only", "weighted"]),
+        lambda c: c["weighting"].update(bisection_iterations=95),
+        lambda c: c["weighting"].update(upper=5.0),
+    ]:
+        invalid = deepcopy(config)
+        mutate(invalid)
+        with pytest.raises(ValueError):
+            baseline.validate_source_recovery_config(invalid)
+    logits = torch.zeros((1, 2))
+    known = torch.tensor([[True, False]])
+    for weights in [
+        torch.tensor([0.1, 1.0]),
+        torch.tensor([1.0, 5.0]),
+        torch.tensor([float("nan"), 1.0]),
+        torch.ones(2, dtype=torch.float64),
+    ]:
+        with pytest.raises(ValueError):
+            baseline.source_recovery_loss(logits, known, {"facet": [0, 2]}, label_weights=weights)

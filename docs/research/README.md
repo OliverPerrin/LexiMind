@@ -565,6 +565,32 @@ source-loss diagnostics. No new training is authorized by this analysis itself;
 unknown omissions remain unknown, human semantic gold stays empty, and no PPO,
 semantic-negative BCE or product promotion follows.
 
+### Planned training-only source-loss weighting
+
+The [fixed weighting protocol](../../configs/research/book_source_loss_weighting.json)
+compares fresh unweighted and weighted LoRA+head controls for seeds 17/29 on the
+same audited 16,384/1,024 rows, tokens and schedules. Four epochs / 4,096 updates
+per arm, endpoints 0/1024/2048/4096 and the same optimizer/model recipe remain.
+Whole-run budget is 2400 seconds; independent post-run CPU/GPU audits have
+separate 600-second caps. No weighting results are claimed yet.
+
+Training-only global target coefficient masses define per-facet probabilities.
+A fixed 96-step float64 bisection chooses the inverse-square-root scalar so
+clipped weights in [0.25,4] have conditional mass-weighted mean one. Applied FP32
+vectors, caps, residuals and hashes are retained without post-cast normalization.
+The original positive/facet/row divisors remain: weights scale singleton rows and
+redistribute co-positive targets. Gradient norms, clipping and update magnitudes
+are not preserved. Global facet normalization does not imply exact scheduled
+batch-mass normalization; both are recorded.
+
+Every endpoint records original and weighted source CE, their corresponding
+entropy floors/excess, and full rankings/log probabilities for audit. Lexical
+controls refit on identical training text; all primary group/label outcomes and
+both seed signs remain. This is source-only, exploratory, with unknown omissions
+and no semantic-negative, human-gold, significance or product-admission claim.
+After audited completion, append the immutable visual/evidence entry to the
+[single portable gallery](visuals.html).
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh
