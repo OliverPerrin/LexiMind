@@ -424,6 +424,32 @@ Retain the strong lexical control and investigate source/objective and label
 support before proposing a new fixed experiment. Do not automatically add more
 epochs or promote PPO/neural website inference. Human field labels remain empty.
 
+### Planned broader source exposure
+
+The [fixed data-exposure protocol](../../configs/research/book_source_data_scaling.json)
+selects 16,384 original-training singleton groups using the unchanged metadata
+policy, preserving the exact historical 4,096-row training prefix and the same
+1,024 development rows. Four fresh arms retain seeds 17/29, both head-only and
+LoRA variants, source objective, input, optimizer and 4,096-update budget. Four
+passes replace sixteen: 65,536 scheduled presentations per arm, of which 65,532
+have observed source positives. The one whole-empty row remains selected and
+contributes no objective loss. Endpoints 0/1024/2048/4096 are retained, with 4096
+primary and a cooperative 1800-second whole-run budget. No results are claimed.
+
+Preparation must verify every newly selected source record and full old-row
+prefix/development equality; execution also verifies identical old visible token
+IDs and decoded lexical text. No source test text is opened or added. Original,
+additional, expanded and development label supports are reported across all 48
+labels. The matched lexical controls refit only on expanded training text. All
+16 development evaluations and four final training reports retain group/label
+recovery and source objective fit diagnostics.
+
+The earlier audited small-cohort arms remain explicitly historical/descriptive
+references. Unique exposure and repetition change together, with no fresh
+small-cohort control; differences cannot isolate a causal data-size effect.
+Development has already been inspected, and semantic field labels remain empty.
+This trial grants no automatic extra epochs, PPO or product promotion.
+
 Rebuild prepared book candidates offline from the preserved source cache:
 
 ```sh

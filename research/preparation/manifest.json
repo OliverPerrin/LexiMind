@@ -20,8 +20,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 27510,
-      "sha256": "71ec81c23c662c8bb504477931beb9472ff4340712ce89ee2b5b89ae95fd1df7"
+      "bytes": 29175,
+      "sha256": "bcc20763928825a9d02512e47006760d79751eb9884a7ca51f6d35b6df6cded5"
     },
     {
       "id": "study_decisions",
@@ -55,8 +55,8 @@
       "id": "manifest_contract",
       "scope": "common",
       "path": "src/research/manifest.py",
-      "bytes": 11063,
-      "sha256": "65cb78dba12f3193cda3bc6b1b2daa95d906f910f28e86ac2e833225d762c52f"
+      "bytes": 11164,
+      "sha256": "1745b50a60511819581ec5e5c5c946dff40cf742e01d5a30c131948f3dca134b"
     },
     {
       "id": "research_entry",
@@ -430,6 +430,13 @@
       "sha256": "4e4ff686772fac688f57d76ad60899c26cee9f8c6f29f1bb1c0f13ebba9fb762"
     },
     {
+      "id": "source_data_scaling_config",
+      "scope": "model_study",
+      "path": "configs/research/book_source_data_scaling.json",
+      "bytes": 8214,
+      "sha256": "5f3a743e969c3c451d8b686e2b33352bfde8e5529f6d7e0d2a3c12665087de45"
+    },
+    {
       "id": "source_learning_curves_config",
       "scope": "model_study",
       "path": "configs/research/book_source_learning_curves.json",
@@ -454,15 +461,15 @@
       "id": "field_baseline_runtime",
       "scope": "model_study",
       "path": "src/research/field_baseline.py",
-      "bytes": 69340,
-      "sha256": "e6c29f566b1f9b7567b8325ab9f4c151e4b15857f8360aa94d1848993599af35"
+      "bytes": 78387,
+      "sha256": "2f49c33edfb0618d35605d5f281e867227cea27b5f90831d054142ca769662e3"
     },
     {
       "id": "field_baseline_inputs",
       "scope": "model_study",
       "path": "src/research/field_baseline_data.py",
-      "bytes": 19751,
-      "sha256": "b963c80d82e3d7dd7655851507ee9c70888cf993d1b469532c0dfcb31a8d9b37"
+      "bytes": 20199,
+      "sha256": "f00adee140283a227133d6bc8256c447bc54cd94ee4752e905fdf876b3dc65f3"
     },
     {
       "id": "field_baseline_review",

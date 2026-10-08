@@ -188,7 +188,12 @@ def _assignments(path: Path) -> tuple[dict, Counter, dict]:
     return assignments, group_counts, group_splits
 
 
-def _metadata_selection(root: Path, fields: dict, partition: dict, groups: dict, mapping: dict):
+def _metadata_selection(
+    root: Path, fields: dict, partition: dict, groups: dict, mapping: dict, *, sample_counts=None
+):
+    caps = dict(SAMPLE_COUNTS if sample_counts is None else sample_counts)
+    if caps not in (SAMPLE_COUNTS, {"train": 16384, "dev": 1024}):
+        raise ValueError("Unsupported fixed metadata sample counts")
     assignments, group_counts, group_splits = _assignments(
         safe_path(root, fields["assignments"]["path"])
     )
@@ -230,7 +235,7 @@ def _metadata_selection(root: Path, fields: dict, partition: dict, groups: dict,
         or len(overrides) != partition["counts"]["overridden_bgc_groups"]
     ):
         raise ValueError("Cross-source component counts changed")
-    eligible: dict[str, list[tuple[str, str]]] = {role: [] for role in SAMPLE_COUNTS}
+    eligible: dict[str, list[tuple[str, str]]] = {role: [] for role in caps}
     exclusions: Counter = Counter()
     seen = set()
     for candidate in jsonl_rows(safe_path(root, fields["field_references"]["path"])):
@@ -264,9 +269,9 @@ def _metadata_selection(root: Path, fields: dict, partition: dict, groups: dict,
             else "review_required"
             if assignment["review_required"]
             else "source_reserved"
-            if assignment["source_split"] not in SAMPLE_COUNTS
+            if assignment["source_split"] not in caps
             else "effective_reserved"
-            if effective not in SAMPLE_COUNTS
+            if effective not in caps
             else "source_effective_disagreement"
             if assignment["source_split"] != effective
             else None
@@ -278,7 +283,7 @@ def _metadata_selection(root: Path, fields: dict, partition: dict, groups: dict,
     if seen != assignments.keys():
         raise ValueError("Field references do not cover every BGC assignment")
     chosen = {}
-    for role, cap in SAMPLE_COUNTS.items():
+    for role, cap in caps.items():
         if len(eligible[role]) < cap:
             raise ValueError(
                 f"Diagnostic {role} shortfall: {len(eligible[role])} eligible, {cap} required; no resampling"
@@ -295,10 +300,10 @@ def _metadata_selection(root: Path, fields: dict, partition: dict, groups: dict,
         for role, identifiers in chosen.items()
     }
     if (
-        len(selected_ids) != sum(SAMPLE_COUNTS.values())
+        len(selected_ids) != sum(caps.values())
         or set(chosen["train"]) & set(chosen["dev"])
         or selected_groups["train"] & selected_groups["dev"]
-        or any(len(selected_groups[role]) != cap for role, cap in SAMPLE_COUNTS.items())
+        or any(len(selected_groups[role]) != cap for role, cap in caps.items())
     ):
         raise ValueError("Diagnostic source IDs and singleton groups must be disjoint")
     counts = {
@@ -306,12 +311,10 @@ def _metadata_selection(root: Path, fields: dict, partition: dict, groups: dict,
         "source_groups": len(group_counts),
         "excluded_by_first_reason": dict(sorted(exclusions.items())),
         "eligible": {role: len(rows) for role, rows in eligible.items()},
-        "selected": dict(SAMPLE_COUNTS),
-        "eligible_not_selected": {
-            role: len(rows) - SAMPLE_COUNTS[role] for role, rows in eligible.items()
-        },
+        "selected": dict(caps),
+        "eligible_not_selected": {role: len(rows) - caps[role] for role, rows in eligible.items()},
         "selected_groups": {role: len(values) for role, values in selected_groups.items()},
-        "shortfall": {role: 0 for role in SAMPLE_COUNTS},
+        "shortfall": {role: 0 for role in caps},
         "record_overlap": 0,
         "group_overlap": 0,
     }
@@ -369,7 +372,15 @@ def prepare_field_baseline_data(root: Path, config: dict) -> dict:
     """
     root = root.resolve()
     fields, partition, groups, audit, mapping, bindings = _load_bindings(root, config)
-    chosen, selected, counts = _metadata_selection(root, fields, partition, groups, mapping)
+    caps = None
+    if config.get("kind") == "book_source_assignment_data_scaling":
+        from .field_baseline import validate_source_recovery_config
+
+        validate_source_recovery_config(config)
+        caps = {"train": config["train_limit"], "dev": config["dev_limit"]}
+    chosen, selected, counts = _metadata_selection(
+        root, fields, partition, groups, mapping, sample_counts=caps
+    )
     resolved = {}
     for identifier, source_row in _selected_source_rows(
         safe_path(root, fields["archive"]["path"]),

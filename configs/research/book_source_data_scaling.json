@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "kind": "book_source_assignment_data_scaling",
+  "seeds": [
+    17,
+    29
+  ],
+  "arms": [
+    "head_only",
+    "lora_head"
+  ],
+  "facets": [
+    "genre",
+    "topic",
+    "form",
+    "audience"
+  ],
+  "top_k": [
+    1,
+    3,
+    5
+  ],
+  "train_limit": 16384,
+  "dev_limit": 1024,
+  "selection_salt": "bgc-field-retrieval-v1",
+  "tfidf": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 2,
+    "max_features": 20000,
+    "sublinear_tf": true,
+    "lowercase": true,
+    "strip_accents": "unicode",
+    "stop_words": "english"
+  },
+  "batch_size": 16,
+  "epochs": 4,
+  "updates": 4096,
+  "endpoints": [
+    0,
+    1024,
+    2048,
+    4096
+  ],
+  "primary_endpoint": 4096,
+  "max_length": 256,
+  "max_total_seconds": 1800,
+  "device": "cuda",
+  "parameter_dtype": "float32",
+  "autocast_dtype": "bfloat16",
+  "gradient_accumulation_steps": 1,
+  "gradient_clip_norm": 1.0,
+  "optimizer": {
+    "lr": 0.0005,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.0
+  },
+  "scheduler": "constant",
+  "lora": {
+    "rank": 4,
+    "alpha": 8,
+    "dropout": 0.0
+  },
+  "dropout": 0.0,
+  "schedule": "Python random.Random(seed + epoch).shuffle over fixed cohort indices; epoch is 1 through 4; same schedule in both arms",
+  "promote": false,
+  "paid_spend_authorized": false,
+  "formal_dataset_admission": false,
+  "human_gold": false,
+  "study_id": "bgc-source-assignment-data-exposure-20261008",
+  "status": "fixed_before_expanded_cohort_execution",
+  "authorization": "User authorized continued owned RTX4070 training on2026-10-08. This fixed four-arm data-exposure diagnostic requires review/freeze before one execution; no paid compute, adaptive reruns or production promotion.",
+  "field_manifest": {
+    "path": "research/preparation/book_field_manifest.json",
+    "bytes": 6428,
+    "sha256": "e24760c7c1e4f0e34bd4fcf263b9b85dc514aa0f077b8cb4be91dc5e61c6978d"
+  },
+  "partition_manifest": {
+    "path": "research/preparation/book_partition_manifest.json",
+    "bytes": 41532,
+    "sha256": "c45173e71a2196090f319e77ad4a17eff0a03c3a137f852bf621183dbccf8e73"
+  },
+  "base": {
+    "repo": "google/flan-t5-base",
+    "revision": "7bcac572ce56db69c1ea7c8af255c5d7c9672fc2",
+    "weight_sha256": "1dfb70afdcedceb9f9fae2f9b68e004ad934361fb35b9b2bd50b45ea90790fc8"
+  },
+  "prior_full_text_reference": {
+    "path": "research/results/book_field_baseline_20261003.json",
+    "bytes": 27361,
+    "sha256": "d9774a2cbe6a58c82791c350509274d0cda07e6445e0daee7f2ea4540427890e"
+  },
+  "loss": "For each eligible row/facet, uniform target mass over observed source positives. Mean eligible facets within each row, then mean eligible rows. Whole-empty rows retain cohort/order but are excluded from loss; every planned batch must have eligible rows. Softmax pressures unassigned labels and co-positives compete; unknown omissions are not semantic negatives.",
+  "input": "Title: {title}\nDescription: {description}, max 256 cached FLAN tokens with longest padding to multiple8. Token-matched lexical control decodes exact visible model IDs excluding special tokens, fit on train only. Historical full raw text baseline is reference only.",
+  "evaluation": "All16384train/1024dev selected singleton groups retained, all48source labels/fourfacets, seeds17/29 and both head_only/lora_head arms.4096updates primary;0/1024/2048 diagnostic (all epoch boundaries). Every dev endpoint and finaltrain report has full rankings/logprobabilities, group/label macro recall1/3/5, reciprocal rank and eligible-rowweighted sourceCE/entropyfloor/excess. Source-only semantically unknown omissions; no precision/F1/accuracy/confirmatory quality claims.",
+  "artifacts": "Fresh identical paired base/head/factors and optimizer, noresume. Shared exact batch tensors are reconstructable from source tokens/schedules and perbatchsha/shapes. Comparison proof verifies full historical4096trainprefix/1024dev equality and visibletoken/decodedtext identity before fitting/training. Original/additional/expanded/dev label supports recorded;1whole-empty row stays selected and is excluded only from objective.",
+  "budget": "1800-second whole-run cooperative cap includes expanded source verification/tokenization, matched lexical fitting on all16384trainrows, fourfresharms4096updates,16dev and4finaltrain evaluations/saves. Stop and preserve failure without automatic reruns or budget/hyperparameter changes.",
+  "limitations": [
+    "FLAN pretraining may have exposed the base to public BGC records or blurbs; exposure is unknown. The identical base controls this within each paired neural arm, but lexical versus neural recovery is not an isolated comparison of pretraining.",
+    "Publisher assignments and the authored mapping are incomplete weak source labels. Recovery metrics do not establish semantic correctness or recommendation relevance.",
+    "This development cohort has already been inspected in lexical and512-update neural experiments. This duration study is exploratory/descriptive, not confirmatory; no significance or unseen-test claim.",
+    "Expanded training includes one metadata-eligible singleton with no mapped positives. It stays in all schedules, has zero objective contribution, and does not create negative labels. No discarded/test rows are added to training."
+  ],
+  "batch_evidence": "shared_schedule_token_hashes",
+  "fit_diagnostics": "dev_every_endpoint_and_final_train",
+  "initialization": "fresh_base_head_factors_and_optimizer_not_resume",
+  "previous_source_recovery_observation": {
+    "path": "research/results/book_source_recovery_20261008.json",
+    "bytes": 241313,
+    "sha256": "561b42ba2c0330e08eab8f7ae0653ca60bceb814c2232e6e1ec1caf5bc94e6af"
+  },
+  "duration_interpretation": "Fixed4096updates and65536scheduled presentations perarm, now4passes over16384selected rows instead of16passes over4096historical rows. Unique data exposure and repetition change jointly. The four prior smallcohortarms are historical/descriptive references, not contemporaneous controls or isolated data-size causal evidence.",
+  "primary_outcomes": {
+    "endpoint": 4096,
+    "facets": [
+      "genre",
+      "topic"
+    ],
+    "metrics": [
+      "group_macro_recall_at_3",
+      "label_macro_recall_at_3"
+    ],
+    "aggregation": "Both seeds and each paired difference retained; two-seed means descriptive only."
+  },
+  "secondary_outcomes": {
+    "facets": [
+      "genre",
+      "topic",
+      "form",
+      "audience"
+    ],
+    "metrics": [
+      "group_macro_recall_at_1",
+      "group_macro_recall_at_5",
+      "label_macro_recall_at_1",
+      "label_macro_recall_at_5",
+      "group_macro_reciprocal_rank",
+      "per_label_support_and_recovery",
+      "eval_mode_source_cross_entropy",
+      "target_entropy_floor",
+      "excess_cross_entropy"
+    ],
+    "additional": "Form/audience recallat3 and endpoints0/1024/2048 plus finaltrain diagnostic are descriptive. Paired historical4096final differences remain explicitly historical/descriptive only."
+  },
+  "scheduled_presentations_per_arm": 65536,
+  "source_supervised_presentations_per_arm": 65532,
+  "expected_whole_empty_train_rows": 1,
+  "comparison": "audited_historical4096_cohort_descriptive_only_not_isolated_data_size_causal_effect",
+  "previous_source_learning_curves_observation": {
+    "path": "research/results/book_source_learning_curves_20261008.json",
+    "bytes": 343277,
+    "sha256": "4e4ff686772fac688f57d76ad60899c26cee9f8c6f29f1bb1c0f13ebba9fb762"
+  },
+  "historical_examples": {
+    "bytes": 12423239,
+    "path": "outputs/book_source_learning_curves_20261008/run_001/examples.json",
+    "sha256": "6a7b6ced4c50eba3693180445442ffb81fbcc13baa2c5a56efc667338ee5ac79"
+  },
+  "historical_tokenization": {
+    "bytes": 45784301,
+    "path": "outputs/book_source_learning_curves_20261008/run_001/tokenization.json",
+    "sha256": "6402a8245afca7980a479ad023238cdb1ec84ca31d937b3830594ba96234ace0"
+  },
+  "next_decision": "Retain lexical controls refitted on the same expandedtrain set. Analyze both seeds and all group/label primary outcomes plus sourceCE fit. No automatic extra epochs/PPO promotion; any additional control or objective trial needs a new fixed protocol."
+}

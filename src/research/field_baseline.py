@@ -436,6 +436,7 @@ def execute(
     if config.get("kind") in {
         "book_source_assignment_recovery_pilot",
         "book_source_assignment_learning_curves",
+        "book_source_assignment_data_scaling",
     }:
         return execute_source_recovery(config_path, output, root=root, prepare_only=prepare_only)
     validate_config(config)
@@ -676,12 +677,28 @@ SOURCE_LEARNING_CURVES = {
 }
 
 
+SOURCE_DATA_SCALING = {
+    **SOURCE_LEARNING_CURVES,
+    "kind": "book_source_assignment_data_scaling",
+    "train_limit": 16384,
+    "epochs": 4,
+    "endpoints": [0, 1024, 2048, 4096],
+    "schedule": "Python random.Random(seed + epoch).shuffle over fixed cohort indices; epoch is 1 through 4; same schedule in both arms",
+    "scheduled_presentations_per_arm": 65536,
+    "source_supervised_presentations_per_arm": 65532,
+    "expected_whole_empty_train_rows": 1,
+    "comparison": "audited_historical4096_cohort_descriptive_only_not_isolated_data_size_causal_effect",
+}
+
+
 def validate_source_recovery_config(config: dict) -> None:
     """Reject protocol drift rather than silently adapting this one bounded pilot."""
     import json
 
     contract = (
-        SOURCE_LEARNING_CURVES
+        SOURCE_DATA_SCALING
+        if config.get("kind") == SOURCE_DATA_SCALING["kind"]
+        else SOURCE_LEARNING_CURVES
         if config.get("kind") == SOURCE_LEARNING_CURVES["kind"]
         else SOURCE_RECOVERY
     )
@@ -834,6 +851,153 @@ def _recovery_tensor_hash(tensor) -> str:
     ).hexdigest()
 
 
+def _scaling_cohort_support(rows, mapping) -> dict:
+    labels = _labels(mapping)
+    empty = sum(not any(row["fields"][f]["positive"] for f in FACETS) for row in rows)
+    return {
+        "rows": len(rows),
+        "unique_groups": len({row["group_id"] for row in rows}),
+        "objective_eligible_rows": len(rows) - empty,
+        "whole_empty_rows": empty,
+        "facets": {
+            f: {
+                "eligible_rows": sum(bool(row["fields"][f]["positive"]) for row in rows),
+                "groups_without_observed_positives": sum(
+                    not row["fields"][f]["positive"] for row in rows
+                ),
+                "positive_groups": {
+                    label: sum(label in row["fields"][f]["positive"] for row in rows)
+                    for label in labels[f]
+                },
+            }
+            for f in FACETS
+        },
+    }
+
+
+def _verify_scaling_comparison(root, config, train, dev, mapping, *, encoded=None) -> dict:
+    """Check full old-row equality and visible-token equality, never approximate identity."""
+    refs = {
+        name: config[name]
+        for name in (
+            "previous_source_learning_curves_observation",
+            "historical_examples",
+            "historical_tokenization",
+        )
+    }
+    for reference in refs.values():
+        if _reference(root, root / reference["path"]) != reference:
+            raise ValueError("Data exposure comparison reference changed")
+    old = read_json(root / refs["historical_examples"]["path"])
+    if (
+        len(old["train"]) != 4096
+        or len(old["dev"]) != 1024
+        or train[:4096] != old["train"]
+        or dev != old["dev"]
+        or mapping != old["mapping"]
+    ):
+        raise ValueError(
+            "Expanded cohort must retain exact historical full train prefix and development rows"
+        )
+    supports = {
+        name: _scaling_cohort_support(rows, mapping)
+        for name, rows in (
+            ("original_train", train[:4096]),
+            ("additional_train", train[4096:]),
+            ("expanded_train", train),
+            ("dev", dev),
+        )
+    }
+    if supports["expanded_train"]["whole_empty_rows"] != config["expected_whole_empty_train_rows"]:
+        raise ValueError("Expanded cohort whole-empty source-positive row count changed")
+    proof = {
+        "references": refs,
+        "historical_train_prefix_rows": 4096,
+        "additional_train_rows": 12288,
+        "development_rows": 1024,
+        "full_train_prefix_rows_exact": True,
+        "full_dev_rows_exact": True,
+        "mapping_exact": True,
+        "visible_tokens_and_decoded_text_verified": False,
+        "support_strata": supports,
+        "comparison": config["comparison"],
+    }
+    if encoded is not None:
+        old_tokens = read_json(root / refs["historical_tokenization"]["path"])["records"]
+        for split, limit in (("train", 4096), ("dev", 1024)):
+            if len(old_tokens[split]) != limit:
+                raise ValueError("Historical token cohort count differs")
+            for current, historical in zip(encoded[split][:limit], old_tokens[split], strict=True):
+                current_visible = [
+                    token
+                    for token, valid in zip(
+                        current["input_ids"], current["attention_mask"], strict=True
+                    )
+                    if valid
+                ]
+                old_visible = [
+                    token
+                    for token, valid in zip(
+                        historical["input_ids"], historical["attention_mask"], strict=True
+                    )
+                    if valid
+                ]
+                if (
+                    current["record_id"] != historical["record_id"]
+                    or current_visible != old_visible
+                    or current["decoded_control_text"] != historical["decoded_control_text"]
+                    or current["decoded_control_sha256"] != historical["decoded_control_sha256"]
+                ):
+                    raise ValueError(
+                        "Historical visible tokens or decoded lexical control text changed"
+                    )
+        proof["visible_tokens_and_decoded_text_verified"] = True
+    return proof
+
+
+def _scaling_primary_comparison(root, config, report) -> dict:
+    """Descriptive historical comparison, retaining every arm and both seeds."""
+    reference = config["previous_source_learning_curves_observation"]
+    if _reference(root, root / reference["path"]) != reference:
+        raise ValueError("Historical learning-curve observation changed before comparison")
+    previous = read_json(root / reference["path"])
+    result = {
+        "historical_reference": config["previous_source_learning_curves_observation"],
+        "claim_boundary": config["comparison"],
+        "endpoint": 4096,
+        "arms": {},
+    }
+    for key, arm in report["arms"].items():
+        current = arm["endpoints"]["4096"]["metrics"][arm["arm"]]
+        old = previous["arms"][key]["endpoints"]["4096"]["metrics"][arm["arm"]]
+        result["arms"][key] = {
+            facet: {
+                metric: {
+                    "current": current[facet][metric]["3"],
+                    "historical": old[facet][metric]["3"],
+                    "difference": current[facet][metric]["3"] - old[facet][metric]["3"],
+                }
+                for metric in ("group_macro_recall_at_k", "label_macro_recall_at_k")
+            }
+            for facet in ("genre", "topic")
+        }
+    result["descriptive_two_seed_mean_differences"] = {
+        arm: {
+            facet: {
+                metric: sum(
+                    result["arms"][f"{seed}_{arm}"][facet][metric]["difference"]
+                    for seed in (17, 29)
+                )
+                / 2
+                for metric in ("group_macro_recall_at_k", "label_macro_recall_at_k")
+            }
+            for facet in ("genre", "topic")
+        }
+        for arm in ("head_only", "lora_head")
+    }
+    return result
+
+
 def execute_source_recovery(
     config_path: Path, output: Path, *, root: Path = ROOT, prepare_only: bool = False
 ) -> dict:
@@ -888,16 +1052,22 @@ def execute_source_recovery(
             raise ValueError("Historical full-text reference changed")
         train, dev, mapping = bundle["train"], bundle["dev"], bundle["mapping"]
         labels = _labels(mapping)
-        if len(train) != 4096 or len(dev) != 1024 or sum(map(len, labels.values())) != 48:
-            raise ValueError(
-                "Recovery requires exactly the existing 4096/1024 cohort and 48 labels"
-            )
+        if (
+            len(train) != config["train_limit"]
+            or len(dev) != config["dev_limit"]
+            or sum(map(len, labels.values())) != 48
+        ):
+            raise ValueError("Recovery requires exactly its fixed train/dev cohort and 48 labels")
         for rows, split in ((train, "train"), (dev, "dev")):
             _validate_rows(rows, mapping, split)
-        if len({r["group_id"] for r in train + dev}) != 5120:
+        if len({r["group_id"] for r in train + dev}) != len(train) + len(dev):
             raise ValueError("Recovery train/development groups overlap")
         if any(r["fields"][f]["negative"] for r in train + dev for f in FACETS):
             raise ValueError("This source-presence pilot requires zero assigned source negatives")
+        scaling_proof = None
+        if config["kind"] == SOURCE_DATA_SCALING["kind"]:
+            scaling_proof = _verify_scaling_comparison(root, config, train, dev, mapping)
+            check("historical_source_cohort_verified")
         bounds, cursor = {}, 0
         for f in FACETS:
             bounds[f] = [cursor, cursor + len(labels[f])]
@@ -993,6 +1163,11 @@ def execute_source_recovery(
                     )
                 check(f"tokenization_{split}")
             encoded[split], lexical_texts[split] = records, texts
+        if scaling_proof is not None:
+            scaling_proof = _verify_scaling_comparison(
+                root, config, train, dev, mapping, encoded=encoded
+            )
+            check("historical_visible_tokens_verified")
         token_path = output / "tokenization.json"
         _write(
             token_path,
@@ -1067,6 +1242,22 @@ def execute_source_recovery(
             },
             "timings": {},
         }
+        if scaling_proof is not None:
+            supervised_presentations = (
+                scaling_proof["support_strata"]["expanded_train"]["objective_eligible_rows"]
+                * config["epochs"]
+            )
+            scheduled_presentations = len(train) * config["epochs"]
+            if (
+                supervised_presentations != config["source_supervised_presentations_per_arm"]
+                or scheduled_presentations != config["scheduled_presentations_per_arm"]
+            ):
+                raise ValueError("Fixed source-supervised or scheduled presentation counts changed")
+            report["comparison_cohort_proof"] = scaling_proof
+            report["comparison_support_strata"] = scaling_proof["support_strata"]
+            report["scheduled_presentations_per_arm"] = scheduled_presentations
+            report["source_supervised_presentations_per_arm"] = supervised_presentations
+            report["semantics"]["historical_comparison"] = config["comparison"]
         if not prepare_only:
             check("matched_lexical_fitting")
             fitted = fit_rankers(train, mapping, config["tfidf"], texts=lexical_texts["train"])
@@ -1095,6 +1286,11 @@ def execute_source_recovery(
                 check,
                 progress,
             )
+            if scaling_proof is not None:
+                report["historical_primary_comparison"] = _scaling_primary_comparison(
+                    root, config, report
+                )
+                check("historical_primary_comparison_saved")
             report.update(
                 status="completed_source_assignment_recovery_pilot",
                 neural_training_performed=True,
@@ -1214,7 +1410,10 @@ def _fit_source_recovery(
             for name in ("torch", "transformers", "numpy", "scipy", "scikit-learn")
         },
     }
-    learning_curves = config["kind"] == SOURCE_LEARNING_CURVES["kind"]
+    learning_curves = config["kind"] in {
+        SOURCE_LEARNING_CURVES["kind"],
+        SOURCE_DATA_SCALING["kind"],
+    }
 
     def evaluate(model, split, method, key, update):
         rows = train if split == "train" else dev
@@ -1455,7 +1654,7 @@ def _fit_source_recovery(
                 for epoch in range(1, config["epochs"] + 1):
                     batches = [
                         collate(schedules[str(seed)][epoch - 1][i : i + 16], "train")
-                        for i in range(0, 4096, 16)
+                        for i in range(0, len(train), config["batch_size"])
                     ]
                     if learning_curves:
                         batch_path = output / f"seed_{seed}_epoch_{epoch}.batch_hashes.json"
@@ -1524,7 +1723,14 @@ def _fit_source_recovery(
                         loaders, train=True, epoch=epoch, step_callback=step_checked
                     )
                     arm_report["training"][str(epoch)]["seconds"] = time.monotonic() - epoch_start
-                    if trainer.global_step != epoch * 256:
+                    if config["kind"] == SOURCE_DATA_SCALING["kind"]:
+                        arm_report["actual_scheduled_presentations"] = (
+                            trainer.global_step * config["batch_size"]
+                        )
+                        arm_report["actual_source_supervised_presentations"] = epoch * int(
+                            indicators["train"].any(dim=1).sum()
+                        )
+                    if trainer.global_step != epoch * (len(train) // config["batch_size"]):
                         raise ValueError(
                             "Recovery update count differs from its fixed record schedule"
                         )
