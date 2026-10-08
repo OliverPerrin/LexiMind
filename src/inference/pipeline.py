@@ -116,7 +116,9 @@ class InferencePipeline:
         topic_input_format: str = "text",
         config: InferenceConfig | None = None,
         device: torch.device | str | None = None,
+        book_pad_to_multiple_of: int | None = None,
     ) -> None:
+        self.book_pad_to_multiple_of = book_pad_to_multiple_of
         self.model = model
         self.tokenizer = tokenizer
         self.config = config or InferenceConfig()
@@ -339,7 +341,12 @@ class InferencePipeline:
             texts.append(format_book_input(book["title"], book["description"]))
         if not texts:
             return []
-        encoded = self.tokenizer.batch_encode(texts)
+        if self.book_pad_to_multiple_of is None:
+            encoded = self.tokenizer.batch_encode(texts)
+        else:
+            encoded = self.tokenizer.batch_encode(
+                texts, pad_to_multiple_of=self.book_pad_to_multiple_of
+            )
         inputs = {key: encoded[key].to(self.device) for key in ("input_ids", "attention_mask")}
         with torch.inference_mode():
             logits = self.model.forward("topic", inputs)

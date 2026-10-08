@@ -2,8 +2,8 @@
   "schema_version": 1,
   "status": "draft",
   "paused_by_user": false,
-  "as_of": "2026-10-02",
-  "instruction": "User authorized bounded local MacBook training and evaluation on 2026-10-02. Apple M5/16GB is available; RTX4070 remains unavailable for several days. Formal MTL/book studies still need their declared data/protocol evidence. Paid calls and remote compute are not authorized.",
+  "as_of": "2026-10-08",
+  "instruction": "User authorized bounded local MacBook work and user-owned RTX4070/WSL Ubuntu profiling through Tailscale/SSH. Synthetic runtime and checkpoint portability verified on M5/16GB and RTX4070/12GB. Formal MTL/book studies retain data/protocol gates. Paid cloud compute and teacher API spend remain unauthorized.",
   "paid_spend_authorized": false,
   "hardware_available": true,
   "proposed_first_comparison": [
@@ -14,8 +14,7 @@
   "deferred": [
     "formal_mtl_comparison",
     "teacher_api_generation",
-    "paid_compute",
-    "rtx4070_execution"
+    "paid_compute"
   ],
   "gates": {
     "literature_gate": {
@@ -178,7 +177,7 @@
       "note": "120 source-linked work references; packet remains empty with no queries, human judgments or gold."
     },
     "runtime_preparation": {
-      "status": "m5_continuation_and_paired_denoising_observed",
+      "status": "m5_and_rtx4070_synthetic_book_lora_engineering_verified_reviewed_data_pending",
       "evidence": [
         {
           "path": "src/models/adapters.py",
@@ -197,8 +196,8 @@
         },
         {
           "path": "src/training/trainer.py",
-          "bytes": 34550,
-          "sha256": "37f599517db69002e01af804c56358cbf8f2fe6305140e8c27911e136b65ab29"
+          "bytes": 35034,
+          "sha256": "0dd16afba914319aaeb07e6bd6fe4d8c2cb60522ee202730b26937dd7dfc641a"
         },
         {
           "path": "research/results/macbook_pilot_20261002.json",
@@ -214,14 +213,108 @@
           "path": "research/results/book_denoising_20261002.json",
           "bytes": 8681,
           "sha256": "ffcd2d18b5ac204f83da7a046e0226c66f4d4921b8fe50e54e67994adbf69403"
+        },
+        {
+          "path": "src/training/utils.py",
+          "bytes": 17354,
+          "sha256": "900ef271820a7b79e286b1b73ab1322faa30bb2310424bc3e7f72531370878d6"
+        },
+        {
+          "path": "scripts/train.py",
+          "bytes": 13428,
+          "sha256": "afd385407f1b661089a200caf4a3bf23391836c6330213423bc6c06f7352e9e7"
+        },
+        {
+          "path": "scripts/profile_training.py",
+          "bytes": 17214,
+          "sha256": "25ee7805d6b866cda9fdbf269502273d9b9f57a271f113cd1dd9346a91092ba5"
+        },
+        {
+          "path": "configs/training/book_lora.yaml",
+          "bytes": 1010,
+          "sha256": "541749750e94507a2ba4d977dbef1cabf7789fff3b1348b13d09b56e7d4a4bfa"
+        },
+        {
+          "path": "src/inference/factory.py",
+          "bytes": 7428,
+          "sha256": "f696a9aa04dc5fee585d4bfff7049afd55645a2ace129c314f0582178d3c7a7c"
+        },
+        {
+          "path": "src/inference/pipeline.py",
+          "bytes": 15654,
+          "sha256": "da5e22e8917424a7c2a6e952cdbd0e9f4c63e7ddfd7b4cc3f1908e50b1199a00"
+        },
+        {
+          "path": "scripts/inference.py",
+          "bytes": 5096,
+          "sha256": "7bab06236d34869f3619e0af7bd514deaa5051d6724c951b286dd533aa23e3e9"
+        },
+        {
+          "path": "research/results/training_readiness_20261008.json",
+          "bytes": 19971,
+          "sha256": "89d1d6ac9bf2ad6aaa6f4a4769c65ed08eb7accff2eaeb695c7779e1805998c2"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch16_summary.json",
+          "bytes": 4764,
+          "sha256": "e07013a010a27ad58381e6837f5ebb5e9d887fb269bf9f59f53c7a260b93d031"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch16_timing_summary.json",
+          "bytes": 6188,
+          "sha256": "f130e9ae7923e04f957fd16e2e9e050e432a2ba9f392a16273c9527b04abb047"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch32_summary.json",
+          "bytes": 4770,
+          "sha256": "2cfc245f3f2740c1da4a70b34c21086bb67e918d77f6b1a16b595b2d3a11c113"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch4_summary.json",
+          "bytes": 4767,
+          "sha256": "1548addea5b5381c8208e3acf58bf08c61cd724eacf8b93261d462cfdae0e051"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch8_summary.json",
+          "bytes": 4764,
+          "sha256": "401bb6b1c482b9732ec63c415cf23560f8bac92e163eefc87385e3ce28b05506"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/cuda_reload_summary.json",
+          "bytes": 473,
+          "sha256": "da68c542607306763c7be5f6bf0f0f8b43e4bfe7e762023bae08aebb9b209748"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/environment.json",
+          "bytes": 638,
+          "sha256": "e85a9dcc2f6eba2c05c65fe02194c4e508a8d026e2541619edf245f0b0dde514"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/hotspot_summary.json",
+          "bytes": 1163,
+          "sha256": "4993d92470a129a5b190c493643ba6c011fb744516291e7d6ad2e731d7655f85"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/original_readonly_check.json",
+          "bytes": 416,
+          "sha256": "2a812c0329a248f030406e9ce966a5f27a9fe6e1d74e3fa3579bc04b2e1aa92d"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/portability_summary.json",
+          "bytes": 3651,
+          "sha256": "b3d7d27c6ebe24b5284c43e2173f782975f23689ca42945c1eedc24ef8e11663"
         }
       ],
-      "note": "Native M5 training and checkpoint reload verified. Two-seed word reconstruction: continued CE reduced validation content loss more than sparse-reward RL; exact recovery remains poor. No book-field model or CUDA result is claimed."
+      "note": "Bounded synthetic M5 and isolated RTX4070 BF16 execution verified. Shared M5-safe batch4/accumulation2 preset retained; explicit CUDA batch16/accumulation1 override selected from diagnostics. Timing-only run:272 fabricated examples,17 active microbatches,172.51 rows/sec. Frozen base, strict Mac adapter portability and ordinary merged inference reload verified. No quality claim, real book judgments or source test data; zero human field reviews and formal data/protocol gates remain open."
     }
   },
   "study_design": "configs/research/study_design.json",
   "preparation_manifest": "research/preparation/manifest.json",
   "scope_decision": "Book-domain field supervision first; accepted joint/specialist/merge comparison retained. Generic corpora are optional controls, not product label truth.",
   "source_decisions": "research/preparation/book_field_sources.json",
-  "local_pilot": "configs/research/macbook_pilot.json"
+  "local_pilot": "configs/research/macbook_pilot.json",
+  "hardware_context": {
+    "m5": "Available and bounded synthetic runtime verified",
+    "rtx4070": "User-owned WSL2 RTX4070/12GB; isolated CUDA13.0 BF16 synthetic execution and checkpoint portability verified"
+  }
 }
