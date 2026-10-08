@@ -2,7 +2,7 @@
   "schema_version": 1,
   "as_of": "2026-10-08",
   "kind": "local_training_runtime_engineering_readiness",
-  "status": "m5_engineering_verified_reviewed_field_data_pending_cuda_unverified",
+  "status": "m5_and_rtx4070_engineering_verified_reviewed_field_data_pending",
   "scope": "Native pinned FLAN-T5-base encoder Q/V LoRA plus private topic head; synthetic runtime/checkpoint plumbing only",
   "base": {
     "repo": "google/flan-t5-base",
@@ -175,11 +175,205 @@
     }
   },
   "cuda": {
-    "hardware": "User-reported RTX 4070 with WSL Ubuntu",
+    "hardware": "User-owned WSL2 NVIDIA GeForce RTX4070/12GB",
     "profiling_authorized": "2026-10-08",
-    "connection": "Pending root SSH verification after port 2222 timeout",
-    "execution_verified": false,
-    "performance_measured": false
+    "connection": "Verified SSH/Tailscale isolated checkout/environment",
+    "execution_verified": true,
+    "performance_measured": true,
+    "environment": {
+      "python": "3.10.12",
+      "torch": "2.14.0+cu130",
+      "cuda_runtime": "13.0",
+      "transformers": "5.17.0",
+      "tokenizers": "0.23.2",
+      "gpu": "NVIDIA GeForce RTX 4070",
+      "capability": [
+        8,
+        9
+      ],
+      "bf16": true,
+      "gpu_total_bytes": 12878086144,
+      "driver_reported": "617.42",
+      "source_commit": "29a55e1",
+      "source_archive_sha256": "5ba78532302ed854b711d7f64a72cbfe6b30c56e98047727de2ee3b89f732042",
+      "profiler_patch_sha256": "1bfbc2295d9696b3ea7576d4f8af97013ef30b52ece14afdef989961f59cbf37",
+      "synthetic_fixture_sha256": "8a988be1f4967f6f9a1a3741b75afb7bda09dc2bb99dd4db9869d728c7aa5096",
+      "cuda_bf16_finite_smoke": true
+    },
+    "fixture": "96 fabricated title/description rows,48 synthetic label columns,all cells observed, balanced known positive/negative targets",
+    "real_book_text_or_human_gold_used": false,
+    "tokenizer_max_length": 256,
+    "warmup_outer_microbatches": 3,
+    "timed_outer_microbatches": 17,
+    "successful_matrix": [
+      {
+        "batch_size": 4,
+        "gradient_accumulation_steps": 2,
+        "nominal_effective_batch_size": 8,
+        "optimizer_updates_including_warmup": 11,
+        "cuda_peak_allocated_bytes": 1759794688,
+        "cuda_peak_reserved_bytes": 1780482048,
+        "frozen_base_verified_after_updates": true,
+        "profile_mode": "heavy_trace",
+        "mean_microbatch_seconds": 0.07289107423532508,
+        "synthetic_rows_per_second_using_mean": 54.87640348235514,
+        "warmup_optimizer_updates": 2,
+        "active_optimizer_updates": 9,
+        "receipt": {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch4_summary.json",
+          "bytes": 4767,
+          "sha256": "1548addea5b5381c8208e3acf58bf08c61cd724eacf8b93261d462cfdae0e051"
+        }
+      },
+      {
+        "batch_size": 8,
+        "gradient_accumulation_steps": 1,
+        "nominal_effective_batch_size": 8,
+        "optimizer_updates_including_warmup": 20,
+        "cuda_peak_allocated_bytes": 2186996736,
+        "cuda_peak_reserved_bytes": 2262827008,
+        "frozen_base_verified_after_updates": true,
+        "profile_mode": "heavy_trace",
+        "mean_microbatch_seconds": 0.08041519376472613,
+        "synthetic_rows_per_second_using_mean": 99.48368741616059,
+        "warmup_optimizer_updates": 3,
+        "active_optimizer_updates": 17,
+        "receipt": {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch8_summary.json",
+          "bytes": 4764,
+          "sha256": "401bb6b1c482b9732ec63c415cf23560f8bac92e163eefc87385e3ce28b05506"
+        }
+      },
+      {
+        "batch_size": 16,
+        "gradient_accumulation_steps": 1,
+        "nominal_effective_batch_size": 16,
+        "optimizer_updates_including_warmup": 20,
+        "cuda_peak_allocated_bytes": 3056868352,
+        "cuda_peak_reserved_bytes": 3131047936,
+        "frozen_base_verified_after_updates": true,
+        "profile_mode": "heavy_trace",
+        "mean_microbatch_seconds": 0.10020399029409578,
+        "synthetic_rows_per_second_using_mean": 159.6742799667006,
+        "warmup_optimizer_updates": 3,
+        "active_optimizer_updates": 17,
+        "receipt": {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch16_summary.json",
+          "bytes": 4764,
+          "sha256": "e07013a010a27ad58381e6837f5ebb5e9d887fb269bf9f59f53c7a260b93d031"
+        }
+      },
+      {
+        "batch_size": 32,
+        "gradient_accumulation_steps": 1,
+        "nominal_effective_batch_size": 32,
+        "optimizer_updates_including_warmup": 20,
+        "cuda_peak_allocated_bytes": 4764236288,
+        "cuda_peak_reserved_bytes": 4907335680,
+        "frozen_base_verified_after_updates": true,
+        "profile_mode": "heavy_trace",
+        "mean_microbatch_seconds": 0.20670899300004,
+        "synthetic_rows_per_second_using_mean": 154.8070044538111,
+        "warmup_optimizer_updates": 3,
+        "active_optimizer_updates": 17,
+        "receipt": {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch32_summary.json",
+          "bytes": 4770,
+          "sha256": "2cfc245f3f2740c1da4a70b34c21086bb67e918d77f6b1a16b595b2d3a11c113"
+        }
+      },
+      {
+        "batch_size": 16,
+        "gradient_accumulation_steps": 1,
+        "nominal_effective_batch_size": 16,
+        "optimizer_updates_including_warmup": 20,
+        "actual_timed_examples": 272,
+        "actual_timed_examples_per_second": 172.50818709911624,
+        "warmup_optimizer_updates": 3,
+        "active_optimizer_updates": 17,
+        "cuda_peak_allocated_bytes": 3056868352,
+        "cuda_peak_reserved_bytes": 3131047936,
+        "frozen_base_verified_after_updates": true,
+        "profile_mode": "timing_only",
+        "mean_microbatch_seconds": 0.09274922117642478,
+        "synthetic_rows_per_second_using_mean": 172.50818709911624,
+        "receipt": {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch16_timing_summary.json",
+          "bytes": 6188,
+          "sha256": "f130e9ae7923e04f957fd16e2e9e050e432a2ba9f392a16273c9527b04abb047"
+        }
+      }
+    ],
+    "comparison_limit": "Synthetic capacity diagnostics; effective batches, examples and optimizer updates differ. No matched-learning or quality comparison.",
+    "selected_cuda_override": {
+      "batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "reason": "Batch32 throughput plateaued with higher reserved memory; batch64 not run"
+    },
+    "shared_m5_safe_preset": {
+      "batch_size": 4,
+      "gradient_accumulation_steps": 2
+    },
+    "portability": {
+      "mac_adapter_weights_only_restore": "passed strict unchanged base/head/architecture/label/tokenizer binding",
+      "restored_adapter_tensors_exact": true,
+      "frozen_base_verified_before_and_after_update": true,
+      "cuda_native_bf16": true,
+      "cuda_optimizer_updates": 1,
+      "synthetic_rows": 2,
+      "finite_loss": 0.6929811835289001,
+      "source_test_used": false,
+      "model_quality_claim": false,
+      "checkpoint": "outputs/runtime_readiness_synthetic_20261008/rtx4070/cuda_checkpoint/last.pt",
+      "materialization_precision": "FP32,TF32disabled",
+      "torch": "2.14.0+cu130",
+      "cuda_runtime": "13.0"
+    },
+    "merged_inference_reload": {
+      "cuda_saved_merged_native_factory_reload": "passed",
+      "comparison_dtype": "CPU FP32,TF32disabled materialization",
+      "max_absolute_adapter_merged_logit_difference": 4.0978193283081055e-08,
+      "tolerance": {
+        "rtol": 1e-05,
+        "atol": 2e-06
+      },
+      "finite_logits": true,
+      "paired_model_label_tokenizer_contracts_restored": true,
+      "cuda_bf16_vs_cpu_fp32_difference_informational": 0.0005775168538093567,
+      "quality_comparison": false,
+      "source_test_used": false
+    },
+    "original_checkout_readonly_check": {
+      "original_repository": "/home/oliverperrin/projects/LexiMind",
+      "git_status_porcelain": "",
+      "git_head": "c420d7c25330ea9972ef4bbe72a9c175ad49a778",
+      "original_torch": "2.9.1+cu128",
+      "original_cuda_runtime": "12.8",
+      "original_transformers": "4.57.3",
+      "original_hydra": "1.3.2",
+      "original_mlflow_skinny": "3.6.0",
+      "check": "Read-only; no installs or source writes in original checkout/environment"
+    },
+    "trace_mean_step_time_increase_relative_to_timing_only_percent": 8.037554410824388,
+    "profiler_versions": {
+      "heavy_trace_conditions": {
+        "conditions": [
+          "4/2",
+          "8/1",
+          "16/1",
+          "32/1"
+        ],
+        "script_sha256": "1bfbc2295d9696b3ea7576d4f8af97013ef30b52ece14afdef989961f59cbf37",
+        "evidence": "Original environment.json captures instrumentation used for heavy trace runs"
+      },
+      "timing_only_condition": {
+        "condition": "16/1",
+        "script_sha256": "25ee7805d6b866cda9fdbf269502273d9b9f57a271f113cd1dd9346a91092ba5",
+        "change": "PROFILE_TRACE=0 and actual batch/example/update count instrumentation added after heavy trace measurements"
+      },
+      "current_local_and_remote_script_sha256": "25ee7805d6b866cda9fdbf269502273d9b9f57a271f113cd1dd9346a91092ba5",
+      "verification": "Root verified matching local and isolated remote scripts/profile_training.py; no new benchmark execution"
+    }
   },
   "data_gate": {
     "human_reviews_completed": 0,
@@ -214,6 +408,56 @@
       "path": "outputs/runtime_readiness_synthetic_20261008/pretrained_smoke_v4/adapter_restore_receipt.json",
       "bytes": 409,
       "sha256": "509d4a89f2dd66e5fcb2e797ebde0b04f94f7c7fa5fe07b4dd8176b5ac6eae2d"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch16_summary.json",
+      "bytes": 4764,
+      "sha256": "e07013a010a27ad58381e6837f5ebb5e9d887fb269bf9f59f53c7a260b93d031"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch16_timing_summary.json",
+      "bytes": 6188,
+      "sha256": "f130e9ae7923e04f957fd16e2e9e050e432a2ba9f392a16273c9527b04abb047"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch32_summary.json",
+      "bytes": 4770,
+      "sha256": "2cfc245f3f2740c1da4a70b34c21086bb67e918d77f6b1a16b595b2d3a11c113"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch4_summary.json",
+      "bytes": 4767,
+      "sha256": "1548addea5b5381c8208e3acf58bf08c61cd724eacf8b93261d462cfdae0e051"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch8_summary.json",
+      "bytes": 4764,
+      "sha256": "401bb6b1c482b9732ec63c415cf23560f8bac92e163eefc87385e3ce28b05506"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/cuda_reload_summary.json",
+      "bytes": 473,
+      "sha256": "da68c542607306763c7be5f6bf0f0f8b43e4bfe7e762023bae08aebb9b209748"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/environment.json",
+      "bytes": 638,
+      "sha256": "e85a9dcc2f6eba2c05c65fe02194c4e508a8d026e2541619edf245f0b0dde514"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/hotspot_summary.json",
+      "bytes": 1163,
+      "sha256": "4993d92470a129a5b190c493643ba6c011fb744516291e7d6ad2e731d7655f85"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/original_readonly_check.json",
+      "bytes": 416,
+      "sha256": "2a812c0329a248f030406e9ce966a5f27a9fe6e1d74e3fa3579bc04b2e1aa92d"
+    },
+    {
+      "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/portability_summary.json",
+      "bytes": 3651,
+      "sha256": "b3d7d27c6ebe24b5284c43e2173f782975f23689ca42945c1eedc24ef8e11663"
     }
   ],
   "software_checks": {

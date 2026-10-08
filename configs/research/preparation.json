@@ -3,7 +3,7 @@
   "status": "draft",
   "paused_by_user": false,
   "as_of": "2026-10-08",
-  "instruction": "User authorized bounded local MacBook work on 2026-10-02 and user-owned RTX 4070/WSL Ubuntu profiling through Tailscale/SSH on 2026-10-08. Apple M5/16GB engineering execution is verified. RTX 4070 is reported available; SSH access and CUDA execution remain pending after port 2222 timeout. Formal MTL/book studies retain their declared data/protocol gates. Paid cloud compute and teacher API spend remain unauthorized.",
+  "instruction": "User authorized bounded local MacBook work and user-owned RTX4070/WSL Ubuntu profiling through Tailscale/SSH. Synthetic runtime and checkpoint portability verified on M5/16GB and RTX4070/12GB. Formal MTL/book studies retain data/protocol gates. Paid cloud compute and teacher API spend remain unauthorized.",
   "paid_spend_authorized": false,
   "hardware_available": true,
   "proposed_first_comparison": [
@@ -14,8 +14,7 @@
   "deferred": [
     "formal_mtl_comparison",
     "teacher_api_generation",
-    "paid_compute",
-    "rtx4070_execution_pending_connection"
+    "paid_compute"
   ],
   "gates": {
     "literature_gate": {
@@ -178,7 +177,7 @@
       "note": "120 source-linked work references; packet remains empty with no queries, human judgments or gold."
     },
     "runtime_preparation": {
-      "status": "m5_synthetic_book_lora_engineering_verified_cuda_pending",
+      "status": "m5_and_rtx4070_synthetic_book_lora_engineering_verified_reviewed_data_pending",
       "evidence": [
         {
           "path": "src/models/adapters.py",
@@ -227,13 +226,13 @@
         },
         {
           "path": "scripts/profile_training.py",
-          "bytes": 11961,
-          "sha256": "8aad2457636e8001c6ad0f733426639b10a2b7f41ca6139babf3f925b50a3d6b"
+          "bytes": 17214,
+          "sha256": "25ee7805d6b866cda9fdbf269502273d9b9f57a271f113cd1dd9346a91092ba5"
         },
         {
           "path": "configs/training/book_lora.yaml",
-          "bytes": 927,
-          "sha256": "ade733246d679b4e0ce140936b4a58d578cccc27f7c1aca0d2bc04cbcc582de3"
+          "bytes": 1010,
+          "sha256": "541749750e94507a2ba4d977dbef1cabf7789fff3b1348b13d09b56e7d4a4bfa"
         },
         {
           "path": "src/inference/factory.py",
@@ -252,11 +251,61 @@
         },
         {
           "path": "research/results/training_readiness_20261008.json",
-          "bytes": 9505,
-          "sha256": "52c54e1b14e224a8078b7c66122309b465dcb255efcb9cb51590bae03c046f64"
+          "bytes": 19971,
+          "sha256": "89d1d6ac9bf2ad6aaa6f4a4769c65ed08eb7accff2eaeb695c7779e1805998c2"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch16_summary.json",
+          "bytes": 4764,
+          "sha256": "e07013a010a27ad58381e6837f5ebb5e9d887fb269bf9f59f53c7a260b93d031"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch16_timing_summary.json",
+          "bytes": 6188,
+          "sha256": "f130e9ae7923e04f957fd16e2e9e050e432a2ba9f392a16273c9527b04abb047"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch32_summary.json",
+          "bytes": 4770,
+          "sha256": "2cfc245f3f2740c1da4a70b34c21086bb67e918d77f6b1a16b595b2d3a11c113"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch4_summary.json",
+          "bytes": 4767,
+          "sha256": "1548addea5b5381c8208e3acf58bf08c61cd724eacf8b93261d462cfdae0e051"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/batch8_summary.json",
+          "bytes": 4764,
+          "sha256": "401bb6b1c482b9732ec63c415cf23560f8bac92e163eefc87385e3ce28b05506"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/cuda_reload_summary.json",
+          "bytes": 473,
+          "sha256": "da68c542607306763c7be5f6bf0f0f8b43e4bfe7e762023bae08aebb9b209748"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/environment.json",
+          "bytes": 638,
+          "sha256": "e85a9dcc2f6eba2c05c65fe02194c4e508a8d026e2541619edf245f0b0dde514"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/hotspot_summary.json",
+          "bytes": 1163,
+          "sha256": "4993d92470a129a5b190c493643ba6c011fb744516291e7d6ad2e731d7655f85"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/original_readonly_check.json",
+          "bytes": 416,
+          "sha256": "2a812c0329a248f030406e9ce966a5f27a9fe6e1d74e3fa3579bc04b2e1aa92d"
+        },
+        {
+          "path": "outputs/runtime_readiness_synthetic_20261008/rtx4070/portability_summary.json",
+          "bytes": 3651,
+          "sha256": "b3d7d27c6ebe24b5284c43e2173f782975f23689ca42945c1eedc24ef8e11663"
         }
       ],
-      "note": "Current trainer/helper/entry/recipe/inference hashes refreshed only after focused existing checks and bounded synthetic M5 execution. Four successful batch 1/2/4/8 diagnostics select batch four/accumulation two at 256 tokens; initial trace export failure retained. Two-row engineering updates, frozen base/adapter weights-only restore, merged native inference and tokenizer contract rejections verified. No real book-field quality or CUDA result; zero completed human field reviews and formal data/protocol gates remain open."
+      "note": "Bounded synthetic M5 and isolated RTX4070 BF16 execution verified. Shared M5-safe batch4/accumulation2 preset retained; explicit CUDA batch16/accumulation1 override selected from diagnostics. Timing-only run:272 fabricated examples,17 active microbatches,172.51 rows/sec. Frozen base, strict Mac adapter portability and ordinary merged inference reload verified. No quality claim, real book judgments or source test data; zero human field reviews and formal data/protocol gates remain open."
     }
   },
   "study_design": "configs/research/study_design.json",
@@ -266,6 +315,6 @@
   "local_pilot": "configs/research/macbook_pilot.json",
   "hardware_context": {
     "m5": "Available and bounded synthetic runtime verified",
-    "rtx4070": "Reported available; user-owned WSL Ubuntu profiling authorized; connection/CUDA verification pending"
+    "rtx4070": "User-owned WSL2 RTX4070/12GB; isolated CUDA13.0 BF16 synthetic execution and checkpoint portability verified"
   }
 }

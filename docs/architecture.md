@@ -98,7 +98,7 @@ sigmoid scores; legacy topic/batch APIs reject that mode. The opt-in
 `training=book_lora` recipe supports the partial-label topic path on MPS and CUDA.
 Thresholds still need calibration; synthetic engineering checks do not establish
 book model quality. [Current commands and measured boundaries](research/README.md#current-runtime-readiness)
-describe the M5 evidence and pending RTX 4070 execution.
+describe verified M5/RTX 4070 engineering evidence and the remaining reviewed-data gates.
 
 `src/models/adapters.py` attaches LoRA only to named native attention projections,
 freezes base weights, and keeps private decoder/head state separate. Task arithmetic
@@ -121,6 +121,11 @@ Weights-only adapter continuation validates the original base/head initializatio
 current and paired labels, and encoding contract before copying factors/head state;
 optimizer, scheduler and RNG state are reset. Each file is written atomically,
 but the artifact set is not one transaction. Legacy checkpoints remain readable.
+Strict small-adapter restoration from the Mac to the RTX and CUDA-saved native
+merged-weight reload have been exercised on fabricated inputs. The existing
+profiler records actual example/batch/update counts and allocated/reserved CUDA
+peaks before a separate frozen-base audit; `PROFILE_TRACE=0` keeps the same loop
+and synchronization while omitting heavy trace collection.
 
 `src/training/rl.py` contains group-relative objectives, DPO and information-gain/EMA
 primitives. `policy.py` supplies full-support sampling, response-only scoring and

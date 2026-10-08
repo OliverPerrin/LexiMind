@@ -13,15 +13,15 @@
       "id": "preparation_status",
       "scope": "common",
       "path": "configs/research/preparation.json",
-      "bytes": 11539,
-      "sha256": "2d76d17242f7e0fc5eedd3531061ecdd1bc69a6169d0e90c8204b57177c2a0d5"
+      "bytes": 13673,
+      "sha256": "6ef3fc1eba860ead271365c51a10cb351eee119714faed04d1650c57d0032770"
     },
     {
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 17752,
-      "sha256": "42922032501a472bd29dafde88eaea1ee75f4bde8184c12db1b0f91d258177e2"
+      "bytes": 21134,
+      "sha256": "a3fbc379d6ba15258085e8da25aa6855a860e3291f7ae385dfbe8453d59024c6"
     },
     {
       "id": "study_decisions",
@@ -468,8 +468,8 @@
       "id": "runtime_architecture",
       "scope": "model_study",
       "path": "docs/architecture.md",
-      "bytes": 11689,
-      "sha256": "db80d55ef17ad3dd254c363dc0bc7c95128cdc8f10640f77b09288e917bae218"
+      "bytes": 12097,
+      "sha256": "dba971b55c7637533f0b683e33020b1ab0918de2e7f3b69a2e17df4ff9e46ba7"
     },
     {
       "id": "attention_runtime",
@@ -531,15 +531,15 @@
       "id": "book_lora_recipe",
       "scope": "model_study",
       "path": "configs/training/book_lora.yaml",
-      "bytes": 927,
-      "sha256": "ade733246d679b4e0ce140936b4a58d578cccc27f7c1aca0d2bc04cbcc582de3"
+      "bytes": 1010,
+      "sha256": "541749750e94507a2ba4d977dbef1cabf7789fff3b1348b13d09b56e7d4a4bfa"
     },
     {
       "id": "training_readiness_observations",
       "scope": "model_study",
       "path": "research/results/training_readiness_20261008.json",
-      "bytes": 9505,
-      "sha256": "52c54e1b14e224a8078b7c66122309b465dcb255efcb9cb51590bae03c046f64"
+      "bytes": 19971,
+      "sha256": "89d1d6ac9bf2ad6aaa6f4a4769c65ed08eb7accff2eaeb695c7779e1805998c2"
     },
     {
       "id": "training_metrics",
@@ -559,8 +559,8 @@
       "id": "profile_entry",
       "scope": "model_study",
       "path": "scripts/profile_training.py",
-      "bytes": 11961,
-      "sha256": "8aad2457636e8001c6ad0f733426639b10a2b7f41ca6139babf3f925b50a3d6b"
+      "bytes": 17214,
+      "sha256": "25ee7805d6b866cda9fdbf269502273d9b9f57a271f113cd1dd9346a91092ba5"
     },
     {
       "id": "training_data_contract",
