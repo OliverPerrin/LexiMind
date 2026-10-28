@@ -24,6 +24,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from .attention import MultiHeadAttention
+from .feedforward import FeedForward
 from .heads import ClassificationHead, TokenClassificationHead
 
 
@@ -200,18 +201,26 @@ def _reject_mutable_aliases(model: nn.Module, mutable: Sequence[str]) -> None:
         )
 
 
+_PARENTS = {
+    **dict.fromkeys(("W_Q", "W_K", "W_V", "W_O"), MultiHeadAttention),
+    **dict.fromkeys(("linear_gate", "linear1", "linear2"), FeedForward),
+}
+
+
 def _projection(model: nn.Module, path: str, scope: str, *, adapted: bool = False) -> nn.Linear:
     parent_name, _, leaf = path.rpartition(".")
-    if not path.startswith(scope + ".") or leaf not in {"W_Q", "W_K", "W_V", "W_O"}:
-        raise ValueError(f"Explicit {scope} attention projection paths are required")
+    if not path.startswith(scope + ".") or leaf not in _PARENTS:
+        raise ValueError(
+            f"Explicit {scope} attention or feed-forward projection paths are required"
+        )
     parent = model.get_submodule(parent_name)
     projection = model.get_submodule(path)
     expected = LoRALinear if adapted else nn.Linear
-    if not isinstance(parent, MultiHeadAttention) or type(projection) is not expected:
+    if not isinstance(parent, _PARENTS[leaf]) or type(projection) is not expected:
         raise ValueError(
-            "Only native dense attention Linear projections are supported; quantized/subclass targets are rejected"
+            "Only native dense attention/feed-forward Linear projections are supported; quantized/subclass targets are rejected"
         )
-    if parent.use_lora:
+    if getattr(parent, "use_lora", False):
         raise ValueError("Legacy attention LoRA cannot be combined with projection adapters")
     if not projection.weight.is_floating_point() or projection.weight.is_quantized:
         raise ValueError("LoRA targets must be unquantized floating weights")
@@ -249,7 +258,7 @@ def attach_lora(
 ) -> AdapterBinding:
     """Attach before optimizer creation; all checks/allocation precede mutation.
 
-    Shared scope is encoder attention; decoder attention and selected native
+    Shared scope is encoder attention/feed-forward; decoder projections and selected native
     classifier/pooler Linear parameters are private. Everything else is frozen.
     """
     shared, private, heads = (

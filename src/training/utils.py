@@ -146,18 +146,10 @@ def prepare_training_runtime(cfg):
     return device, snapshot
 
 
-def build_training_model(
-    cfg,
-    tokenizer,
-    *,
-    num_emotions,
-    num_topics,
-    topic_problem_type="single_label",
-    snapshot=None,
-    compile_modules=True,
+def build_native_model(
+    cfg, tokenizer, *, num_emotions, num_topics, topic_problem_type="single_label", snapshot=None
 ):
-    """One model, adapter, freeze and compilation recipe for train and profile."""
-    from src.models.adapters import LoRAConfig, attach_lora
+    """The native transformer and requested heads, before adapters, freezing or device moves."""
     from src.models.factory import ModelConfig, build_multitask_model
 
     training, settings = cfg.training, cfg.model
@@ -190,6 +182,31 @@ def build_training_model(
         topic_problem_type=topic_problem_type,
     )
     model._leximind_training_model_config = asdict(model_config)
+    return model
+
+
+def build_training_model(
+    cfg,
+    tokenizer,
+    *,
+    num_emotions,
+    num_topics,
+    topic_problem_type="single_label",
+    snapshot=None,
+    compile_modules=True,
+):
+    """One model, adapter, freeze and compilation recipe for train and profile."""
+    from src.models.adapters import LoRAConfig, attach_lora
+
+    training, settings = cfg.training, cfg.model
+    model = build_native_model(
+        cfg,
+        tokenizer,
+        num_emotions=num_emotions,
+        num_topics=num_topics,
+        topic_problem_type=topic_problem_type,
+        snapshot=snapshot,
+    )
     binding = None
     if snapshot is not None:
         recipe = training.book_lora

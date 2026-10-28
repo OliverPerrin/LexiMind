@@ -320,3 +320,26 @@ def test_incompatible_effective_deltas_are_rejected(problem):
         b.shared["encoder.embedding.weight"] = b.shared.pop(name)
     with pytest.raises(ValueError):
         merge_deltas([a, b], method="ties")
+
+
+def test_feedforward_projections_adapt_extract_and_merge_like_attention():
+    from src.models.feedforward import FeedForward
+
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(5)
+        pristine = TinyBase().eval()
+        pristine.encoder.ffn = FeedForward(4, 8, dropout=0, activation="gated-gelu-tanh")
+    paths = SHARED + ("encoder.ffn.linear_gate", "encoder.ffn.linear1", "encoder.ffn.linear2")
+    deltas = []
+    for task, fill in (("topic", 0.2), ("emotion", -0.1)):
+        model, binding = specialist(pristine, task, shared=paths)
+        with torch.no_grad():
+            model.encoder.ffn.linear2.lora_B.fill_(fill)
+        deltas.append(extract_effective_delta(model, binding, task_id=task))
+    expected = sum(value.shared["encoder.ffn.linear2.weight"] for value in deltas)
+    merged = materialize_merge(pristine, merge_deltas(deltas, method="task_arithmetic"))
+    assert torch.equal(
+        merged.encoder.ffn.linear2.weight, pristine.encoder.ffn.linear2.weight + expected
+    )
+    with pytest.raises(ValueError, match="feed-forward"):
+        specialist(pristine, shared=("encoder.ffn.activation",))

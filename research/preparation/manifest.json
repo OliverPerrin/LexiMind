@@ -14,7 +14,7 @@
       "scope": "common",
       "path": "configs/research/preparation.json",
       "bytes": 14175,
-      "sha256": "5a678bd342c52994c952ac205bface5a0fcecd378cab640f7550fffb69d017de"
+      "sha256": "4a9189477a9057a13d13838ec0291659ae6bd8c11daa0033681f5b4718a13d2d"
     },
     {
       "id": "research_visual_archive",
@@ -27,8 +27,8 @@
       "id": "research_index",
       "scope": "common",
       "path": "docs/research/README.md",
-      "bytes": 40209,
-      "sha256": "4b279a54f523e725309c8d9ecd798f3d0ca79170640711111b742986d2448e57"
+      "bytes": 8638,
+      "sha256": "63450387fe88eb2fde47cf5a031407e9603ed7cb501ef11e4b270022002d7f7b"
     },
     {
       "id": "study_decisions",
@@ -69,8 +69,8 @@
       "id": "research_entry",
       "scope": "common",
       "path": "scripts/research.py",
-      "bytes": 3254,
-      "sha256": "8991d357365787ce1b2571ad6e7c143e32f14ab5961b137a855274889dc92744"
+      "bytes": 3392,
+      "sha256": "cba53ede18f7b630efd07158c5b57907159b40bcf7d5656c38f2ed06aacc4f6b"
     },
     {
       "id": "builder_location",
@@ -328,8 +328,8 @@
       "id": "adapter_runtime",
       "scope": "model_study",
       "path": "src/models/adapters.py",
-      "bytes": 22058,
-      "sha256": "04026d30b3379258f86801c5a94844402fd351e7a97f3e70c108bd8c085321a1"
+      "bytes": 22317,
+      "sha256": "a3e60f82c08139c7fe3303f09a31e2d2a5b36cf5a51724946064f1ac58b01682"
     },
     {
       "id": "pilot_runtime",
@@ -601,8 +601,8 @@
       "id": "training_runtime_helpers",
       "scope": "model_study",
       "path": "src/training/utils.py",
-      "bytes": 17354,
-      "sha256": "900ef271820a7b79e286b1b73ab1322faa30bb2310424bc3e7f72531370878d6"
+      "bytes": 17855,
+      "sha256": "7c6a525f4124ef3be5dd2a29d1685b4f52fa4532abfe59b9b6101b08c78ca3dc"
     },
     {
       "id": "book_lora_recipe",
