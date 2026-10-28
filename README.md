@@ -64,9 +64,10 @@ The catalogue holds 120 works identified in Open Library, 113 of them with sourc
 | Attention, encoder, decoder, feed-forward, T5 layer norm | `src/models/` |
 | FLAN-T5 weight transfer (small, base, large) | `src/models/factory.py`, `configs/model/` |
 | Multi-task training, metrics, PCGrad | `src/training/` |
+| LoRA adapters, task arithmetic and TIES merging | `src/models/adapters.py` |
 | Checkpoint loading and shared-encoder inference | `src/inference/` |
 
-**Status:** bounded local training runs are active. Source-backed book continuation and missing-word experiments run on the M5 using the native transformer and LoRA; the [research notes](docs/research/README.md) record their results and limits. The formal book-field/model-recipe and recommendation studies still need reviewed labels and evaluation evidence. Earlier undergraduate results remain [historical evidence](docs/RESULTS.md) and have not been reproduced.
+**Research:** a budget-matched comparison of joint LoRA training, task specialists, and specialists merged with task arithmetic or TIES on book genre, topic and narrative-emotion classification. Merged models are charged for training their experts. Evaluation uses duplicate-aware splits of the Blurb Genre Collection, five seeds and a tuned TF-IDF baseline. The [research notes](docs/research/README.md) give the design, status and results so far. Earlier undergraduate results remain [historical evidence](docs/RESULTS.md) and have not been reproduced.
 
 The [interactive research visual archive](docs/research/visuals.html) collects the charts with their PRs and pinned evidence. Download the HTML and open it locally; GitHub displays its source rather than rendering the gallery.
 

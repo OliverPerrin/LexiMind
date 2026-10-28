@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "study_id": "merge-budget-v1",
+  "question": "Once the cost of training the experts is counted, do specialists merged with task arithmetic or TIES match one jointly trained LoRA adapter on book genre, topic and narrative-emotion classification?",
+  "data": {
+    "archive": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/blurbgenrecollectionen.zip",
+    "archive_sha256": "41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c",
+    "assignments": "data/research_candidates/bgc/41e6d70c2db2b4ec8dd644be7d08371f8f879c6d698732a829c9a24a42f38d7c/groups-v1/assignments.jsonl",
+    "components": "data/research_candidates/book-partitions-v1/components.jsonl",
+    "mapping": "research/preparation/book_field_mapping.json",
+    "cache": "data/research_candidates/merge-study-v1",
+    "expected_rows": {"train": 58889, "dev": 14630, "test": 18326, "quarantine": 49},
+    "labels": "Publisher labels are treated as complete: an absent label is a negative."
+  },
+  "tasks": {
+    "genre": {"source": "bgc", "facet": "genre"},
+    "topic": {"source": "bgc", "facet": "topic"}
+  },
+  "model": {
+    "max_length": 256,
+    "lora": {
+      "rank": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "targets": ["W_Q", "W_K", "W_V", "W_O", "linear_gate", "linear1", "linear2"]
+    },
+    "head": {"pooler": "mean", "dropout": 0.1}
+  },
+  "training": {
+    "batch_size": 32,
+    "lr": 0.0005,
+    "weight_decay": 0.0,
+    "warmup_fraction": 0.06,
+    "max_grad_norm": 1.0,
+    "baseline_updates": 3680
+  },
+  "seeds": [17, 29, 41, 53, 67],
+  "lexical": {"ngram_range": [1, 2], "min_df": 2, "max_features": 300000, "C_grid": [1, 4, 16, 64, 256, 1024, 4096]},
+  "evaluation": {
+    "selection_split": "dev_select",
+    "report_split": "dev_report",
+    "threshold_grid": [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7],
+    "min_label_support": 5,
+    "bootstrap_resamples": 1000,
+    "bootstrap_seed": 0,
+    "test_sealed": true
+  }
+}

@@ -23,6 +23,10 @@ COMMANDS = {
         "src.research.field_baseline",
         "Run a bounded weak source-label ranking diagnostic",
     ),
+    "merge-study": (
+        "src.research.merge_study",
+        "Run the budget-matched joint, specialist and merged LoRA study",
+    ),
     "licensed-books": ("licensed_books", "Prepare licensed book text candidates"),
     "bookdash": ("bookdash", "Prepare the expanded licensed Book Dash cohort"),
     "cr4": ("cr4", "Audit raw CR4 character-emotion annotations"),
