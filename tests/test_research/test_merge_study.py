@@ -6,6 +6,8 @@ from sklearn.metrics import average_precision_score, f1_score
 
 from src.research.merge_study import (
     _dev_half,
+    _schedule,
+    distribution_metrics,
     group_weights,
     metrics,
     select_threshold,
@@ -87,3 +89,23 @@ def test_tied_scores_form_one_threshold_like_scikit_learn():
     probs = np.array([[0.9], [0.9], [0.5], [0.5], [0.5], [0.1]])
     observed = metrics(probs, truth, 0.5, np.ones((1, 6)))["macro_ap"][0]
     assert observed == pytest.approx(average_precision_score(truth[:, 0], probs[:, 0]))
+
+
+def test_distribution_metrics_score_unique_majorities_and_agreement():
+    counts = np.array([[3, 0, 1], [1, 1, 0], [0, 2, 0], [0, 0, 4]], dtype=float)
+    probs = np.array([[0.6, 0.3, 0.1], [0.2, 0.7, 0.1], [0.1, 0.8, 0.1], [0.5, 0.2, 0.3]])
+    result = distribution_metrics(probs, counts, np.ones((1, 4)))
+    # Row 1 has tied majorities, so accuracy and F1 use rows 0, 2 and 3.
+    assert result["accuracy"][0] == pytest.approx(2 / 3)
+    expected_f1 = np.mean([f1_score([0, 1, 2], [0, 1, 0], average=None, labels=[0, 1, 2])])
+    assert result["macro_f1"][0] == pytest.approx(expected_f1)
+    assert result["agreement"][0] == pytest.approx(np.mean([3 / 4, 1 / 2, 1, 0]))
+    assert targets([{"emotion": [3, 0, 1]}], "emotion", ["a", "b", "c"]).tolist() == [[3, 0, 1]]
+
+
+def test_joint_schedule_follows_the_fixed_source_pattern():
+    config = {"budget": {"joint_batch_pattern": ["bgc", "bgc", "cr4"]}}
+    assert _schedule(config, ["bgc", "cr4"], 7) == ["bgc", "bgc", "cr4"] * 2 + ["bgc"]
+    assert _schedule(config, ["cr4"], 3) == ["cr4"] * 3
+    with pytest.raises(ValueError):
+        _schedule({"budget": {"joint_batch_pattern": ["bgc"]}}, ["bgc", "cr4"], 3)

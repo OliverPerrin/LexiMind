@@ -22,19 +22,28 @@ and implemented in [`src/research/merge_study.py`](../../src/research/merge_stud
 
 - **Tasks.** Book genre (15 labels) and topic (23 labels) from the
   [Blurb Genre Collection](https://www.inf.uni-hamburg.de/en/inst/ab/lt/resources/data/blurb-genre-collection.html)
-  (BGC), predicted from title and blurb. Narrative emotion from
-  [CR4-NarrEmote](https://aclanthology.org/2025.emnlp-main.493/) is the third task,
-  added in step 3: a character's emotion in a passage, mapped to eight NRC
-  categories. It differs from the BGC tasks in both input domain and output type.
+  (BGC), predicted from title and blurb. The third task is narrative emotion from
+  [CR4-NarrEmote](https://aclanthology.org/2025.emnlp-main.493/): given a passage
+  and a highlighted character, predict the distribution of annotators' emotions.
+  The provider maps each annotator's free-text answer to one of eight NRC
+  categories (`NRC_TopEmotion`). The mapping is automatic, so the labels are only
+  partly human; a strict majority of annotators agree in 69% of multi-annotator
+  pairs. This task differs from BGC in both input domain and output type: one
+  softmax distribution instead of independent labels.
 - **Duplicate-aware splits.** 849 groups of matching BGC records (shared blurbs,
   ISBNs, or title and author) crossed the official splits, including 274 identical
   blurbs. Groups are kept together: 58,889 train, 14,630 dev and 18,326 test
-  records, with 49 ambiguous records quarantined. Dev is halved by group:
+  records, with 49 ambiguous records quarantined. CR4's 38,209 passage-character
+  pairs are grouped by linked source documents and split 24,455 / 6,111 / 7,643.
+  Dev is halved by group:
   `dev_select` picks thresholds, regularisation and merge coefficients, while
   `dev_report` is used for development reporting. The test split stays sealed
   until the final run.
-- **Labels and metrics.** Publisher labels are treated as complete, so an absent
-  label is a negative. We report micro-F1, macro-F1 and macro average precision.
+- **Labels and metrics.** BGC publisher labels are treated as complete, so an
+  absent label is a negative. We report micro-F1, macro-F1 and macro average
+  precision. Emotion reports accuracy and macro-F1 against the unique majority
+  label, plus annotator agreement: the share of annotators who chose the predicted
+  category.
   Labels with fewer than 5 positives in the evaluated split are left out of the
   averages and listed. Each task uses one decision threshold, chosen on
   `dev_select` by micro-F1. The mapped 15/23-label vocabularies differ from BGC's
@@ -45,9 +54,13 @@ and implemented in [`src/research/merge_study.py`](../../src/research/merge_stud
   projection; each task has a mean-pooled linear head trained with sigmoid
   cross-entropy. Every arm of a seed starts from an identical base and heads,
   which merging requires.
-- **Budget.** Examples processed (updates × batch 32). Specialists share the
-  budget; a joint BGC batch supervises genre and topic in one pass. Selection and
-  merge-coefficient searches are reported separately.
+- **Budget.** Examples processed (updates × batch 32). Each specialist gets 3,680
+  updates (two BGC epochs). The joint adapter gets their total, 11,040 updates,
+  drawing two BGC batches for every CR4 batch; each BGC batch supervises genre and
+  topic in one pass. Merges reuse the specialists and choose a scale on
+  `dev_select`, by mean macro-AP (genre, topic) and macro-F1 (emotion). Task
+  arithmetic searches 0.4–1.0; TIES keeps the top 20% of each delta and searches
+  0.8–1.5. Each search is reported as selection cost.
 - **Uncertainty.** Five seeds (17, 29, 41, 53, 67) and 1,000 bootstrap resamples
   over book groups. Intervals cover the seed-averaged metric; seed spread is
   reported separately.
@@ -59,36 +72,56 @@ and implemented in [`src/research/merge_study.py`](../../src/research/merge_stud
 | Step | State |
 | --- | --- |
 | 1. Duplicate-aware data and closed-world labels | Done |
-| 2. Fair single-task baseline: does LoRA beat tuned TF-IDF? | TF-IDF done; seed-17 neural validation running on the M5; five seeds wait for the RTX 4070 |
-| 3. CR4 emotion task, then joint / specialists / task arithmetic / TIES | Next |
-| 4. Final test-split run and write-up | After step 3 |
+| 2. Fair single-task baseline: does LoRA beat tuned TF-IDF? | TF-IDF done; a seed-17 neural validation is running on the M5 |
+| 3. CR4 emotion task and the four arms | Implemented and smoke-tested end to end; five seeds wait for the RTX 4070 |
+| 4. Final test-split run and write-up | After the five-seed runs |
 
-## Results so far (`dev_report`, 7,369 records)
+The five-seed specialists also answer step 2, since each is a single-task LoRA
+model at the study budget. Roughly 1.5 hours per seed on the RTX 4070, extrapolated
+from the earlier pilots' throughput; this recipe hasn't been timed there yet.
+
+## Results so far (`dev_report`)
 
 | Task | System | Micro-F1 | Macro-F1 | Macro-AP |
 | --- | --- | --- | --- | --- |
-| Genre | Tuned TF-IDF | 0.685 [0.671, 0.696] | 0.634 [0.610, 0.652] | 0.688 [0.667, 0.709] |
-| Topic | Tuned TF-IDF | 0.709 [0.698, 0.722] | 0.688 [0.667, 0.706] | 0.749 [0.733, 0.769] |
+| Genre (7,369 books) | Tuned TF-IDF | 0.685 [0.671, 0.696] | 0.634 [0.610, 0.652] | 0.688 [0.667, 0.709] |
+| Topic (7,369 books) | Tuned TF-IDF | 0.709 [0.698, 0.722] | 0.688 [0.667, 0.706] | 0.749 [0.733, 0.769] |
 
-Brackets are 95% book-group bootstrap intervals. Erotica has 2 `dev_report`
-positives and is excluded from genre averages.
+| Task | System | Accuracy | Macro-F1 | Annotator agreement |
+| --- | --- | --- | --- | --- |
+| Emotion (2,904 passages) | Tuned TF-IDF | 0.533 [0.514, 0.554] | 0.484 [0.461, 0.507] | 0.467 [0.452, 0.483] |
+
+Brackets are 95% group bootstrap intervals. Erotica has 2 `dev_report`
+positives and is excluded from genre averages. For emotion, always predicting the
+most common majority label would score about 0.26 accuracy. Lexical C peaks
+inside its grid: 256 for genre and topic, 4 for emotion.
 
 ## Commands
 
 ```sh
 python scripts/research.py merge-study prepare          # rebuild splits from the pinned BGC archive
 python scripts/research.py merge-study lexical --output outputs/merge-study/lexical
-HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python scripts/research.py merge-study train \
-  --tasks genre --seed 17 --device cuda --output outputs/merge-study/genre-17
-python scripts/research.py merge-study report outputs/merge-study/lexical outputs/merge-study/genre-* \
-  --output research/results/merge_study_baseline.json
+export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+for seed in 17 29 41 53 67; do
+  for task in genre topic emotion all; do
+    python scripts/research.py merge-study train --tasks $task --seed $seed --device cuda \
+      --output outputs/merge-study/$task-$seed
+  done
+  for method in task_arithmetic ties; do
+    python scripts/research.py merge-study merge --method $method --device cuda \
+      --output outputs/merge-study/$method-$seed outputs/merge-study/{genre,topic,emotion}-$seed
+  done
+done
+python scripts/research.py merge-study report outputs/merge-study/*/ \
+  --output research/results/merge_study.json
 ```
 
-`--tasks genre,topic` trains one joint adapter. On the M5, add `--microbatch 4`.
+`--tasks all` trains the joint adapter. On the M5, add `--microbatch 4`.
 It accumulates gradients within the protocol batch of 32 and fits the repo's 35%
 MPS memory cap; one 3,680-update run takes about 2.6 hours there. The BGC archive
 and partition overlay come from `python scripts/research.py bgc-groups` and
-`book-partitions`.
+`book-partitions`. The CR4 file is downloaded from the URL in the protocol, which
+also pins its MD5.
 
 ## Earlier pilots, September–October 2026
 

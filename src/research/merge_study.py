@@ -4,27 +4,33 @@ Question: once the cost of training the experts is counted, do specialists merge
 with task arithmetic or TIES match one jointly trained adapter? The protocol and
 fixed settings live in ``configs/research/merge_study.json``.
 
-Publisher labels are treated as complete, so absent labels are negatives and the
-metrics are standard micro/macro-F1 and macro average precision. Thresholds and
-lexical regularisation are chosen on ``dev_select``; results are reported on
-``dev_report`` with book-group bootstrap intervals. The test split stays sealed.
+Tasks: BGC genre and topic (multi-label; publisher labels treated as complete, so
+absent labels are negatives) and CR4 narrative emotion (a distribution over eight
+categories from the annotators' answers). Thresholds, lexical regularisation and
+merge scales are chosen on ``dev_select``; results are reported on ``dev_report``
+with group bootstrap intervals. The test split stays sealed.
 
     python scripts/research.py merge-study prepare
     python scripts/research.py merge-study lexical --output outputs/merge-study/lexical
     python scripts/research.py merge-study train --tasks genre --seed 17 \\
         --device cuda --output outputs/merge-study/genre-17
+    python scripts/research.py merge-study merge --method ties --device cuda \\
+        --output outputs/merge-study/ties-17 outputs/merge-study/{genre,topic,emotion}-17
     python scripts/research.py merge-study report outputs/merge-study/* \\
-        --output research/results/merge_study_baseline.json
+        --output research/results/merge_study.json
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
 import gzip
 import hashlib
 import json
+import sys
 import time
 import zipfile
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
@@ -45,12 +51,16 @@ SPLITS = ("train", "dev_select", "dev_report", "test")
 # --------------------------------------------------------------------- data
 
 
+def _unit(group: str) -> float:
+    return int(hashlib.sha256(group.encode()).hexdigest(), 16) / 2**256
+
+
 def _dev_half(group: str) -> str:
     return "dev_report" if int(hashlib.sha256(group.encode()).hexdigest(), 16) % 2 else "dev_select"
 
 
-def prepare(config: dict, root: Path = ROOT) -> dict:
-    """Resolve every BGC record to its duplicate-aware split and closed-world labels."""
+def _bgc_rows(config: dict, root: Path) -> tuple[dict[str, list[dict]], dict]:
+    """Every BGC record in its duplicate-aware split, with closed-world genre/topic labels."""
     data = config["data"]
     archive = root / data["archive"]
     if file_hash(archive) != data["archive_sha256"]:
@@ -58,10 +68,6 @@ def prepare(config: dict, root: Path = ROOT) -> dict:
     assignments = {row["record_id"]: row for row in jsonl_rows(root / data["assignments"])}
     overrides = group_overrides(jsonl_rows(root / data["components"]))
     mapping = read_json(root / data["mapping"])
-    vocab = {
-        task: sorted(mapping["facets"][spec["facet"]]["labels"])
-        for task, spec in config["tasks"].items()
-    }
     rows: dict[str, list[dict]] = {split: [] for split in SPLITS}
     counts = {"train": 0, "dev": 0, "test": 0, "quarantine": 0}
     with zipfile.ZipFile(archive) as source:
@@ -83,50 +89,142 @@ def prepare(config: dict, root: Path = ROOT) -> dict:
                         "text": format_book_input(record["title"], record["body"]),
                     }
                     for task, spec in config["tasks"].items():
-                        row[task] = fields[spec["facet"]]["positive"]
+                        if spec["source"] == "bgc":
+                            row[task] = fields[spec["facet"]]["positive"]
                     rows[_dev_half(group) if split == "dev" else split].append(row)
     if counts != data["expected_rows"]:
         raise ValueError(f"Split counts {counts} differ from {data['expected_rows']}")
-    cache = root / data["cache"]
-    cache.mkdir(parents=True, exist_ok=True)
-    summary: dict = {
-        "schema_version": 1,
-        "study_id": config["study_id"],
-        "counts": counts,
-        "splits": {},
+    vocab = {
+        task: sorted(mapping["facets"][spec["facet"]]["labels"])
+        for task, spec in config["tasks"].items()
+        if spec["source"] == "bgc"
     }
-    for split, values in rows.items():
-        path = cache / f"{split}.jsonl.gz"
-        with gzip.open(path, "wt", encoding="utf-8") as handle:
-            for row in values:
-                handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
-        summary["splits"][split] = {
-            "rows": len(values),
-            "groups": len({row["group"] for row in values}),
-            "sha256": file_hash(path),
-            "label_support": {
-                task: {label: sum(label in row[task] for row in values) for label in labels}
-                for task, labels in vocab.items()
-            },
+    return rows, vocab
+
+
+def _cr4_rows(config: dict, root: Path) -> tuple[dict[str, list[dict]], dict]:
+    """One row per passage and highlighted character, grouped by linked source documents."""
+    spec = config["data"]["cr4"]
+    path = root / spec["csv"]
+    if hashlib.md5(path.read_bytes()).hexdigest() != spec["md5"]:
+        raise ValueError(f"CR4 file differs from the provider MD5; download {spec['url']}")
+    tasks = {t: s for t, s in config["tasks"].items() if s["source"] == "cr4"}
+    conditions: dict[tuple[str, str], dict] = {}
+    parent: dict[str, str] = {}
+
+    def find(node: str) -> str:
+        while parent.setdefault(node, node) != node:
+            parent[node] = parent[parent[node]]
+            node = parent[node]
+        return node
+
+    passages: dict[str, str] = {}
+    csv.field_size_limit(sys.maxsize)
+    with path.open(newline="", encoding="utf-8") as handle:
+        for record in csv.DictReader(handle):
+            if record["t0"] != "Yes":
+                continue
+            document = f"{record['workflow_name']}:{record['file_id']}"
+            key = (record["subject_ids"], record["highlighted_char"])
+            condition = conditions.setdefault(
+                key,
+                {
+                    "passage": record["passage"],
+                    "document": document,
+                    **{task: Counter() for task in tasks},
+                },
+            )
+            if condition["passage"] != record["passage"]:
+                raise ValueError(f"CR4 condition {key} has more than one passage")
+            for task, task_spec in tasks.items():
+                label = record[task_spec["column"]]
+                if label not in task_spec["labels"]:
+                    raise ValueError(f"Unexpected {task_spec['column']} value: {label!r}")
+                condition[task][label] += 1
+            # Documents that share a passage or a subject belong to one group.
+            for linked in (passages.setdefault(record["passage"], document), condition["document"]):
+                parent[find(document)] = find(linked)
+    rows: dict[str, list[dict]] = {split: [] for split in SPLITS}
+    fractions = spec["split"]
+    for (subject, character), condition in sorted(conditions.items()):
+        group = "cr4-documents:" + find(condition["document"])
+        position = _unit(group)
+        if position < fractions["train"]:
+            split = "train"
+        elif position < fractions["train"] + fractions["dev"]:
+            split = _dev_half(group)
+        else:
+            split = "test"
+        row: dict = {
+            "id": f"cr4:{subject}:{hashlib.sha256(character.encode()).hexdigest()[:12]}",
+            "group": group,
+            "text": f"Character: {character}\nPassage: {condition['passage']}",
         }
-    summary["vocabulary"] = vocab
+        for task, task_spec in tasks.items():
+            row[task] = [condition[task][label] for label in task_spec["labels"]]
+        rows[split].append(row)
+    return rows, {task: list(task_spec["labels"]) for task, task_spec in tasks.items()}
+
+
+def _support(rows: list[dict], task: str, spec: dict, labels: list[str]) -> dict:
+    if spec["type"] == "multi_label":
+        return {label: sum(label in row[task] for row in rows) for label in labels}
+    majority = Counter(labels[int(np.argmax(row[task]))] for row in rows)
+    return {label: majority[label] for label in labels}
+
+
+def prepare(config: dict, root: Path = ROOT) -> dict:
+    """Write each source's split rows and a summary with hashes and label support."""
+    cache = root / config["data"]["cache"]
+    cache.mkdir(parents=True, exist_ok=True)
+    summary: dict = {"schema_version": 2, "study_id": config["study_id"], "sources": {}}
+    vocabulary: dict[str, list[str]] = {}
+    for source, builder in (("bgc", _bgc_rows), ("cr4", _cr4_rows)):
+        rows, vocab = builder(config, root)
+        vocabulary |= vocab
+        summary["sources"][source] = {}
+        for split, values in rows.items():
+            path = cache / f"{source}_{split}.jsonl.gz"
+            with gzip.open(path, "wt", encoding="utf-8") as handle:
+                for row in values:
+                    handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+            summary["sources"][source][split] = {
+                "rows": len(values),
+                "groups": len({row["group"] for row in values}),
+                "sha256": file_hash(path),
+                "support": {
+                    task: _support(values, task, config["tasks"][task], labels)
+                    for task, labels in vocab.items()
+                },
+            }
+    summary["vocabulary"] = vocabulary
     (cache / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
     return summary
 
 
-def load(config: dict, split: str, root: Path = ROOT) -> tuple[list[dict], dict[str, list[str]]]:
+def load(config: dict, source: str, split: str, root: Path = ROOT) -> list[dict]:
     if split == "test" and config["evaluation"]["test_sealed"]:
         raise ValueError("The test split is sealed until the final study run")
     cache = root / config["data"]["cache"]
-    summary = read_json(cache / "summary.json")
-    path = cache / f"{split}.jsonl.gz"
-    if file_hash(path) != summary["splits"][split]["sha256"]:
-        raise ValueError(f"Prepared {split} rows changed; rerun prepare")
+    path = cache / f"{source}_{split}.jsonl.gz"
+    if file_hash(path) != read_json(cache / "summary.json")["sources"][source][split]["sha256"]:
+        raise ValueError(f"Prepared {source} {split} rows changed; rerun prepare")
     with gzip.open(path, "rt", encoding="utf-8") as handle:
-        return [json.loads(line) for line in handle], summary["vocabulary"]
+        return [json.loads(line) for line in handle]
+
+
+def vocabulary(config: dict, root: Path = ROOT) -> dict[str, list[str]]:
+    vocab: dict[str, list[str]] = read_json(root / config["data"]["cache"] / "summary.json")[
+        "vocabulary"
+    ]
+    return vocab
 
 
 def targets(rows: list[dict], task: str, labels: list[str]) -> np.ndarray:
+    """Boolean multi-label matrix, or annotator counts for a distribution task."""
+    if rows and len(rows[0][task]) == len(labels) and all(type(v) is int for v in rows[0][task]):
+        counts: np.ndarray = np.asarray([row[task] for row in rows], dtype=np.float64)
+        return counts
     index = {label: i for i, label in enumerate(labels)}
     result: np.ndarray = np.zeros((len(rows), len(labels)), dtype=bool)
     for i, row in enumerate(rows):
@@ -142,7 +240,7 @@ def _save(path: Path, arrays: dict) -> None:
 
 
 def group_weights(groups: list[str], resamples: int, seed: int) -> np.ndarray:
-    """Row weights for a bootstrap over book groups; row 0 is the unweighted sample."""
+    """Row weights for a bootstrap over groups; row 0 is the unweighted sample."""
     unique, inverse = np.unique(np.asarray(groups), return_inverse=True)
     rng = np.random.default_rng(seed)
     counts = rng.multinomial(len(unique), np.full(len(unique), 1 / len(unique)), size=resamples)
@@ -185,6 +283,29 @@ def metrics(
     return {"micro_f1": micro, "macro_f1": macro, "macro_ap": average_precision}
 
 
+def distribution_metrics(probs: np.ndarray, counts: np.ndarray, weights: np.ndarray) -> dict:
+    """Accuracy and macro-F1 against a unique majority label, plus annotator agreement.
+
+    Agreement is the share of annotators who chose the predicted category, over all rows.
+    """
+    predicted = probs.argmax(axis=1)
+    majority = counts.argmax(axis=1)
+    unique = (counts == counts.max(axis=1, keepdims=True)).sum(axis=1) == 1
+    share = counts[np.arange(len(counts)), predicted] / counts.sum(axis=1)
+    scoped = weights * unique
+    classes = np.arange(counts.shape[1])
+    hit = (predicted[:, None] == classes) & (majority[:, None] == classes)
+    with np.errstate(all="ignore"):
+        tp = scoped @ hit.astype(np.float64)
+        fp = scoped @ ((predicted[:, None] == classes) & ~hit).astype(np.float64)
+        fn = scoped @ ((majority[:, None] == classes) & ~hit).astype(np.float64)
+        return {
+            "accuracy": scoped @ (predicted == majority).astype(np.float64) / scoped.sum(axis=1),
+            "macro_f1": np.nanmean(2 * tp / (2 * tp + fp + fn), axis=1),
+            "agreement": weights @ share / weights.sum(axis=1),
+        }
+
+
 def select_threshold(
     probs: np.ndarray, truth: np.ndarray, grid: list[float], min_support: int = 1
 ) -> float:
@@ -221,57 +342,86 @@ def summarize(per_seed: list[dict], baseline: dict | None = None) -> dict:
     return result
 
 
+def selection_score(config: dict, probs: dict, rows: dict, vocab: dict) -> float:
+    """Mean dev_select score used to pick merge scales: macro-AP or distribution macro-F1."""
+    scores = []
+    support = config["evaluation"]["min_label_support"]
+    for task, spec in config["tasks"].items():
+        truth = targets(rows[spec["source"]], task, vocab[task])
+        ones = np.ones((1, len(truth)))
+        if spec["type"] == "multi_label":
+            scores.append(metrics(probs[task], truth, 0.5, ones, support)["macro_ap"][0])
+        else:
+            scores.append(distribution_metrics(probs[task], truth, ones)["macro_f1"][0])
+    return float(np.mean(scores))
+
+
 # ------------------------------------------------------------------ lexical
 
 
 def lexical(config: dict, output: Path, root: Path = ROOT) -> dict:
-    """TF-IDF one-vs-rest logistic regression; C is chosen by dev_select macro-AP."""
+    """TF-IDF logistic regression per task; C is chosen on dev_select."""
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.linear_model import LogisticRegression
     from sklearn.multiclass import OneVsRestClassifier
 
     settings, evaluation = config["lexical"], config["evaluation"]
-    train, vocab = load(config, "train", root)
-    select, _ = load(config, evaluation["selection_split"], root)
-    report, _ = load(config, evaluation["report_split"], root)
-    vectorizer = TfidfVectorizer(
-        sublinear_tf=True,
-        ngram_range=tuple(settings["ngram_range"]),
-        min_df=settings["min_df"],
-        max_features=settings["max_features"],
-    )
-    features = {
-        "train": vectorizer.fit_transform([row["text"] for row in train]),
-        "select": vectorizer.transform([row["text"] for row in select]),
-        "report": vectorizer.transform([row["text"] for row in report]),
-    }
+    vocab = vocabulary(config, root)
     output.mkdir(parents=True, exist_ok=False)
     result: dict = {"kind": "lexical", "tasks": {}}
     probabilities: dict[str, dict] = {"select": {}, "report": {}}
-    for task, labels in vocab.items():
-        truth = {
-            name: targets(rows, task, labels)
-            for name, rows in (("train", train), ("select", select))
+    for source in sorted({spec["source"] for spec in config["tasks"].values()}):
+        rows = {
+            name: load(config, source, split, root)
+            for name, split in (
+                ("train", "train"),
+                ("select", evaluation["selection_split"]),
+                ("report", evaluation["report_split"]),
+            )
         }
-        best = None
-        for c in settings["C_grid"]:
-            model = OneVsRestClassifier(LogisticRegression(C=c, solver="liblinear"), n_jobs=-1)
-            model.fit(features["train"], truth["train"])
-            probs = model.predict_proba(features["select"])
-            score = metrics(
-                probs,
-                truth["select"],
-                0.5,
-                np.ones((1, len(select))),
-                evaluation["min_label_support"],
-            )["macro_ap"][0]
-            if best is None or score > best[0]:
-                best = (score, c, model, probs)
-        assert best is not None
-        _, c, model, select_probs = best
-        probabilities["select"][task] = select_probs.astype(np.float32)
-        probabilities["report"][task] = model.predict_proba(features["report"]).astype(np.float32)
-        result["tasks"][task] = {"C": c}
+        vectorizer = TfidfVectorizer(
+            sublinear_tf=True,
+            ngram_range=tuple(settings["ngram_range"]),
+            min_df=settings["min_df"],
+            max_features=settings["max_features"],
+        )
+        features = {"train": vectorizer.fit_transform([row["text"] for row in rows["train"]])}
+        for name in ("select", "report"):
+            features[name] = vectorizer.transform([row["text"] for row in rows[name]])
+        for task, spec in config["tasks"].items():
+            if spec["source"] != source:
+                continue
+            truth = {name: targets(rows[name], task, vocab[task]) for name in ("train", "select")}
+            ones = np.ones((1, len(rows["select"])))
+            best = None
+            for c in settings["C_grid"]:
+                if spec["type"] == "multi_label":
+                    model = OneVsRestClassifier(
+                        LogisticRegression(C=c, solver="liblinear"), n_jobs=-1
+                    ).fit(features["train"], truth["train"])
+                    probs = model.predict_proba(features["select"])
+                    score = metrics(
+                        probs, truth["select"], 0.5, ones, evaluation["min_label_support"]
+                    )["macro_ap"][0]
+                else:
+                    # Annotator counts become sample weights: a soft-label cross-entropy.
+                    row_index, label_index = np.nonzero(truth["train"])
+                    model = LogisticRegression(C=c, max_iter=2000).fit(
+                        features["train"][row_index],
+                        label_index,
+                        sample_weight=truth["train"][row_index, label_index],
+                    )
+                    probs = model.predict_proba(features["select"])
+                    score = distribution_metrics(probs, truth["select"], ones)["macro_f1"][0]
+                if best is None or score > best[0]:
+                    best = (score, c, model, probs)
+            assert best is not None
+            _, c, model, select_probs = best
+            probabilities["select"][task] = select_probs.astype(np.float32)
+            probabilities["report"][task] = model.predict_proba(features["report"]).astype(
+                np.float32
+            )
+            result["tasks"][task] = {"C": c}
     _save(output / "select_probs.npz", probabilities["select"])
     _save(output / "report_probs.npz", probabilities["report"])
     (output / "run.json").write_text(json.dumps(result, indent=2) + "\n")
@@ -294,13 +444,10 @@ def _runtime(device: str, root: Path):
     return cfg, torch_device, snapshot, tokenizer
 
 
-def build_model(
-    config: dict, cfg, tokenizer, snapshot, seed: int, train_tasks: list[str], vocab: dict
-):
-    """Identical base and heads for every arm of one seed; only ``train_tasks`` heads adapt."""
+def build_base(config: dict, cfg, tokenizer, snapshot, seed: int, vocab: dict):
+    """The pristine model and every task head, identical for all arms of one seed."""
     import torch
 
-    from src.models.adapters import LoRAConfig, attach_lora
     from src.models.heads import ClassificationHead
     from src.training.utils import build_native_model
 
@@ -308,7 +455,7 @@ def build_model(
     head = config["model"]["head"]
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(seed)
-        for task in config["tasks"]:
+        for task, spec in config["tasks"].items():
             model.add_head(
                 task,
                 ClassificationHead(
@@ -316,16 +463,23 @@ def build_model(
                     len(vocab[task]),
                     pooler=head["pooler"],
                     dropout=head["dropout"],
-                    problem_type="multi_label",
+                    problem_type="multi_label" if spec["type"] == "multi_label" else "single_label",
                 ),
             )
+    return model
+
+
+def attach(config: dict, cfg, model, seed: int, train_tasks: list[str]):
+    """Shared LoRA on every listed encoder projection; only ``train_tasks`` heads adapt."""
+    from src.models.adapters import LoRAConfig, attach_lora
+
     lora = config["model"]["lora"]
     paths = [
         f"encoder.layers.{layer}.{'self_attn' if target.startswith('W_') else 'ffn'}.{target}"
         for layer in range(cfg.model.num_encoder_layers)
         for target in lora["targets"]
     ]
-    binding = attach_lora(
+    return attach_lora(
         model,
         shared_projections=paths,
         private_heads=[f"head_{task}" for task in train_tasks],
@@ -333,7 +487,6 @@ def build_model(
             rank=lora["rank"], alpha=lora["alpha"], dropout=lora["dropout"], seed=seed
         ),
     )
-    return model, binding
 
 
 def _encode(tokenizer, rows: list[dict], max_length: int) -> list[list[int]]:
@@ -359,7 +512,8 @@ def _batch(ids: list[list[int]], indices, pad: int, device):
     return tokens, tokens != pad
 
 
-def predict(model, ids, tasks, pad, device, batch_size=128) -> dict[str, np.ndarray]:
+def predict(config, model, ids, tasks, pad, device, batch_size=128) -> dict[str, np.ndarray]:
+    """Sigmoid probabilities for multi-label tasks and softmax for distribution tasks."""
     import torch
 
     from src.models.multitask import MultiTaskModel
@@ -376,9 +530,39 @@ def predict(model, ids, tasks, pad, device, batch_size=128) -> dict[str, np.ndar
                 tokens, mask=MultiTaskModel._expand_attention_mask(mask, device)
             )
             for task in tasks:
-                logits = model.classify_encoded(task, encoded, mask)
-                outputs[task].append(torch.sigmoid(logits.float()).cpu().numpy())
+                logits = model.classify_encoded(task, encoded, mask).float()
+                if config["tasks"][task]["type"] == "multi_label":
+                    outputs[task].append(torch.sigmoid(logits).cpu().numpy())
+                else:
+                    outputs[task].append(torch.softmax(logits, dim=-1).cpu().numpy())
     return {task: np.concatenate(values) for task, values in outputs.items()}
+
+
+def _evaluate(config, model, tokenizer, tasks, device, batch_size, root) -> dict:
+    """Probabilities on the selection and report splits, keyed by split then task."""
+    evaluation, max_length = config["evaluation"], config["model"]["max_length"]
+    result: dict[str, dict] = {"select": {}, "report": {}}
+    for source in sorted({config["tasks"][task]["source"] for task in tasks}):
+        source_tasks = [task for task in tasks if config["tasks"][task]["source"] == source]
+        for name, split in (
+            ("select", evaluation["selection_split"]),
+            ("report", evaluation["report_split"]),
+        ):
+            ids = _encode(tokenizer, load(config, source, split, root), max_length)
+            result[name] |= predict(
+                config, model, ids, source_tasks, tokenizer.pad_token_id, device, batch_size
+            )
+    return result
+
+
+def _schedule(config: dict, sources: list[str], updates: int) -> list[str]:
+    """Which source each update draws from: the fixed joint pattern, or the one source."""
+    if len(sources) == 1:
+        return sources * updates
+    pattern = [source for source in config["budget"]["joint_batch_pattern"] if source in sources]
+    if set(pattern) != set(sources):
+        raise ValueError(f"The joint batch pattern must cover {sources}")
+    return [pattern[step % len(pattern)] for step in range(updates)]
 
 
 def train(
@@ -397,24 +581,30 @@ def train(
     import torch
     from torch.nn import functional as F
 
-    if not tasks or set(tasks) - set(config["tasks"]):
-        raise ValueError(f"Tasks must be drawn from {sorted(config['tasks'])}")
-    if {config["tasks"][task]["source"] for task in tasks} != {"bgc"}:
-        raise NotImplementedError("Mixed-source joint batches arrive with the emotion task")
+    from src.models.multitask import MultiTaskModel
+
+    if not tasks or set(tasks) - set(config["tasks"]) or len(set(tasks)) != len(tasks):
+        raise ValueError(f"Tasks must be distinct names from {sorted(config['tasks'])}")
+    tasks = [task for task in config["tasks"] if task in tasks]
     output.mkdir(parents=True, exist_ok=False)
     cfg, torch_device, snapshot, tokenizer = _runtime(device, root)
-    training, evaluation = config["training"], config["evaluation"]
-    train_rows, vocab = load(config, "train", root)
-    evaluation_rows = {
-        split: load(config, evaluation[split], root)[0]
-        for split in ("selection_split", "report_split")
-    }
-    max_length = config["model"]["max_length"]
-    ids = _encode(tokenizer, train_rows, max_length)
-    truth = {
-        task: torch.from_numpy(targets(train_rows, task, vocab[task])).float() for task in tasks
-    }
-    model, binding = build_model(config, cfg, tokenizer, snapshot, seed, tasks, vocab)
+    training = config["training"]
+    vocab = vocabulary(config, root)
+    sources = sorted({config["tasks"][task]["source"] for task in tasks})
+    streams: dict[str, dict] = {}
+    for source in sources:
+        rows = load(config, source, "train", root)
+        streams[source] = {
+            "ids": _encode(tokenizer, rows, config["model"]["max_length"]),
+            "tasks": [task for task in tasks if config["tasks"][task]["source"] == source],
+            "order": [],
+        }
+        streams[source]["truth"] = {
+            task: torch.from_numpy(targets(rows, task, vocab[task])).float()
+            for task in streams[source]["tasks"]
+        }
+    model = build_base(config, cfg, tokenizer, snapshot, seed, vocab)
+    attach(config, cfg, model, seed, tasks)
     model.to(torch_device)
     parameters = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.AdamW(
@@ -435,9 +625,8 @@ def train(
     if batch_size % microbatch:
         raise ValueError("The microbatch must divide the protocol batch size")
     generator = torch.Generator().manual_seed(seed)
-    order: list[int] = []
+    plan = _schedule(config, sources, updates)
     curve = []
-    from src.models.multitask import MultiTaskModel
 
     def synchronize():
         if torch_device.type == "cuda":
@@ -445,19 +634,26 @@ def train(
         elif torch_device.type == "mps":
             torch.mps.synchronize()
 
+    def task_loss(task, logits, truth):
+        if config["tasks"][task]["type"] == "multi_label":
+            return F.binary_cross_entropy_with_logits(logits, truth)
+        target = truth / truth.sum(dim=1, keepdim=True)
+        return -(target * F.log_softmax(logits, dim=-1)).sum(dim=1).mean()
+
     torch.manual_seed(seed)  # Dropout draws; LoRA and head initialisation are seeded above.
     model.train()
     synchronize()
     started = time.perf_counter()
     running = 0.0
-    for step in range(updates):
-        if len(order) < batch_size:
-            order.extend(torch.randperm(len(ids), generator=generator).tolist())
-        indices, order = order[:batch_size], order[batch_size:]
+    for step, source in enumerate(plan):
+        stream = streams[source]
+        if len(stream["order"]) < batch_size:
+            stream["order"].extend(torch.randperm(len(stream["ids"]), generator=generator).tolist())
+        indices, stream["order"] = stream["order"][:batch_size], stream["order"][batch_size:]
         loss_value = 0.0
         for begin in range(0, batch_size, microbatch):
             chunk = indices[begin : begin + microbatch]
-            tokens, mask = _batch(ids, chunk, pad, torch_device)
+            tokens, mask = _batch(stream["ids"], chunk, pad, torch_device)
             with torch.autocast(
                 torch_device.type, dtype=torch.bfloat16, enabled=torch_device.type == "cuda"
             ):
@@ -465,13 +661,14 @@ def train(
                     tokens, mask=MultiTaskModel._expand_attention_mask(mask, torch_device)
                 )
                 losses = [
-                    F.binary_cross_entropy_with_logits(
+                    task_loss(
+                        task,
                         model.classify_encoded(task, encoded, mask).float(),
-                        truth[task][chunk].to(torch_device),
+                        stream["truth"][task][chunk].to(torch_device),
                     )
-                    for task in tasks
+                    for task in stream["tasks"]
                 ]
-            # Chunk-size weighting keeps the batch-32 mean; only dropout draws differ.
+            # Chunk-size weighting keeps the batch mean; only dropout draws differ.
             loss = torch.stack(losses).mean() * (len(chunk) / batch_size)
             loss.backward()
             loss_value += loss.item()
@@ -488,18 +685,14 @@ def train(
             print(f"  update {step + 1}/{updates} loss {curve[-1]['train_loss']:.4f}", flush=True)
     synchronize()
     seconds = time.perf_counter() - started
-    probabilities = {
-        split: predict(
-            model, _encode(tokenizer, rows, max_length), tasks, pad, torch_device, 4 * microbatch
-        )
-        for split, rows in evaluation_rows.items()
-    }
+    probabilities = _evaluate(config, model, tokenizer, tasks, torch_device, 4 * microbatch, root)
     result: dict = {
         "kind": "neural",
-        "tasks": {},
+        "tasks": {task: {} for task in tasks},
         "seed": seed,
         "updates": updates,
         "examples": updates * batch_size,
+        "batches_by_source": dict(Counter(plan)),
         "microbatch": microbatch,
         "train_seconds": seconds,
         "device": torch.cuda.get_device_name(torch_device)
@@ -508,9 +701,8 @@ def train(
         "trainable_parameters": sum(p.numel() for p in parameters),
         "curve": curve,
     }
-    result["tasks"] = {task: {} for task in tasks}
-    _save(output / "report_probs.npz", probabilities["report_split"])
-    _save(output / "select_probs.npz", probabilities["selection_split"])
+    _save(output / "report_probs.npz", probabilities["report"])
+    _save(output / "select_probs.npz", probabilities["select"])
     torch.save(
         {name: p.detach().cpu() for name, p in model.named_parameters() if p.requires_grad},
         output / "adapter.pt",
@@ -519,26 +711,97 @@ def train(
     return result
 
 
+def merge(
+    config: dict,
+    specialists: list[Path],
+    method: str,
+    device: str,
+    output: Path,
+    root: Path = ROOT,
+    batch_size: int = 128,
+) -> dict:
+    """Merge one seed's specialists; the scale is chosen on dev_select and its search counted."""
+    from copy import deepcopy
+
+    import torch
+
+    from src.models.adapters import extract_effective_delta, materialize_merge, merge_deltas
+
+    runs = [read_json(path / "run.json") for path in specialists]
+    tasks = [task for run in runs for task in run["tasks"]]
+    if (
+        any(run["kind"] != "neural" or len(run["tasks"]) != 1 for run in runs)
+        or sorted(tasks) != sorted(config["tasks"])
+        or len({run["seed"] for run in runs}) != 1
+    ):
+        raise ValueError("Merging needs one single-task specialist per study task, one seed")
+    seed = runs[0]["seed"]
+    output.mkdir(parents=True, exist_ok=False)
+    cfg, torch_device, snapshot, tokenizer = _runtime(device, root)
+    vocab = vocabulary(config, root)
+    base = build_base(config, cfg, tokenizer, snapshot, seed, vocab)
+    deltas = []
+    for path, task in zip(specialists, tasks, strict=True):
+        model = deepcopy(base)
+        binding = attach(config, cfg, model, seed, [task])
+        state = torch.load(path / "adapter.pt", map_location="cpu")
+        trainable = {name for name, p in model.named_parameters() if p.requires_grad}
+        if set(state) != trainable:
+            raise ValueError(f"{path} does not hold exactly the {task} specialist's parameters")
+        model.load_state_dict(state, strict=False)
+        deltas.append(extract_effective_delta(model, binding, task_id=task))
+        del model
+    settings = config["merge"][method]
+    selection_rows = {
+        source: load(config, source, config["evaluation"]["selection_split"], root)
+        for source in {spec["source"] for spec in config["tasks"].values()}
+    }
+    best = None
+    searched = []
+    for scale in settings["scales"]:
+        merged = merge_deltas(deltas, method=method, density=settings["density"], scale=scale)
+        model = materialize_merge(base, merged, private_tasks=tasks).to(torch_device)
+        probabilities = _evaluate(config, model, tokenizer, tasks, torch_device, batch_size, root)
+        score = selection_score(config, probabilities["select"], selection_rows, vocab)
+        searched.append({"scale": scale, "selection_score": score})
+        print(f"  {method} scale {scale}: dev_select score {score:.4f}", flush=True)
+        if best is None or score > best[0]:
+            best = (score, scale, probabilities)
+        del model
+    assert best is not None
+    _, scale, probabilities = best
+    result = {
+        "kind": "merged",
+        "method": method,
+        "density": settings["density"],
+        "scale": scale,
+        "seed": seed,
+        "tasks": {task: {} for task in config["tasks"]},
+        "specialists": [str(path) for path in specialists],
+        "updates": sum(run["updates"] for run in runs),
+        "examples": sum(run["examples"] for run in runs),
+        "selection": searched,
+    }
+    _save(output / "report_probs.npz", probabilities["report"])
+    _save(output / "select_probs.npz", probabilities["select"])
+    (output / "run.json").write_text(json.dumps(result, indent=2) + "\n")
+    return result
+
+
 # ------------------------------------------------------------------- report
 
 
-def _score(select_probs, report_probs, select_truth, truth, weights, evaluation):
-    """Threshold from dev_select by micro-F1, then bootstrap metrics on dev_report."""
-    support = evaluation["min_label_support"]
-    threshold = select_threshold(select_probs, select_truth, evaluation["threshold_grid"], support)
-    return threshold, metrics(report_probs, truth, threshold, weights, support)
+def _arm(run: dict) -> str:
+    if run["kind"] == "merged":
+        return f"{run['method']}@{run['updates']}"
+    return "+".join(sorted(run["tasks"])) + f"@{run['updates']}"
 
 
 def report(config: dict, runs: list[Path], root: Path = ROOT) -> dict:
-    """Seed-averaged neural results per task against the lexical baseline, on dev_report."""
+    """Seed-averaged results per task and arm against the lexical baseline, on dev_report."""
     evaluation = config["evaluation"]
-    rows, vocab = load(config, evaluation["report_split"], root)
-    weights = group_weights(
-        [row["group"] for row in rows],
-        evaluation["bootstrap_resamples"],
-        evaluation["bootstrap_seed"],
-    )
-    select_rows, _ = load(config, evaluation["selection_split"], root)
+    vocab = vocabulary(config, root)
+    support = evaluation["min_label_support"]
     loaded = [
         (
             read_json(path / "run.json"),
@@ -547,46 +810,63 @@ def report(config: dict, runs: list[Path], root: Path = ROOT) -> dict:
         )
         for path in runs
     ]
-    lexical_run = next((item for item in loaded if item[0]["kind"] == "lexical"), None)
-    summary: dict = {
-        "study_id": config["study_id"],
-        "split": evaluation["report_split"],
-        "rows": len(rows),
-        "tasks": {},
-    }
-    support = evaluation["min_label_support"]
-    for task, labels in vocab.items():
-        truth, select_truth = targets(rows, task, labels), targets(select_rows, task, labels)
+    summary: dict = {"study_id": config["study_id"], "split": evaluation["report_split"]}
+    summary["tasks"] = {}
+    for source in sorted({spec["source"] for spec in config["tasks"].values()}):
+        rows = load(config, source, evaluation["report_split"], root)
+        select_rows = load(config, source, evaluation["selection_split"], root)
+        weights = group_weights(
+            [row["group"] for row in rows],
+            evaluation["bootstrap_resamples"],
+            evaluation["bootstrap_seed"],
+        )
+        for task, spec in config["tasks"].items():
+            if spec["source"] != source:
+                continue
+            truth = targets(rows, task, vocab[task])
+            select_truth = targets(select_rows, task, vocab[task])
 
-        summary["tasks"][task] = {
-            "excluded_labels": [
-                label for label, n in zip(labels, truth.sum(0), strict=True) if n < support
-            ]
-        }
-        baseline = None
-        if lexical_run is not None:
-            run, select_probs, report_probs = lexical_run
-            threshold, baseline = _score(
-                select_probs[task], report_probs[task], select_truth, truth, weights, evaluation
-            )
-            summary["tasks"][task]["lexical"] = summarize([baseline]) | {
-                "C": run["tasks"][task]["C"],
-                "thresholds": [threshold],
-            }
-        arms: dict[str, list] = {}
-        for run, select_probs, report_probs in loaded:
-            if run["kind"] == "neural" and task in run["tasks"]:
-                arm = "+".join(sorted(run["tasks"])) + f"@{run['updates']}"
-                scored = _score(
-                    select_probs[task], report_probs[task], select_truth, truth, weights, evaluation
+            def score(
+                select_probs,
+                report_probs,
+                task=task,
+                truth=truth,
+                select_truth=select_truth,
+                weights=weights,
+            ):
+                if config["tasks"][task]["type"] != "multi_label":
+                    return None, distribution_metrics(report_probs[task], truth, weights)
+                threshold = select_threshold(
+                    select_probs[task], select_truth, evaluation["threshold_grid"], support
                 )
-                arms.setdefault(arm, []).append((run["seed"], *scored))
-        for arm, values in arms.items():
-            values.sort(key=lambda item: item[0])
-            summary["tasks"][task][arm] = summarize([v[2] for v in values], baseline) | {
-                "seeds_run": [v[0] for v in values],
-                "thresholds": [v[1] for v in values],
-            }
+                return threshold, metrics(report_probs[task], truth, threshold, weights, support)
+
+            entry: dict = {"rows": len(rows)}
+            if spec["type"] == "multi_label":
+                entry["excluded_labels"] = [
+                    label for label, n in zip(vocab[task], truth.sum(0), strict=True) if n < support
+                ]
+            baseline = None
+            arms: dict[str, list] = {}
+            for run, select_probs, report_probs in loaded:
+                if task not in run["tasks"] or task not in report_probs:
+                    continue
+                threshold, values = score(select_probs, report_probs)
+                if run["kind"] == "lexical":
+                    baseline = values
+                    entry["lexical"] = summarize([values]) | {
+                        "C": run["tasks"][task]["C"],
+                        "thresholds": [threshold],
+                    }
+                else:
+                    arms.setdefault(_arm(run), []).append((run["seed"], threshold, values))
+            for arm, values in arms.items():
+                values.sort(key=lambda item: item[0])
+                entry[arm] = summarize([v[2] for v in values], baseline) | {
+                    "seeds_run": [v[0] for v in values],
+                    "thresholds": [v[1] for v in values],
+                }
+            summary["tasks"][task] = entry
     return summary
 
 
@@ -596,22 +876,26 @@ def report(config: dict, runs: list[Path], root: Path = ROOT) -> dict:
 def configure_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--config", type=Path, default=CONFIG)
     actions = parser.add_subparsers(dest="action", required=True)
-    actions.add_parser("prepare", help="Resolve duplicate-aware splits and closed-world labels")
-    lexical_parser = actions.add_parser("lexical", help="Fit the tuned TF-IDF baseline")
+    actions.add_parser("prepare", help="Build BGC and CR4 splits with closed-world labels")
+    lexical_parser = actions.add_parser("lexical", help="Fit the tuned TF-IDF baselines")
     lexical_parser.add_argument("--output", type=Path, required=True)
     train_parser = actions.add_parser("train", help="Train one LoRA adapter for a fixed budget")
-    train_parser.add_argument(
-        "--tasks", required=True, help="Comma-separated, e.g. genre or genre,topic"
-    )
+    train_parser.add_argument("--tasks", required=True, help="Comma-separated, e.g. genre or all")
     train_parser.add_argument("--seed", type=int, required=True)
     train_parser.add_argument(
-        "--updates", type=int, help="Defaults to the protocol baseline budget"
+        "--updates", type=int, help="Default: the specialist budget times the number of tasks"
     )
     train_parser.add_argument("--device", choices=["cuda", "mps"], required=True)
     train_parser.add_argument("--output", type=Path, required=True)
     train_parser.add_argument(
         "--microbatch", type=int, help="Gradient-accumulation chunk; must divide the batch"
     )
+    merge_parser = actions.add_parser("merge", help="Merge one seed's specialists")
+    merge_parser.add_argument("specialists", type=Path, nargs="+")
+    merge_parser.add_argument("--method", choices=["task_arithmetic", "ties"], required=True)
+    merge_parser.add_argument("--device", choices=["cuda", "mps"], required=True)
+    merge_parser.add_argument("--output", type=Path, required=True)
+    merge_parser.add_argument("--batch-size", type=int, default=128)
     report_parser = actions.add_parser("report", help="Summarize run directories")
     report_parser.add_argument("runs", type=Path, nargs="+")
     report_parser.add_argument("--output", type=Path, required=True)
@@ -621,37 +905,45 @@ def run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     config = read_json(args.config)
     if args.action == "prepare":
         summary = prepare(config)
-        print(json.dumps({split: value["rows"] for split, value in summary["splits"].items()}))
+        print(
+            json.dumps(
+                {
+                    source: {split: value["rows"] for split, value in splits.items()}
+                    for source, splits in summary["sources"].items()
+                }
+            )
+        )
     elif args.action == "lexical":
         print(json.dumps(lexical(config, args.output), indent=2))
     elif args.action == "train":
-        updates = args.updates or config["training"]["baseline_updates"]
+        tasks = list(config["tasks"]) if args.tasks == "all" else args.tasks.split(",")
+        updates = args.updates or config["budget"]["specialist_updates"] * len(tasks)
         result = train(
+            config, tasks, args.seed, updates, args.device, args.output, microbatch=args.microbatch
+        )
+        print(json.dumps({key: result[key] for key in ("tasks", "examples", "train_seconds")}))
+    elif args.action == "merge":
+        result = merge(
             config,
-            args.tasks.split(","),
-            args.seed,
-            updates,
+            args.specialists,
+            args.method,
             args.device,
             args.output,
-            microbatch=args.microbatch,
+            batch_size=args.batch_size,
         )
-        print(
-            json.dumps(
-                {key: result[key] for key in ("tasks", "examples", "train_seconds")}, indent=2
-            )
-        )
+        print(json.dumps({key: result[key] for key in ("method", "scale", "selection")}))
     else:
         summary = report(config, args.runs)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(summary, indent=2) + "\n")
         for task, arms in summary["tasks"].items():
-            print(f"{task}: excluded {arms['excluded_labels']}")
             for arm, values in arms.items():
-                if arm == "excluded_labels":
+                if not isinstance(values, dict):
                     continue
                 cells = "  ".join(
-                    f"{name} {values[name]['mean']:.4f} [{values[name]['ci95'][0]:.4f}, {values[name]['ci95'][1]:.4f}]"
-                    for name in ("micro_f1", "macro_f1", "macro_ap")
+                    f"{name} {v['mean']:.4f} [{v['ci95'][0]:.4f}, {v['ci95'][1]:.4f}]"
+                    for name, v in values.items()
+                    if isinstance(v, dict) and "ci95" in v
                 )
-                print(f"{task:6} {arm:14} {cells}")
+                print(f"{task:7} {arm:24} {cells}")
     return 0
